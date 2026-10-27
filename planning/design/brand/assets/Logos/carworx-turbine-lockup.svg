@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="CarworX">
+<title>CarworX: Turbine</title>
+<defs>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600&amp;display=swap');
+.word{font-family:Sora,system-ui,sans-serif;font-weight:600;font-size:120px;fill:#ffffff}
+.blade{fill:#ffffff}
+</style>
+<radialGradient id="tg1"><stop offset="0" stop-color="#a0b0c4" stop-opacity=".6"/><stop offset="1" stop-color="#a0b0c4" stop-opacity="0"/></radialGradient>
+<radialGradient id="tg2"><stop offset="0" stop-color="#768aa2" stop-opacity=".5"/><stop offset="1" stop-color="#768aa2" stop-opacity="0"/></radialGradient>
+<filter id="tn"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/></filter>
+<path id="tb" d="M0,-9 C11,-14 19,-31 9,-52 C1,-47 -7,-30 0,-9Z"/>
+</defs>
+<rect width="1200" height="630" fill="#0d0f12"/>
+<g class="glow">
+  <ellipse cx="384" cy="265" rx="560" ry="200" fill="url(#tg1)"/>
+  <ellipse cx="816" cy="365" rx="440" ry="160" fill="url(#tg2)"/>
+</g>
+<rect width="1200" height="630" filter="url(#tn)" opacity=".1"/>
+<svg x="247" y="240" width="150" height="150" viewBox="-60 -60 120 120" overflow="visible">
+  <g class="rotor" fill="#ffffff">
+    <g><use href="#tb" class="blade"/></g>
+    <g transform="rotate(72)"><use href="#tb" class="blade b1"/></g>
+    <g transform="rotate(144)"><use href="#tb" class="blade b2"/></g>
+    <g transform="rotate(216)"><use href="#tb" class="blade b3"/></g>
+    <g transform="rotate(288)"><use href="#tb" class="blade b4"/></g>
+  </g>
+</svg>
+<text class="word" font-family="Sora, system-ui, sans-serif" font-weight="600" font-size="120" fill="#ffffff" x="433" y="358" textLength="520" lengthAdjust="spacing">CarworX</text>
+</svg>

@@ -1,0 +1,50 @@
+{
+  "v": 3,
+  "assetGroups": {
+    "Logos": {
+      "name": "Logos",
+      "tile": "l",
+      "order": [
+        "carworx-turbine-mark.svg",
+        "carworx-turbine-lockup.svg"
+      ],
+      "files": {
+        "carworx-turbine-mark.svg": {
+          "name": "carworx-turbine-mark.svg",
+          "blob": "7177548aee66ecf661d909db60c770d3",
+          "size": 503,
+          "type": "image/svg+xml"
+        },
+        "carworx-turbine-lockup.svg": {
+          "name": "carworx-turbine-lockup.svg",
+          "blob": "dff83a38074fa995ad0b90021f0f74e1",
+          "size": 1682,
+          "type": "image/svg+xml"
+        }
+      }
+    }
+  },
+  "blobs": {},
+  "createdOnFiles": {
+    "at": "2026-10-27T12:00:00Z",
+    "v": 1
+  },
+  "docs": {
+    "readme": "project/README.md",
+    "sections": []
+  },
+  "groups": [
+    "Logos"
+  ],
+  "lastChange": {
+    "at": "2026-10-27T21:30:00Z",
+    "by": "Claude",
+    "note": "Owner locked the Turbine logo; removed the other concepts (Blocks, Slipstream, Circuit, Pit Signal, Gauge, Keyfob, High Beam, Tread).",
+    "via": "Claude Code"
+  },
+  "layout": "files",
+  "libraries": [],
+  "namespace": "CarworX",
+  "sections": {},
+  "title": "CarworX"
+}

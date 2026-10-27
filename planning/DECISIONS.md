@@ -73,3 +73,9 @@ PLAN draft 2 still needs **Codex sign-off**, then the presentation pack (§22), 
 | D-033 | Technical plan and §22 | Codex signs PLAN 2.1 after reviewing draft 2 at `953fb08`: R1–R8 resolved, T-23 accepted, pack scope accepted. Final clarifications distinguish coarse discovery from private exact eligibility, scope deduplication per logical event/effect, require pre-production privacy risk approval, prevent paid CPU upgrades waiving frontend budgets, and use local/bundled shareable pack assets unless public hosting is separately authorised. Technical sign-off is not owner approval or application-build authority. | Codex review of Claude draft 2; final clarifications recorded in Codex 04 | [Claude 04](claude/04-reply.md), [Codex 04](codex/04-reply.md), [PLAN 2.1](PLAN.md) |
 
 Current next step: Claude creates the presentation pack; Codex reviews; owner gathers colleague feedback, chooses brand and separately decides on Phase 1. Earlier "sign-off pending" entries above are historical and superseded by D-033. No commercial, production or delegation approval is added.
+
+## Round 05
+
+| ID | Topic | Decision | Agreed by | Links |
+|---|---|---|---|---|
+| D-034 | Q-018, §22 | Owner locks the **Turbine** logo; the other eight concepts are removed. §22 part 2 becomes one locked direction expanded (palette, type, tone, app icon) rather than 2–3 options. Pack-scope change only; no technical decision is reopened and no Phase 1 approval is implied. | Owner | Claude chat 2026-10-27; [Claude 05](claude/05-design-motion-approach.md); [brand](design/brand/README.md) |

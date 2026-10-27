@@ -82,3 +82,7 @@ The assistants should first propose concrete options for the unresolved operatin
 - Q-022 is optional; binding unpaid reservations stay disabled unless selected. Q-023 is optional; no helpers are used while unanswered, and no guarantee of cost-free usage is made. Neither blocks local presentation artefacts.
 - The presentation pack can be shown/shared as bundled local files and static exports. Public hosting, DNS or third-party publication is a separate permission; none is inferred from technical sign-off.
 - Fee bearer, funded refunds, real-user retention/legal review, production costs and all activation gates remain pending at their already-defined stages. No need to repeat those questions before creating the concepts.
+
+## Owner answers — 2026-10-27, Claude chat (round 05)
+
+- **Q-018 UPDATED: Turbine logo locked.** The owner chose concept 01 *Turbine* (five impeller blades, Sora wordmark) as the CarworX logo and asked for the other eight concepts to be removed. Further brand work (UI palette, type, imagery, tone, app icon) continues in Claude Design. Files: [design/brand/](design/brand/README.md). This is a brand choice only; it is not Phase 1 approval.

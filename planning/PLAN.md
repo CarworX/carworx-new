@@ -62,7 +62,7 @@
 | Phase | What happens | Exit criteria | Authorised by |
 |---|---|---|---|
 | **0a. Technical plan** | This document | Codex sign-off | — |
-| **0b. Presentation pack** | Brand directions plus layout mockups plus a plain-language summary (§22) | Owner has shown the colleagues; feedback folded in | Owner (planning artefacts, no app code) |
+| **0b. Presentation pack** | Turbine brand (D-034) plus layout mockups plus a plain-language summary (§22) | Owner has shown the colleagues; feedback folded in | Owner (planning artefacts, no app code) |
 | **1. Foundations** | Repo scaffold, CI, local dev, staging, auth, the first tables with RLS, design system from the chosen direction, deploy to staging. Synthetic data only. **No Paystack or Mapbox needed** | A1–A6 and **A7 (restore drill: database plus storage objects)** pass on staging | **Owner approval of this plan**, plus the §15 Phase 1 prerequisites |
 | **2. Discovery and applications** | Catalogue, search, listings, applications, admin review, enquiries, demand capture, fines referral pages. **Production launch of the free site** | A8–A17 pass; GATE G-PROD passed | Owner, at phase start; Q-017 budget **before** the production launch |
 | **3. Bookings and quotes (test payments)** | Resources, holds, quotes, mobile travel, notifications, Paystack test mode, reviews, refunds and disputes tooling. Staging only | A18–A36 pass on staging | Owner, at phase start |
@@ -222,7 +222,7 @@ Incident response plan; restore drill (A7); WCAG 2.2 AA.
 
 ## 10. Design and UX (D-028)
 
-- **Brand:** no assets yet (Q-018). Claude proposes **2–3 provisional directions** in the presentation pack (§22). The owner chooses, with colleague feedback, before Phase 1 design-system work.
+- **Brand:** the owner locked the **Turbine** logo on 2026-10-27 (D-034); files in [design/brand/](design/brand/README.md). The rest of the brand (UI palette, type scale, imagery, tone, app icon) is refined in Claude Design and shown in the presentation pack (§22) as concept, not final, before Phase 1 design-system work.
 - **Every state is designed,** including:
   - empty or limited supply
   - acknowledgement deadline
@@ -426,11 +426,11 @@ A non-technical pack the owner can show the two colleagues. **Planning artefacts
 | Part | Content | Lead / reviewer |
 |---|---|---|
 | 1. One-page summary | What CarworX is, the five shortcuts, how booking and payment work, what launches first, what it costs, what's needed from the business | Claude / Codex |
-| 2. Brand directions | 2–3 provisional directions: name treatment, colour palette, type, tone of voice, sample app icon | Claude / Codex |
+| 2. Brand | The locked Turbine logo (D-034) expanded: name treatment, colour palette, type, tone of voice, sample app icon | Claude / Codex |
 | 3. Layout mockups | Mobile-first images: home (5 shortcuts), search results (list and map), provider listing, booking with quote approval, checkout, provider dashboard, provider application, fines guidance. Each shown in the leading brand direction, with desktop variants for home and search | Claude / Codex (accessibility, state coverage) |
 | 4. Journey walkthroughs | "Thandi books a wash" and "Pieter gets a repair quote", step by step through the mockups | Claude / Codex |
 | 5. Roadmap and decisions | Phases, gates, and the decisions the business needs to make, in plain language | Claude / Codex |
 
 **Format:** a self-contained local HTML presentation with bundled image/SVG assets and readable static exports, plus source files in `planning/design/`, suitable for the owner to present on a phone/computer or share as files. Mark mockups and copy **"concept, not final"**. Use fictional/demo names and ratings; no real endorsements, working checkout, vendor API calls, credentials, tracking or production data. Apply the required design skills for the authoring session. The pack is a planning artefact, not application UI code.
 
-Publicly hosting the pack, changing DNS or publishing through a third-party site service requires separate explicit owner authorisation; technical sign-off does not grant it. Shareable file exports provide a fallback without public hosting. Claude creates the pack next, Codex reviews factual/state/accessibility coverage, then the owner gathers colleague feedback and chooses the brand before deciding on Phase 1. Do not reopen the whole technical plan for purely cosmetic pack feedback; record any actual scope/contract change for review.
+Publicly hosting the pack, changing DNS or publishing through a third-party site service requires separate explicit owner authorisation; technical sign-off does not grant it. Shareable file exports provide a fallback without public hosting. Claude creates the pack next, Codex reviews factual/state/accessibility coverage, then the owner gathers colleague feedback on the Turbine brand and layouts before deciding on Phase 1. Do not reopen the whole technical plan for purely cosmetic pack feedback; record any actual scope/contract change for review.
