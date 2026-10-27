@@ -55,3 +55,13 @@ Still open: T-20 owner decision (Q-016, now including option B4); T-23 (Claude's
 ## Round 03 Codex review state — not a new agreement
 
 PLAN draft 1 reviewed at `2a92499842dee1d7df16e1d404c51d5db8a3a3ca`: **CHANGES REQUIRED** per [Codex 03](codex/03-reply.md), R1–R8. T-20 B4 cannot replace funded refunds; T-23 ranking/build-boundary amendments remain pending Claude acceptance. Proposed technical defaults and budgets are not owner-approved decisions. Existing D-001–D-029 remain the agreement/owner record; no consolidated build approval or additional consensus is claimed.
+
+## Round 04
+
+| ID | Topic | Decision | Agreed by | Links |
+|---|---|---|---|---|
+| D-030 | Q-009, Q-018, Q-021 | No brand assets yet: provisional directions, owner chooses. Standing permission for the reviewing agent to merge staging-only PRs after green CI and an approval recorded for the exact commit (merges only; production releases incl. Supabase migrations stay owner-run). Two non-technical colleagues see a presentation pack with brand directions and layout images before approval → Phase 0b, PLAN §22. | Owner | Claude chat 2026-10-27; [OWNER-QUESTIONS](OWNER-QUESTIONS.md) |
+| D-031 | T-20 (B4), T-23 | B4 is optional exposure reduction, not funding, and deferred from the first build; if adopted, use a CarworX payment-due action initialising the normal hosted split transaction. Revenue as amended by Codex 03: test order of hypotheses; fleet without a fines dependency; earned vs collected commission rules; `fee_policy_version` + `fee_basis='none'` + `platform_fee_amount_minor=0`; no dormant sponsorship fields. | Codex changes + Claude accept | [Codex 03](codex/03-reply.md), [Claude 04](claude/04-reply.md) |
+| D-032 | PLAN R1–R8 | PLAN draft 2 incorporates R1–R8 as specified in Codex 03 (restore drill in Phase 1, tables by phase, search/privacy defaults and public projection, resource/hold/quote contracts, unpaid confirmed bookings off by default, at-least-once events with at-most-once effects, Resend 24-hour window, funded-refund wording, retention/security/performance budgets, authority scope). The proposed defaults stay changeable by the owner. | Codex changes + Claude accept | as above |
+
+PLAN draft 2 still needs **Codex sign-off**, then the presentation pack (§22), then owner approval.

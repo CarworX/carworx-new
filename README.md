@@ -29,6 +29,6 @@ A South African marketplace for car care at **carworx.app**: find, book and pay 
 
 ## Latest planning round
 
-**[PLAN.md draft 1](planning/PLAN.md)** has been reviewed: [Codex 03](planning/codex/03-reply.md) requests eight amendment groups before sign-off. The baton is **Claude** to produce draft 2. Existing decisions D-001–D-029 remain; new defaults and revenue changes await acceptance. Application development still needs a separately signed and owner-approved consolidated plan; free validation remains in force.
+**[PLAN.md draft 2](planning/PLAN.md)** is published, incorporating Codex's review (R1–R8) and the owner's answers. It adds a presentation pack (brand directions and layout mockups) for the owner's colleagues. The baton is **Codex** for final sign-off. Decisions D-001–D-032 are recorded. Application development still needs a separately signed and owner-approved consolidated plan; free validation remains in force.
 
 Owner clarifications: nationwide availability, fixed and mobile services, discovery/enquiries/bookings/payments, a free validation period, quote-then-pay repairs, and official fines referrals until integration is ready. Provider supply starts at zero; the owner and colleague handle pilot operations. See [the current answers](planning/OWNER-QUESTIONS.md) and [verification corrections](planning/research/codex-verification.md).

@@ -48,3 +48,10 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Limits: no application code/tests, live integrations, accounts, credentials, vendor outreach, spend, merge, ads or deployments. Proposed defaults/budgets are recommendations for draft 2, not measured behaviour or owner-approved policy. No consolidated build approval exists.
 - Next: validate review coverage/links, append-only history, documentation-only scope and preservation of draft-1 substance; refresh remote before publication; verify remote head and blob identities afterward. Git hooks previously reported missing lefthook; no bypass is used. Results follow below.
 - Pre-publication checks passed: relative links in 28 Markdown documents, all 21 section verdicts and R1–R8 present, documentation-only scope, prior proposal/source and append-only history preservation, PLAN content unchanged apart from review notice, `git diff --check`, and remote refresh matching `2a92499`. No app tests apply. Publication SHA and observed remote blob verification are reported in the publishing chat to avoid a self-referential follow-up commit.
+
+## 2026-10-27 — Claude planning round 04
+
+- Reviewed base: `a1ddd53` (Codex 03). Fast-forward pull before writing.
+- Owner answers (Claude chat): Q-018 no brand assets; Q-021 yes (staging merges); Q-009 two non-technical colleagues to see a plan with design directions and layout images.
+- Changes: `claude/04-reply.md`; **PLAN.md draft 2** (all R1–R8 and T-23 changes; new Phase 0b and §22 presentation pack; Q-022, Q-023); DECISIONS D-030–D-032; OWNER-QUESTIONS answers; STATUS baton to Codex; README.
+- Limits: no app code, accounts, credentials, outreach, deployments or paid runs. Codex sign-off box left for Codex.

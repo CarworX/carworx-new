@@ -1,38 +1,35 @@
 # Status
 
-## 🟢 Baton: **CLAUDE**
+## 🟢 Baton: **CODEX**
 
-Claude: read [Codex 03](codex/03-reply.md), the 21 section verdicts and **R1–R8**. Revise [PLAN.md](PLAN.md) to draft 2, accepting or explicitly replacing each concrete amendment. Codex reviewed draft 1 at `2a92499842dee1d7df16e1d404c51d5db8a3a3ca`. **CHANGES REQUIRED; Codex sign-off withheld.** Evidence: [round-03 verification](research/codex-round-03-verification.md).
+Codex: final review of **[PLAN.md draft 2](PLAN.md)** per [Claude 04](claude/04-reply.md), which maps every R1–R8 and T-23 change. Sign it off by ticking the box in PLAN.md, or return a bounded fix list in `codex/04-reply.md`. Also review the new **§22 presentation pack** scope and Phase 0b. Reviewed base for Claude 04: `a1ddd53`.
 
-**Phase: PLANNING.** No application code, accounts, deployments, outreach or paid automation. Owner decisions D-001–D-005 and D-022 are constraints.
+**Phase: PLANNING.** No application code, accounts, deployments, outreach or paid automation.
 
-## Open topics
+## Open items
 
-| ID | Topic | State |
+| ID | Item | State |
 |---|---|---|
-| T-20 | Fee bearer, refund funding | A1 joint recommendation; owner Q-016 open. B4 may mitigate exposure but cannot replace approved funding; optional/deferred from initial build |
-| T-23 | Revenue portfolio | Codex changes: fleet not dependent on fines, commission recognition/reversals explicit, zero fee amount distinct from basis, no dormant sponsor fields in free core |
-| PLAN | Draft 1 reviewed; draft 2 required | R1 phase/restore dependency; R2 search/private locations; R3 capacity/quote/timeouts; R4 payment/outbox effects; R5 funding; R6 retention/security/budgets; R7 revenue; R8 authority/dependencies |
+| PLAN | Draft 2 | Waiting for Codex sign-off |
+| §22 | Presentation pack (brand directions, layout mockups, plain summary) for the owner's two colleagues | New scope (owner Q-009); Claude builds it after sign-off |
+| T-20 | Q-016 funded refund process | Owner decision at G-PAY; agents aligned (D-026, D-031) |
 
-**AGREED:** T-01–T-19, T-21, T-22, T-24 → D-006 to D-029 (T-20 partial: D-026). See [DECISIONS.md](DECISIONS.md).
+**AGREED:** T-01–T-19, T-21–T-24 and the PLAN R1–R8 changes → D-006 to D-032. See [DECISIONS.md](DECISIONS.md).
 
 ## Waiting on the owner
 
-See [OWNER-QUESTIONS.md](OWNER-QUESTIONS.md): Q-005, Q-006, Q-008, Q-009, Q-016, Q-017, Q-018 brand, Q-019 GitHub Team (optional), Q-021 optional standing staging-merge permission. Q-021 is not required for local/PR work; owner merges remain a fallback. Brand can begin with provisional directions. Confirm staging access/authority before remote setup; budget approval precedes any paid production gate. These questions do not block Claude's revision.
+**Answered this round:** Q-009 (colleagues see the pack), Q-018 (no brand yet), Q-021 (yes, staging merges).
+**New:** Q-022 (unpaid reservations; default no), Q-023 (agent helpers). Both are needed later.
+**Later:** Q-005, Q-006, Q-008, Q-016, Q-017 (before the Phase 2 production launch), Q-019.
 
-## Next step
+## Next steps
 
-Claude revises draft 2, correcting the gate/test map and T-20/T-23 treatment. Preserve explicit pending owner choices; do not tick Codex sign-off on Codex's behalf. Return an immutable revision for final Codex review, then separate owner approval for Phase 1 only. Current direction, platform and category decisions are not reopened. No application work, vendor calls with credentials, spending, outreach or deployment is authorised.
+1. Codex 04: sign draft 2, or list fixes.
+2. Claude 05: build the presentation pack in `planning/design/` plus a shareable page.
+3. Codex 05: review the pack.
+4. Owner shows the colleagues → feedback → approves Phase 1.
 
-## Material review findings
-
-- Phase 2 production currently depends on a restore test scheduled in Phase 3; fix before approval.
-- Capacity resources, hold lifetime, immutable quotes and late-payment resolution need concrete contracts.
-- Mobile bases need a private projection and protection from public spatial probing; hiding a field alone is insufficient.
-- At-least-once payment events need idempotent business effects; Resend keys have a 24-hour window, not an unlimited delivery guarantee.
-- B4 timing is not refund funding. Fleet scheduling can validate without integrated fines; no legal/demand claim substitutes for validation.
-
-Detailed publication/check history: [HISTORY.md](HISTORY.md).
+Detailed history: [HISTORY.md](HISTORY.md).
 
 ## Turn log
 
@@ -44,3 +41,4 @@ Detailed publication/check history: [HISTORY.md](HISTORY.md).
 | 4 | 2026-10-27 | Codex | Responded to T-17–T-22; corrected settlement/refund and private-deployment assumptions; added T-23 revenue portfolio and T-24 advertising boundaries with sources/scenario arithmetic. Owner request D-022; changes pending. Baton to Claude. |
 | 5 | 2026-10-27 | Claude | Accepted Codex's changes (D-023–D-029), added payment option B4, ranked the revenue streams, and published **PLAN.md draft 1**. Baton to Codex for plan review. |
 | 6 | 2026-10-27 | Codex | Reviewed all 21 PLAN sections; withheld sign-off with R1–R8; proposed B4 and T-23 corrections; added primary-source verification. Draft 1 preserved with review notice; baton to Claude for draft 2. |
+| 7 | 2026-10-27 | Claude | Recorded owner answers (Q-009, Q-018, Q-021); accepted all R1–R8 and T-23 changes (D-030–D-032); published **PLAN.md draft 2** with Phase 0b and the §22 presentation pack. Baton to Codex for sign-off. |

@@ -67,3 +67,11 @@ The assistants should first propose concrete options for the unresolved operatin
 - **Q-021 clarification:** standing staging-merge permission is optional. Without it, agents prepare reviewed PRs and the owner merges; it need not block local/PR work. It does not authorise extra agents, credentials, deployment, spending or automatic task triggering.
 - **Q-018 clarification:** missing brand assets can be handled with provisional design directions; no approval of a final brand is inferred. Staging access/setup permission and any spend remain distinct prerequisites.
 - **Q-017 timing:** any production plan that requires paid backups/compute needs budget approval before the Phase 2 production launch, even if it takes no payments. Do not postpone that approval to paid activation.
+
+## Owner answers — 2026-10-27, Claude chat (round 04)
+
+- **Q-018 ANSWERED:** No brand assets yet. Brand will be worked out during the design work. Agents propose provisional directions; nothing is final until the owner chooses.
+- **Q-021 ANSWERED: YES.** The reviewing agent may merge staging-only PRs without the owner, once CI is green and the other agent's approval is recorded against the exact commit. This covers merges only. It does not cover production releases (including Supabase production migrations), credentials, spending, extra agents or automatic triggering.
+- **Q-009 ANSWERED:** The owner will show **two colleagues** (not technical) the first finalised plan. That plan must include **design directions and images of potential layouts**, so a non-technical presentation pack is part of planning (PLAN §22). Colleague sign-off isn't formally required, but their feedback is expected before owner approval.
+- **Q-022 (new, Phase 3) Unpaid reservations?** Before live payments are switched on, should providers be able to take binding bookings with no online payment? Agents' default: **no**. Discovery and enquiries still work.
+- **Q-023 (new, Phase 1) Agent helpers.** May each agent use its own built-in helpers (sub-agents or parallel tasks for searching, reviewing or testing) within its assigned work, at no extra cost? Reviews by the other agent still apply.
