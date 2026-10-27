@@ -246,17 +246,52 @@ function cam(S, t) {
 const glow = (id, color, op) =>
   `<radialGradient id="${id}"><stop offset="0" stop-color="${color}" stop-opacity="${op}"/><stop offset=".6" stop-color="${color}" stop-opacity="${f2(op * 0.35)}"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>`;
 
-function background(S, t) {
-  const P = 2 * Math.PI * (t / S.duration); // periodic over the cut, so a loop has no seam
-  const a = Math.sin(P), b = Math.cos(P);
-  const k = Math.max(S.w, S.h), cx = S.w / 2, cy = S.h / 2;
-  return `<rect width="${S.w}" height="${S.h}" fill="${COLOR.ink}"/>` +
-    `<ellipse cx="${f2(cx - 0.16 * S.w + 0.035 * k * a)}" cy="${f2(cy - 0.07 * S.h + 0.012 * k * b)}" rx="${f2(0.46 * k)}" ry="${f2(0.2 * k)}" fill="url(#g1)"/>` +
-    `<ellipse cx="${f2(cx + 0.2 * S.w - 0.03 * k * a)}" cy="${f2(cy + 0.12 * S.h - 0.01 * k * b)}" rx="${f2(0.36 * k)}" ry="${f2(0.15 * k)}" fill="url(#g2)"/>` +
-    `<rect width="${S.w}" height="${S.h}" fill="url(#vig)"/>`;
+// Normalised rotor speed (0–1) from the spool velocity curve; 0 outside the spool.
+const V_PEAK = Math.pow(2.2 / 3.5, 2.2) * Math.pow(1.3 / 3.5, 1.3);
+function spoolSpeed(t) {
+  const [a, b] = BEATS.spool, u = (t - a) / (b - a);
+  return u <= 0 || u >= 1 ? 0 : (Math.pow(u, 2.2) * Math.pow(1 - u, 1.3)) / V_PEAK;
 }
 
-const DEFS_BG = `${glow('g1', '#9fb0c5', 0.26)}${glow('g2', '#7489a3', 0.2)}` +
+// The light behind the logo is driven by the rotor:
+// - Orbit: the two lights circle the rotor at a 4:1 gear ratio, one full orbit while the rotor makes
+//   its four turns, so they settle exactly where they began (the loop has no seam).
+// - Level: they come up from dark with the ignition, surge with rotor speed and flash at the boost.
+// - Sweep: a soft beam crosses the background with the glint.
+// - Breath: a slow drift, periodic over the cut, keeps the hold alive.
+function background(S, tLocal) {
+  const t = heroTime(S, tLocal);
+  const exit = S.cut === 'loop' ? ease.inOutCubic(seg(tLocal, ...BEATS.exit)) : 0;
+  const period = S.cut === 'splash' ? 8 : S.duration;
+  const P = 2 * Math.PI * (tLocal / period);
+  const k = Math.max(S.w, S.h);
+  const C = cam(S, t);
+  const ox = S.w / 2 + (C.x - S.w / 2) * 0.35, oy = S.h / 2 + (C.y - S.h / 2) * 0.35;
+  const geared = ((rotorAngle(t) - rotorAngle(0)) / TURNS) * (Math.PI / 180); // 0 → 2π across the spool
+  const phi = -2.95 + geared + 0.22 * Math.sin(P);
+  const rho = 0.15 * k * (1 + 0.18 * Math.cos(P));
+  const ig = ease.inOutCubic(seg(t, 0.1, 1.4)) * (1 - exit);
+  const flash = Math.exp(-Math.pow((t - (BEATS.boost[0] + 0.2)) / 0.28, 2)) * (1 - exit);
+  const level = 0.42 + 0.48 * ig + 0.45 * spoolSpeed(t) * (1 - exit) + 0.4 * flash + 0.05 * Math.sin(2 * P);
+  const L = (ang, r, rx, ry, id, op) => {
+    const x = ox + r * Math.cos(ang), y = oy + r * Math.sin(ang) * 0.6;
+    const rot = 9 * Math.sin(ang) - 4;
+    return `<ellipse cx="${f2(x)}" cy="${f2(y)}" rx="${f2(rx * k)}" ry="${f2(ry * k)}" fill="url(#${id})" opacity="${f2(Math.min(1, op))}" transform="rotate(${f2(rot)} ${f2(x)} ${f2(y)})"/>`;
+  };
+  let body = `<rect width="${S.w}" height="${S.h}" fill="${COLOR.ink}"/>` +
+    L(phi, rho, 0.46, 0.2, 'g1', level) +
+    L(phi + Math.PI + 0.25, rho * 1.3, 0.36, 0.15, 'g2', level * 0.95);
+  let defs = '';
+  const gl = seg(t, BEATS.glint[0] - 0.15, BEATS.glint[1] + 0.25);
+  if (gl > 0 && gl < 1) {
+    const span = S.w + 1.2 * k, bx = -0.6 * k + span * ease.inOutCubic(gl), bw = 0.22 * k;
+    defs = `<linearGradient id="beam" gradientUnits="userSpaceOnUse" x1="${f2(bx - bw)}" y1="${f2(S.h / 2 + bw * 0.78)}" x2="${f2(bx + bw)}" y2="${f2(S.h / 2 - bw * 0.78)}"><stop offset="0" stop-color="#b9c6d6" stop-opacity="0"/><stop offset=".5" stop-color="#b9c6d6" stop-opacity="${f2(0.16 * Math.sin(Math.PI * gl))}"/><stop offset="1" stop-color="#b9c6d6" stop-opacity="0"/></linearGradient>`;
+    body += `<rect width="${S.w}" height="${S.h}" fill="url(#beam)"/>`;
+  }
+  return { defs, body: body + `<rect width="${S.w}" height="${S.h}" fill="url(#vig)"/>` };
+}
+
+const DEFS_BG = `${glow('g1', '#9fb0c5', 0.3)}${glow('g2', '#7489a3', 0.24)}` +
   `<radialGradient id="vig" cx=".5" cy=".5" r=".72"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></radialGradient>`;
 
 const BLOOM = `<radialGradient id="bloom"><stop offset="0" stop-color="#eef3f8" stop-opacity=".95"/><stop offset=".35" stop-color="#c9d4e0" stop-opacity=".35"/><stop offset="1" stop-color="#c9d4e0" stop-opacity="0"/></radialGradient>`;
@@ -266,7 +301,8 @@ const BLOOM = `<radialGradient id="bloom"><stop offset="0" stop-color="#eef3f8" 
 function frame(S, tLocal, layer = 'all') {
   const svgOpen = `<svg xmlns="http://www.w3.org/2000/svg" width="${S.w}" height="${S.h}" viewBox="0 0 ${S.w} ${S.h}">`;
   const bgOn = S.bg && layer !== 'fg';
-  if (layer === 'bg') return `${svgOpen}<defs>${DEFS_BG}</defs>${bgOn ? background(S, tLocal) : ''}</svg>`;
+  const BG = bgOn ? background(S, tLocal) : { defs: '', body: '' };
+  if (layer === 'bg') return `${svgOpen}<defs>${DEFS_BG}${BG.defs}</defs>${BG.body}</svg>`;
 
   const t = heroTime(S, tLocal);
   const H = S.H, s = H / 100;
@@ -360,7 +396,7 @@ function frame(S, tLocal, layer = 'all') {
       `<g transform="translate(${f2(S.WX)},${f2(S.WY)}) scale(${s})">${S.letters.map((l) => `<path d="${l.d}"/>`).join('')}</g></g>`;
   }
 
-  return `${svgOpen}<defs>${bgOn ? DEFS_BG : ''}${defs}</defs>${bgOn ? background(S, tLocal) : ''}${under}${out}</svg>`;
+  return `${svgOpen}<defs>${bgOn ? DEFS_BG : ''}${BG.defs}${defs}</defs>${BG.body}${under}${out}</svg>`;
 }
 
 // Sub-frames this frame needs for honest motion blur (180° shutter): one per ~2.4 px of blade-tip travel.

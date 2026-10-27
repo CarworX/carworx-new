@@ -38,10 +38,13 @@ const withGrain = (S, svg) =>
   svg.replace('<defs>', `<defs><pattern id="gr" width="256" height="256" patternUnits="userSpaceOnUse"><image href="${grain()}" width="256" height="256"/></pattern>`)
      .replace('</svg>', `<rect width="${S.w}" height="${S.h}" fill="url(#gr)" opacity="0.07"/></svg>`);
 
-export function makeScene(cut, format, { alpha = false, scale = 1 } = {}) {
+export function makeScene(cut, format, { alpha = false, scale = 1, noGrain = false, stillLight = false } = {}) {
   const F = FORMATS[format];
   const G = { word: wordmark(), L: layout(F.kind, F.H * scale) };
-  return scene(G, { w: Math.round(F.w * scale), h: Math.round(F.h * scale), bg: !alpha, cut });
+  const S = scene(G, { w: Math.round(F.w * scale), h: Math.round(F.h * scale), bg: !alpha, cut });
+  S.noGrain = noGrain; // GIFs compress far better without grain
+  S.stillLight = stillLight; // and with the light held at its end-card position
+  return S;
 }
 
 const raster = (svg) => new Resvg(svg, { background: 'rgba(0,0,0,0)', ...NOFONTS }).render().pixels;
@@ -61,7 +64,8 @@ export function renderFrame(S, t, fps, blur = true) {
   const out = Buffer.alloc(S.w * S.h * 4);
   if (S.bg) {
     // Premultiplied foreground over the opaque background.
-    const bg = raster(withGrain(S, frame(S, t, 'bg')));
+    const tb = S.stillLight ? 7.0 : t;
+    const bg = raster(S.noGrain ? frame(S, tb, 'bg') : withGrain(S, frame(S, tb, 'bg')));
     for (let j = 0; j < out.length; j += 4) {
       const a = acc[j + 3] / n;
       out[j] = Math.round(acc[j] / n + bg[j] * (1 - a));
@@ -129,7 +133,7 @@ export async function encode(job, { fps = 60, blur = true, out, duration = CUTS[
   const alpha = !!job.alpha;
   const args = ['-y', '-v', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${S.w}x${S.h}`, '-r', String(fps), '-i', '-'];
   if (out.endsWith('.webm')) args.push('-c:v', 'libvpx-vp9', '-pix_fmt', alpha ? 'yuva420p' : 'yuv420p', '-b:v', '0', '-crf', '20', '-row-mt', '1', '-auto-alt-ref', '0');
-  else if (out.endsWith('.gif')) args.push('-vf', `split[a][b];[a]palettegen=max_colors=${alpha ? 32 : 48}:stats_mode=full${alpha ? ':reserve_transparent=1' : ''}[p];[b][p]paletteuse=dither=sierra2_4a${alpha ? ':alpha_threshold=128' : ''}`, '-loop', '0');
+  else if (out.endsWith('.gif')) args.push('-vf', `split[a][b];[a]palettegen=max_colors=${alpha ? 32 : 48}:stats_mode=full${alpha ? ':reserve_transparent=1' : ''}[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle${alpha ? ':alpha_threshold=128' : ''}`, '-loop', '0');
   else args.push('-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '14', '-preset', 'slow', '-tune', 'animation', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-movflags', '+faststart');
   args.push('-an', '-metadata', 'title=CarworX Turbine', out);
   const ff = spawn(FFMPEG, args, { stdio: ['pipe', 'inherit', 'inherit'] });

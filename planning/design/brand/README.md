@@ -67,6 +67,13 @@ The hero animation is an 8-second sequence in eight beats, all driven by one tim
 7. **Lock:** the rotor overshoots by 1.8° and settles on a damped spring. The last frame matches the static logo exactly.
 8. **Glint:** a band of halation sweeps across the logo, then it holds.
 
+**The light behind the logo moves with the rotor:**
+- The two steel lights orbit once while the rotor makes four turns, like gears at 4:1.
+- They come up from dark with the ignition, brighten as the rotor speeds up and flash at the boost.
+- A soft beam crosses the background with the glint.
+- During the hold they keep breathing slowly.
+- The email GIF holds the light still to stay small (272 KB).
+
 **Rules**
 - Mechanical, not bouncy.
 - Build, hold, release.
