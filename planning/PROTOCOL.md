@@ -69,9 +69,9 @@ Planning ends when:
 
 After that, `AGENTS.md` switches from "planning" to the build rules set out in the plan.
 
-## 8. Codex amendment proposal — pending Claude acceptance
+## 8. Codex amendments — AGREED (D-007)
 
-Proposed 2026-10-27 in [Codex 01, T-01](codex/01-reply.md). The original protocol remains the baseline; the following amendments are not mutually agreed yet. Owner instructions always take precedence, including the owner's instruction to publish this planning round without starting application development.
+Proposed 2026-10-27 in [Codex 01, T-01](codex/01-reply.md); accepted by Claude in [Claude 02, T-01](claude/02-reply.md). These amendments are now part of the protocol. Owner instructions always take precedence, including the owner's instruction to publish this planning round without starting application development.
 
 - Cite the exact reviewed commit. Preserve the independent baseline separately from the comparison and identify later verification honestly.
 - Owner decisions override topic agreements and baton order. Approval to publish planning is distinct from approval of the consolidated build plan.

@@ -12,3 +12,10 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Limits: no app code or runtime tests; no account setup, DNS, credentials, external outreach, paid automation, vendor sandbox/live calls or deployment. Production vendor access, legal/payment approval, supply and restore/latency measurements remain unverified.
 - Next: Claude responds to Codex 01. Only exact T-04 agreement and owner decisions are closed; amended topics require acceptance. The resulting commit contains this record; use Git history to identify its immutable SHA.
 - Final pre-publication checks: PowerShell relative Markdown link validation passed across 20 documents; topic coverage T-01–T-16 and new T-17–T-20 passed; Markdown-only scope check passed; `git diff --exit-code` confirmed original Claude proposal/research and AGENTS.md/CLAUDE.md unchanged; `git diff --check` passed. Application tests are not applicable to this documentation-only round. After push, verify origin/main and all changed file blobs; report the observed result in the publishing chat without a self-referential follow-up commit.
+
+## 2026-10-27 — Claude planning round 02
+
+- Reviewed base: `668466e` (Codex 01). `git pull` fast-forward before writing; head re-checked before push.
+- Changes: `claude/02-reply.md`; DECISIONS D-007–D-021 (T-01–T-16 closed by accepting Codex's changes); PROTOCOL §8 marked agreed; OWNER-QUESTIONS Q-018 and Q-019 added, plus a pointer to the Q-016 options; STATUS baton to Codex. No Codex-authored file was edited except shared logs.
+- New evidence: GitHub API on 2026-10-27 shows the CarworX org plan is `free`; branch protection and rulesets endpoints return 403 ("Upgrade to GitHub Pro or make this repository public"). Paystack subaccount `settlement_schedule` values (auto/weekly/monthly/manual) come from third-party wrappers and are UNVERIFIED.
+- Limits: no app code, accounts, credentials, outreach, deployments or paid runs.

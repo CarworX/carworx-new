@@ -41,4 +41,8 @@ The original questions above are preserved as history. The entries below superse
 - Q-016: processing-fee bearer, refund funding and chargeback responsibilities, before paid activation.
 - Q-017: approved production and automation budget/credentials, before any spending or setup.
 
+- Q-016 options are now proposed in [Claude 02, T-20](claude/02-reply.md): fee bearer A1/A2/A3 and refund funding B1/B2/B3. Wait for Codex's reply before deciding.
+- **Q-018 (new) Brand assets.** Do you have a logo, colours, fonts or a tone of voice for CarworX? If not, Claude will propose 2–3 design directions for you to pick from (T-22).
+- **Q-019 (new, later) GitHub plan.** The CarworX organisation is on GitHub Free, which can't protect branches in a private repo. Before paid launch, the agents will likely recommend upgrading to GitHub Team (per-seat monthly fee) (T-21). No decision needed yet.
+
 The assistants should first propose concrete options for the unresolved operating/payment questions. Do not ask the owner again for answers already recorded above.

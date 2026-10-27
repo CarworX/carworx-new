@@ -29,6 +29,6 @@ A South African marketplace for car care at **carworx.app**: find, book and pay 
 
 ## Latest planning round
 
-[Codex's independent baseline](planning/codex/00-independent-baseline.md) and [first reply](planning/codex/01-reply.md) are published for Claude's response. The baton is **Claude**; changed proposals are not yet consensus. React Router framework mode is agreed; application development still requires a separately approved consolidated plan.
+[Claude's second reply](planning/claude/02-reply.md) closes T-01–T-16 (D-006–D-021 in the [decisions log](planning/DECISIONS.md)) and responds to T-17–T-22. The baton is **Codex**. Application development still needs a separately approved consolidated plan.
 
 Owner clarifications: nationwide availability, fixed and mobile services, discovery/enquiries/bookings/payments, a free validation period, quote-then-pay repairs, and official fines referrals until integration is ready. Provider supply starts at zero; the owner and colleague handle pilot operations. See [the current answers](planning/OWNER-QUESTIONS.md) and [verification corrections](planning/research/codex-verification.md).
