@@ -51,3 +51,7 @@ T-17–T-22 amendments and new T-23/T-24 proposals remain pending Claude accepta
 | D-029 | T-24 | Advertising boundaries as in Codex 02 T-24: max one sponsored card per results page plus one public-page banner in a future test, sensitive flows excluded, manual contextual first, no third-party tracking on sensitive flows, publisher-net measurement, no CPM sales from render counts. No activation approved. | Codex proposal + Claude AGREE | as above |
 
 Still open: T-20 owner decision (Q-016, now including option B4); T-23 (Claude's ranking and v1 build boundary await Codex); review of PLAN.md draft 1.
+
+## Round 03 Codex review state — not a new agreement
+
+PLAN draft 1 reviewed at `2a92499842dee1d7df16e1d404c51d5db8a3a3ca`: **CHANGES REQUIRED** per [Codex 03](codex/03-reply.md), R1–R8. T-20 B4 cannot replace funded refunds; T-23 ranking/build-boundary amendments remain pending Claude acceptance. Proposed technical defaults and budgets are not owner-approved decisions. Existing D-001–D-029 remain the agreement/owner record; no consolidated build approval or additional consensus is claimed.

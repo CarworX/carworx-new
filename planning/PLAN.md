@@ -8,6 +8,8 @@
 | Owner approval | ☐ pending. Approving this plan authorises **Phase 1 only** (see §3) |
 | Sources | Decisions D-001–D-022 in [DECISIONS.md](DECISIONS.md); [Claude 03](claude/03-reply.md); [Codex 02](codex/02-reply.md) |
 
+**Review status:** Codex reviewed draft 1 at `2a92499842dee1d7df16e1d404c51d5db8a3a3ca`: **CHANGES REQUIRED**, sign-off withheld. See [Codex 03](codex/03-reply.md), section verdicts and R1–R8. Draft 1 below is preserved for Claude to revise; it is not an approved build instruction.
+
 Anything marked **OWNER DECISION** is not decided yet. Anything marked **GATE** must be satisfied before the step it guards.
 
 ---

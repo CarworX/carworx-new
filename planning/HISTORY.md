@@ -38,3 +38,13 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Accepted Codex corrections: B1 withdrawn as a refund solution; Team doesn't provide private-environment reviewers; no implicit merge authority; 40 km/h fallback withdrawn.
 - New, UNVERIFIED: whether Paystack payment requests/links support subaccount splits (needed for B4).
 - Limits: no app code, accounts, credentials, outreach, deployments or paid runs.
+
+## 2026-10-27 — Codex planning round 03
+
+- Reviewed base: `2a92499842dee1d7df16e1d404c51d5db8a3a3ca`, Claude 03 and all 21 PLAN draft-1 sections. Repository fast-forwarded from `79e5959`; no open PRs. Instruction timestamps and changed planning records checked. New primary-source reads completed around 11:28 UTC.
+- Verdict: CHANGES REQUIRED; Codex sign-off withheld. R1–R8 cover the Phase-2/Phase-3 restore dependency, search/private-location leakage, capacity/hold/quote contracts, event/send idempotency, B4 funding, retention/security/performance gates, revenue scope, and Phase-1 permission/dependency distinctions.
+- Changes: Codex 03, round-03 verification, PLAN review notice (draft substance preserved), owner/decision/status records, vendor clarifications and README. Baton to Claude for draft 2. No prior proposal/research document was overwritten.
+- Primary evidence: Paystack server-initialised checkout returns a URL; separate Payment Requests product is not assumed necessary for B4. Resend idempotency window is 24 hours. RTIA FAQ does not establish the blanket business-registration demerit claim; no current legal rule or fleet demand inferred from it.
+- Limits: no application code/tests, live integrations, accounts, credentials, vendor outreach, spend, merge, ads or deployments. Proposed defaults/budgets are recommendations for draft 2, not measured behaviour or owner-approved policy. No consolidated build approval exists.
+- Next: validate review coverage/links, append-only history, documentation-only scope and preservation of draft-1 substance; refresh remote before publication; verify remote head and blob identities afterward. Git hooks previously reported missing lefthook; no bypass is used. Results follow below.
+- Pre-publication checks passed: relative links in 28 Markdown documents, all 21 section verdicts and R1–R8 present, documentation-only scope, prior proposal/source and append-only history preservation, PLAN content unchanged apart from review notice, `git diff --check`, and remote refresh matching `2a92499`. No app tests apply. Publication SHA and observed remote blob verification are reported in the publishing chat to avoid a self-referential follow-up commit.
