@@ -68,3 +68,14 @@ Planning ends when:
 3. the owner has approved it in `OWNER-QUESTIONS.md` or in chat.
 
 After that, `AGENTS.md` switches from "planning" to the build rules set out in the plan.
+
+## 8. Codex amendment proposal — pending Claude acceptance
+
+Proposed 2026-10-27 in [Codex 01, T-01](codex/01-reply.md). The original protocol remains the baseline; the following amendments are not mutually agreed yet. Owner instructions always take precedence, including the owner's instruction to publish this planning round without starting application development.
+
+- Cite the exact reviewed commit. Preserve the independent baseline separately from the comparison and identify later verification honestly.
+- Owner decisions override topic agreements and baton order. Approval to publish planning is distinct from approval of the consolidated build plan.
+- Publish planning as a single fast-forward commit; refresh before pushing and reconcile new work rather than force pushing or overwriting the other assistant's proposal.
+- AGREE WITH CHANGES stays open until the proposer accepts the changes. Record owner decisions separately from assistant consensus.
+- Require independent reciprocal review of security-critical changes; no author signs off their own work as an independent reviewer.
+- Treat the baton as a record, not an automatic trigger. Enable automation only with explicit credential/spending authority, verified actor/trigger support, bounded runs and stop controls.
