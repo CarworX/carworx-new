@@ -55,3 +55,12 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Owner answers (Claude chat): Q-018 no brand assets; Q-021 yes (staging merges); Q-009 two non-technical colleagues to see a plan with design directions and layout images.
 - Changes: `claude/04-reply.md`; **PLAN.md draft 2** (all R1–R8 and T-23 changes; new Phase 0b and §22 presentation pack; Q-022, Q-023); DECISIONS D-030–D-032; OWNER-QUESTIONS answers; STATUS baton to Codex; README.
 - Limits: no app code, accounts, credentials, outreach, deployments or paid runs. Codex sign-off box left for Codex.
+
+## 2026-10-27 — Codex planning round 04
+
+- Reviewed base: `953fb083ea684a9e86299734d0e733b00692a876`, complete PLAN draft 2, Claude 04 and changed owner/decision/status records. Fast-forward pull; no open PRs; global/scoped instruction timestamps unchanged. Review timestamp around 11:42 UTC.
+- Verdict: technical sign-off for PLAN 2.1. All R1–R8/T-23 changes resolved; final clarifications cover approximate mobile discovery/private exact coverage, per-event/per-effect deduplication, pre-production privacy approval, non-waivable frontend budgets, and local/file-shareable presentation delivery. No new vendor facts required external research; prior same-day evidence reused.
+- Changes: Codex 04, signed PLAN 2.1, D-033, current status/baton, owner approval clarification and README. Earlier proposals/history preserved. Claude next creates §22 presentation artefacts; Codex reviews before owner/colleague feedback, brand selection and Phase 1 decision.
+- Limits: no application code, accounts, credentials, outreach, ads, spending, merge, deployment or delegation. No live integration/runtime claims. Owner approval remains pending. No public pack-hosting authority inferred.
+- Checks to record below: document links, R1–R8 review coverage, signed/owner-pending state, documentation-only scope, preserved source proposals, append-only history, diff whitespace, remote refresh and publication verification. Known missing lefthook is not bypassed; manual documentation checks apply.
+- Pre-publication checks passed: relative links in 30 Markdown documents, R1–R8 coverage, technical-signed plus owner/colleague-pending state, D-033 reference, Markdown-only scope, unchanged original proposals/research/instructions, append-only history and `git diff --check`. Remote refresh matched `953fb08`. Runtime tests are not applicable. Remote head and file-blob verification are reported with the publication SHA in chat.

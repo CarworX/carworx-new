@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Version | **Draft 2**, 2026-10-27 (draft 1 is in Git history at `2a92499`) |
+| Version | **Draft 2.1 — technically signed**, 2026-10-27 (draft 2 reviewed at `953fb08`; final clarifications in [Codex 04](codex/04-reply.md)) |
 | Drafted by | Claude ([Claude 04](claude/04-reply.md)), incorporating [Codex 03](codex/03-reply.md) R1–R8 and T-23 |
-| Codex sign-off | ☐ pending, for Codex to tick, not Claude |
+| Codex sign-off | ☑ Codex, 2026-10-27: R1–R8 resolved; technical plan and §22 pack scope accepted with the recorded 2.1 clarifications. This is not owner approval or permission to build the application. |
 | Colleague review | ☐ pending: the presentation pack (§22) is shown to the owner's two colleagues |
 | Owner approval | ☐ pending. Approving authorises **Phase 1 only** (§3) |
 | Sources | D-001–D-033 in [DECISIONS.md](DECISIONS.md) |
@@ -126,8 +126,9 @@ Application → admin review with the method recorded → labels granted → liv
 ### 6.2 Search and location privacy (R2, PROPOSED DEFAULTS)
 - **Fixed-premises:** providers within **25 km** of the selected point, with the customer able to choose 5/10/25/50 km. Results are paginated in a deterministic order (distance, then a stable ID). The search never widens silently; any widening is shown to the user. Distances are labelled "straight-line".
 - **Mobile:** a provider is included if **the customer's selected point lies inside the provider's radius**. No distance to a mobile provider is shown, and none is used for ranking, because it would reveal the base.
+- Mobile discovery uses the coarse point described below, so displayed results are **approximate service-area candidates**, not a guarantee of exact-address coverage. The server rechecks the customer-supplied exact service point privately before a provider accepts a quote/booking; show any coverage mismatch and never charge an ineligible booking. Do not offer an unrestricted public exact-address eligibility endpoint.
 - **Public projection** (`listing_public`): it **never** contains base or radius-centre coordinates, base-derived distances, or private row IDs that link to them. A mobile provider's public map shows at most a coarse, separately approved service-area representation, never the base pin.
-- **Anti-probing:** radius matching runs only in the server search endpoint, never through an anonymous RPC. Inputs are bounded (coordinates rounded to about 1 km for the mobile test), and requests are rate-limited per IP and session. **Remaining risk:** repeated coarse probes can still narrow down where a base is. This is recorded and accepted at this precision; providers are told when they set up their area.
+- **Anti-probing:** radius matching runs only in the server search endpoint, never through an anonymous RPC. Inputs are bounded (coordinates rounded to about 1 km for mobile discovery), and requests are rate-limited per IP and session. **Remaining risk:** repeated coarse probes can still narrow down where a base is. Record it in the pre-production privacy assessment and obtain approval of the mitigation before G-PROD; do not claim anonymity or assume the owner's/providers' risk acceptance. Explain the limitation during provider onboarding.
 - **Empty supply** → private demand capture.
 
 ### 6.3 Fixed-price booking (D-024, R3, PROPOSED DEFAULTS)
@@ -160,8 +161,8 @@ Guidance pages plus labelled official referrals. No ID number collected. "No res
 
 - Hosted checkout, initialised on the server with a subaccount split. No wallet or escrow.
 - **Events (R4):** delivered at least once.
-  - The Worker verifies the HMAC over raw bytes, **stores the event durably before responding 200**, and deduplicates on the event or transaction reference.
-  - Business effects apply **at most once** per transaction (unique constraints plus transactions).
+  - The Worker verifies the HMAC over raw bytes and **stores the event durably before responding 200**. Deduplicate the same logical event using a stable provider event identifier where supplied, otherwise a documented key including event type, affected provider object/reference and lifecycle transition. A transaction reference alone must not suppress distinct payment, refund or dispute events.
+  - The same business effect applies **at most once per logical operation**, enforced by unique constraints and transactions. Distinct refunds/disputes on the same payment remain processable.
   - If Paystack's verification call fails temporarily, the stored event is retried, not discarded. Bad signatures are rejected.
   - Amount, currency and reference must match the attempt.
   - A **scheduled reconciliation** checks Paystack's transaction, refund and settlement records and shows mismatches to operators.
@@ -247,12 +248,12 @@ CI unless marked *manual* or *sandbox*. "Every table" means **every table migrat
 - **A3** Sign-up, login and logout work; the session is validated on the server; revoked membership stops access on the next request.
 - **A4** RLS matrix for every table so far: anonymous, self, member, member of another organisation, admin.
 - **A5** Secret scan passes; no personal responses are cacheable.
-- **A6** Foundation routes meet the **performance budget**: Worker CPU p95 ≤ 8 ms (to stay within the free 10 ms limit), Lighthouse mobile performance ≥ 90 and accessibility ≥ 95, CLS ≤ 0.1, lab LCP ≤ 2.5 s, using a pinned profile and repeated runs. **A failure blocks promotion** until it's optimised or the owner approves paid runtime.
+- **A6** Foundation routes meet the **performance budget**: Worker CPU p95 ≤ 8 ms (to stay within the free 10 ms limit), Lighthouse mobile performance ≥ 90 and accessibility ≥ 95, CLS ≤ 0.1, lab LCP ≤ 2.5 s, using a pinned profile and repeated runs. **A failure blocks promotion.** Owner-approved paid runtime can replace the free-tier CPU ceiling with a recorded tested budget; it cannot waive accessibility, CLS, LCP or frontend performance checks. A p95 observation does not prove that no individual invocation exceeds a runtime limit; inspect the sampled tail and failures as well.
 - **A7** *Manual:* **restore drill.** Database **and** storage objects are restored into an isolated environment, access controls are checked, and the steps are documented.
 
 **Phase 2:**
 - **A8** Fixed search: radius boundary (inside/outside at 25 km and at the chosen radius), pagination, deterministic order.
-- **A9** Mobile search: included only if the customer's point is inside the provider's radius.
+- **A9** Mobile discovery matches the coarse query point against the radius and labels results approximate; test boundary false positives/negatives from rounding. Exact coverage is rechecked privately before quote/booking acceptance; an ineligible address cannot proceed to payment.
 - **A10** **No mobile base, radius centre or base-derived distance** in public JSON, SSR HTML, map data, logs or cached responses.
 - **A11** Search is rate-limited and inputs are bounded; there is no anonymous RPC that can be used for probing.
 - **A12** Application → approval → live (Playwright); claim dispute; suspension.
@@ -269,7 +270,7 @@ CI unless marked *manual* or *sandbox*. "Every table" means **every table migrat
 - **A21** A repeated request or payment initialisation creates no second hold or attempt.
 - **A22** Hold expiry releases capacity.
 - **A23** Payment succeeds after expiry → reconciliation → customer resolution; never confirmed silently.
-- **A24** Webhook replay plus concurrency: **at-least-once delivery, applied at most once**.
+- **A24** Webhook replay plus concurrency: **at-least-once reception, the same effect applied at most once**; distinct refund/dispute transitions sharing a transaction reference are not dropped.
 - **A25** Bad signature, amount, currency or reference is rejected; verification outage → stored event retried.
 - **A26** Recovery after a crash between storing an event and applying its effect.
 - **A27** Quote expiry rejects approval; revision supersedes earlier versions; a paid version is immutable; a change quote is required for extra work.
@@ -430,4 +431,6 @@ A non-technical pack the owner can show the two colleagues. **Planning artefacts
 | 4. Journey walkthroughs | "Thandi books a wash" and "Pieter gets a repair quote", step by step through the mockups | Claude / Codex |
 | 5. Roadmap and decisions | Phases, gates, and the decisions the business needs to make, in plain language | Claude / Codex |
 
-**Format:** a shareable web page (with images) the owner can open on a phone or present, plus the source files in `planning/design/`. Mockups are static HTML/SVG images, not product code. Mockups and copy are clearly marked **"concept, not final"**.
+**Format:** a self-contained local HTML presentation with bundled image/SVG assets and readable static exports, plus source files in `planning/design/`, suitable for the owner to present on a phone/computer or share as files. Mark mockups and copy **"concept, not final"**. Use fictional/demo names and ratings; no real endorsements, working checkout, vendor API calls, credentials, tracking or production data. Apply the required design skills for the authoring session. The pack is a planning artefact, not application UI code.
+
+Publicly hosting the pack, changing DNS or publishing through a third-party site service requires separate explicit owner authorisation; technical sign-off does not grant it. Shareable file exports provide a fallback without public hosting. Claude creates the pack next, Codex reviews factual/state/accessibility coverage, then the owner gathers colleague feedback and chooses the brand before deciding on Phase 1. Do not reopen the whole technical plan for purely cosmetic pack feedback; record any actual scope/contract change for review.

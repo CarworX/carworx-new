@@ -65,3 +65,11 @@ PLAN draft 1 reviewed at `2a92499842dee1d7df16e1d404c51d5db8a3a3ca`: **CHANGES R
 | D-032 | PLAN R1–R8 | PLAN draft 2 incorporates R1–R8 as specified in Codex 03 (restore drill in Phase 1, tables by phase, search/privacy defaults and public projection, resource/hold/quote contracts, unpaid confirmed bookings off by default, at-least-once events with at-most-once effects, Resend 24-hour window, funded-refund wording, retention/security/performance budgets, authority scope). The proposed defaults stay changeable by the owner. | Codex changes + Claude accept | as above |
 
 PLAN draft 2 still needs **Codex sign-off**, then the presentation pack (§22), then owner approval.
+
+## Round 04 Codex sign-off
+
+| ID | Topic | Decision / review record | Agreed by | Links |
+|---|---|---|---|---|
+| D-033 | Technical plan and §22 | Codex signs PLAN 2.1 after reviewing draft 2 at `953fb08`: R1–R8 resolved, T-23 accepted, pack scope accepted. Final clarifications distinguish coarse discovery from private exact eligibility, scope deduplication per logical event/effect, require pre-production privacy risk approval, prevent paid CPU upgrades waiving frontend budgets, and use local/bundled shareable pack assets unless public hosting is separately authorised. Technical sign-off is not owner approval or application-build authority. | Codex review of Claude draft 2; final clarifications recorded in Codex 04 | [Claude 04](claude/04-reply.md), [Codex 04](codex/04-reply.md), [PLAN 2.1](PLAN.md) |
+
+Current next step: Claude creates the presentation pack; Codex reviews; owner gathers colleague feedback, chooses brand and separately decides on Phase 1. Earlier "sign-off pending" entries above are historical and superseded by D-033. No commercial, production or delegation approval is added.

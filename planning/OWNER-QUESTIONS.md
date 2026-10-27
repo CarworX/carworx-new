@@ -75,3 +75,10 @@ The assistants should first propose concrete options for the unresolved operatin
 - **Q-009 ANSWERED:** The owner will show **two colleagues** (not technical) the first finalised plan. That plan must include **design directions and images of potential layouts**, so a non-technical presentation pack is part of planning (PLAN §22). Colleague sign-off isn't formally required, but their feedback is expected before owner approval.
 - **Q-022 (new, Phase 3) Unpaid reservations?** Before live payments are switched on, should providers be able to take binding bookings with no online payment? Agents' default: **no**. Discovery and enquiries still work.
 - **Q-023 (new, Phase 1) Agent helpers.** May each agent use its own built-in helpers (sub-agents or parallel tasks for searching, reviewing or testing) within its assigned work, at no extra cost? Reviews by the other agent still apply.
+
+## Codex round 04 — current approval state
+
+- Technical PLAN 2.1 is **Codex-signed**. This closes the technical review, not the owner's application-build decision. Presentation/colleague review and the owner's brand choice remain next, followed by a separate Phase 1 decision.
+- Q-022 is optional; binding unpaid reservations stay disabled unless selected. Q-023 is optional; no helpers are used while unanswered, and no guarantee of cost-free usage is made. Neither blocks local presentation artefacts.
+- The presentation pack can be shown/shared as bundled local files and static exports. Public hosting, DNS or third-party publication is a separate permission; none is inferred from technical sign-off.
+- Fee bearer, funded refunds, real-user retention/legal review, production costs and all activation gates remain pending at their already-defined stages. No need to repeat those questions before creating the concepts.

@@ -1,8 +1,8 @@
 # Status
 
-## 🟢 Baton: **CODEX**
+## 🟢 Baton: **CLAUDE**
 
-Codex: final review of **[PLAN.md draft 2](PLAN.md)** per [Claude 04](claude/04-reply.md), which maps every R1–R8 and T-23 change. Sign it off by ticking the box in PLAN.md, or return a bounded fix list in `codex/04-reply.md`. Also review the new **§22 presentation pack** scope and Phase 0b. Reviewed base for Claude 04: `a1ddd53`.
+Claude: create the **§22 presentation pack** per [Codex 04](codex/04-reply.md). Codex reviewed draft 2 at `953fb083ea684a9e86299734d0e733b00692a876` and signed the final clarified **[PLAN.md 2.1](PLAN.md)** for technical planning. R1–R8 and T-23 are resolved. Local/file-shareable concepts and exports only; no public hosting or application code.
 
 **Phase: PLANNING.** No application code, accounts, deployments, outreach or paid automation.
 
@@ -10,24 +10,24 @@ Codex: final review of **[PLAN.md draft 2](PLAN.md)** per [Claude 04](claude/04-
 
 | ID | Item | State |
 |---|---|---|
-| PLAN | Draft 2 | Waiting for Codex sign-off |
-| §22 | Presentation pack (brand directions, layout mockups, plain summary) for the owner's two colleagues | New scope (owner Q-009); Claude builds it after sign-off |
+| PLAN | Version 2.1 technically signed | Owner approval still pending after pack/colleague feedback; no Phase 1 start |
+| §22 | Presentation pack: brand directions, mockup images, summary and journeys | Claude creates local/bundled artefacts, then Codex reviews; public hosting requires separate authority |
 | T-20 | Q-016 funded refund process | Owner decision at G-PAY; agents aligned (D-026, D-031) |
 
-**AGREED:** T-01–T-19, T-21–T-24 and the PLAN R1–R8 changes → D-006 to D-032. See [DECISIONS.md](DECISIONS.md).
+**AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee/funding choices still require the owner before G-PAY.
 
 ## Waiting on the owner
 
 **Answered this round:** Q-009 (colleagues see the pack), Q-018 (no brand yet), Q-021 (yes, staging merges).
-**New:** Q-022 (unpaid reservations; default no), Q-023 (agent helpers). Both are needed later.
+**Later, only if wanted:** Q-022 (unpaid reservations; default off), Q-023 (agent helpers; no delegation while unanswered). Neither blocks the presentation pack.
 **Later:** Q-005, Q-006, Q-008, Q-016, Q-017 (before the Phase 2 production launch), Q-019.
 
 ## Next steps
 
-1. Codex 04: sign draft 2, or list fixes.
-2. Claude 05: build the presentation pack in `planning/design/` plus a shareable page.
-3. Codex 05: review the pack.
-4. Owner shows the colleagues → feedback → approves Phase 1.
+1. Claude 05: create the presentation pack in `planning/design/`: self-contained local HTML, bundled images/SVG and readable static exports. No APIs, credentials, tracking or real endorsements. Follow applicable design skills.
+2. Codex 05: review factual accuracy, state/accessibility/mobile coverage and exported-file usability.
+3. Owner shows colleagues, records feedback and chooses a brand, then decides whether to approve Phase 1. Technical sign-off is not that approval.
+4. Reopen technical decisions only for actual scope/contract changes, not cosmetic concept feedback. No automatic trigger is enabled; owner still starts each turn.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
@@ -42,3 +42,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 5 | 2026-10-27 | Claude | Accepted Codex's changes (D-023–D-029), added payment option B4, ranked the revenue streams, and published **PLAN.md draft 1**. Baton to Codex for plan review. |
 | 6 | 2026-10-27 | Codex | Reviewed all 21 PLAN sections; withheld sign-off with R1–R8; proposed B4 and T-23 corrections; added primary-source verification. Draft 1 preserved with review notice; baton to Claude for draft 2. |
 | 7 | 2026-10-27 | Claude | Recorded owner answers (Q-009, Q-018, Q-021); accepted all R1–R8 and T-23 changes (D-030–D-032); published **PLAN.md draft 2** with Phase 0b and the §22 presentation pack. Baton to Codex for sign-off. |
+| 8 | 2026-10-27 | Codex | Signed technical PLAN 2.1 with final search/event/performance/sharing clarifications; accepted §22 pack scope. Owner approval remains pending. Baton to Claude for local presentation artefacts, then Codex review. |
