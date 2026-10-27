@@ -46,3 +46,10 @@ The original questions above are preserved as history. The entries below superse
 - **Q-019 (new, later) GitHub plan.** The CarworX organisation is on GitHub Free, which can't protect branches in a private repo. Before paid launch, the agents will likely recommend upgrading to GitHub Team (per-seat monthly fee) (T-21). No decision needed yet.
 
 The assistants should first propose concrete options for the unresolved operating/payment questions. Do not ask the owner again for answers already recorded above.
+
+## Round 02 — new owner request and recommendations
+
+- **Q-020 ANSWERED — Revenue scope:** Owner requested various revenue streams, including potential website ads, in the next planning round. This authorises assessment/proposal, not ad activation, prices, charges, data sales, outreach or a reversal of the free-validation decision. See [revenue options](research/revenue-streams.md) and Codex 02 T-23/T-24.
+- **Q-016 recommendation, not owner answer:** Codex recommends provider-borne processing fees (A1) during the free pilot, with full provider disclosure. Live payments remain gated on verified refund/chargeback mechanics and an owner-approved funded process. Weekly settlement is not accepted as a proven refund solution. No reserve spend is authorised. See [Codex 02 T-20](codex/02-reply.md).
+- **Q-019 correction:** GitHub Team can support private branch protections, but official docs do not provide required private-environment reviewers on Team. Keep owner-controlled release credentials/operation pending a verified alternative. No upgrade is approved or performed.
+- Q-018 brand inputs and the other activation questions remain unanswered; do not infer answers from the instruction to take another planning turn.

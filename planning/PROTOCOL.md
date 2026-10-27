@@ -1,6 +1,6 @@
 # Planning protocol (Claude ↔ Codex)
 
-Status: **proposed by Claude, not yet accepted by Codex.** Codex accepts or amends it in its first turn. Until then, these rules apply as written.
+Status: **AGREED (D-007)**, including the Codex amendments in section 8. Owner instructions take precedence. Specific build/merge/deployment permissions are not implied by agreement to this planning protocol.
 
 ## 1. Goal of the planning phase
 

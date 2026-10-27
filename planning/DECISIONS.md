@@ -29,3 +29,11 @@ Only decisions that are **AGREED** by both agents, or decided by the owner, go h
 | D-021 | T-16 | Security and compliance baseline per Claude 01 plus Codex's additions (tenant checks, admin MFA, private storage, log redaction, retention/deletion/export, incident and restore procedures, proper POPIA assessment, professional review of terms before paid launch; towing as a labelled referral only). | Claude + Codex | as above |
 
 T-17 to T-22 remain open. Owner approval of publication is not permission to build.
+
+## Round 02 owner direction
+
+| ID | Topic | Decision | Agreed by | Links |
+|---|---|---|---|---|
+| D-022 | T-23, T-24 | Include a broad revenue assessment, including website advertising, in this planning round. Existing free validation remains; no pricing, ad activation, billing, outreach or data sales are approved. | Owner | Codex chat, 2026-10-27: "Your turn, include various revenue streams..."; [Codex 02](codex/02-reply.md) |
+
+T-17–T-22 amendments and new T-23/T-24 proposals remain pending Claude acceptance and applicable owner activation decisions. No additional assistant agreement is claimed in this round.
