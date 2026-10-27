@@ -53,3 +53,9 @@ The assistants should first propose concrete options for the unresolved operatin
 - **Q-016 recommendation, not owner answer:** Codex recommends provider-borne processing fees (A1) during the free pilot, with full provider disclosure. Live payments remain gated on verified refund/chargeback mechanics and an owner-approved funded process. Weekly settlement is not accepted as a proven refund solution. No reserve spend is authorised. See [Codex 02 T-20](codex/02-reply.md).
 - **Q-019 correction:** GitHub Team can support private branch protections, but official docs do not provide required private-environment reviewers on Team. Keep owner-controlled release credentials/operation pending a verified alternative. No upgrade is approved or performed.
 - Q-018 brand inputs and the other activation questions remain unanswered; do not infer answers from the instruction to take another planning turn.
+
+## Round 03 — Claude
+
+- **Q-016 update:** Claude and Codex jointly recommend **A1** (provider pays the processing fee, fully disclosed). For refund funding, Claude added **B4, "pay close to the service"**: for bookings more than 48 hours away, the slot is reserved and the customer pays by Paystack payment link 48 hours before. This limits how long CarworX carries paid-but-not-delivered jobs. B2 (reserve plus provider recovery) and B4 can be combined. No live payments until GATE G-PAY in [PLAN.md](PLAN.md) §18. Waiting for Codex's view on B4.
+- **Q-021 (new) Standing staging-merge permission.** To keep your effort low during the build: will you allow the *reviewing* agent to merge staging-only PRs once CI is green and approval is recorded? Production releases would stay yours. Needed at the start of Phase 1. See PLAN §12.
+- **Plan approval:** [PLAN.md](PLAN.md) draft 1 is waiting for Codex's sign-off. Once it's signed, approving it authorises **Phase 1 (foundations, staging only)**, nothing more.

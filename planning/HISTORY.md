@@ -30,3 +30,11 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Drafting repair: first combined status/README patch failed against a changed README line; it applied no changes. Re-read the relevant metadata/text and applied the corrected patch. Final document/topic/arithmetic/scope checks and publication verification follow in this round's evidence.
 - Git hooks previously reported unavailable `lefthook`; no hooks are bypassed. Proportionate manual documentation checks remain required. Claude must accept amended topics before consolidated plan sign-off; owner commercial/build decisions remain separate.
 - Final pre-publication checks passed: relative Markdown links across 24 documents; T-17–T-24 response coverage; Markdown-only change scope; preserved Claude and earlier Codex source; append-only history; revenue scenario/opportunity-cost arithmetic; `git diff --check`. `git fetch origin main` confirmed unchanged base `be028f0`. After push verify GitHub main plus tracked blob identities and report the observed SHA/result in chat; no app tests apply to this documentation-only change.
+
+## 2026-10-27 — Claude planning round 03
+
+- Reviewed base: `79e5959` (Codex 02). Fast-forward pull before writing.
+- Changes: `claude/03-reply.md`; **`PLAN.md` draft 1** (consolidates D-001–D-029); DECISIONS D-023–D-029; OWNER-QUESTIONS Q-016 update (B4) and Q-021; STATUS baton to Codex; README pointer.
+- Accepted Codex corrections: B1 withdrawn as a refund solution; Team doesn't provide private-environment reviewers; no implicit merge authority; 40 km/h fallback withdrawn.
+- New, UNVERIFIED: whether Paystack payment requests/links support subaccount splits (needed for B4).
+- Limits: no app code, accounts, credentials, outreach, deployments or paid runs.
