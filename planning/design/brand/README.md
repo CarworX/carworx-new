@@ -1,43 +1,103 @@
 # CarworX brand: Turbine
 
-**Status: logo locked by the owner on 2026-10-27 (D-034).** The rest of the brand (UI palette, type scale, imagery, tone of voice, app icon) is still being refined in Claude Design. Treat everything here except the mark as **concept, not final**.
-
-The eight other logo concepts from rounds 1 and 2 were removed on the owner's instruction. They remain in git history only as this note.
+**Status:** the owner locked the Turbine logo on 2026-10-27 (D-034). This is the refined, final drawing of that logo. The app UI palette, imagery and tone of voice are still **concept, not final**.
 
 ## The name
 
-- Always **CarworX**: capital **C**, capital **X**, lowercase *arwor* in between. Never "Carworx", "CARWORX" or "CarWorx".
+Always **CarworX**: capital **C**, capital **X**, with *arwor* in lowercase between them. Never "Carworx", "CARWORX" or "CarWorx".
+
+In running text it is set in the surrounding typeface. The wordmark artwork is only for logos.
 
 ## The mark
 
-Five curved impeller blades around a hub: a turbo spooling up.
+The mark is five impeller blades around an open hub: a turbo spooling up. The drawing is generated, not hand-traced, by [`motion/shape.mjs`](motion/shape.mjs). Every file and every video frame comes from that one geometry.
 
-| File | What it is |
+**Blades**
+- Each blade grows from a **logarithmic spiral**: the curve air follows through an impeller, crossing every radius at the same angle.
+- The thickness follows a skewed curve: full near the root, a needle at the tip.
+- The trailing edge sits on the same side as the leading edge, so each blade is a scythe rather than a leaf.
+- The spiral sweeps 110° from hub (radius 21) to tip (radius 100).
+
+**Two optical sizes**
+- **Full**, for 48 px and up.
+- **Small**, for 16–47 px, embroidery and stamps. Heavier blades and a bigger hub keep the gaps open at tiny sizes.
+
+**The X is part of the rotor**
+- The wordmark's X is drawn as two straight strokes, and its rising stroke leans at **38°**.
+- The mark rests at the angle where one blade tip runs exactly parallel to that stroke.
+
+## The wordmark
+
+- Drawn from Sora SemiBold (SIL Open Font Licence) as outlined artwork, with hand-set letter spacing and a custom X.
+- It looks the same everywhere, needs no font installed, and is ready to cut in vinyl.
+- Never retype it.
+
+## Lockups
+
+| Lockup | Use |
 |---|---|
-| [`assets/Logos/carworx-turbine-mark.svg`](assets/Logos/carworx-turbine-mark.svg) | The symbol alone, transparent background, single colour `ink` #0d0f12. On a dark ground, recolour to white or `paper`. |
-| [`assets/Logos/carworx-turbine-lockup.svg`](assets/Logos/carworx-turbine-lockup.svg) | Mark and wordmark on `ink` with drifting `steel` light and grain, 1200 × 630 (share-card size). |
-| [`assets/Logos/carworx-turbine-animated.svg`](assets/Logos/carworx-turbine-animated.svg) | The lockup with motion. Plays when opened in a browser. |
-| [`videos/carworx-turbine.mp4`](videos/carworx-turbine.mp4) | A rendered loop of the animated lockup. |
-| [`tokens.json`](tokens.json) | Colour, type, spacing and radius tokens, trimmed to this direction. |
+| Horizontal | Primary: headers, signs, documents |
+| Stacked | Square and tall spaces: posts, stories, splash screens |
+| Mark only | App icon, profile picture, favicon, small spaces |
+| Wordmark only | Only where the mark already appears nearby |
 
-The wordmark is live text in Sora 600 (Google Fonts), not outlines. Convert it to outlines before sending files to print.
-
-## Motion
-
-- **Build:** the blades grow out from the hub, the rotor turns 144° and locks, and the wordmark sharpens from a blur.
-- **Hold, release:** a 6 s loop, about a quarter building and most of it holding the finished logo, with a short exit.
-- **Mechanical, not bouncy:** `cubic-bezier(.65,0,.25,1)` for the rotor, with slight overshoot only on the blades.
-- **The static frame is the logo.** With *reduce motion* switched on, the logo shows complete and still.
+**Clear space** on every side equals the height of the X. **Minimum sizes:** 24 px for the mark (small version) and 96 px wide for the horizontal lockup.
 
 ## Colour
 
-`ink` and `paper` grounds carry most of the work, with white blades and wordmark on ink. `signal` orange is kept as the UI accent for the app; it is not part of the mark. Accent colours never set small text.
+| Pair | Contrast | Use |
+|---|---|---|
+| White on `ink` #0d0f12 | 19.2:1 | Primary |
+| `ink` on `paper` #f4efe6 | 16.8:1 | Light |
+| White on `graphite` #1c2128 | 16.2:1 | Secondary dark |
+| Black on white | 21:1 | One-colour print, receipts, vinyl |
 
-## Clear space and sizing
+`signal` orange #ff3b0a is the app's UI accent. It is **never** part of the mark.
 
-- Clear space around any lockup equals the height of the X.
-- Minimum size: 24 px tall for the mark alone, 96 px wide for a mark-and-wordmark lockup.
+## Motion
 
-## Still to do (in Claude Design)
+The hero animation is an 8-second sequence in eight beats, all driven by one timeline ([`motion/timeline.mjs`](motion/timeline.mjs)):
 
-App icon and favicon from the mark, UI palette and type scale for the app, imagery and tone of voice. These feed the §22 presentation pack.
+1. **Ignition:** a point of light at the hub, and a hairline housing ring draws around it.
+2. **Intake:** five airflow lines spiral inward, along the blades' own curves.
+3. **Forge:** each line thickens into its blade.
+4. **Spool:** the rotor spools up through 4 turns: turbo lag, then surge, then braking. The motion blur is real, averaged from up to 16 sub-frames per frame. Meanwhile the camera glides the rotor from the centre of the frame into its seat in the lockup.
+5. **Boost:** a pressure ring leaves the rotor and uncovers the letters as it passes.
+6. **X:** the two strokes of the X slide in along their own axes, cross, and seat with a flash.
+7. **Lock:** the rotor overshoots by 1.8° and settles on a damped spring. The last frame matches the static logo exactly.
+8. **Glint:** a band of halation sweeps across the logo, then it holds.
+
+**Rules**
+- Mechanical, not bouncy.
+- Build, hold, release.
+- The static frame *is* the logo.
+- With reduced motion switched on, the static logo is shown instead.
+
+**Cut-downs**
+
+| Cut | Length | What it is |
+|---|---|---|
+| Loop | 8.6 s | Adds a wind-down exit; no visible seam |
+| App splash | 1.6 s | A compressed version of the hero |
+| Loader | 1.2 s per step | Indexes one blade (72°) at a time, like a ratchet |
+| Hover | 0.6 s | Indexes one blade |
+
+## Files
+
+All files are in [`exports/`](exports/), grouped by where they are used:
+
+| Folder | Contents |
+|---|---|
+| `core/` | Marks, lockups and wordmarks in ink, white and black |
+| `web-app/` | Favicons, iOS, PWA and Android icons, manifest |
+| `social/` | Share card, headers, banners, posts, story, profile pictures |
+| `business/` | Email signature, letterhead, business card, invoice header, 1-bit receipt logo |
+| `vehicle/` | Door decals, windscreen sticker, workshop sign, service-bay banner, stamp |
+| `motion/` | Hero films (16:9, 1:1, 9:16), loop, transparent WebM, splash, email GIF, loader, web snippets |
+| `guidelines/` | One-page usage sheet |
+
+[`MANIFEST.md`](MANIFEST.md) lists each file with its sources, tool versions, checks and checksums.
+
+**Regenerating everything:** in `motion/`, run `npm install`, then `node export.mjs`, `node build-motion.mjs`, `node build-web-motion.mjs`, `node build-preview.mjs` and `node verify.mjs`. Open `motion/preview.html` to scrub through the animation.
+
+These are brand-asset scripts, not application code.
