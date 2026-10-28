@@ -1,8 +1,78 @@
 # Studio: CarworX web design concept
 
-**Status:** concept, not final. This is refinement pass 1 (2026-10-28), built to `../BRIEF.md`. The first version is kept for comparison as `v1/index.html`, with its stills in `v1/stills/`.
+**Status:** concept, not final. This is refinement pass 2 (2026-10-28), built to `../BRIEF.md`. Earlier versions are kept for comparison:
+- `v1/index.html` and `v1/stills/`: the original
+- `v2-pass1/index.html` and `v2-pass1/stills/`: pass 1, as committed in a1c9b42
 
 **One-line idea:** a calm, light studio desk where the objects of a booking float in soft depth: a sticky note, a key fob, a quote receipt and a hold timer. Every screen tells you what happens next.
+
+## Pass 2 changes
+
+This pass is polish only. Every idea, section and object from pass 1 is kept.
+
+**Hero**
+- The quote receipt has clear air from the key row. The keys are 172 px wide at 1440 instead of 180, and the receipt is tilted less (−3° to −5°).
+- Measured horizontal gap between the receipt and the nearest key:
+
+  | Width | Gap |
+  |---|---|
+  | 1280 | 43 px |
+  | 1366 | 85 px |
+  | 1440 | 32 px |
+
+- "APPROVED" now sits on its own row under "Valid 7 days", rotated −8°, so "R 3 480" is fully readable.
+- When a key is hovered, the other objects dim to 0.75 opacity. There is no blur and no desaturation.
+- `text-wrap: balance` is on all headings and key labels, and `text-wrap: pretty` on paragraphs, list items and small text.
+- An automated check found no single-word last lines in visible copy at 1280, 1440, 768 or 390.
+- Key labels keep "&" with the word before it, using a non-breaking space, so a line never starts with "&". "A fine on the windscreen?" keeps "the windscreen?" together.
+- The booking tile reads "Paid to the business". Its date is shortened to "Sat, 09:00" so the row fits on one line.
+
+**Intro**
+- Each rolling line now reads "For [service]" and is centred as one block under the tagline, so "For" no longer hangs left.
+- On phones the lockup and tagline group sits slightly above true centre.
+- The tagline has a proper gap under the stacked wordmark. Two margins were collapsing into each other.
+- The tagline words now rise out of a mask, like the page headlines. Every word shares one size and baseline, and they differ only in position while revealing.
+
+**Carousel**
+- The filter-chip row fades out at its right edge with a mask, so a cut chip looks intentional.
+- The whole stage fades into the canvas at both edges instead of clipping the outermost phones.
+
+**Mobile nav (900 px and below)**
+- The nav shows the lockup on the left and a round menu button on the right. Its two bars turn into an X when open.
+- The button opens a frosted sheet with the four section links, "Find a service near you" as the primary button and "List your business" as the secondary.
+- The sheet is `role="dialog"` with `aria-modal`. The button carries `aria-expanded`, `aria-controls` and an "Open menu" / "Close menu" label.
+- Focus is trapped between the button and the sheet's links. Esc and the scrim close the sheet and return focus to the button.
+- Tested by keyboard in headless Edge: open, Tab through every item and wrap, Shift+Tab, and Esc.
+
+**Craft**
+- **Focus rings:** one style everywhere, a 2 px ink outline with a 2 px offset that follows each element's radius. This covers keys, CTAs, nav links, the menu button, carousel tabs, dashboard tabs and the carousel region.
+- **Carousel semantics:**
+  - The carousel is `role="region"` with `aria-roledescription="carousel"` and a label that mentions the arrow keys. It is focusable.
+  - Each phone is a `group` with `aria-roledescription="slide"` and a label like "2 of 5: Business listing".
+  - The tabs point at their slide with `aria-controls`.
+- **Timeline:** a polite live region announces "Step 3 of 4. Held for 15 minutes. …" whenever the active step changes.
+- **Closing band:** a frosted card before the footer. It holds:
+  - one line in the hero's voice, "Your car's next visit, booked properly."
+  - the "Find a service near you" pill and a quieter "List your business free" link
+  - the full mark at 64 px idling through one turn every 32 s (still under reduced motion)
+
+**Performance**
+- **Transform and opacity only:**
+  - The booking timeline no longer animates width, height, border radius or `left`. Each of its four faces now has its own true size and shape. While the booking travels, the faces cross-fade and scale toward a shared size, and each face's content is counter-scaled so text never stretches.
+  - Hover shadows on the keys and pills are an opacity layer, where they used to be `box-shadow` transitions.
+  - The timeline dots fade an ink layer in, where they used to transition colour.
+  - Carousel and dashboard tabs no longer transition colours.
+  - The intro's pressure ring scales instead of changing its radius.
+- **Writes only on change:** per-frame style, attribute and text writes go through small helpers that skip the DOM when a value hasn't changed. In pass 1 the carousel rewrote `aria-hidden`, `z-index` and `filter` on all five phones every frame, and the timeline rewrote its clock text.
+- **Dashboard:** it no longer uses `backdrop-filter`. The glow behind it moves with scroll, so the blur was recomputed on every scroll frame. A layered translucent gradient now gives the same frosted look.
+- **Off-screen loops pause:**
+  - An IntersectionObserver pauses the CSS loops of the hero, the fines illustration, the marquee, the quote's sheen and the closing rotor while they are off screen.
+  - The single rAF loop sleeps when nothing it drives is visible or moving. Scroll, pointer and visibility changes wake it.
+  - The hero's live timer skips DOM writes while the hero is off screen.
+- **Not changed, by design:** a few things still update SVG paint attributes, which costs paint but not layout:
+  - stroke draws (the intro's housing ring, the chart line, the hold rings)
+  - the chart's path morph between Week and Month
+  - text swaps (the intro scramble and the countdowns)
 
 ## Pass 1 changes
 
@@ -98,7 +168,10 @@ The canvas is a soft off-white with a 24 px dot grid. Colour comes only from acc
    - Perks and an EquipFlow-style dashboard on a blue-to-orange glow.
    - Request, quote and payment tabs.
    - KPIs that count up (38 requests, R 18 420 paid directly, 1h07 average reply against 2 h, R0 CarworX fee), a week/month chart morph and a request queue.
-8. **Footer.** The lockup, "Concept, not final", and a line saying all businesses, people, prices and ratings are fictional.
+8. **Closing band.** The idling mark, "Your car's next visit, booked properly.", the driver CTA and a quieter link for businesses.
+9. **Footer.** The lockup, "Concept, not final", and a line saying all businesses, people, prices and ratings are fictional.
+
+**Nav:** a frosted pill fixed at the top. Above 900 px it shows the four section links and "List your business". From 900 px down it shows the lockup and a menu button, which opens the sheet described under pass 2.
 
 ## Brand handling
 
@@ -131,29 +204,47 @@ The canvas is a soft off-white with a 24 px dot grid. Colour comes only from acc
 
 ## Stills
 
-All are in `stills/`. Desktop stills are 1440 × 900. Mobile stills are 390 × 844 at 2× pixel density. All were captured in headless Edge.
+All are in `stills/` and were recaptured for pass 2. Desktop stills are 1440 × 900. Mobile stills are 390 × 844 at 2× pixel density. All were captured in headless Edge.
 
 | File | Shows |
 |---|---|
-| `01-intro-large-mid-reveal.png` | The intro at 1.2 s: glyphs half resolved, the rotor spooling with motion blur inside its concentric housing |
-| `02-intro-large-settled.png` | The intro at 2.85 s: the full-scale lockup with the tagline and rolling services |
-| `03-hero-settled.png` | The hero after the intro |
-| `04-shortcuts-hover-tyres.png` | Hovering the Tyres key: the key lifts, the tyre rolls, the gauge needle swings and the other objects dim |
+| `01-intro-settled-desktop.png` | The intro at 2.85 s: the full-scale lockup with the tagline and the centred "For [service]" line |
+| `02-intro-settled-mobile.png` | The phone intro, using the stacked lockup, with the group just above centre |
+| `03-hero-settled.png` | The hero after the intro: the receipt has clear air and the stamp is under the total |
+| `04-hero-tyres-hover.png` | Hovering the Tyres key: the key lifts, the tyre rolls, the gauge needle swings and the other objects dim to 0.75 |
 | `05-booking-timeline.png` | The signature moment at step 3, the hold timer |
-| `06-product-glimpse.png` | The carousel |
+| `06-carousel.png` | The carousel: the chip row fades out and the stage fades at both edges |
 | `07-business-dashboard.png` | The dashboard |
-| `08-mobile-intro.png` | The phone intro, using the stacked lockup |
-| `09-mobile-hero-shortcuts.png` | The phone hero, with all five keys above the fold |
-| `10-mobile-booking-timeline.png` | The phone timeline at step 3 |
-| `11-mobile-dashboard.png` | The stacked phone dashboard |
+| `08-closing-band.png` | The new closing band |
+| `09-mobile-hero.png` | The phone hero with the menu button and all five keys above the fold |
+| `10-mobile-nav-open.png` | The phone menu sheet, open |
+| `11-mobile-booking-timeline.png` | The phone timeline at step 3 |
+| `12-mobile-dashboard.png` | The stacked phone dashboard |
 
 ## Checks done
 
 All checks ran in headless Edge 156 through the DevTools protocol.
 
-- **Errors and overflow.** At 1440 × 900, 768 × 1024 and 390 × 844, with and without `prefers-reduced-motion: reduce`, I played the intro and scrolled the whole page. There were no console errors, warnings or exceptions. Page scroll width equals viewport width every time.
+- **Errors and overflow (pass 2).** At 1280 × 800, 1440 × 900, 768 × 1024 and 390 × 844, plus 1366 × 768, with and without `prefers-reduced-motion: reduce`, I played the intro and scrolled the whole page in quarter-screen steps.
+  - There were no console errors, warnings or exceptions, and page scroll width equals viewport width every time.
   - Edge prints its own "Tracking Prevention blocked access to storage" notice for the CDN scripts on a `file://` page. The QA script filters that out because it is a browser notice, not a page error.
-- **Hero overlaps.** I measured the floating objects against the badge, headline lines, sub-line, CTA, keys, nav and each other. Nothing overlaps at 1920, 1440, 1439, 1360, 1280, 1200, 1180, 1024, 768, 600 and 390 px.
+- **Hero overlaps.** I measured the floating objects against the badge, headline lines, sub-line, CTA, keys, nav and each other. There were no overlaps at any tested width.
+- **Orphans.** No visible heading, paragraph or list item ends with a single word on its last line. Two-line key labels such as "Repairs &" over "Maintenance" are intended and excluded from the check.
+- **Menu keyboard test** at 390, with real key events:
+  - Opening the menu focuses "How it works".
+  - Tab moves through the four links, both buttons and the menu button, then wraps.
+  - Shift+Tab wraps backwards.
+  - Esc closes the sheet, sets `aria-expanded="false"` and returns focus to the button.
+- **Long tasks over 50 ms during a full scroll.** These were recorded with a PerformanceObserver injected before page load.
+
+  | Rendering | With motion | With reduced motion |
+  |---|---|---|
+  | GPU compositing on (closer to a real device) | 0–8 tasks, 50–200 ms; 1440 had 0–3 across runs | 0 at every width |
+  | Software rendering (`--disable-gpu`) | 1–4 s paint-bound tasks at every width | The same, so they come from software raster, not from the motion |
+
+  - Load adds 2–5 tasks of 130–400 ms, mostly script parsing and fonts.
+  - In software mode, script, style and layout stay at 4–50 ms per step. The time is paint of the large blurred glows and shadows.
+  - Before the pass 2 fixes, GPU-on runs showed tasks up to 300 ms in the timeline, carousel and dashboard. The fixes are listed under pass 2.
 - **Text size.** No visible CSS text is under 12 px, outside the intro's SVG.
 - **Contrast.** The ratios above were computed with the WCAG formula.
 
@@ -162,8 +253,9 @@ All checks ran in headless Edge 156 through the DevTools protocol.
 - **Safari, Firefox and real phones.** Only Chromium-based Edge was used. Touch swiping was not exercised with real touch input.
   - In current Safari, `backdrop-filter`, the receipt's CSS mask, `overflow-x: clip` and `position: sticky` inside the 420 vh timeline section should work, but I didn't see them run there.
 - **Rendering inside the claude.ai Artifact viewer.**
-- **Frame rate on low-end devices.**
-  - The timeline animates width, height and border radius every frame while you scroll. That is smooth in desktop Chromium but should be profiled on a mid-range Android phone.
-  - Headless Edge runs the intro slower than real time, so its 3.9 s length is by the timeline, not measured.
+- **Frame rate on real devices.**
+  - Long tasks were only measured in headless Edge, whose GPU path is software-emulated. The timeline, carousel blur and big blurred glows should still be profiled on a mid-range Android phone.
+  - Headless Edge runs the intro slower than real time, so its 3.9 s length comes from the animation timings, not a measurement.
+- **Screen readers.** The menu sheet, live region and carousel roles were checked as markup and by keyboard, not with VoiceOver, TalkBack or NVDA.
 - **Scaled hero objects.** From 901 to 1439 px the floating objects are scaled down (0.8, then 0.72) as a whole, so the text inside them renders at about 9–11 px. They are decorative and `aria-hidden`, but a later pass could give them compact variants instead of scaling.
 - **Neighbour phone cards.** The out-of-focus phones in the carousel are scaled to 0.9 and 0.8, so their text renders below 12 px by design. The phone in focus is full size.
