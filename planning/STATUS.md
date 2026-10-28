@@ -2,7 +2,7 @@
 
 ## 🟢 Baton: **CODEX**
 
-Codex: review the **§22 presentation pack** in [design/pack/](design/pack/) on branch `planning/design-motion-toolkit` (see [Claude 06](claude/06-presentation-pack.md) and [QA.md](design/pack/QA.md)). Check factual accuracy against PLAN 2.1, state/accessibility coverage, five-shortcut discoverability and export usability. Local files only; no public hosting.
+Codex: review the **§22 presentation pack, rebuilt in the Studio direction** (D-036) in [design/pack/](design/pack/) on branch `planning/design-motion-toolkit` (see [Claude 07](claude/07-pack-studio.md) and [QA.md](design/pack/QA.md)). Check that facts match PLAN 2.1 and the previous pack, state/accessibility coverage (including UNVERIFIED rows), five-shortcut discoverability and export usability. Local files only; no public hosting.
 
 **Phase: PLANNING.** No application code, accounts, deployments, outreach or paid automation.
 
@@ -11,7 +11,7 @@ Codex: review the **§22 presentation pack** in [design/pack/](design/pack/) on 
 | ID | Item | State |
 |---|---|---|
 | PLAN | Version 2.1 technically signed | Owner approval still pending after pack/colleague feedback; no Phase 1 start |
-| §22 | Presentation pack: Turbine brand (D-034), mockups, summary and journeys | Delivered by Claude ([06](claude/06-presentation-pack.md)) on `planning/design-motion-toolkit`; Codex reviews next; public hosting requires separate authority |
+| §22 | Presentation pack: Turbine brand (D-034) in the Studio UI language (D-035, D-036), mockups, summary and journeys | Rebuilt by Claude ([07](claude/07-pack-studio.md)) on `planning/design-motion-toolkit`; Codex reviews next; public hosting requires separate authority |
 | T-20 | Q-016 funded refund process | Owner decision at G-PAY; agents aligned (D-026, D-031) |
 
 **AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee/funding choices still require the owner before G-PAY.
@@ -44,3 +44,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 7 | 2026-10-27 | Claude | Recorded owner answers (Q-009, Q-018, Q-021); accepted all R1–R8 and T-23 changes (D-030–D-032); published **PLAN.md draft 2** with Phase 0b and the §22 presentation pack. Baton to Codex for sign-off. |
 | 8 | 2026-10-27 | Codex | Signed technical PLAN 2.1 with final search/event/performance/sharing clarifications; accepted §22 pack scope. Owner approval remains pending. Baton to Claude for local presentation artefacts, then Codex review. |
 | 9 | 2026-10-28 | Claude | Built the §22 pack (Stage A) in `design/pack/`: one offline HTML with the Turbine brand and hero motion, 8 phone screen groups with §10 states, desktop home/search, Thandi and Pieter journeys, roadmap/decisions, summary, 16 PNG + PDF exports and QA.md (UNVERIFIED items listed). Branch `planning/design-motion-toolkit`. Baton to Codex for review. |
+| 10 | 2026-10-28 | Claude | Owner chose then approved the Studio web direction (D-035, D-036) after two refinement passes. Rebuilt the §22 pack in Studio: Studio intro, Turbine rules + Studio UI language, 8 screen groups with §10 states, desktop home/search, scroll-linked journeys, roadmap; fonts bundled offline; 27 PNG + 42-page PDF checked by eye; QA.md rewritten. Baton to Codex for review. |

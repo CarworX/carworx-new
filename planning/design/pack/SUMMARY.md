@@ -61,7 +61,7 @@ The home page has **five equal shortcuts**:
 
 Look through the pack and tell the owner:
 - Does the idea make sense?
-- Do the Turbine brand and the screens feel right?
+- Do the Turbine brand and the Studio look of the screens feel right?
 - Is anything confusing or missing?
 
-The **Turbine logo is final.** The colours, type, wording and screens are still open to change.
+The **Turbine logo is final.** The app look (called **Studio**: a light, calm canvas with tactile objects) is the chosen direction but still a concept. The colours, type, wording and screens are still open to change.

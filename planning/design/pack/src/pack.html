@@ -4,1161 +4,567 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CarworX Presentation Pack</title>
-<meta name="description" content="CarworX planning presentation pack (PLAN §22). Concept, not final. Fictional names and demo data only.">
+<meta name="description" content="CarworX planning presentation pack (PLAN §22), in the Studio direction. Concept, not final. Fictional names and demo data only.">
 <style>
-@font-face{font-family:"Sora";font-weight:600;font-style:normal;font-display:swap;src:url({{font}}) format("truetype")}
+/* Fonts: Geist, Geist Mono and Caveat (SIL OFL 1.1), latin subsets bundled from src/vendor/fonts. */
+@font-face{font-family:"Geist";font-weight:200 700;font-style:normal;font-display:swap;src:url({{font:Geist-latin.woff2}}) format("woff2")}
+@font-face{font-family:"Geist Mono";font-weight:400 500;font-style:normal;font-display:swap;src:url({{font:GeistMono-latin.woff2}}) format("woff2")}
+@font-face{font-family:"Caveat";font-weight:500 600;font-style:normal;font-display:swap;src:url({{font:Caveat-latin.woff2}}) format("woff2")}
 :root{
-  --ink:#0d0f12;--graphite:#1c2128;--steel:#8a97a6;--paper:#f4efe6;--muted:#5b6470;--white:#fff;--black:#000;
-  --signal:#ff3b0a;--signal-soft:#ff6a33;
-  /* Concept additions for the pack, not in tokens.json yet */
-  --line:#ddd5c6;--paper-2:#ece5d8;--ok:#1e6b45;--ok-bg:#e7f4ec;--warn:#8a5300;--warn-bg:#fff4e0;--err:#a61b1b;--err-bg:#fdecea;--info-bg:#e9edf2;
-  --display:"Sora",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --text:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  /* Studio UI language (chosen direction, concept, not final) */
+  --canvas:#f2f1ee;--canvas-2:#e9e7e2;--dot:rgba(13,15,18,.12);
+  --ink:#0d0f12;--graphite:#1c2128;--muted:#5b6470;--quiet:#727a85;--steel:#8a97a6;--hair:rgba(13,15,18,.09);--line:#dedcd6;
+  --white:#fff;--paper:#f4efe6;
+  --blue:#3d6dff;--blue-ink:#2a54d4;--blue-soft:#a9c0ff;--sky:#e3eaff;
+  --signal:#ff3b0a;--apricot:#ffb08a;--peach:#ffe3d4;--note:#ffe9a6;--key-side:#e2e0db;
+  /* Status colours: concept additions, each 5.6:1 or better on its own background */
+  --ok:#1e6b45;--ok-bg:#e7f4ec;--warn:#8a5300;--warn-bg:#fff4e0;--err:#a61b1b;--err-bg:#fdecea;
+  --sans:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --hand:"Caveat","Segoe Print",cursive;
+  --s1:8px;--s2:16px;--s3:24px;--s4:32px;--s5:40px;--s6:48px;--s8:64px;--s10:80px;--s12:96px;
+  --r-sm:12px;--r:16px;--r-md:24px;--r-lg:32px;
+  --sh-1:0 1px 1px rgba(13,15,18,.04),0 2px 6px rgba(13,15,18,.04),0 8px 24px rgba(13,15,18,.06);
+  --sh-2:0 1px 2px rgba(13,15,18,.05),0 8px 16px rgba(13,15,18,.05),0 16px 32px rgba(13,15,18,.08),0 40px 80px rgba(13,15,18,.08);
+  --sh-3:0 2px 3px rgba(13,15,18,.06),0 8px 24px rgba(13,15,18,.07),0 32px 64px rgba(13,15,18,.10),0 64px 120px rgba(13,15,18,.10);
+  --ds-2:drop-shadow(0 2px 2px rgba(13,15,18,.07)) drop-shadow(0 16px 24px rgba(13,15,18,.14));
+  --ease:cubic-bezier(.16,1,.3,1);--spring:cubic-bezier(.34,1.56,.64,1);
+  --gutter:clamp(16px,4vw,48px);
 }
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
-body{margin:0;background:var(--paper);color:var(--ink);font:500 16px/1.55 var(--text)}
+body{margin:0;background-color:var(--canvas);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 1.4px);background-size:24px 24px;color:var(--ink);font:400 16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
 img,svg{max-width:100%}
-a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px}
-a:hover{text-decoration-thickness:2px}
-:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:4px}
-.dark :focus-visible,.top :focus-visible,.foot :focus-visible{outline-color:var(--signal-soft)}
-h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1.15;margin:0 0 .5em;letter-spacing:-.015em}
-h2{font-size:clamp(28px,4vw,40px)}
-h3{font-size:clamp(20px,2.4vw,26px)}
-h4{font-size:18px}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+h1,h2,h3,h4,h5{font-weight:500;letter-spacing:-.03em;line-height:1.1;margin:0 0 .5em;text-wrap:balance}
+p,li{text-wrap:pretty}
 p{margin:0 0 1em}
-.wrap{max-width:1232px;margin:0 auto;padding:0 16px}
-@media (min-width:768px){.wrap{padding:0 32px}}
-.skip{position:absolute;left:16px;top:-60px;background:var(--signal);color:var(--ink);padding:10px 14px;font-weight:700;z-index:20;border-radius:6px}
-.skip:focus{top:12px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--gutter)}
+.skip{position:absolute;left:16px;top:-80px;z-index:200;background:var(--ink);color:#fff;padding:12px 16px;border-radius:999px;font-weight:500;text-decoration:none}
+.skip:focus{top:96px}
 .cx{display:block;height:auto}
 .ic{width:20px;height:20px;flex:none;display:inline-block;vertical-align:middle}
+.ko{display:block;width:100%;height:100%;overflow:visible;filter:var(--ds-2)}
+.ill{display:block;width:120px;height:84px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:var(--mono)}
+.grey{color:var(--quiet)}
+section{scroll-margin-top:96px}
 
-/* ---------- Pack chrome ---------- */
-.top{background:var(--ink);color:#fff;z-index:10}
-@media (min-width:900px) and (min-height:640px){.top{position:sticky;top:0}main [id]{scroll-margin-top:72px}}
-.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-top:10px;padding-bottom:10px}
-.top .cx-lockup{width:120px;color:#fff}
-.top nav{flex:1 1 auto;min-width:0}
-.top ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:2px 4px}
-.top nav a{display:block;color:#fff;text-decoration:none;font-size:14px;padding:8px 10px;border-radius:6px}
-.top nav a:hover{background:var(--graphite)}
-.badge{display:inline-flex;align-items:center;gap:6px;font:700 12px/1 var(--text);letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:4px;border:1.5px solid var(--signal-soft);color:var(--signal-soft)}
-.badge.on-paper{border-color:var(--ink);color:var(--ink);background:#fff}
-
-.cover{background:var(--ink);color:#fff;padding:56px 0 64px}
-.cover .cx-lockup{width:min(520px,100%);color:#fff;margin:18px 0 28px}
-.cover h1{font-size:clamp(30px,5vw,56px);max-width:18ch}
-.cover p{max-width:62ch;color:#dfe3e8;font-size:18px}
-.cover .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
-.cover .meta a{color:#fff}.cover .meta .btnlink.p{color:var(--ink)}
-.btnlink{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;border-radius:10px;font-weight:700;text-decoration:none}
-.btnlink.p{background:var(--signal);color:var(--ink)}
-.btnlink.s{border:1.5px solid #fff;color:#fff}
-
-section.sec{padding:64px 0;border-top:1px solid var(--line)}
-section.sec.dark{background:var(--ink);color:#fff;border-top:0}
-section.sec.dark a{color:#fff}
-.kicker{font:700 13px/1 var(--text);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:block}
-.dark .kicker{color:var(--steel)}
-.lead{font-size:19px;max-width:64ch}
-.grid2{display:grid;gap:24px}
+/* ---------- shared parts ---------- */
+.eyebrow{display:block;font:500 12px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--s2)}
+.h2{font-size:clamp(34px,5vw,64px);line-height:1.02;letter-spacing:-.04em;margin:0}
+.h2 .ln{display:block}
+.lede{font-size:clamp(17px,1.4vw,19px);color:var(--muted);max-width:62ch;margin:var(--s3) 0 0}
+.sec{padding:clamp(80px,10vw,144px) 0 0}
+.badge{display:inline-flex;align-items:center;gap:var(--s1);min-height:32px;padding:4px 14px;border-radius:999px;background:rgba(255,255,255,.82);border:1px solid #fff;box-shadow:var(--sh-1);font-size:13px;font-weight:500;color:var(--graphite)}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 4px rgba(255,59,10,.14);flex:none}
+.pill{display:inline-flex;align-items:center;gap:var(--s1);min-height:52px;padding:0 8px 0 22px;border-radius:999px;background:var(--ink);color:#fff;font-weight:500;text-decoration:none;box-shadow:var(--sh-2);transition:transform .5s var(--ease)}
+.pill .arr{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.pill .arr .ic{width:16px;height:16px}
+.pill:hover{transform:translateY(-2px)}
+.pill.light{background:#fff;color:var(--ink);box-shadow:var(--sh-1)}
+.pill.light .arr{background:var(--canvas)}
+.card{background:rgba(255,255,255,.82);border:1px solid #fff;border-radius:var(--r-md);box-shadow:var(--sh-1);padding:var(--s3)}
+.card h3{font-size:22px;margin:0 0 var(--s2)}
+.card ul,.card ol{margin:0;padding-left:20px}
+.card li+li{margin-top:var(--s1)}
+.grid2{display:grid;gap:var(--s3)}
 @media (min-width:900px){.grid2{grid-template-columns:1fr 1fr}}
-.grid3{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))}
-.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}
-.dark .panel{background:var(--graphite);border-color:#2c333d}
-.panel h3,.panel h4{margin-top:0}
-.panel ul,.panel ol{padding-left:20px;margin:0}
-.panel li+li{margin-top:6px}
-.callout{border-left:4px solid var(--signal);background:#fff;padding:14px 18px;border-radius:0 12px 12px 0;margin:20px 0;max-width:80ch}
-table.t{width:100%;border-collapse:collapse;font-size:15px;background:#fff;border-radius:12px;overflow:hidden}
-table.t th,table.t td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
-table.t th{font-weight:700;background:var(--paper-2)}
-.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+.callout{display:flex;gap:var(--s2);align-items:flex-start;background:#fff;border-radius:var(--r-md);padding:var(--s3);margin-top:var(--s3);box-shadow:var(--sh-1);border:1px solid #fff}
+.callout .ic{color:var(--signal);margin-top:2px}
+.est{font:500 12px var(--mono);color:var(--warn);background:var(--warn-bg);padding:2px 8px;border-radius:999px;white-space:nowrap;vertical-align:middle;letter-spacing:0}
+table.t{width:100%;border-collapse:collapse;font-size:15px;background:#fff}
+table.t th,table.t td{text-align:left;vertical-align:top;padding:12px 16px;border-bottom:1px solid var(--hair)}
+table.t th{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#fafaf8}
+table.t tr:last-child td{border-bottom:0}
+.tscroll{overflow-x:auto;border-radius:var(--r-md);box-shadow:var(--sh-1);border:1px solid #fff;background:#fff}
 .tscroll table{min-width:560px}
-.five{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));margin:18px 0}
-.five div{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;font-weight:700;font-size:15px}
-.five .sq{width:36px;height:36px;border-radius:9px;background:var(--ink);color:#fff;display:grid;place-items:center;flex:none}
-.est{font-size:12px;font-weight:700;color:var(--warn);background:var(--warn-bg);padding:1px 6px;border-radius:4px;white-space:nowrap}
 
-/* ---------- Brand ---------- */
-.tiles{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
-.tile{border-radius:18px;padding:40px 28px;display:grid;place-items:center;min-height:200px;position:relative}
-.tile .cap{position:absolute;left:14px;bottom:10px;font-size:12.5px}
-.tile.ink{background:var(--ink);color:#fff;border:1px solid #3a424d}.tile.ink .cap{color:var(--steel)}
-.tile.paper{background:var(--paper);color:var(--ink);border:1px solid var(--line)}.tile.paper .cap{color:var(--muted)}
-.tile.white{background:#fff;color:var(--black);border:1px solid var(--line)}.tile.white .cap{color:var(--muted)}
-.tile .cx-lockup{width:min(300px,100%)}
-.tile .cx-mark{width:110px}
-.tile .cx-marksm{width:32px}
-.hero-motion{border-radius:18px;overflow:hidden;background:var(--ink);aspect-ratio:16/9;width:100%}
-.hero-motion iframe{display:block;width:100%;height:100%;border:0}
-.motion-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px}
-.motion-bar button{font:700 15px var(--text);min-height:44px;padding:0 16px;border-radius:10px;border:1.5px solid #fff;background:transparent;color:#fff;cursor:pointer}
-.swatches{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,170px),1fr))}
-.sw{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#fff}
-.sw .chip{height:84px;display:flex;align-items:flex-end;padding:8px 10px;font:600 14px var(--display)}
-.sw .meta{padding:10px;font-size:13px;line-height:1.4;color:var(--ink)}
-.sw code{font:13px var(--mono)}
-.type-row{display:grid;gap:4px;padding:16px 0;border-bottom:1px solid var(--line)}
+/* ---------- intro (Studio: glyphs resolve into the full-scale lockup, then FLIP into the nav) ---------- */
+#intro{position:fixed;inset:0;z-index:150;display:none;place-items:center;cursor:pointer;overflow:hidden}
+#intro .ibg{position:absolute;inset:0;background-color:var(--canvas);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 1.4px);background-size:24px 24px}
+#intro .stage{position:relative;width:min(78vw,1180px);text-align:center}
+#intro .lk{width:100%;overflow:visible;color:var(--ink);transform-origin:0 0;display:block}
+#intro .glyph-slot{font-family:var(--mono);font-size:100px;fill:var(--quiet)}
+#intro .housing,#intro .pressure{fill:none;stroke:var(--steel);stroke-width:1.1}
+#intro .ticks line{stroke:var(--steel);stroke-width:1.1;stroke-linecap:round}
+.intro-sub{margin-top:clamp(24px,3.5vw,48px);font-size:clamp(20px,2.2vw,32px);letter-spacing:-.025em;font-weight:500;color:var(--graphite);line-height:1.2}
+.intro-sub p{margin:0}
+.intro-sub .k{display:block;margin-top:var(--s1);font-weight:400;color:var(--muted);font-size:.8em}
+.intro-skip{position:absolute;bottom:var(--s4);left:50%;transform:translateX(-50%);font:500 12px var(--mono);letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+html.intro-on{overflow:hidden}
+html.intro-on #intro{display:grid}
+@media (max-width:599px){#intro{padding-bottom:9vh}#intro .stage{width:90vw}#intro .stage.stacked .lk{margin:19.5vw 0}#intro .stage.stacked .intro-sub{margin-top:calc(19.5vw + var(--s4))}}
+
+/* ---------- nav ---------- */
+.top{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:50;width:min(1200px,calc(100% - 32px));min-height:64px;display:flex;align-items:center;gap:var(--s2);padding:8px 8px 8px 24px;border-radius:999px;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,.9);box-shadow:var(--sh-1)}
+.top .logo{width:124px;color:var(--ink);flex:none;border-radius:8px}
+.top nav{flex:1;min-width:0}
+.top ul{list-style:none;margin:0;padding:0;display:flex;justify-content:center;flex-wrap:wrap;gap:2px}
+.top nav a{display:block;padding:8px 12px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);text-decoration:none}
+.top nav a:hover{color:var(--ink);background:rgba(13,15,18,.04)}
+.top .badge{box-shadow:none;background:var(--canvas);border-color:transparent;flex:none}
+html.logo-wait .top .logo{visibility:hidden}
+.menu-btn{display:none;width:48px;height:48px;border-radius:50%;background:#fff;box-shadow:var(--sh-1);border:0;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;margin-left:auto}
+.menu-btn i{display:block;width:18px;height:2px;border-radius:2px;background:var(--ink);transition:transform .4s var(--ease)}
+.menu-btn[aria-expanded="true"] i:first-child{transform:translateY(3px) rotate(45deg)}
+.menu-btn[aria-expanded="true"] i:last-child{transform:translateY(-3px) rotate(-45deg)}
+.scrim{position:fixed;inset:0;z-index:48;background:rgba(242,241,238,.6);opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility 0s .35s}
+.scrim.open{opacity:1;visibility:visible;transition:opacity .35s var(--ease)}
+.sheet{position:fixed;top:88px;left:16px;right:16px;z-index:49;padding:var(--s1) var(--s2) var(--s2);border-radius:var(--r-md);background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);border:1px solid #fff;box-shadow:var(--sh-3);opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);transform-origin:50% 0;transition:opacity .35s var(--ease),transform .45s var(--ease),visibility 0s .45s}
+.sheet.open{opacity:1;visibility:visible;transform:none;transition:opacity .35s var(--ease),transform .45s var(--ease)}
+.sheet a.row{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 var(--s1);font-size:19px;font-weight:500;letter-spacing:-.02em;text-decoration:none;border-bottom:1px solid var(--hair)}
+.sheet a.row .ic{color:var(--muted)}
+.sheet .acts{display:grid;gap:var(--s1);margin-top:var(--s2)}
+.sheet .acts .pill{justify-content:space-between}
+html.menu-open{overflow:hidden}
+@media (max-width:1060px){.top nav,.top .badge{display:none}.menu-btn{display:flex}}
+@media (max-width:599px){.top{min-height:56px;padding-left:16px}.menu-btn{width:40px;height:40px}.sheet{top:80px}}
+
+/* ---------- cover ---------- */
+.cover{position:relative;min-height:max(100svh,760px);display:flex;align-items:center;padding:144px 0 var(--s10);overflow-x:clip}
+.cover .copy{position:relative;z-index:2;max-width:880px;margin:0 auto;text-align:center}
+.cover h1{font-size:clamp(38px,5.6vw,80px);line-height:1.02;letter-spacing:-.045em;margin:var(--s3) 0 0}
+.cover h1 span{display:block}
+.cover p{font-size:clamp(16px,1.3vw,18px);color:var(--muted);max-width:620px;margin:var(--s3) auto 0}
+.cover .cta{display:flex;flex-wrap:wrap;gap:var(--s2);justify-content:center;margin-top:var(--s4)}
+.floats{position:absolute;inset:0;z-index:1;pointer-events:none}
+.obj{position:absolute;animation:drift var(--dur,9s) ease-in-out infinite alternate;animation-delay:var(--del,0s)}
+@keyframes drift{from{transform:translate3d(0,0,0) rotate(var(--r0,0deg))}to{transform:translate3d(6px,-12px,0) rotate(var(--r1,2deg))}}
+.f-note{left:3%;top:18%;width:176px;--r0:-7deg;--r1:-4deg;--dur:8s}
+.f-tile{right:3%;top:19%;width:252px;--r0:4deg;--r1:2deg;--dur:10s;--del:-3s}
+.f-timer{right:7%;top:58%;width:148px;--r0:6deg;--r1:2deg;--dur:9s;--del:-2s}
+.f-receipt{left:5%;top:56%;width:196px;--r0:-4deg;--r1:-6deg;--dur:10s;--del:-1s}
+@media (max-width:1180px){.f-note{width:140px}.f-tile{width:210px;top:15%}.f-timer{width:120px;top:64%}.f-receipt{width:170px;top:62%}}
+@media (max-width:900px){.f-tile,.f-receipt{display:none}.f-note{left:16px;top:92px;width:104px}.f-timer{right:16px;top:96px;width:92px}.cover{padding-top:220px}}
+@media (max-width:599px){.f-note{width:84px;left:8px}.f-timer{width:76px;right:10px}.cover{padding-top:208px;min-height:auto}}
+html.motion .cover .reveal{opacity:0;transform:translateY(24px)}
+html.motion.go .cover .reveal{opacity:1;transform:none;transition:opacity 1s var(--ease),transform 1.1s var(--ease);transition-delay:calc(var(--i,0) * 80ms)}
+html.motion .floats .obj-in{opacity:0;transform:translateX(calc(var(--side) * 30vw)) scale(.7)}
+html.motion.go .floats .obj-in{opacity:1;transform:none;transition:opacity .6s var(--ease),transform 1.4s var(--spring)}
+
+/* tactile objects */
+.sticky{position:relative;aspect-ratio:1;padding:var(--s3) var(--s2) var(--s2);background:linear-gradient(160deg,#fff1bd,var(--note) 55%,#fbe08f);border-radius:3px 3px 3px 16px;box-shadow:var(--sh-2);color:#3a3326;text-align:left}
+.sticky::before{content:"";position:absolute;left:50%;top:-12px;width:72px;height:22px;transform:translateX(-50%) rotate(-3deg);background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.7)}
+.sticky p{margin:0;font:600 24px/1.05 var(--hand)}
+.sticky p+p{margin-top:var(--s1);font-size:19px;font-weight:500;color:#5b5240}
+@media (max-width:900px){.f-note .sticky{padding:14px 10px 10px}.f-note .sticky p{font-size:16px}.f-note .sticky p+p{display:none}}
+.tile{background:#fff;border-radius:var(--r-md);padding:var(--s2);box-shadow:var(--sh-3);border:1px solid #fff;text-align:left}
+.tile .row{display:flex;align-items:center;gap:12px}
+.tick{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;background:linear-gradient(140deg,#7aa0ff,var(--blue));color:#fff;box-shadow:0 8px 16px rgba(61,109,255,.3)}
+.tick .ic{width:20px;height:20px;stroke-width:2.4}
+.tile b{display:block;font-size:15px;font-weight:600}
+.tile small{display:block;font-size:13px;color:var(--muted)}
+.tile .meta{display:flex;justify-content:space-between;gap:var(--s1);margin-top:var(--s2);padding-top:12px;border-top:1px dashed var(--hair);font-size:12px;color:var(--muted);white-space:nowrap}
+.tile .meta span:last-child{color:var(--ink);font-weight:500}
+.dial{position:relative;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0,#f7f6f3 45%,#e9e7e2 100%);box-shadow:inset 0 2px 1px #fff,inset 0 -6px 12px rgba(13,15,18,.06),var(--sh-2)}
+.dial svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.dial .read{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial .read b{font:500 clamp(16px,2.2vw,28px)/1 var(--mono);letter-spacing:-.03em}
+.dial .read small{font:500 12px var(--mono);color:var(--muted);margin-top:6px;letter-spacing:.04em;text-transform:uppercase}
+.receipt-wrap{filter:var(--ds-2)}
+.receipt{position:relative;background:#fffdf9;padding:var(--s2) var(--s2) var(--s3);font:400 12px/1.6 var(--mono);color:#2c3036;text-align:left;-webkit-mask:linear-gradient(#000,#000) top/100% calc(100% - 9px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 9px repeat-x;mask:linear-gradient(#000,#000) top/100% calc(100% - 9px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 9px repeat-x}
+.receipt h4{margin:0 0 6px;font:500 12px var(--mono);letter-spacing:.12em}
+.receipt .ln2{display:flex;justify-content:space-between;gap:var(--s1)}
+.receipt hr{border:0;border-top:1px dashed #c9c6bf;margin:6px 0}
+.receipt .tot{font-weight:500;font-size:13px}
+
+/* key-caps */
+.keys{list-style:none;margin:var(--s4) 0 0;padding:0;display:grid;gap:var(--s2);grid-template-columns:repeat(5,minmax(0,1fr))}
+.key{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:176px;padding:var(--s2) var(--s2) 20px;border-radius:var(--r-md);background:linear-gradient(180deg,#fff 0%,#fbfaf8 60%,#f4f3f0 100%);border:1px solid rgba(255,255,255,.95);box-shadow:inset 0 1px 0 #fff,inset 0 -2px 0 rgba(13,15,18,.04),0 6px 0 -1px var(--key-side),var(--sh-2)}
+.key .ko-box{width:68px;height:68px;margin:-4px 0 0 -4px}
+.key b{font-size:16px;font-weight:500;line-height:1.25;letter-spacing:-.015em;text-wrap:balance}
+.key small{display:block;font-size:13px;color:var(--muted);margin-top:4px;line-height:1.35}
+.key .n{position:absolute;top:var(--s2);right:var(--s2);font:500 12px var(--mono);color:var(--muted)}
+@media (max-width:1060px){.keys{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:599px){.keys{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1)}.key{min-height:150px;padding:12px}.key .ko-box{width:48px;height:48px}.key b{font-size:15px}}
+
+/* ---------- summary ---------- */
+.flow{display:grid;gap:var(--s2);grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));margin:var(--s3) 0 0;padding:0;list-style:none}
+.flow li{position:relative;background:#fff;border-radius:var(--r-md);padding:var(--s3) var(--s2) var(--s2);box-shadow:var(--sh-1);border:1px solid #fff}
+.flow li .k{font:500 12px var(--mono);color:var(--muted);letter-spacing:.06em}
+.flow li b{display:block;font-size:17px;font-weight:500;letter-spacing:-.02em;margin:6px 0 4px}
+.flow li p{margin:0;font-size:14px;color:var(--muted)}
+.flow li .vis{height:72px;display:flex;align-items:center;margin-bottom:var(--s2)}
+.mini-note{width:64px;height:64px;padding:10px 6px;background:linear-gradient(160deg,#fff1bd,var(--note));border-radius:2px 2px 2px 10px;box-shadow:var(--sh-1);font:600 14px/1 var(--hand);color:#3a3326;transform:rotate(-5deg)}
+.mini-tick{width:52px;height:52px}
+.mini-dial{width:64px}
+.mini-dial .read b{font-size:14px}
+.mini-coin{display:flex;align-items:center;gap:6px;font:500 13px var(--mono)}
+.mini-coin i{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffd0b8,var(--signal));box-shadow:var(--sh-1)}
+
+/* ---------- brand ---------- */
+.part-head{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);align-items:flex-end;justify-content:space-between}
+.sub-h{font-size:clamp(24px,2.6vw,32px);margin:var(--s10) 0 var(--s3)}
+.sub-h small{display:block;font:500 12px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--s1)}
+.film{position:relative;border-radius:var(--r-lg);overflow:hidden;background:var(--ink);aspect-ratio:16/9;box-shadow:var(--sh-3)}
+.film iframe{display:block;width:100%;height:100%;border:0}
+.film-bar{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;margin-top:var(--s2);color:var(--muted);font-size:14px}
+.btn-ghost{display:inline-flex;align-items:center;gap:var(--s1);min-height:44px;padding:0 18px;border-radius:999px;border:0;background:#fff;color:var(--ink);font:500 15px var(--sans);box-shadow:var(--sh-1);cursor:pointer}
+.tiles{display:grid;gap:var(--s2);grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.btile{position:relative;border-radius:var(--r-md);padding:var(--s5) var(--s3) var(--s6);display:grid;place-items:center;min-height:200px;box-shadow:var(--sh-1)}
+.btile .cap{position:absolute;left:var(--s2);bottom:12px;font-size:13px}
+.btile.ink{background:var(--ink);color:#fff}.btile.ink .cap{color:#c9d1da}
+.btile.graphite{background:var(--graphite);color:#fff}.btile.graphite .cap{color:#c9d1da}
+.btile.paper{background:var(--paper);color:var(--ink)}.btile.paper .cap{color:var(--muted)}
+.btile.white{background:#fff;color:#000}.btile.white .cap{color:var(--muted)}
+.btile .cx-lockup{width:min(260px,100%)}
+.btile .ratio{position:absolute;right:var(--s2);bottom:12px;font:500 12px var(--mono)}
+.btile.ink .ratio,.btile.graphite .ratio{color:#c9d1da}.btile.paper .ratio,.btile.white .ratio{color:var(--muted)}
+.clear{position:relative;padding:var(--xh);border:1.5px dashed var(--steel);border-radius:4px;--xh:clamp(18px,3.2vw,40px)}
+.clear .cx-lockup{width:clamp(220px,40vw,460px)}
+.clear .xh{position:absolute;right:0;top:50%;width:var(--xh);height:var(--xh);transform:translateY(-50%);background:rgba(255,59,10,.18)}
+.sizes{display:grid;gap:var(--s2)}
+.sizes .s{display:flex;align-items:center;gap:var(--s2);font-size:15px}
+.sizes .s .cx-marksm{width:24px;flex:none}.sizes .s .cx-lockup{width:96px;flex:none}
+.rules{display:grid;gap:var(--s1);grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));margin-top:var(--s3)}
+.rules div{display:flex;gap:var(--s1);align-items:flex-start;background:#fff;border-radius:var(--r);padding:12px var(--s2);font-size:14px;box-shadow:var(--sh-1)}
+.rules .ic{color:var(--err);margin-top:2px}
+.appicons{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:flex-end}
+.appicons figure{margin:0;text-align:center;font-size:13px;color:var(--muted)}
+.appicon{display:block;border-radius:22.37%;box-shadow:var(--sh-2);margin:0 auto var(--s1)}
+.inuse{display:grid;gap:var(--s2);grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr))}
+.inuse figure{margin:0}
+.inuse img{display:block;width:100%;height:auto;border-radius:var(--r);box-shadow:var(--sh-1);background:#fff}
+.inuse figcaption{font-size:13px;color:var(--muted);margin-top:var(--s1)}
+.ui-tag{display:inline-flex;align-items:center;gap:var(--s1);padding:6px 14px;border-radius:999px;background:var(--ink);color:#fff;font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.swatches{display:grid;gap:var(--s2);grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}
+.sw{border-radius:var(--r-md);overflow:hidden;background:#fff;box-shadow:var(--sh-1)}
+.sw .chip{height:88px;display:flex;align-items:flex-end;padding:10px 12px;font-weight:500}
+.sw .meta{padding:12px;font-size:13px;line-height:1.45}
+.sw code{font:500 13px var(--mono)}
+.dotchip{background-color:var(--canvas);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 1.4px);background-size:12px 12px}
+.type-row{display:grid;gap:6px;padding:var(--s3) 0;border-bottom:1px solid var(--hair)}
 .type-row small{color:var(--muted);font-size:13px}
-.icon-row{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end}
-.icon-row figure{margin:0;text-align:center;font-size:13px;color:var(--muted)}
-.appicon{display:block;border-radius:22.37%}
-.apps{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr))}
-.apps figure{margin:0}
-.apps img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line);background:#fff}
-.apps figcaption{font-size:13px;color:var(--muted);margin-top:6px}
-.tone{display:grid;gap:12px}
-.tone div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}
-.tone .say{color:var(--ok);font-weight:700}
-.tone .no{color:var(--err);font-weight:700}
+.shadows{display:grid;gap:var(--s3);grid-template-columns:repeat(3,minmax(0,1fr))}
+.shadows div{background:#fff;border-radius:var(--r-md);height:120px;display:flex;align-items:flex-end;padding:12px;font:500 12px var(--mono);color:var(--muted)}
+.spacing{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:flex-end}
+.spacing span{display:flex;flex-direction:column;align-items:center;gap:6px;font:500 12px var(--mono);color:var(--muted)}
+.spacing i{display:block;background:var(--blue-soft);border-radius:4px;width:var(--w);height:var(--w)}
+.frost-demo{position:relative;border-radius:var(--r-md);overflow:hidden;min-height:200px;padding:var(--s3);background:linear-gradient(115deg,#9fb7ff,#ffd2bd 70%,#ff9a6e)}
+.frost-demo .card{position:relative;max-width:320px;background:rgba(255,255,255,.7);-webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%)}
+.objects-row{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));align-items:center}
+.objects-row figure{margin:0;text-align:center;font-size:13px;color:var(--muted)}
+.objects-row figure>div{margin:0 auto var(--s2)}
+.principles{display:grid;gap:var(--s2);grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));margin:0;padding:0;list-style:none}
+.principles li{background:#fff;border-radius:var(--r-md);padding:var(--s3);box-shadow:var(--sh-1)}
+.principles b{display:block;font-weight:500;font-size:17px;letter-spacing:-.02em;margin-bottom:4px}
+.principles p{margin:0;color:var(--muted);font-size:14px}
+.tone{display:grid;gap:var(--s2)}
+.tone div{background:#fff;border-radius:var(--r-md);padding:var(--s2) var(--s3);box-shadow:var(--sh-1)}
+.tone .say{color:var(--ok);font-weight:600}
+.tone .no{color:var(--err);font-weight:600}
 
-/* ---------- Screen groups ---------- */
-.group{display:grid;gap:28px;padding:40px 0;border-top:1px solid var(--line)}
-.group:first-of-type{border-top:0}
-@media (min-width:1040px){.group{grid-template-columns:376px 1fr;align-items:start}}
-.group-head{grid-column:1/-1}
-.group-head p{max-width:76ch;margin-bottom:0}
-.states{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));align-items:start}
-.state{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.state>header{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--paper-2);font:700 13px var(--text);letter-spacing:.02em}
-.state>header .n{font-weight:500;color:var(--muted)}
-.state .scr{border:0;border-radius:0}
+/* ---------- screen groups ---------- */
+.group{display:grid;gap:var(--s4);padding:var(--s10) 0 0}
+@media (min-width:1060px){.group{grid-template-columns:400px 1fr;align-items:start}}
+.group-head{grid-column:1/-1;display:grid;gap:var(--s1)}
+.group-head h3{font-size:clamp(26px,3vw,38px);margin:0}
+.group-head h3 .k{font:500 14px var(--mono);color:var(--muted);letter-spacing:0;margin-right:var(--s1);vertical-align:middle}
+.group-head p{max-width:76ch;margin:0;color:var(--muted)}
+.states{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));align-items:start}
+.state{background:rgba(255,255,255,.7);border:1px solid #fff;border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-1)}
+.state>header{display:flex;align-items:center;gap:6px;padding:12px var(--s2) 0;font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.state>header .n{color:var(--ink);letter-spacing:.02em}
+.state .scr{background:transparent}
+.state .ill{margin:0 0 -4px}
 
-figure.phone{margin:0 auto;width:100%;max-width:376px}
-figure.phone>figcaption,.cap-under{font-size:13.5px;color:var(--muted);margin-top:10px;text-align:center}
-.phone .scr{border:8px solid var(--ink);border-radius:30px;overflow:hidden;position:relative}
-/* Mockup UI (concept): fixed px sizes so a 360 px screen reads like a phone */
-.scr{background:var(--paper);color:var(--ink);font:500 15px/1.45 var(--text);text-align:left}
-.scr .sb{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 14px;background:var(--ink);color:#fff;font:600 12px/1.4 var(--text)}
-.scr .sb .c{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--signal-soft)}
-.scr .ab{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--ink);color:#fff;min-height:48px}
-.scr .ab .cx-lockup{width:112px;color:#fff}
-.scr .ab .t{font:600 16px/1.2 var(--display);flex:1;min-width:0}
-.scr .ab .ic{width:22px;height:22px}
+figure.phone{margin:0 auto;width:100%;max-width:380px}
+figure.phone>figcaption{font-size:14px;color:var(--muted);margin-top:var(--s2);text-align:center}
+.phone .shell{position:relative;padding:10px;border-radius:44px;background:linear-gradient(165deg,rgba(255,255,255,.95),rgba(255,255,255,.7));border:1px solid #fff;box-shadow:var(--sh-3)}
+.phone .shell>.scr{border-radius:34px;overflow:hidden;position:relative;background:linear-gradient(180deg,#fafaf8,#f4f3f0)}
+/* mockup UI (concept): fixed px sizes so a 360 px screen reads like a phone */
+.scr{color:var(--ink);font:400 15px/1.45 var(--sans);text-align:left}
+.scr .sb{display:flex;justify-content:space-between;align-items:center;gap:var(--s1);padding:12px 20px 4px;font:500 12px/1.4 var(--mono)}
+.scr .sb .c{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-family:var(--sans)}
+.scr .ab{display:flex;align-items:center;gap:10px;padding:6px 16px;min-height:52px}
+.scr .ab .cx-lockup{width:108px;color:var(--ink)}
+.scr .ab .t{font:500 17px/1.2 var(--sans);letter-spacing:-.02em;flex:1;min-width:0}
+.scr .ab>.ic{width:36px;height:36px;padding:8px;border-radius:50%;background:#fff;box-shadow:var(--sh-1)}
 .scr .ab .sp{flex:1}
-.scr .bd{padding:14px}
+.scr .ab .small{font-size:13px;color:var(--muted)}
+.scr .bd{padding:8px 16px 16px}
+.state .scr .bd{padding:12px var(--s2) var(--s2)}
 .scr .bd>*+*{margin-top:12px}
-.scr .tabs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:#fff;padding:7px 0 9px}
-.scr .tabs span{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;color:var(--muted)}
-.scr .tabs .on{color:var(--ink);font-weight:700}
-.scr .h{font:600 19px/1.25 var(--display);margin:0}
-.scr .h2{font:600 16px/1.3 var(--display);margin:0}
-.scr .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+.scr .tabs{display:grid;grid-template-columns:repeat(4,1fr);margin:0 12px 12px;padding:8px 4px;border-radius:999px;background:rgba(255,255,255,.85);box-shadow:var(--sh-1)}
+.scr .tabs span{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted)}
+.scr .tabs .on{color:var(--ink);font-weight:600}
+.scr .h{font:500 21px/1.2 var(--sans);letter-spacing:-.03em;margin-bottom:0}
+.scr .h2{font:500 16px/1.3 var(--sans);letter-spacing:-.015em;margin-bottom:0}
+.scr .card{background:#fff;border:0;border-radius:var(--r);padding:12px 14px;box-shadow:0 1px 2px rgba(13,15,18,.05),0 6px 16px rgba(13,15,18,.04)}
 .scr .card>*+*{margin-top:8px}
-.scr .row{display:flex;align-items:center;gap:8px}
-.scr .between{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.scr .row{display:flex;align-items:center;gap:var(--s1)}
+.scr .row>.ic{flex:none}
+.scr .between{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s1)}
 .scr .muted{color:var(--muted)}
-.scr .small{font-size:13px;line-height:1.4}
-.scr .xs{font-size:12px;line-height:1.35}
-.scr .price{font:600 15px var(--mono);white-space:nowrap}
+.scr .small{font-size:13.5px;line-height:1.45}
+.scr .xs{font-size:12.5px;line-height:1.4}
+.scr .price{font:500 14.5px var(--mono);white-space:nowrap}
 .scr .strike{text-decoration:line-through;color:var(--muted)}
-.scr .btn{display:flex;justify-content:center;align-items:center;gap:8px;min-height:48px;border-radius:10px;font-weight:700;padding:0 14px;text-align:center;line-height:1.2}
-.scr .btn-p{background:var(--signal);color:var(--ink)}
-.scr .btn-s{background:#fff;border:1.5px solid var(--ink);color:var(--ink)}
-.scr .btn-d{background:var(--ink);color:#fff}
-.scr .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.scr .chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:13px;white-space:nowrap}
-.scr .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.scr .btn{display:flex;justify-content:center;align-items:center;gap:var(--s1);min-height:48px;border-radius:999px;font-weight:500;padding:0 18px;text-align:center;line-height:1.2}
+.scr .btn-p,.scr .btn-d{background:var(--ink);color:#fff;box-shadow:var(--sh-1)}
+.scr .btn-s{background:#fff;color:var(--ink);box-shadow:0 0 0 1px var(--line) inset}
+.scr .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s1)}
+.scr .chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border-radius:999px;padding:5px 12px;font-size:13px;white-space:nowrap;box-shadow:0 0 0 1px var(--line) inset}
+.scr .chip.on{background:var(--ink);color:#fff;box-shadow:none}
+.scr .chip .ic{width:15px;height:15px}
 .scr .chips{display:flex;flex-wrap:wrap;gap:6px}
-.scr .lbl{display:inline-flex;gap:4px;align-items:center;font-size:12px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--ok-bg);color:var(--ok)}
+.scr .lbl{display:inline-flex;gap:4px;align-items:center;font-size:12px;font-weight:500;padding:3px 8px;border-radius:999px;background:var(--ok-bg);color:var(--ok)}
 .scr .lbl .ic{width:14px;height:14px}
-.scr .lbl.n{background:var(--info-bg);color:var(--ink)}
+.scr .lbl.n{background:var(--sky);color:var(--blue-ink)}
 .scr .lbl.w{background:var(--warn-bg);color:var(--warn)}
 .scr .lbl.e{background:var(--err-bg);color:var(--err)}
-.scr .note{display:flex;gap:9px;padding:10px 12px;border-radius:10px;font-size:13.5px;line-height:1.4;border-left:4px solid;background:var(--info-bg);border-color:var(--steel)}
-.scr .note .ic{width:18px;height:18px;margin-top:1px}
-.scr .note.w{background:var(--warn-bg);border-color:#c98a00}.scr .note.w .ic{color:var(--warn)}
-.scr .note.e{background:var(--err-bg);border-color:var(--err)}.scr .note.e .ic{color:var(--err)}
-.scr .note.ok{background:var(--ok-bg);border-color:var(--ok)}.scr .note.ok .ic{color:var(--ok)}
-.scr .search{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--ink);border-radius:10px;min-height:46px;padding:0 12px;color:var(--muted)}
-.scr .field{display:grid;gap:4px}
-.scr .field b{font-size:13px}
-.scr .input{background:#fff;border:1.5px solid #8b929b;border-radius:10px;min-height:44px;padding:10px 12px;font-size:14.5px}
-.scr .seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--ink);border-radius:10px;overflow:hidden}
-.scr .seg span{display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;font-size:14px;font-weight:700}
+.scr .note{display:flex;gap:10px;padding:12px;border-radius:var(--r);font-size:13.5px;line-height:1.45;background:#fff;box-shadow:0 0 0 1px var(--line) inset}
+.scr .note .ic{width:18px;height:18px;margin-top:1px;color:var(--blue-ink)}
+.scr .note.w{background:var(--warn-bg);box-shadow:none}.scr .note.w .ic{color:var(--warn)}
+.scr .note.e{background:var(--err-bg);box-shadow:none}.scr .note.e .ic{color:var(--err)}
+.scr .note.ok{background:var(--ok-bg);box-shadow:none}.scr .note.ok .ic{color:var(--ok)}
+.scr .search{display:flex;align-items:center;gap:var(--s1);background:#fff;border-radius:var(--r);min-height:48px;padding:0 14px;color:var(--muted);box-shadow:var(--sh-1)}
+.scr .field{display:grid;gap:6px}
+.scr .field b{font-size:13px;font-weight:500}
+.scr .input{background:#fff;border-radius:var(--r-sm);min-height:44px;padding:11px 12px;font-size:14px;box-shadow:0 0 0 1.5px #8b929b inset}
+.scr .seg{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:999px;background:#fff;box-shadow:var(--sh-1)}
+.scr .seg span{display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;font-size:13.5px;font-weight:500;border-radius:999px;color:var(--muted)}
 .scr .seg .on{background:var(--ink);color:#fff}
-.scr .check{display:flex;gap:8px;align-items:flex-start;font-size:13px}
-.scr .box{width:20px;height:20px;border:1.5px solid var(--ink);border-radius:4px;flex:none;display:grid;place-items:center;background:#fff;margin-top:1px}
+.scr .check{display:flex;gap:var(--s1);align-items:flex-start;font-size:13px}
+.scr .box{width:20px;height:20px;border:1.5px solid var(--ink);border-radius:6px;flex:none;display:grid;place-items:center;background:#fff;margin-top:1px}
 .scr .box.on{background:var(--ink);color:#fff}
 .scr .box .ic{width:14px;height:14px}
-.scr .rule{border:0;border-top:1px solid var(--line);margin:10px 0}
-.scr .stars{color:var(--ink);display:inline-flex;align-items:center;gap:3px;font-size:13px;font-weight:700}
-.scr .stars .ic{width:15px;height:15px}
-.scr .demo{font-size:11px;font-weight:700;color:var(--muted);border:1px solid var(--line);padding:0 5px;border-radius:4px;background:#fff}
-.scr .thumb{border-radius:12px;height:120px;background:linear-gradient(135deg,var(--graphite),#38414d);color:#c9d1da;display:flex;align-items:flex-end;padding:10px;font-size:12px}
-.scr .bar{height:8px;border-radius:99px;background:var(--paper-2);overflow:hidden}
-.scr .bar i{display:block;height:100%;background:var(--ink);border-radius:99px}
-.scr .timer{font:700 28px/1 var(--mono);letter-spacing:-.02em}
+.scr .stars{display:inline-flex;align-items:center;gap:3px;font-size:13px;font-weight:500;color:var(--ink)}
+.scr .stars .ic{width:14px;height:14px}
+.scr .demo{font:500 11.5px var(--mono);color:var(--muted);padding:1px 6px;border-radius:999px;background:var(--canvas);letter-spacing:.04em}
+.scr .thumb{position:relative;border-radius:20px;height:132px;background:linear-gradient(135deg,#cfdbff,#ffd8c4);color:var(--graphite);display:flex;align-items:flex-end;padding:12px;font-size:12px;overflow:hidden}
+.scr .thumb svg{position:absolute;inset:0;width:100%;height:100%}
+.scr .thumb span{position:relative;background:rgba(255,255,255,.8);padding:2px 8px;border-radius:999px}
+.scr .bar{height:8px;border-radius:99px;background:var(--canvas-2);overflow:hidden}
+.scr .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue-soft),var(--blue));border-radius:99px}
+.scr .timer{font:500 28px/1 var(--mono);letter-spacing:-.03em}
 .scr .lines>div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
 .scr .lines>div:last-child{border-bottom:0}
-.scr .lines .tot{font-weight:800;font-size:15.5px;border-top:1.5px solid var(--ink);border-bottom:0;margin-top:2px}
+.scr .lines .tot{font-weight:600;border-top:1.5px solid var(--ink);border-bottom:0;margin-top:2px}
 .scr .stepper{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-.scr .stepper i{height:5px;border-radius:9px;background:var(--line)}
+.scr .stepper i{height:6px;border-radius:9px;background:var(--canvas-2)}
 .scr .stepper i.on{background:var(--ink)}
-/* Five equal shortcuts */
+.scr .slot{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 12px;border-radius:999px;background:#fff;font:500 13.5px var(--mono);box-shadow:0 0 0 1px var(--line) inset}
+.scr .slot.on{background:var(--ink);color:#fff;box-shadow:none}
+.scr .slot.off{color:var(--muted);background:var(--canvas-2);text-decoration:line-through;box-shadow:none}
+.scr .mapbox{position:relative;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh-1)}
+.scr .mapbox svg{display:block;width:100%;height:auto}
+.scr .ill{width:96px;height:68px}
+/* phone receipt and hold dial */
+.scr .rcpt{background:#fffdf9;border-radius:6px 6px 0 0;padding:14px;font:400 13px/1.55 var(--mono);filter:var(--ds-2);-webkit-mask:linear-gradient(#000,#000) top/100% calc(100% - 8px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/12px 8px repeat-x;mask:linear-gradient(#000,#000) top/100% calc(100% - 8px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/12px 8px repeat-x;padding-bottom:22px}
+.scr .rcpt>div{display:flex;justify-content:space-between;gap:10px;padding:4px 0}
+.scr .rcpt .tot{border-top:1px dashed #c9c6bf;margin-top:4px;padding-top:8px;font-weight:500}
+.scr .rcpt .cap{display:block;font-size:11.5px;letter-spacing:.12em;color:var(--muted);padding:0 0 6px;border-bottom:1px dashed #c9c6bf;margin-bottom:4px}
+.scr .hold{display:flex;align-items:center;gap:var(--s2)}
+.scr .hold .dial{width:96px;flex:none}
+.scr .hold .dial .read b{font-size:20px}
+/* five equal shortcuts, as tactile key rows */
 .scr .shortcuts{display:grid;grid-auto-rows:1fr;gap:8px;margin-top:10px}
-.scr .sc{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 12px;min-height:58px}
-.scr .sc .sq{width:38px;height:38px;border-radius:10px;background:var(--ink);color:#fff;display:grid;place-items:center;flex:none}
-.scr .sc .sq .ic{width:21px;height:21px}
-.scr .sc b{display:block;font-size:14.5px;line-height:1.2}
+.scr .sc{display:flex;align-items:center;gap:12px;padding:6px 12px 6px 6px;border-radius:var(--r);background:linear-gradient(180deg,#fff,#f8f7f4);box-shadow:inset 0 1px 0 #fff,0 3px 0 -1px var(--key-side),0 1px 2px rgba(13,15,18,.06),0 8px 16px rgba(13,15,18,.05);min-height:60px}
+.scr .sc .sq{width:46px;height:46px;flex:none}
+.scr .sc b{display:block;font-size:14.5px;font-weight:500;line-height:1.2}
 .scr .sc small{display:block;font-size:12.5px;color:var(--muted);line-height:1.3}
 .scr .sc>.ic{margin-left:auto;color:var(--muted);width:18px;height:18px}
 .fold{position:absolute;left:0;right:0;top:640px;border-top:2px dashed var(--signal);pointer-events:none}
-.fold span{position:absolute;right:6px;top:-22px;background:var(--signal);color:var(--ink);font:700 11px/1 var(--text);padding:4px 6px;border-radius:4px}
-.mapbox{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
-.mapbox svg{display:block;width:100%;height:auto}
-.slot{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 10px;border-radius:8px;border:1.5px solid var(--line);background:#fff;font:600 13.5px var(--mono)}
-.slot.on{border-color:var(--ink);background:var(--ink);color:#fff}
-.slot.off{color:var(--muted);background:var(--paper-2);text-decoration:line-through}
+.fold span{position:absolute;right:8px;top:-24px;background:var(--ink);color:#fff;font:500 11px/1 var(--mono);padding:5px 8px;border-radius:999px}
+/* business dashboard on a computer (EquipFlow style) */
+.dash-wrap{position:relative;grid-column:1/-1;margin-top:var(--s2)}
+.dash-glow{position:absolute;inset:6% 4% -4%;border-radius:64px;background:linear-gradient(115deg,#9fb7ff 0%,#c9d6ff 35%,#ffd2bd 70%,#ff9a6e 100%);filter:blur(50px);opacity:.7;pointer-events:none}
+.dash{position:relative;border-radius:var(--r-lg);padding:var(--s2);background:linear-gradient(160deg,rgba(255,255,255,.68),rgba(255,255,255,.5));border:1px solid rgba(255,255,255,.9);box-shadow:var(--sh-3)}
+.dbar{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);padding:var(--s1) var(--s1) var(--s2);flex-wrap:wrap}
+.dbar .who{display:flex;align-items:center;gap:12px}
+.dbar .who b{display:block;font-size:15px;font-weight:600}
+.dbar .who small{display:block;font-size:12.5px;color:var(--muted)}
+.av{width:40px;height:40px;border-radius:var(--r-sm);display:grid;place-items:center;font-weight:600;font-size:14px;background:linear-gradient(140deg,#dfe7ff,#ffe3d4);color:var(--graphite);flex:none}
+.ptabs{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid #fff}
+.ptabs span{min-height:32px;padding:0 var(--s2);border-radius:999px;font-size:13px;font-weight:500;color:var(--muted);display:inline-flex;align-items:center}
+.ptabs span.on{background:var(--ink);color:#fff}
+.dgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s2)}
+.kpi{padding:var(--s3);border-radius:var(--r-md);background:rgba(255,255,255,.78);border:1px solid #fff}
+.kpi small{display:block;font-size:13px;color:var(--muted)}
+.kpi .num{display:block;font-weight:200;font-size:clamp(36px,4vw,56px);line-height:1;letter-spacing:-.055em;margin-top:var(--s2);white-space:nowrap}
+.kpi .num sub{font-size:.42em;vertical-align:baseline;letter-spacing:-.02em;font-weight:300;bottom:0}
+.kpi .foot{display:flex;align-items:center;gap:var(--s1);margin-top:var(--s2);font-size:12.5px;color:var(--muted)}
+.kpi .bar{flex:1;height:6px;border-radius:8px;background:rgba(13,15,18,.07);overflow:hidden}
+.kpi .bar i{display:block;height:100%;width:var(--w,50%);background:linear-gradient(90deg,var(--blue),var(--apricot))}
+.kpi.fee{background:linear-gradient(150deg,rgba(255,255,255,.88),rgba(255,227,212,.88))}
+@media (max-width:900px){.dgrid{grid-template-columns:1fr 1fr}}
+@media (max-width:599px){.dgrid{grid-template-columns:1fr}.kpi{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:var(--s2);padding:var(--s2)}.kpi small{grid-row:1}.kpi .foot{grid-row:2;margin-top:var(--s1)}.kpi .num{grid-column:2;grid-row:1/3;margin:0;font-size:36px}}
 
-/* ---------- Desktop mockups (scale with their frame) ---------- */
-.desk{container-type:inline-size;margin-top:18px}
-.browser{border:1px solid #c9c1b1;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.04)}
-.browser .bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--paper-2);font-size:13px;color:var(--muted)}
-.browser .dots{display:flex;gap:6px}.browser .dots i{width:10px;height:10px;border-radius:50%;background:#c9c1b1;display:block}
-.browser .url{flex:1;min-width:0;background:#fff;border-radius:6px;padding:3px 10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.dk{font:500 clamp(5.5px,1.2cqw,15px)/1.45 var(--text);color:var(--ink);background:var(--paper)}
-.dk .ic{width:1.35em;height:1.35em}
-.dk .nav{display:flex;align-items:center;gap:2em;padding:1em 3em;background:var(--ink);color:#fff}
-.dk .nav .cx-lockup{width:9em;color:#fff}
-.dk .nav .links{display:flex;gap:1.6em;font-size:.95em;flex:1}
-.dk .nav .acct{display:flex;gap:.8em}
-.dk .nav .pill{border:1px solid #fff;border-radius:.6em;padding:.4em .9em;font-weight:700}
-.dk .nav .pill.p{background:var(--signal);color:var(--ink);border-color:var(--signal)}
-.dk .hero{background:var(--ink);color:#fff;padding:3.2em 3em 3.6em}
-.dk .hero h3{font:600 3.2em/1.08 var(--display);letter-spacing:-.03em;margin:0 0 .35em;max-width:16em}
-.dk .hero p{color:#dfe3e8;font-size:1.15em;margin:0 0 1.4em;max-width:40em}
-.dk .sbar{display:flex;gap:.8em;background:#fff;border-radius:.8em;padding:.5em;max-width:52em;color:var(--ink)}
-.dk .sbar>div{display:flex;align-items:center;gap:.6em;padding:.5em .8em;border-radius:.5em;flex:1;color:var(--muted)}
-.dk .sbar>div+div{border-left:1px solid var(--line)}
-.dk .sbar .go{flex:none;background:var(--signal);color:var(--ink);font-weight:700;padding:.7em 1.6em}
-.dk .five5{display:grid;grid-template-columns:repeat(5,1fr);gap:1em;padding:0 3em;margin-top:-1.8em}
-.dk .five5>div{background:#fff;border:1px solid var(--line);border-radius:1em;padding:1.2em;display:grid;gap:.6em;align-content:start}
-.dk .five5 .sq{width:2.8em;height:2.8em;border-radius:.7em;background:var(--ink);color:#fff;display:grid;place-items:center}
-.dk .five5 b{font-size:1.08em;line-height:1.2}
-.dk .five5 small{color:var(--muted);font-size:.9em}
-.dk .band{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:1.5em;padding:2.4em 3em}
-.dk .band h4{font:600 1.3em/1.2 var(--display);margin:0 0 .4em}
-.dk .band p{margin:0;font-size:.95em;color:var(--muted)}
-.dk .band .num{font:700 1em var(--mono);background:var(--ink);color:#fff;border-radius:50%;width:1.9em;height:1.9em;display:grid;place-items:center;margin-bottom:.6em}
-.dk .honest{margin:0 3em 2.4em;background:#fff;border:1px solid var(--line);border-left:.3em solid var(--signal);border-radius:.8em;padding:1.2em 1.4em;display:flex;align-items:center;gap:1.4em}
+/* ---------- desktop mockups (fixed 1280 px canvas, zoomed to fit its frame) ---------- */
+.browser{margin:var(--s3) 0 0;border-radius:var(--r-md);overflow:hidden;background:#fff;box-shadow:var(--sh-3);border:1px solid #fff}
+.browser .bar{display:flex;align-items:center;gap:var(--s1);padding:10px 14px;background:#f6f5f2;font-size:13px;color:var(--muted)}
+.browser .dots{display:flex;gap:6px}.browser .dots i{width:11px;height:11px;border-radius:50%;background:#dcd9d2;display:block}
+.browser .url{flex:1;min-width:0;background:#fff;border-radius:999px;padding:4px 14px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-family:var(--mono);font-size:12px}
+.desk-in{width:1280px;zoom:var(--z,1)}
+.dk{position:relative;overflow:hidden;background-color:var(--canvas);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 1.4px);background-size:24px 24px;font:400 15px/1.5 var(--sans)}
+.dk .dnav{display:flex;align-items:center;gap:24px;margin:16px 24px 0;padding:8px 8px 8px 22px;border-radius:999px;background:rgba(255,255,255,.75);box-shadow:var(--sh-1);border:1px solid #fff}
+.dk .dnav .cx-lockup{width:116px}
+.dk .dnav .links{display:flex;gap:24px;font-size:14px;color:var(--muted);flex:1;justify-content:center;font-weight:500}
+.dk .dnav .acct{display:flex;gap:8px;font-size:14px;font-weight:500}
+.dk .dnav .acct span{padding:10px 18px;border-radius:999px;background:#fff;box-shadow:var(--sh-1)}
+.dk .dnav .acct span.p{background:var(--ink);color:#fff}
+.dk .dhero{position:relative;text-align:center;padding:72px 220px 0}
+.dk .dhero h3{font-size:58px;line-height:1.02;letter-spacing:-.045em;margin:20px 0 0}
+.dk .dhero p{color:var(--muted);font-size:17px;max-width:600px;margin:18px auto 0}
+.dk .sbar{display:flex;gap:6px;background:#fff;border-radius:999px;padding:6px;max-width:640px;margin:28px auto 0;box-shadow:var(--sh-2);text-align:left}
+.dk .sbar>div{display:flex;align-items:center;gap:8px;padding:8px 14px;flex:1;color:var(--muted)}
+.dk .sbar>div+div{border-left:1px solid var(--hair)}
+.dk .sbar .go{flex:none;background:var(--ink);color:#fff;font-weight:500;padding:12px 26px;border-radius:999px}
+.dk .keys{padding:0 64px;margin-top:40px;gap:16px;grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.dk .key{padding:16px 16px 20px}.dk .key .ko-box{width:68px;height:68px}.dk .key b{font-size:16px}
+.dk .dial .read b{font-size:20px}
+.dk .key{min-height:168px}
+.dk .band{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:20px;padding:56px 64px 0}
+.dk .band>div{background:rgba(255,255,255,.75);border-radius:var(--r-md);padding:20px;box-shadow:var(--sh-1)}
+.dk .band>div:first-child{background:transparent;box-shadow:none;padding:4px 0}
+.dk .band h4{font-size:24px;margin:0 0 6px}
+.dk .band b{display:block;font-weight:500;font-size:16px;margin:8px 0 4px}
+.dk .band p{margin:0;font-size:14px;color:var(--muted)}
+.dk .band .num{font:500 12px var(--mono);color:var(--muted)}
+.dk .honest{display:flex;align-items:center;gap:20px;margin:28px 64px 0;background:#fff;border-radius:var(--r-md);padding:20px 24px;box-shadow:var(--sh-1)}
+.dk .honest .ill{width:96px;height:68px;flex:none}
 .dk .honest p{margin:0;flex:1}
-.dk .btn{display:inline-flex;align-items:center;gap:.5em;border-radius:.6em;padding:.75em 1.2em;font-weight:700;white-space:nowrap}
-.dk .btn-p{background:var(--signal);color:var(--ink)}
-.dk .btn-s{border:.12em solid var(--ink);background:#fff}
-.dk .foot{background:var(--ink);color:#c9d1da;padding:1.6em 3em;display:flex;justify-content:space-between;font-size:.9em}
-.dk .srch{display:grid;grid-template-columns:15em 1fr 1fr;gap:1.6em;padding:1.6em 3em 2.4em}
-.dk .filters{display:grid;gap:1.1em;align-content:start;background:#fff;border:1px solid var(--line);border-radius:1em;padding:1.2em}
-.dk .filters b{font-size:.95em}
-.dk .opt{display:flex;align-items:center;gap:.5em;font-size:.95em}
-.dk .opt i{width:1em;height:1em;border:.12em solid var(--ink);border-radius:.25em;display:inline-block}
+.dk .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:12px 20px;font-weight:500;white-space:nowrap;background:#fff;box-shadow:0 0 0 1px var(--line) inset}
+.dk .dfoot{display:flex;justify-content:space-between;padding:28px 64px 32px;margin-top:48px;border-top:1px solid var(--hair);color:var(--muted);font-size:13px}
+.dk .dobj{position:absolute;pointer-events:none}
+.dk .srch{display:grid;grid-template-columns:240px 1fr 380px;gap:24px;padding:24px 64px 0}
+.dk .crumbs{display:flex;justify-content:space-between;align-items:flex-end;padding:48px 64px 0}
+.dk .crumbs h3{font-size:36px;margin:0}
+.dk .crumbs span{color:var(--muted)}
+.dk .filters{display:grid;gap:14px;align-content:start;background:rgba(255,255,255,.82);border-radius:var(--r-md);padding:20px;box-shadow:var(--sh-1)}
+.dk .filters b{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dk .opt{display:flex;align-items:center;gap:8px;font-size:14px}
+.dk .opt i{width:16px;height:16px;border:1.5px solid var(--ink);border-radius:5px;display:inline-block}
 .dk .opt i.on{background:var(--ink)}
 .dk .opt i.r{border-radius:50%}
-.dk .res{display:grid;gap:1em;align-content:start}
-.dk .rc{background:#fff;border:1px solid var(--line);border-radius:1em;padding:1.1em;display:grid;gap:.5em}
-.dk .rc .between{display:flex;justify-content:space-between;gap:1em;align-items:baseline}
-.dk .rc h5{font:600 1.15em var(--display);margin:0}
-.dk .lbl{display:inline-flex;align-items:center;gap:.3em;font-size:.82em;font-weight:700;padding:.15em .5em;border-radius:.3em;background:var(--ok-bg);color:var(--ok)}
-.dk .lbl.n{background:var(--info-bg);color:var(--ink)}
-.dk .lbl .ic{width:1.1em;height:1.1em}
-.dk .muted{color:var(--muted)}
-.dk .price{font:600 1em var(--mono)}
-.dk .crumbs{display:flex;justify-content:space-between;align-items:center;padding:1.4em 3em 0}
-.dk .crumbs h3{font:600 1.7em var(--display);margin:0}
-.dk .chip{display:inline-flex;align-items:center;gap:.3em;border:1px solid var(--line);background:#fff;border-radius:99em;padding:.3em .8em;font-size:.9em}
-.dk .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.dk .mapcol{border-radius:1em;overflow:hidden;border:1px solid var(--line);align-self:start;position:sticky;top:0}
+.dk .res{display:grid;gap:12px;align-content:start}
+.dk .rc{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;background:#fff;border-radius:var(--r-md);padding:14px;box-shadow:var(--sh-1)}
+.dk .rc .th{width:64px;height:64px;border-radius:14px;overflow:hidden}
+.dk .rc .th svg{width:100%;height:100%;display:block}
+.dk .rc h5{font-size:17px;margin:0 0 2px;font-weight:600;letter-spacing:-.015em}
+.dk .rc .m{font-size:13px;color:var(--muted)}
+.dk .rc .lbls{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.dk .lbl{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:3px 8px;border-radius:999px;background:var(--ok-bg);color:var(--ok)}
+.dk .lbl.n{background:var(--sky);color:var(--blue-ink)}
+.dk .lbl .ic{width:14px;height:14px}
+.dk .price{font:500 14px var(--mono);text-align:right;white-space:nowrap}
+.dk .price small{display:block;color:var(--muted);font-size:12px}
+.dk .mapcol{border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-2);align-self:start}
 .dk .mapcol svg{display:block;width:100%;height:auto}
 
-/* ---------- Journeys and roadmap ---------- */
-.journey{display:grid;gap:28px}
-@media (min-width:1040px){.journey{grid-template-columns:320px 1fr}}
-.persona{background:var(--ink);color:#fff;border-radius:18px;padding:22px;align-self:start}
-.persona p{color:#dfe3e8}
+/* ---------- journeys: one booking object travels the steps ---------- */
+.journey{display:grid;gap:var(--s4);margin-top:var(--s5)}
+@media (min-width:1060px){.journey{grid-template-columns:380px 1fr;align-items:start}}
+.jside{display:grid;gap:var(--s3)}
+@media (min-width:1060px){.jside{position:sticky;top:104px}}
+.persona{background:#fff;border-radius:var(--r-md);padding:var(--s3);box-shadow:var(--sh-1)}
 .persona .who{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.persona .av{width:52px;height:52px;border-radius:50%;background:var(--signal);color:var(--ink);display:grid;place-items:center;font:600 22px var(--display);flex:none}
-ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
-ol.steps>li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
-ol.steps>li::before{content:counter(s);width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:700 15px var(--mono)}
-ol.steps p{margin:4px 0 0}
-.actor{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--paper-2);margin-right:6px}
+.persona .av{width:48px;height:48px;border-radius:50%;font-size:20px}
+.persona p{color:var(--muted);margin:0 0 var(--s1)}
+.persona p:last-child{margin:0;color:var(--ink)}
+.stagebox{position:relative;height:300px;border-radius:var(--r-lg);background:rgba(255,255,255,.5);border:1px solid #fff;box-shadow:var(--sh-1);overflow:hidden;display:grid;place-items:center}
+.stagebox .lbl-now{position:absolute;left:var(--s2);top:12px;font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stagebox .rail{position:absolute;left:var(--s3);right:var(--s3);bottom:var(--s3);height:4px;border-radius:4px;background:var(--canvas-2)}
+.stagebox .rail i{position:absolute;inset:0;border-radius:4px;background:linear-gradient(90deg,var(--blue-soft),var(--blue) 45%,var(--signal));transform-origin:left;transform:scaleX(var(--p,0));transition:transform .6s var(--ease)}
+.stagebox .face{position:absolute;opacity:0;transform:translateY(16px) scale(.92);transition:opacity .5s var(--ease),transform .7s var(--spring)}
+.stagebox .face.on{opacity:1;transform:none}
+.face-note{width:180px}.face-tile{width:270px}.face-dial{width:170px}.face-rcpt{width:220px}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+ol.steps>li{display:grid;grid-template-columns:72px 1fr;gap:var(--s2);align-items:start;background:rgba(255,255,255,.62);border:1px solid #fff;border-radius:var(--r-md);padding:var(--s2);transition:background .5s,box-shadow .5s,transform .5s var(--ease)}
+ol.steps>li.on{background:#fff;box-shadow:var(--sh-2)}
+ol.steps .thumbo{width:64px;height:64px;border-radius:var(--r);background:var(--canvas);display:grid;place-items:center;position:relative}
+ol.steps .thumbo .k{position:absolute;left:6px;top:4px;font:500 11.5px var(--mono);color:var(--muted)}
+ol.steps .thumbo .ic{width:26px;height:26px}
+ol.steps b{font-weight:500;font-size:17px;letter-spacing:-.015em;display:block;margin-top:2px}
+ol.steps p{margin:4px 0 0;color:var(--muted);font-size:15px}
+ol.steps a{color:var(--ink)}
+.actor{display:inline-block;font:500 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--canvas-2);color:var(--ink);margin-right:6px}
 .actor.c{background:var(--ink);color:#fff}
-.actor.p{background:var(--info-bg)}
-.actor.x{background:var(--signal);color:var(--ink)}
-.whatif{background:var(--warn-bg);border:1px solid #edd3a6;border-radius:14px;padding:16px 18px;margin-top:14px}
-.whatif h4{margin:0 0 6px}
+.actor.p{background:var(--sky);color:var(--blue-ink)}
+.actor.x{background:var(--peach);color:#8a2a0a}
+.whatif{background:#fff;border-radius:var(--r-md);padding:var(--s3);margin-top:var(--s2);box-shadow:var(--sh-1);display:grid;grid-template-columns:auto 1fr;gap:var(--s2)}
+.whatif h4{font-size:19px;margin:0 0 6px}
 .whatif ul{margin:0;padding-left:20px}
-.phases{display:grid;gap:12px}
-.ph{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}
-.ph .tag{grid-row:span 2;font:700 14px var(--mono);background:var(--paper-2);border-radius:8px;padding:8px 10px;align-self:start;min-width:52px;text-align:center}
-.ph.done .tag{background:var(--ok-bg);color:var(--ok)}
-.ph.now{border:2px solid var(--ink)}
-.ph.now .tag{background:var(--signal);color:var(--ink)}
-.ph p{margin:0;font-size:15px}
-.ph b{font-size:16.5px}
-.foot{background:var(--ink);color:#c9d1da;padding:40px 0;font-size:14px}
-.foot a{color:#fff}
-.foot .cx-mark{width:40px;color:#fff;margin-bottom:12px}
+.whatif li+li{margin-top:6px}
+.whatif .hand{font:600 34px/1 var(--hand);color:var(--blue-ink);transform:rotate(-6deg)}
+
+/* ---------- roadmap ---------- */
+.phases{list-style:none;margin:var(--s4) 0 0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(7,minmax(0,1fr));position:relative}
+.phases::before{content:"";position:absolute;left:4%;right:4%;top:27px;height:2px;background:repeating-linear-gradient(90deg,rgba(13,15,18,.2) 0 8px,transparent 8px 16px)}
+.phases li{position:relative;display:grid;gap:6px;align-content:start}
+.phases .dot{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font:500 15px var(--mono);background:#fff;box-shadow:var(--sh-1);position:relative;z-index:1}
+.phases .done .dot{background:var(--ok-bg);color:var(--ok)}
+.phases .now .dot{background:var(--ink);color:#fff;box-shadow:0 0 0 6px rgba(255,59,10,.18),var(--sh-2)}
+.phases b{font-weight:500;font-size:16px;letter-spacing:-.015em;margin-top:6px}
+.phases p{margin:0;font-size:14px;color:var(--muted)}
+@media (max-width:1060px){.phases{grid-template-columns:1fr}.phases::before{left:27px;right:auto;top:20px;bottom:20px;width:2px;height:auto;background:repeating-linear-gradient(180deg,rgba(13,15,18,.2) 0 8px,transparent 8px 16px)}.phases li{grid-template-columns:56px 1fr;column-gap:var(--s2)}.phases .dot{grid-row:span 2}.phases b{margin-top:4px}}
+.dec{display:grid;gap:12px;margin:0;padding:0;list-style:none}
+.dec li{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:var(--r);padding:12px var(--s2);box-shadow:var(--sh-1);font-size:15px}
+.dec li .ic{color:var(--ok);margin-top:2px}
+.dec li .id{font:500 12px var(--mono);color:var(--muted);white-space:nowrap;margin-left:auto;padding-left:var(--s1)}
+
+/* ---------- footer ---------- */
+.pagefoot{margin-top:var(--s12);padding:var(--s8) 0 var(--s6);border-top:1px solid var(--hair);color:var(--muted);font-size:14px}
+.pagefoot .cx-lockup{width:min(360px,70vw);color:var(--ink);margin-bottom:var(--s3)}
+.pagefoot .big{font-size:clamp(20px,2.2vw,26px);letter-spacing:-.02em;color:var(--ink);font-weight:500;max-width:36ch;margin-bottom:var(--s2)}
+
+/* ---------- scroll reveals (motion only) ---------- */
+html.motion [data-reveal]{opacity:0;transform:translateY(24px)}
+html.motion [data-reveal].in{opacity:1;transform:none;transition:opacity .9s var(--ease),transform 1s var(--ease)}
+
+@media (prefers-reduced-motion:reduce){
+  .obj{animation:none}
+  .pill,.stagebox .face,.stagebox .rail i,ol.steps>li,.menu-btn i,.sheet,.scrim{transition:none!important}
+  .c-rotor{animation:none!important}
+}
 
 @media print{
-  .top,.skip,.motion-bar{display:none}
-  section.sec{break-before:page;padding:24px 0}
-  .group,.state,figure.phone,.ph,ol.steps>li,.panel{break-inside:avoid}
-  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #intro,.top,.sheet,.scrim,.skip,.film-bar,.stagebox,.fold span{display:none!important}
+  html.motion [data-reveal],html.motion .cover .reveal,html.motion .floats .obj-in{opacity:1!important;transform:none!important}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact;background-size:24px 24px}
+  .cover{min-height:auto;padding:48px 0}
+  .sec{break-before:page;padding-top:24px}
+  .group{padding-top:32px}
+  .group-head,.group>figure,.state,.card,.key,ol.steps>li,.whatif,.phases li,.tscroll,.browser,.btile,.sw,.principles li,.dash-wrap{break-inside:avoid}
+  .keys{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px}.key{min-height:130px;padding:12px}.key .ko-box{width:44px;height:44px}.key b{font-size:13px}
+  .flow{grid-template-columns:repeat(4,minmax(0,1fr))}.flow li{break-inside:avoid}
+  .group-head{break-after:avoid}
+  .cover{min-height:auto;padding:40px 0 24px}.cover .floats{display:none}
+  .pagefoot{break-inside:avoid;margin-top:32px;padding-top:32px}
+  h2,h3,h4,.sub-h,.eyebrow{break-after:avoid}
+  .desk-in{zoom:.55!important}
+  .jside{position:static}
+  .obj{animation:none}
+  .film{aspect-ratio:16/9;height:auto}
+  /* print stays light: no blurred glows or soft drop-shadow filters (they rasterise into heavy PDF images) */
+  .dash-glow,.cover .floats,.pagefoot .big{filter:none!important}
+  .dash-glow{display:none}
+  .ko,.receipt-wrap,.scr .rcpt{filter:none!important}
+  *{box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  .card,.state,.key,.flow li,.persona,.phone .shell,.sw,.btile,.principles li,.tone div,.dec li,.rules div,.whatif,ol.steps>li,.browser,.tscroll,.callout,.kpi,.dash{outline:1px solid #e2e0db}
 }
 </style>
 </head>
 <body>
 {{symbols}}
+{{part:objects}}
 <a class="skip" href="#summary">Skip to the summary</a>
-
-<header class="top">
-  <div class="wrap">
-    <a href="#cover" aria-label="CarworX pack, back to the top">{{logo:lockup}}</a>
-    <nav aria-label="Pack sections">
-      <ul>
-        <li><a href="#summary">Summary</a></li>
-        <li><a href="#brand">Brand</a></li>
-        <li><a href="#screens">Phone screens</a></li>
-        <li><a href="#desktop">Desktop</a></li>
-        <li><a href="#journeys">Journeys</a></li>
-        <li><a href="#roadmap">Roadmap and decisions</a></li>
-      </ul>
-    </nav>
-    <span class="badge">Concept, not final</span>
-  </div>
-</header>
-
+{{part:chrome}}
 <main id="main">
-<section class="cover dark" id="cover" aria-labelledby="cover-h">
-  <div class="wrap">
-    <span class="badge">Concept, not final · planning pack</span>
-    {{logo:lockup}}
-    <h1 id="cover-h">Car care you can find, book and pay for, in one place.</h1>
-    <p>This pack shows the owner's two colleagues what CarworX is, how it would look and how it would work, before anything is built. Everything here is a <strong>concept</strong>: the screens are pictures, the businesses, people, prices and ratings are made up, and nothing connects to a real service.</p>
-    <div class="meta">
-      <a class="btnlink p" href="#summary">Start with the one-page summary</a>
-      <a class="btnlink s" href="#journeys">See the two walkthroughs</a>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 1. SUMMARY ================= -->
-<section class="sec" id="summary" aria-labelledby="summary-h">
-  <div class="wrap">
-    <span class="kicker">Part 1 · One-page summary</span>
-    <h2 id="summary-h">CarworX in plain language</h2>
-    <p class="lead">CarworX (carworx.app) is a South African website where drivers find car services near them, ask questions, book a time and pay, and get straight guidance on traffic fines and vehicle admin. Businesses list themselves for free while we test the idea.</p>
-
-    <h3>Five services, equal on the home page</h3>
-    <div class="five">
-      <div><span class="sq">{{icon:wash}}</span>Wash &amp; Detailing</div>
-      <div><span class="sq">{{icon:repair}}</span>Repairs &amp; Maintenance</div>
-      <div><span class="sq">{{icon:glass}}</span>Glass Repair &amp; Replacement</div>
-      <div><span class="sq">{{icon:tyre}}</span>Tyres &amp; Wheel Alignment</div>
-      <div><span class="sq">{{icon:fines}}</span>Fines &amp; Vehicle Admin</div>
-    </div>
-    <p>Behind them sit three groups: <strong>Wash &amp; Detailing</strong>; <strong>Repairs &amp; Maintenance</strong> (servicing, glass, tyres and alignment); and <strong>Fines &amp; Vehicle Admin</strong> (links to the official fines channels, listed admin helpers, and towing as a referral only).</p>
-
-    <div class="grid2" style="margin-top:28px">
-      <div class="panel">
-        <h3>How booking and paying work</h3>
-        <ul>
-          <li><strong>Nothing is instant.</strong> You send a request; the business has 2 business hours to accept it.</li>
-          <li>When they accept, the slot is <strong>held for you for 15 minutes</strong> while you pay.</li>
-          <li>You pay on a secure payment partner's page. The money is split straight to the business; CarworX never holds a wallet.</li>
-          <li><strong>Repairs use a quote.</strong> The workshop sends a written quote that expires after 7 days. You approve that exact quote, then pay. Extra work needs a new quote you approve.</li>
-          <li>Mobile businesses (for example a wash at your home) show a <strong>travel charge</strong> based on straight-line distance bands.</li>
-          <li>During the free pilot the CarworX fee is <strong>R0</strong>.</li>
-        </ul>
-      </div>
-      <div class="panel">
-        <h3>What launches first</h3>
-        <ol>
-          <li><strong>Build the foundations</strong> on a private test site with made-up data.</li>
-          <li><strong>Launch the free public site:</strong> search, business listings, enquiries, business sign-ups and fines guidance. No bookings or payments yet.</li>
-          <li><strong>Add bookings, quotes and payments</strong> on the private test site, with test money only.</li>
-          <li><strong>Switch on real payments</strong>, one business at a time, only after legal, payment-partner and refund checks.</li>
-          <li><strong>Grow</strong>, and test ways to earn money only with the owner's approval.</li>
-        </ol>
-      </div>
-      <div class="panel">
-        <h3>What it costs <span class="est">estimates</span></h3>
-        <ul>
-          <li>Planning and the private test site: free tiers.</li>
-          <li>Public launch: database hosting from about <strong>US$25 a month</strong> (needs owner approval first).</li>
-          <li>Email: free up to 3,000 a month, then about US$20 a month.</li>
-          <li>Card payments: the payment partner's fee per transaction, about <strong>2.9% + R1</strong> (excl. VAT) when researched. Who pays it is an owner decision.</li>
-          <li>An attorney and an accountant before payments go live: quotes needed.</li>
-          <li>Marketing: the owner's budget.</li>
-        </ul>
-        <p class="small" style="font-size:14px;color:var(--muted);margin-top:10px">Prices are rechecked before anything is bought. Nothing in this pack approves spending.</p>
-      </div>
-      <div class="panel">
-        <h3>What the business needs to do</h3>
-        <ul>
-          <li><strong>Find and check businesses.</strong> CarworX starts with zero listings anywhere in South Africa. The owner and a colleague recruit, check and support them.</li>
-          <li>Run customer and business support.</li>
-          <li>Appoint an Information Officer (privacy law) and agree a production budget before the public launch.</li>
-          <li>Set up the business details and bank account for the payment partner, and decide how refunds are funded, before real payments.</li>
-          <li>Look at this pack and tell the owner what works and what doesn't.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="callout">
-      <strong>Still open:</strong> who pays the card fee; how refunds and chargebacks are funded; the production budget; who the Information Officer is; whether to approach fines partners; and, after this review, whether to start building (Phase 1). See <a href="#roadmap">Roadmap and decisions</a>.
-    </div>
-  </div>
-</section>
-
-<!-- ================= 2. BRAND ================= -->
-<section class="sec dark" id="brand" aria-labelledby="brand-h">
-  <div class="wrap">
-    <span class="kicker">Part 2 · Brand</span>
-    <h2 id="brand-h">Turbine: the CarworX brand</h2>
-    <p class="lead" style="color:#dfe3e8">The owner has locked the <strong>Turbine</strong> logo: five impeller blades around an open hub, like a turbo spooling up. The X in the name leans at the same angle as one blade tip. The logo is final; the app colours, type and tone below are <strong>concept, not final</strong>.</p>
-
-    <div class="hero-motion" style="margin-top:28px">
-      <iframe id="hero" tabindex="-1" title="CarworX logo animation, 8 seconds, ends on the static logo" loading="lazy" data-srcdoc="{{srcdoc:motion/carworx-hero-embed.html}}"></iframe>
-    </div>
-    <div class="motion-bar">
-      <button type="button" id="replay">Play the logo animation again</button>
-      <span style="color:#c9d1da;font-size:14px">8 seconds: ignition, intake, spool, boost, then it locks into the logo. With reduced motion switched on, only the still logo is shown.</span>
-    </div>
-
-    <h3 style="margin-top:40px">Name and lockups</h3>
-    <p style="color:#dfe3e8;max-width:70ch">Always written <strong>CarworX</strong>: a capital C, a capital X, and <em>arwor</em> in lowercase. Never "Carworx", "CARWORX" or "CarWorx". The logo artwork is never retyped.</p>
-    <div class="tiles">
-      <div class="tile ink">{{logo:lockup}}<span class="cap">Horizontal, on ink (primary)</span></div>
-      <div class="tile paper">{{logo:lockup}}<span class="cap">Horizontal, on paper</span></div>
-      <div class="tile white"><div class="icon-row" style="justify-content:center">{{logo:mark}}{{logo:marksm}}</div><span class="cap">Mark: full size, and the small version for 16–47 px</span></div>
-    </div>
-
-    <h3 style="margin-top:40px">Colour</h3>
-    <div class="swatches">
-      <div class="sw"><div class="chip" style="background:#0d0f12;color:#fff">Ink</div><div class="meta"><code>#0d0f12</code><br>Main dark ground. White on ink 19.2:1.</div></div>
-      <div class="sw"><div class="chip" style="background:#1c2128;color:#fff">Graphite</div><div class="meta"><code>#1c2128</code><br>Cards on dark. White 16.2:1.</div></div>
-      <div class="sw"><div class="chip" style="background:#f4efe6;color:#0d0f12">Paper</div><div class="meta"><code>#f4efe6</code><br>Warm light ground. Ink 16.8:1.</div></div>
-      <div class="sw"><div class="chip" style="background:#5b6470;color:#fff">Muted</div><div class="meta"><code>#5b6470</code><br>Secondary text on paper, 5.2:1.</div></div>
-      <div class="sw"><div class="chip" style="background:#8a97a6;color:#0d0f12">Steel</div><div class="meta"><code>#8a97a6</code><br>Glow and hairlines. Never text on paper.</div></div>
-      <div class="sw"><div class="chip" style="background:#ff3b0a;color:#0d0f12">Signal</div><div class="meta"><code>#ff3b0a</code><br>App accent only, never in the logo. Ink on signal 5.4:1 for buttons.</div></div>
-    </div>
-    <p style="color:#c9d1da;font-size:14px;margin-top:12px">Status colours used in the screens (green for done, amber for waiting, red for problems) are concept additions for this pack, each checked at 5.6:1 or better against its background.</p>
-
-    <div class="grid2" style="margin-top:40px">
-      <div>
-        <h3>Type</h3>
-        <div class="type-row" style="border-color:#2c333d"><span style="font:600 clamp(28px,4vw,44px)/1.1 var(--display);letter-spacing:-.03em">Book a wash in minutes</span><small style="color:#c9d1da">Sora SemiBold: headlines. It is the typeface the wordmark was drawn from.</small></div>
-        <div class="type-row" style="border-color:#2c333d"><span style="font:500 17px/1.5 var(--text)">Request a time. The business has two business hours to accept, then you have 15 minutes to pay.</span><small style="color:#c9d1da">Space Grotesk for running text (this pack falls back to your system font).</small></div>
-        <div class="type-row" style="border-color:#2c333d"><span style="font:600 17px var(--mono)">R330.00 · CX-2048 · 14:32</span><small style="color:#c9d1da">A monospaced face for prices, references and timers.</small></div>
-      </div>
-      <div>
-        <h3>App icon</h3>
-        <div class="icon-row" style="background:var(--paper);border-radius:18px;padding:24px">
-          <figure><img class="appicon" src="{{img:web-app/carworx-app-icon.svg}}" width="120" height="120" alt="CarworX app icon: the white Turbine mark on an ink rounded square"><figcaption>Home screen</figcaption></figure>
-          <figure><img class="appicon" src="{{img:web-app/carworx-app-icon.svg}}" width="60" height="60" alt=""><figcaption>60 px</figcaption></figure>
-          <figure><span style="display:block;width:32px;margin:0 auto 8px;color:var(--ink)">{{logo:marksm}}</span><figcaption>Small mark, 32 px</figcaption></figure>
-        </div>
-      </div>
-    </div>
-
-    <h3 style="margin-top:40px">Tone of voice</h3>
-    <p style="color:#dfe3e8;max-width:70ch">Plain, honest and calm, in South African English. Say what happens next and what it costs. Never promise what we can't check.</p>
-    <div class="tone" style="color:var(--ink)">
-      <div><span class="say">Say:</span> "Request sent. Gleamline has until 11:40 to reply. You haven't paid anything."<br><span class="no">Not:</span> "Booked instantly!"</div>
-      <div><span class="say">Say:</span> "No wash businesses within 25 km yet. Tell us what you need and we'll let you know."<br><span class="no">Not:</span> "Hundreds of providers near you."</div>
-      <div><span class="say">Say:</span> "No results here doesn't mean you have no fines. Check the official channels."<br><span class="no">Not:</span> "You're all clear!"</div>
-    </div>
-
-    <h3 style="margin-top:40px">In use</h3>
-    <div class="apps">
-      <figure><img src="{{img:vehicle/workshop-sign-3x1.png}}" alt="Workshop sign: the CarworX lockup in white on an ink board" ><figcaption style="color:#c9d1da">Workshop sign, 3:1</figcaption></figure>
-      <figure><img src="{{img:business/business-card-front-300dpi.png}}" alt="Business card front with the CarworX mark" ><figcaption style="color:#c9d1da">Business card</figcaption></figure>
-      <figure><img src="{{img:business/invoice-quote-header.svg}}" alt="Invoice and quote header with the CarworX lockup" ><figcaption style="color:#c9d1da">Quote and invoice header</figcaption></figure>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 3. PHONE SCREENS ================= -->
-<section class="sec" id="screens" aria-labelledby="screens-h">
-  <div class="wrap">
-    <span class="kicker">Part 3 · Layouts, phone first</span>
-    <h2 id="screens-h">Eight phone screens, with the moments that matter</h2>
-    <p class="lead">Each group shows the main screen on a 360-pixel-wide phone, then the other states it must handle: waiting, expiring, failing, empty and paused. All businesses, people, prices and ratings are fictional. <span class="badge on-paper">Concept, not final</span></p>
-
-    <!-- 3.1 HOME -->
-    <div class="group" id="s-home">
-      <div class="group-head"><h3>1. Home: five equal shortcuts</h3><p>The five services get equal space and all five are visible on a small phone without scrolling (the orange dashed line marks the bottom of a 360 × 640 screen). Below them, we say honestly how many businesses there are.</p></div>
-      <figure class="phone" aria-label="Home screen mockup">
-        <div class="scr">
-          <div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div>
-          <div class="ab">{{logo:lockup}}<span class="sp"></span>{{icon:bell}}{{icon:user}}</div>
-          <div class="bd">
-            <div class="row small"><span class="chip">{{icon:pin}} Near Ferndale, Randburg</span><span class="muted xs">Change</span></div>
-            <div class="search">{{icon:search}} Search a service or business</div>
-            <div>
-              <p class="h">What does your car need?</p>
-              <div class="shortcuts" data-shortcuts>
-                <div class="sc"><span class="sq">{{icon:wash}}</span><span><b>Wash &amp; Detailing</b><small>At a wash bay or at your door</small></span>{{icon:chev}}</div>
-                <div class="sc"><span class="sq">{{icon:repair}}</span><span><b>Repairs &amp; Maintenance</b><small>Services, brakes, diagnostics</small></span>{{icon:chev}}</div>
-                <div class="sc"><span class="sq">{{icon:glass}}</span><span><b>Glass Repair &amp; Replacement</b><small>Chips, cracks, windscreens</small></span>{{icon:chev}}</div>
-                <div class="sc"><span class="sq">{{icon:tyre}}</span><span><b>Tyres &amp; Wheel Alignment</b><small>Fitting, balancing, alignment</small></span>{{icon:chev}}</div>
-                <div class="sc"><span class="sq">{{icon:fines}}</span><span><b>Fines &amp; Vehicle Admin</b><small>Official links and admin help</small></span>{{icon:chev}}</div>
-              </div>
-            </div>
-            <div class="note">{{icon:info}}<span><b>CarworX is new.</b> We only show businesses that have applied and been checked, so there may be few near you. Don't see what you need? <u>Tell us</u> and we'll look for one.</span></div>
-            <div class="card"><p class="h2">How it works</p><p class="small muted">1. Request a time · 2. The business accepts · 3. Pay within 15 minutes · 4. Done. Repairs start with a quote you approve.</p></div>
-          </div>
-          <div class="tabs"><span class="on">{{icon:home}}Home</span><span>{{icon:search}}Search</span><span>{{icon:cal}}Bookings</span><span>{{icon:user}}Account</span></div>
-          <div class="fold" aria-hidden="true"><span>Bottom of a 360 × 640 screen</span></div>
-        </div>
-        <figcaption>Home, first open. Fictional location.</figcaption>
-      </figure>
-      <div class="states">
-        <div class="state"><header>State <span class="n">· Limited supply</span></header><div class="scr"><div class="bd">
-          <div class="note w">{{icon:alert}}<span><b>Few businesses near Polokwane yet.</b> 1 wash business and 0 tyre businesses within 25 km.</span></div>
-          <div class="card"><p class="h2">Ask for a business here</p><p class="small muted">Tell us the service and rough area. We use it only to recruit businesses and to let you know.</p><span class="btn btn-s">Tell us what you need</span></div>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· No location yet</span></header><div class="scr"><div class="bd">
-          <p class="h2">Where's the car?</p>
-          <div class="search">{{icon:pin}} Suburb, town or postcode</div>
-          <p class="xs muted">You can browse with a suburb. We don't need your exact address until you book a business that comes to you.</p>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Error</span></header><div class="scr"><div class="bd">
-          <div class="note e">{{icon:alert}}<span><b>We couldn't load this page.</b> Check your signal and try again. Nothing you entered was lost.</span></div>
-          <span class="btn btn-s">{{icon:refresh}} Try again</span>
-        </div></div></div>
-      </div>
-    </div>
-
-    <!-- 3.2 SEARCH -->
-    <div class="group" id="s-search">
-      <div class="group-head"><h3>2. Search results: list and map</h3><p>The list always works; the map is optional. Distances are straight-line and say so. A business that comes to you shows no distance, because that would reveal where it is based. If nothing is near, we say so and offer to widen the search or record the need. Searches never widen silently.</p></div>
-      <figure class="phone" aria-label="Search results list mockup">
-        <div class="scr">
-          <div class="sb"><span>09:42</span><span class="c">Concept, not final</span><span>4G</span></div>
-          <div class="ab">{{icon:back}}<span class="t">Wash &amp; Detailing</span>{{icon:search}}</div>
-          <div class="bd">
-            <div class="seg"><span class="on">{{icon:list}} List</span><span>{{icon:map}} Map</span></div>
-            <div class="chips"><span class="chip on">Within 25 km</span><span class="chip">At my place</span><span class="chip">At a wash bay</span><span class="chip">Can pay online</span></div>
-            <p class="xs muted">5 businesses near Ferndale, Randburg · nearest first · straight-line distance</p>
-            <div class="card">
-              <div class="between"><span class="h2">Gleamline Wash Bay</span><span class="demo">DEMO</span></div>
-              <div class="row xs muted">{{icon:bay}} Wash bay · 3.2 km straight-line · <span class="stars">{{icon:star}}4.6</span> (38, demo)</div>
-              <div class="chips"><span class="lbl">{{icon:shield}}Operator checked</span><span class="lbl">{{icon:shield}}Visited by CarworX</span></div>
-              <div class="between small"><span>From <span class="price">R120</span></span><span class="muted">Next free: today 14:00</span></div>
-            </div>
-            <div class="card">
-              <div class="between"><span class="h2">Bubbleworks Mobile Wash</span><span class="demo">DEMO</span></div>
-              <div class="row xs muted">{{icon:car}} Comes to you · your suburb is in their area (approx.)</div>
-              <div class="chips"><span class="lbl">{{icon:shield}}Operator checked</span><span class="lbl n">Payments enabled</span></div>
-              <div class="between small"><span>From <span class="price">R180</span> + travel <span class="price">R30–R60</span></span></div>
-            </div>
-            <div class="card">
-              <div class="between"><span class="h2">Spotless Valet Co.</span><span class="demo">DEMO</span></div>
-              <div class="row xs muted">{{icon:bay}} Wash bay · 7.9 km straight-line · New, no reviews yet</div>
-              <div class="chips"><span class="lbl w">Enquiries only for now</span></div>
-            </div>
-          </div>
-          <div class="tabs"><span>{{icon:home}}Home</span><span class="on">{{icon:search}}Search</span><span>{{icon:cal}}Bookings</span><span>{{icon:user}}Account</span></div>
-        </div>
-        <figcaption>List first. Labels say exactly what was checked.</figcaption>
-      </figure>
-      <div class="states">
-        <div class="state"><header>View <span class="n">· Map (optional)</span></header><div class="scr"><div class="bd">
-          <div class="mapbox">
-            <svg viewBox="0 0 320 230" role="img" aria-label="Concept map: two wash bays as numbered pins, a shaded approximate service area for the mobile business, and your location">
-              <rect width="320" height="230" fill="#e9e3d7"/>
-              <path d="M0 70 C80 60 140 90 320 64" stroke="#fff" stroke-width="10" fill="none"/>
-              <path d="M110 0 C120 80 90 150 130 230" stroke="#fff" stroke-width="8" fill="none"/>
-              <path d="M0 170 L320 150" stroke="#fff" stroke-width="6" fill="none"/>
-              <path d="M220 0 L250 230" stroke="#fff" stroke-width="5" fill="none"/>
-              <rect x="150" y="90" width="52" height="40" rx="6" fill="#d6e2cc"/>
-              <circle cx="168" cy="118" r="70" fill="#8a97a6" fill-opacity=".22" stroke="#5b6470" stroke-dasharray="5 4"/>
-              <text x="190" y="62" font-size="11" font-family="system-ui" fill="#0d0f12">Bubbleworks: area, approx.</text>
-              <circle cx="132" cy="120" r="7" fill="#ff3b0a" stroke="#0d0f12" stroke-width="2"/>
-              <g font-family="system-ui" font-weight="700" font-size="12" text-anchor="middle">
-                <circle cx="96" cy="88" r="12" fill="#0d0f12"/><text x="96" y="92" fill="#fff">1</text>
-                <circle cx="252" cy="176" r="12" fill="#0d0f12"/><text x="252" y="180" fill="#fff">3</text>
-              </g>
-              <text x="116" y="140" font-size="11" font-family="system-ui" fill="#0d0f12">You</text>
-            </svg>
-          </div>
-          <p class="xs muted">Pins show businesses with a public address. Mobile businesses show only a rough shaded area, never their base.</p>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Nothing nearby</span></header><div class="scr"><div class="bd">
-          <p class="h2">No tyre businesses within 25 km yet</p>
-          <p class="small muted">CarworX is new near Mahikeng. You can look further, or tell us what you need.</p>
-          <span class="btn btn-s">Look within 50 km</span>
-          <div class="card"><p class="small"><b>Ask for a business here</b></p>
-            <div class="input">Tyres &amp; Wheel Alignment</div>
-            <div class="check"><span class="box on">{{icon:check}}</span><span>Email me when one joins. Used only for this.</span></div>
-            <span class="btn btn-p">Send</span></div>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Search widened by you</span></header><div class="scr"><div class="bd">
-          <div class="note">{{icon:info}}<span>Now showing businesses up to <b>50 km</b> away, because you widened the search. <u>Back to 25 km</u></span></div>
-          <div class="card"><div class="between"><span class="h2">Kgosi Tyre &amp; Align</span><span class="demo">DEMO</span></div><p class="xs muted">38.4 km straight-line · Enquiries only for now</p></div>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Could not load</span></header><div class="scr"><div class="bd">
-          <div class="note e">{{icon:alert}}<span><b>Results didn't load.</b> Your filters are kept. Try again in a moment.</span></div>
-          <span class="btn btn-s">{{icon:refresh}} Try again</span>
-        </div></div></div>
-      </div>
-    </div>
-
-    <!-- 3.3 LISTING -->
-    <div class="group" id="s-listing">
-      <div class="group-head"><h3>3. Business listing</h3><p>Prices, times and what CarworX checked, with how and when. A request is not an instant booking: the business must accept it first. A paused business can't take new bookings.</p></div>
-      <figure class="phone" aria-label="Business listing mockup">
-        <div class="scr">
-          <div class="sb"><span>09:44</span><span class="c">Concept, not final</span><span>4G</span></div>
-          <div class="ab">{{icon:back}}<span class="t">Bubbleworks Mobile Wash</span></div>
-          <div class="bd">
-            <div class="thumb">Photo placeholder · business's own photos go here</div>
-            <div class="between"><span class="h">Bubbleworks Mobile Wash</span><span class="demo">DEMO</span></div>
-            <div class="row small muted">{{icon:car}} Comes to you · Randburg and surrounds (approx.) · <span class="stars">{{icon:star}}4.8</span> (52, demo)</div>
-            <div class="card">
-              <p class="h2">What CarworX checked</p>
-              <div class="row small">{{icon:shield}}<span><b>Operator/contact checked</b>: video call, 12 Oct 2026</span></div>
-              <div class="row small">{{icon:shield}}<span><b>Payments enabled</b>: can take online payment</span></div>
-              <p class="xs muted">Not visited: mobile businesses have no premises to visit.</p>
-            </div>
-            <div class="card">
-              <p class="h2">Services</p>
-              <div class="lines">
-                <div><span>Exterior wash · 45 min</span><span class="price">R180</span></div>
-                <div><span>Full wash, in and out · 1 h 30</span><span class="price">R280</span></div>
-                <div><span>Engine bay clean · 40 min</span><span class="price">R150</span></div>
-              </div>
-              <p class="xs muted">Travel: R30 up to 10 km, R50 for 10–20 km, R60 for 20–30 km, measured in a straight line from their area, not driving distance.</p>
-            </div>
-            <span class="btn btn-p">Request a time</span>
-            <span class="btn btn-s">Ask a question</span>
-            <p class="xs muted">Bubbleworks has 2 business hours to accept a request. You pay only after they accept.</p>
-          </div>
-        </div>
-        <figcaption>A mobile business: its base is never shown.</figcaption>
-      </figure>
-      <div class="states">
-        <div class="state"><header>State <span class="n">· Business paused</span></header><div class="scr"><div class="bd">
-          <div class="note e">{{icon:alert}}<span><b>Not taking new bookings.</b> CarworX has paused this business while we look into a report. If you have a booking with them, we'll contact you.</span></div>
-          <span class="btn btn-s">See similar businesses</span>
-        </div></div></div>
-        <div class="state"><header>Variant <span class="n">· Wash bay with an address</span></header><div class="scr"><div class="bd">
-          <div class="between"><span class="h2">Gleamline Wash Bay</span><span class="demo">DEMO</span></div>
-          <div class="row small muted">{{icon:pin}} 14 Example Rd, Ferndale (shown with permission)</div>
-          <div class="chips"><span class="lbl">{{icon:shield}}Operator checked</span><span class="lbl">{{icon:shield}}Business registration checked</span><span class="lbl">{{icon:shield}}Visited by CarworX</span></div>
-          <p class="xs muted">Open Mon–Sat 08:00–17:00</p>
-        </div></div></div>
-        <div class="state"><header>Variant <span class="n">· Enquiries only</span></header><div class="scr"><div class="bd">
-          <div class="note">{{icon:info}}<span>Spotless Valet Co. isn't taking online bookings yet. Send a question and they'll reply by email.</span></div>
-          <span class="btn btn-p">Ask a question</span>
-        </div></div></div>
-      </div>
-    </div>
-
-    <!-- 3.4 BOOKING + QUOTE -->
-    <div class="group" id="s-quote">
-      <div class="group-head"><h3>4. Booking and quote approval</h3><p>For repairs the workshop sends a written quote with an expiry date. The customer approves that exact version. A revised quote replaces the old one, which can no longer be paid. Extra work found later needs its own change quote.</p></div>
-      <figure class="phone" aria-label="Quote approval mockup">
-        <div class="scr">
-          <div class="sb"><span>10:20</span><span class="c">Concept, not final</span><span>4G</span></div>
-          <div class="ab">{{icon:back}}<span class="t">Your quote</span></div>
-          <div class="bd">
-            <div class="between"><span class="h2">Ridgeview Auto Care</span><span class="demo">DEMO</span></div>
-            <div class="chips"><span class="lbl n">Quote version 2</span><span class="lbl w">{{icon:clock}}Expires Wed 4 Nov, 10:15</span></div>
-            <p class="xs muted">VW Polo 2017 · front brakes squealing · after the R350 inspection on Wed 28 Oct</p>
-            <div class="card lines">
-              <div><span>Front brake pads (parts)</span><span class="price">R1 240</span></div>
-              <div><span>Skim front discs</span><span class="price">R320</span></div>
-              <div><span>Labour, 1.5 hours</span><span class="price">R870</span></div>
-              <div><span>CarworX fee (free pilot)</span><span class="price">R0</span></div>
-              <div class="tot"><span>Total, incl. VAT</span><span class="price">R2 430</span></div>
-            </div>
-            <div class="note">{{icon:info}}<span>This replaces version 1 (<span class="strike">R2 650</span>), which can no longer be paid.</span></div>
-            <p class="small"><b>Choose a time</b></p>
-            <div class="chips"><span class="slot">Thu 08:00</span><span class="slot on">Fri 08:00</span><span class="slot off">Fri 13:00</span></div>
-            <span class="btn btn-p">Approve version 2 and pay</span>
-            <div class="btn-row"><span class="btn btn-s">Ask a question</span><span class="btn btn-s">Decline</span></div>
-            <p class="xs muted">Approving holds Friday 08:00 for 15 minutes while you pay. Work that isn't in this quote needs a new quote that you approve.</p>
-          </div>
-        </div>
-        <figcaption>Pieter's repair quote (see Journeys).</figcaption>
-      </figure>
-      <div class="states">
-        <div class="state"><header>State <span class="n">· Waiting for the business</span></header><div class="scr"><div class="bd">
-          <div class="row">{{icon:clock}}<span class="h2">Request sent to Bubbleworks</span></div>
-          <p class="small">They have until <b>11:40 today</b> to accept (2 business hours). You haven't paid anything.</p>
-          <div class="bar"><i style="width:35%"></i></div>
-          <p class="xs muted">Business hours: Mon–Sat 08:00–17:00, excluding public holidays.</p>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· No reply in time</span></header><div class="scr"><div class="bd">
-          <div class="note w">{{icon:alert}}<span><b>Bubbleworks didn't reply by 11:40.</b> Your request has lapsed. Nothing was charged.</span></div>
-          <span class="btn btn-p">See other wash businesses</span>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Quote expired</span></header><div class="scr"><div class="bd">
-          <div class="note w">{{icon:clock}}<span><b>Quote version 2 expired on Wed 4 Nov.</b> It can't be approved any more. Prices may have changed.</span></div>
-          <span class="btn btn-s">Ask Ridgeview for a new quote</span>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Change quote during work</span></header><div class="scr"><div class="bd">
-          <div class="between"><span class="h2">Change quote C1</span><span class="lbl w">Needs your OK</span></div>
-          <p class="small">The rear pads are also worn: <span class="price">R1 150</span> extra. Your paid quote (version 2, R2 430) stays exactly as it is.</p>
-          <div class="btn-row"><span class="btn btn-p">Approve and pay</span><span class="btn btn-s">Not now</span></div>
-        </div></div></div>
-        <div class="state"><header>Variant <span class="n">· Travel charge</span></header><div class="scr"><div class="bd">
-          <div class="lines">
-            <div><span>Full wash, in and out</span><span class="price">R280</span></div>
-            <div><span>Travel, 10–20 km band</span><span class="price">R50</span></div>
-          </div>
-          <p class="xs muted">The band is measured in a straight line, not by road. Bubbleworks confirmed 30 minutes of travel time for this slot.</p>
-        </div></div></div>
-      </div>
-    </div>
-
-    <!-- 3.5 CHECKOUT -->
-    <div class="group" id="s-checkout">
-      <div class="group-head"><h3>5. Checkout and what happens after</h3><p>Once the business accepts, the slot is held for 15 minutes. Payment happens on the payment partner's secure page. We confirm only when the payment partner tells us the money arrived, never just because the browser came back. In this pack nothing is charged: payments would run in test mode.</p></div>
-      <figure class="phone" aria-label="Checkout mockup">
-        <div class="scr">
-          <div class="sb"><span>10:05</span><span class="c">Concept, not final</span><span>4G</span></div>
-          <div class="ab">{{icon:back}}<span class="t">Pay to confirm</span></div>
-          <div class="bd">
-            <div class="card">
-              <div class="between"><span class="small"><b>Your slot is held</b></span><span class="timer" aria-label="14 minutes 32 seconds left">14:32</span></div>
-              <div class="bar"><i style="width:97%"></i></div>
-              <p class="xs muted">If the time runs out, the slot is released and nothing is charged.</p>
-            </div>
-            <div class="card">
-              <p class="h2">Bubbleworks Mobile Wash <span class="demo">DEMO</span></p>
-              <p class="small muted">Sat 31 Oct · 09:00–10:30 · at your address in Ferndale</p>
-              <div class="lines">
-                <div><span>Full wash, in and out</span><span class="price">R280</span></div>
-                <div><span>Travel, 10–20 km band</span><span class="price">R50</span></div>
-                <div><span>CarworX fee (free pilot)</span><span class="price">R0</span></div>
-                <div class="tot"><span>Total</span><span class="price">R330</span></div>
-              </div>
-            </div>
-            <span class="btn btn-p">{{icon:lock}} Pay R330 securely</span>
-            <p class="xs muted">You'll go to our payment partner's page to pay. The money goes to Bubbleworks. Cancellation: free up to 24 hours before (business's terms, demo).</p>
-          </div>
-        </div>
-        <figcaption>Thandi's wash (see Journeys).</figcaption>
-      </figure>
-      <div class="states">
-        <div class="state"><header>State <span class="n">· Checking payment</span></header><div class="scr"><div class="bd">
-          <div class="row"><img src="{{img:motion/carworx-loader-ink.svg}}" width="40" height="40" alt=""><span class="h2">Checking your payment…</span></div>
-          <p class="small">We're waiting for the payment partner to confirm. <b>Please don't pay again.</b> This page updates by itself.</p>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Payment failed</span></header><div class="scr"><div class="bd">
-          <div class="note e">{{icon:alert}}<span><b>The payment didn't go through.</b> Nothing was taken. Your slot is still held for <b class="price">09:12</b>.</span></div>
-          <span class="btn btn-p">Try again</span>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Hold expired</span></header><div class="scr"><div class="bd">
-          <div class="note w">{{icon:clock}}<span><b>Your 15 minutes ran out.</b> The slot was released and nothing was charged.</span></div>
-          <span class="btn btn-s">Check if Sat 09:00 is still free</span>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Paid, needs sorting out</span></header><div class="scr"><div class="bd">
-          <div class="note w">{{icon:alert}}<span><b>Your payment of R330 arrived after the hold ran out.</b> Your booking isn't confirmed yet. Choose what you'd like:</span></div>
-          <span class="btn btn-p">Rebook Sat 09:00 (still free)</span>
-          <span class="btn btn-s">Get a full refund</span>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Confirmed</span></header><div class="scr"><div class="bd">
-          <div class="note ok">{{icon:check}}<span><b>Booked and paid.</b> Bubbleworks, Sat 31 Oct, 09:00–10:30. Ref <span class="price">CX-2048</span>.</span></div>
-          <p class="xs muted">Your full address goes only to the staff member assigned to the job, and only now that it's confirmed.</p>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Cancelled and refunded</span></header><div class="scr"><div class="bd">
-          <div class="between"><span class="h2">Booking cancelled</span><span class="lbl n">Refund processing</span></div>
-          <div class="stepper"><i class="on"></i><i class="on"></i><i></i><i></i></div>
-          <p class="small">R330 back to your card: requested → <b>processing</b> → paid back. Banks can take a few working days.</p>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Problem reported</span></header><div class="scr"><div class="bd">
-          <div class="between"><span class="h2">Case CX-2048-1</span><span class="lbl w">Open</span></div>
-          <p class="small">"Interior not cleaned." We've asked Bubbleworks for their side and will reply within 1 business day.</p>
-        </div></div></div>
-      </div>
-    </div>
-
-    <!-- 3.6 PROVIDER DASHBOARD -->
-    <div class="group" id="s-dashboard">
-      <div class="group-head"><h3>6. Business dashboard</h3><p>What a business sees: requests with a reply deadline, today's jobs per bay or team, and payment status. A mobile business sees only the suburb until a booking is confirmed.</p></div>
-      <figure class="phone" aria-label="Business dashboard mockup">
-        <div class="scr">
-          <div class="sb"><span>09:58</span><span class="c">Concept, not final</span><span>4G</span></div>
-          <div class="ab">{{logo:lockup}}<span class="sp"></span><span class="small">Business</span></div>
-          <div class="bd">
-            <div class="between"><span class="h">Bubbleworks</span><span class="lbl n">Test payments</span></div>
-            <p class="small muted">Wed 28 Oct</p>
-            <p class="h2">New requests (2)</p>
-            <div class="card">
-              <div class="between"><b class="small">Full wash, in and out</b><span class="lbl w">{{icon:clock}}Reply by 11:40</span></div>
-              <p class="xs muted">Sat 31 Oct 09:00 · Ferndale (suburb only until confirmed) · R280 + R50 travel</p>
-              <p class="xs">Travel time you need for this slot: <b>30 min</b> <u>change</u></p>
-              <div class="btn-row"><span class="btn btn-p">Accept</span><span class="btn btn-s">Decline</span></div>
-            </div>
-            <div class="card">
-              <div class="between"><b class="small">Exterior wash</b><span class="lbl w">{{icon:clock}}Reply by 13:05</span></div>
-              <p class="xs muted">Thu 29 Oct 15:00 · Blairgowrie · R180 + R30 travel</p>
-            </div>
-            <p class="h2">Today</p>
-            <div class="card lines">
-              <div><span>Team A · 08:00–09:30</span><span class="lbl">Paid</span></div>
-              <div><span>Team A · 11:00–12:00</span><span class="lbl w">Waiting for payment, 12 min</span></div>
-              <div><span>Team B · 13:00–14:30</span><span class="lbl">Paid</span></div>
-            </div>
-            <div class="note">{{icon:info}}<span>1 refund processing (R180). Payouts go straight to your bank account through the payment partner.</span></div>
-          </div>
-          <div class="tabs"><span class="on">{{icon:home}}Today</span><span>{{icon:cal}}Calendar</span><span>{{icon:doc}}Quotes</span><span>{{icon:user}}Business</span></div>
-        </div>
-        <figcaption>Requests show a reply-by time.</figcaption>
-      </figure>
-      <div class="states">
-        <div class="state"><header>Screen <span class="n">· Write a quote (workshop)</span></header><div class="scr"><div class="bd">
-          <p class="h2">Quote for Pieter · VW Polo 2017</p>
-          <div class="field"><b>Line items</b><div class="input">Front brake pads (parts) · R1 240</div><div class="input">Skim front discs · R320</div><div class="input">Labour 1.5 h · R870</div></div>
-          <div class="between small"><span>Valid for</span><b>7 days</b></div>
-          <span class="btn btn-d">Send quote version 2</span>
-          <p class="xs muted">Once sent, a quote can't be edited. A revision becomes version 3 and replaces this one.</p>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Confirmed mobile job</span></header><div class="scr"><div class="bd">
-          <div class="note ok">{{icon:check}}<span><b>Confirmed and paid.</b> Address now visible to the assigned team only: 8 Demo St, Ferndale. Hidden 7 days after the job.</span></div>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Your listing is paused</span></header><div class="scr"><div class="bd">
-          <div class="note e">{{icon:alert}}<span><b>Your listing is paused</b> while we look into a customer report (case CX-2048-1). You can't take new bookings. Existing bookings: please contact support.</span></div>
-          <span class="btn btn-s">Contact support</span>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Dispute on a payment</span></header><div class="scr"><div class="bd">
-          <div class="between"><span class="h2">Card dispute · R280</span><span class="lbl e">Evidence due</span></div>
-          <p class="small">The customer's bank has queried this payment. Upload photos or messages that show the job was done.</p>
-          <span class="btn btn-s">{{icon:camera}} Add evidence</span>
-        </div></div></div>
-      </div>
-    </div>
-
-    <!-- 3.7 PROVIDER APPLICATION -->
-    <div class="group" id="s-apply">
-      <div class="group-head"><h3>7. Business application</h3><p>Businesses apply and a person at CarworX reviews them. Each label says what was checked and how. A mobile business's home base stays private: customers see only a rough area.</p></div>
-      <figure class="phone" aria-label="Business application mockup">
-        <div class="scr">
-          <div class="sb"><span>16:10</span><span class="c">Concept, not final</span><span>4G</span></div>
-          <div class="ab">{{icon:back}}<span class="t">List your business</span><span class="small">2 of 4</span></div>
-          <div class="bd">
-            <div class="stepper"><i class="on"></i><i class="on"></i><i></i><i></i></div>
-            <p class="h">Where do you work?</p>
-            <div class="seg"><span>{{icon:bay}} At my premises</span><span class="on">{{icon:car}} I go to customers</span></div>
-            <div class="field"><b>Your base (kept private)</b><div class="input">Search an address…</div></div>
-            <div class="note">{{icon:lock}}<span>Customers never see your base. They see a rough area. Repeated searches could still hint at it, so we limit them and will explain more before launch.</span></div>
-            <div class="field"><b>How far will you travel?</b><div class="chips"><span class="chip">10 km</span><span class="chip on">20 km</span><span class="chip">30 km</span></div></div>
-            <div class="field"><b>Travel charges (straight-line bands)</b><div class="input">0–10 km R30 · 10–20 km R50</div></div>
-            <div class="check"><span class="box on">{{icon:check}}</span><span>I agree that CarworX can contact me to check my details.</span></div>
-            <span class="btn btn-p">Continue</span>
-          </div>
-        </div>
-        <figcaption>Step 2 of 4: area and travel.</figcaption>
-      </figure>
-      <div class="states">
-        <div class="state"><header>State <span class="n">· Under review</span></header><div class="scr"><div class="bd">
-          <div class="row">{{icon:clock}}<span class="h2">Application received</span></div>
-          <p class="small">A person at CarworX will check it and call or video-call you. You'll get an email when your listing goes live.</p>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· We need one more thing</span></header><div class="scr"><div class="bd">
-          <div class="note w">{{icon:alert}}<span><b>Please add a photo of your signage or vehicle.</b> We use it only to check your listing, then delete it within 30 days.</span></div>
-          <span class="btn btn-s">{{icon:camera}} Add photo</span>
-        </div></div></div>
-        <div class="state"><header>State <span class="n">· Live, with labels</span></header><div class="scr"><div class="bd">
-          <div class="row small">{{icon:check}}<span><b>Operator/contact checked</b>: video call</span></div>
-          <div class="row small">{{icon:check}}<span><b>Business registration checked</b>: where relevant</span></div>
-          <div class="row small muted">{{icon:clock}}<span><b>Visited by CarworX</b>: not yet</span></div>
-          <div class="row small muted">{{icon:lock}}<span><b>Payments enabled</b>: later, after legal and payment checks</span></div>
-          <p class="xs muted">Labels can't be bought.</p>
-        </div></div></div>
-      </div>
-    </div>
-
-    <!-- 3.8 FINES -->
-    <div class="group" id="s-fines">
-      <div class="group-head"><h3>8. Fines guidance</h3><p>At launch CarworX doesn't look up fines. It explains the options and links to official channels, clearly marked as leaving CarworX. It never asks for an ID number, and never says "no fines" because a search found nothing.</p></div>
-      <figure class="phone" aria-label="Fines guidance mockup">
-        <div class="scr">
-          <div class="sb"><span>12:30</span><span class="c">Concept, not final</span><span>4G</span></div>
-          <div class="ab">{{icon:back}}<span class="t">Fines &amp; Vehicle Admin</span></div>
-          <div class="bd">
-            <p class="h">Got a traffic fine? Here's what to do.</p>
-            <div class="note">{{icon:info}}<span>CarworX doesn't look up fines yet. These official channels can. <b>We never ask for your ID number.</b></span></div>
-            <div class="card">
-              <p class="h2">Check and pay</p>
-              <div class="between small"><span>National fines channel</span><span class="row muted xs">Official {{icon:ext}}</span></div>
-              <div class="between small"><span>Your municipality's traffic department</span><span class="row muted xs">Official {{icon:ext}}</span></div>
-              <p class="xs muted">Links open outside CarworX. Official sources are confirmed before launch.</p>
-            </div>
-            <div class="note w">{{icon:alert}}<span><b>"No results" doesn't mean "no fines".</b> Not every fine shows up everywhere.</span></div>
-            <div class="card"><p class="h2">Guides</p>
-              <div class="between small"><span>Paying, disputing or asking for more time</span>{{icon:chev}}</div>
-              <div class="between small"><span>Renewing your licence disc</span>{{icon:chev}}</div>
-            </div>
-            <div class="card"><p class="h2">Admin help near you</p><p class="small muted">Listed businesses that help with licence renewals and roadworthy bookings.</p></div>
-            <p class="xs muted">Towing: shown as a referral only. CarworX doesn't dispatch tow trucks.</p>
-          </div>
-          <div class="tabs"><span>{{icon:home}}Home</span><span class="on">{{icon:search}}Search</span><span>{{icon:cal}}Bookings</span><span>{{icon:user}}Account</span></div>
-        </div>
-        <figcaption>Guidance and official referrals only.</figcaption>
-      </figure>
-      <div class="states">
-        <div class="state"><header>State <span class="n">· Leaving CarworX</span></header><div class="scr"><div class="bd">
-          <p class="h2">You're going to an official site</p>
-          <p class="small">CarworX doesn't run this site and can't see what you enter there.</p>
-          <div class="btn-row"><span class="btn btn-p">Continue {{icon:ext}}</span><span class="btn btn-s">Stay</span></div>
-        </div></div></div>
-        <div class="state"><header>Later <span class="n">· Built-in lookup (not planned yet)</span></header><div class="scr"><div class="bd">
-          <div class="note">{{icon:lock}}<span>A built-in fines lookup needs a partner, legal checks and the owner's go-ahead. It's not part of the first versions.</span></div>
-        </div></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 4. DESKTOP ================= -->
-<section class="sec" id="desktop" aria-labelledby="desktop-h">
-  <div class="wrap">
-    <span class="kicker">Part 3 continued · Larger screens</span>
-    <h2 id="desktop-h">Desktop: home and search</h2>
-    <p class="lead">The same five shortcuts in one equal row, and search with filters, list and an optional map side by side. These frames scale down to fit your screen; the static exports show them full size. <span class="badge on-paper">Concept, not final</span></p>
-
-    <h3 style="margin-top:28px">Home</h3>
-    <div class="desk" id="d-home"><figure class="browser" style="margin:0" aria-label="Desktop home page mockup">
-      <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">carworx.app · concept, not final</span></div>
-      <div class="dk">
-        <div class="nav">{{logo:lockup}}<div class="links"><span>Services</span><span>Fines &amp; admin</span><span>For businesses</span><span>How it works</span></div><div class="acct"><span class="pill">Sign in</span><span class="pill p">List your business</span></div></div>
-        <div class="hero">
-          <h3>Car care you can find, book and pay for.</h3>
-          <p>Wash bays, mobile washers, workshops, glass and tyre fitters across South Africa. Every business is checked by a person, and every label says how.</p>
-          <div class="sbar"><div>{{icon:search}} What does your car need?</div><div>{{icon:pin}} Ferndale, Randburg</div><span class="btn go">Search</span></div>
-        </div>
-        <div class="five5">
-          <div><span class="sq">{{icon:wash}}</span><b>Wash &amp; Detailing</b><small>At a wash bay or at your door</small></div>
-          <div><span class="sq">{{icon:repair}}</span><b>Repairs &amp; Maintenance</b><small>Services, brakes, diagnostics</small></div>
-          <div><span class="sq">{{icon:glass}}</span><b>Glass Repair &amp; Replacement</b><small>Chips, cracks, windscreens</small></div>
-          <div><span class="sq">{{icon:tyre}}</span><b>Tyres &amp; Wheel Alignment</b><small>Fitting, balancing, alignment</small></div>
-          <div><span class="sq">{{icon:fines}}</span><b>Fines &amp; Vehicle Admin</b><small>Official links and admin help</small></div>
-        </div>
-        <div class="band">
-          <div><h4>How it works</h4><p>No instant promises: the business confirms first, then you pay.</p></div>
-          <div><span class="num">1</span><b>Request a time</b><p>Or ask for a quote for repairs.</p></div>
-          <div><span class="num">2</span><b>The business accepts</b><p>Within 2 business hours.</p></div>
-          <div><span class="num">3</span><b>Pay within 15 minutes</b><p>On a secure payment page. CarworX fee: R0 in the pilot.</p></div>
-        </div>
-        <div class="honest">{{icon:info}}<p><b>We're new, and we'd rather be honest.</b> We show only businesses that applied and were checked. If there's nobody near you yet, tell us what you need and we'll go and find someone.</p><span class="btn btn-s">Ask for a business here</span></div>
-        <div class="foot"><span>CarworX · concept, not final · fictional content</span><span>Privacy · Terms · Contact</span></div>
-      </div>
-    </figure></div>
-
-    <h3 style="margin-top:40px">Search</h3>
-    <div class="desk" id="d-search"><figure class="browser" style="margin:0" aria-label="Desktop search results mockup">
-      <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">carworx.app/wash-detailing · concept, not final</span></div>
-      <div class="dk">
-        <div class="nav">{{logo:lockup}}<div class="links"><span>Services</span><span>Fines &amp; admin</span><span>For businesses</span><span>How it works</span></div><div class="acct"><span class="pill">Sign in</span></div></div>
-        <div class="crumbs"><h3>Wash &amp; Detailing near Ferndale, Randburg</h3><span class="muted">5 businesses · nearest first · straight-line distance</span></div>
-        <div class="srch">
-          <div class="filters">
-            <b>Distance</b>
-            <span class="opt"><i class="r"></i>5 km</span><span class="opt"><i class="r"></i>10 km</span><span class="opt"><i class="r on"></i>25 km</span><span class="opt"><i class="r"></i>50 km</span>
-            <b>Where</b>
-            <span class="opt"><i class="on"></i>At my place</span><span class="opt"><i class="on"></i>At a wash bay</span>
-            <b>Booking</b>
-            <span class="opt"><i></i>Can pay online</span><span class="opt"><i></i>Enquiries only</span>
-            <p class="muted" style="margin:0;font-size:.85em">Search never widens by itself. If you change the distance, we show it.</p>
-          </div>
-          <div class="res">
-            <div class="rc"><div class="between"><h5>Gleamline Wash Bay</h5><span class="price">from R120</span></div><span class="muted">Wash bay · 3.2 km straight-line · ★ 4.6 (38, demo)</span><div><span class="lbl">{{icon:shield}}Operator checked</span> <span class="lbl">{{icon:shield}}Visited by CarworX</span></div><span class="muted">Next free: today 14:00</span></div>
-            <div class="rc"><div class="between"><h5>Bubbleworks Mobile Wash</h5><span class="price">from R180</span></div><span class="muted">Comes to you · your suburb is in their area (approx.) · + travel R30–R60</span><div><span class="lbl">{{icon:shield}}Operator checked</span> <span class="lbl n">Payments enabled</span></div></div>
-            <div class="rc"><div class="between"><h5>Spotless Valet Co.</h5><span class="price">from R150</span></div><span class="muted">Wash bay · 7.9 km straight-line · new, no reviews yet</span><div><span class="lbl n">Enquiries only for now</span></div></div>
-            <div class="rc"><div class="between"><h5>Shine Point Detailing</h5><span class="price">from R250</span></div><span class="muted">Wash bay · 11.4 km straight-line · ★ 4.3 (12, demo)</span><div><span class="lbl">{{icon:shield}}Operator checked</span></div></div>
-          </div>
-          <div class="mapcol">
-            <svg viewBox="0 0 320 420" role="img" aria-label="Concept map with numbered pins for wash bays and a shaded approximate area for the mobile business">
-              <rect width="320" height="420" fill="#e9e3d7"/>
-              <path d="M0 120 C90 100 160 150 320 110" stroke="#fff" stroke-width="12" fill="none"/>
-              <path d="M120 0 C130 140 90 260 140 420" stroke="#fff" stroke-width="9" fill="none"/>
-              <path d="M0 300 L320 270" stroke="#fff" stroke-width="7" fill="none"/>
-              <path d="M240 0 L270 420" stroke="#fff" stroke-width="6" fill="none"/>
-              <rect x="160" y="160" width="60" height="50" rx="6" fill="#d6e2cc"/>
-              <circle cx="176" cy="200" r="96" fill="#8a97a6" fill-opacity=".22" stroke="#5b6470" stroke-dasharray="6 5"/>
-              <circle cx="146" cy="206" r="8" fill="#ff3b0a" stroke="#0d0f12" stroke-width="2"/>
-              <g font-family="system-ui" font-weight="700" font-size="13" text-anchor="middle">
-                <circle cx="100" cy="150" r="13" fill="#0d0f12"/><text x="100" y="155" fill="#fff">1</text>
-                <circle cx="268" cy="330" r="13" fill="#0d0f12"/><text x="268" y="335" fill="#fff">3</text>
-                <circle cx="44" cy="368" r="13" fill="#0d0f12"/><text x="44" y="373" fill="#fff">4</text>
-              </g>
-              <text x="12" y="410" font-size="12" font-family="system-ui" fill="#0d0f12">Map optional · shaded = approximate area</text>
-            </svg>
-          </div>
-        </div>
-        <div class="foot"><span>CarworX · concept, not final · fictional content</span><span>Privacy · Terms · Contact</span></div>
-      </div>
-    </figure></div>
-  </div>
-</section>
-
-<!-- ================= 5. JOURNEYS ================= -->
-<section class="sec" id="journeys" aria-labelledby="journeys-h">
-  <div class="wrap">
-    <span class="kicker">Part 4 · Walkthroughs</span>
-    <h2 id="journeys-h">Two people, two jobs</h2>
-    <p class="lead">These show how bookings and quotes would work once payments are switched on (Phase 4). The first public site launches with search, listings and enquiries only. Thandi and Pieter are fictional.</p>
-
-    <div id="j-thandi"><h3 style="margin-top:32px">Thandi books a wash</h3>
-    <div class="journey">
-      <div class="persona">
-        <div class="who"><span class="av" aria-hidden="true">T</span><div><b>Thandi</b><br><span style="color:#c9d1da">Ferndale, Randburg</span></div></div>
-        <p>Works from home on Fridays. Wants the car washed at home on Saturday morning without driving anywhere.</p>
-        <p style="margin:0"><b>Pays:</b> <span style="font-family:var(--mono)">R330</span> (R280 wash + R50 travel + R0 CarworX fee)</p>
-      </div>
-      <div>
-        <ol class="steps">
-          <li><div><span class="actor c">Thandi</span><b>Taps Wash &amp; Detailing on the home page.</b><p>All five services are equal and visible straight away. <a href="#s-home">Home screen</a></p></div></li>
-          <li><div><span class="actor c">Thandi</span><b>Filters to "At my place".</b><p>Bubbleworks Mobile Wash covers her suburb (approximately). No distance is shown, so their base stays private. Travel is R30–R60 by straight-line band. <a href="#s-search">Search results</a></p></div></li>
-          <li><div><span class="actor c">Thandi</span><b>Reads the listing and requests Sat 09:00.</b><p>She sees what CarworX checked and the prices. Bubbleworks has until 11:40 to reply; she hasn't paid anything. <a href="#s-listing">Listing</a> · <a href="#s-quote">Waiting state</a></p></div></li>
-          <li><div><span class="actor p">Bubbleworks</span><b>Accepts and confirms 30 minutes of travel time.</b><p>They see "Ferndale", not her address. Accepting puts a 15-minute hold on the slot. <a href="#s-dashboard">Dashboard</a></p></div></li>
-          <li><div><span class="actor c">Thandi</span><b>Pays R330 on the payment partner's page.</b><p>The CarworX fee is R0 in the pilot. The money goes to Bubbleworks. <a href="#s-checkout">Checkout</a></p></div></li>
-          <li><div><span class="actor x">CarworX</span><b>Confirms only when the payment partner confirms.</b><p>"Checking your payment… please don't pay again." Then: booked, ref CX-2048. Only now does the assigned team see her full address.</p></div></li>
-          <li><div><span class="actor c">Thandi</span><b>Gets her wash, then leaves a review.</b><p>Bubbleworks' view of her address is hidden 7 days after the job.</p></div></li>
-        </ol>
-        <div class="whatif">
-          <h4>What if…</h4>
-          <ul>
-            <li><b>Bubbleworks doesn't reply by 11:40?</b> The request lapses, nothing is charged, and she's shown other businesses.</li>
-            <li><b>Her card fails?</b> Nothing is taken and the slot stays held until the 15 minutes run out.</li>
-            <li><b>The 15 minutes run out?</b> The slot is released. If her money arrives late anyway, she chooses rebook or a full refund. It's never confirmed silently.</li>
-            <li><b>She cancels, or the wash goes wrong?</b> Refund under the business's terms, or a reported problem with a case number.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    </div>
-
-    <div id="j-pieter"><h3 style="margin-top:48px">Pieter gets a repair quote</h3>
-    <div class="journey">
-      <div class="persona">
-        <div class="who"><span class="av" aria-hidden="true">P</span><div><b>Pieter</b><br><span style="color:#c9d1da">Bellville, Cape Town</span></div></div>
-        <p>His 2017 VW Polo's front brakes are squealing. He wants a clear price before any work starts.</p>
-        <p style="margin:0"><b>Pays:</b> <span style="font-family:var(--mono)">R350</span> inspection, then <span style="font-family:var(--mono)">R2 430</span> for quote version 2</p>
-      </div>
-      <div>
-        <ol class="steps">
-          <li><div><span class="actor c">Pieter</span><b>Taps Repairs &amp; Maintenance and finds Ridgeview Auto Care.</b><p>A workshop with an address, checked and visited by CarworX. <a href="#s-search">Search</a> · <a href="#s-listing">Listing</a></p></div></li>
-          <li><div><span class="actor c">Pieter</span><b>Books a fixed-price inspection for R350.</b><p>Same steps as Thandi: request, the workshop accepts, a 15-minute hold, then he pays. <a href="#s-checkout">Checkout</a></p></div></li>
-          <li><div><span class="actor p">Ridgeview</span><b>Inspects the car and sends quote version 1: R2 650.</b><p>A written quote with a visible expiry, 7 days by default. Once sent, it can't be edited. <a href="#s-dashboard">Write a quote</a></p></div></li>
-          <li><div><span class="actor p">Ridgeview</span><b>Revises it to version 2: R2 430.</b><p>Version 1 is replaced and can no longer be paid, so there's never any doubt which price applies.</p></div></li>
-          <li><div><span class="actor c">Pieter</span><b>Approves version 2 before it expires and picks Fri 08:00.</b><p>Approving holds the slot for 15 minutes while he pays R2 430. <a href="#s-quote">Quote approval</a></p></div></li>
-          <li><div><span class="actor p">Ridgeview</span><b>Finds the rear pads worn too and sends change quote C1: R1 150.</b><p>He approves or declines it separately. His paid quote stays exactly as it was.</p></div></li>
-          <li><div><span class="actor x">CarworX</span><b>Job done; Pieter reviews it.</b><p>If something's wrong he reports it, and a case number tracks it.</p></div></li>
-        </ol>
-        <div class="whatif">
-          <h4>What if…</h4>
-          <ul>
-            <li><b>He waits more than 7 days?</b> The quote expires and can't be approved; he asks for a new one.</li>
-            <li><b>He declines the quote?</b> He has paid only for the inspection. No other charge.</li>
-            <li><b>Ridgeview gets paused by CarworX?</b> It can't take new bookings, and CarworX contacts people with existing ones.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 6. ROADMAP ================= -->
-<section class="sec" id="roadmap" aria-labelledby="roadmap-h">
-  <div class="wrap">
-    <span class="kicker">Part 5 · Roadmap and decisions</span>
-    <h2 id="roadmap-h">What happens when, and what's still to decide</h2>
-    <p class="lead">Each phase needs the owner's go-ahead. Agreeing on the plan approves Phase 1 only, and only after this pack has been shown to the colleagues.</p>
-
-    <div class="grid2" style="margin-top:24px">
-      <div>
-        <h3>Phases</h3>
-        <div class="phases">
-          <div class="ph done"><span class="tag">0a</span><b>Technical plan</b><p>Written by Claude and checked and signed by Codex. Done.</p></div>
-          <div class="ph now"><span class="tag">0b</span><b>This pack (now)</b><p>The owner shows the colleagues and collects feedback.</p></div>
-          <div class="ph"><span class="tag">1</span><b>Foundations</b><p>A private test site with made-up data, sign-in and the design system. Needs the owner's approval of the plan.</p></div>
-          <div class="ph"><span class="tag">2</span><b>Free public site</b><p>Search, listings, business sign-ups, enquiries and fines guidance. Needs a budget, privacy and legal checks first.</p></div>
-          <div class="ph"><span class="tag">3</span><b>Bookings and quotes, test money only</b><p>Holds, quotes, travel charges, notifications, refunds and disputes tested on the private site.</p></div>
-          <div class="ph"><span class="tag">4</span><b>Real payments</b><p>Switched on one business at a time, after the payment partner, attorney and refund funding are confirmed.</p></div>
-          <div class="ph"><span class="tag">5</span><b>Grow</b><p>More businesses, and earning money only through experiments the owner approves.</p></div>
-        </div>
-      </div>
-      <div>
-        <h3>Key decisions already made</h3>
-        <div class="panel">
-          <ul>
-            <li>Drivers anywhere in South Africa; businesses with premises and mobile ones.</li>
-            <li>Five equal shortcuts across three service groups.</li>
-            <li>A free pilot: the CarworX fee is R0.</li>
-            <li>Businesses accept first; then a 15-minute hold and payment. Repairs go through a quote that is approved, then paid.</li>
-            <li>Fines: guidance and official links only, no ID numbers, until a partner and legal checks are in place.</li>
-            <li>Every business is checked by a person; labels can't be bought.</li>
-            <li>The Turbine logo is locked (the rest of the brand is still a concept).</li>
-            <li>This pack stays as local files; putting it online needs separate permission.</li>
-          </ul>
-        </div>
-        <h3 style="margin-top:24px">Ways to earn later (optional, owner approves each)</h3>
-        <div class="panel">
-          <ol>
-            <li>A commission on paid bookings.</li>
-            <li>Clearly labelled sponsorship, never on payment screens.</li>
-            <li>Scheduling and reports for fleets and small businesses.</li>
-          </ol>
-          <p style="margin:10px 0 0;font-size:15px"><b>Never:</b> selling personal data, paid trust badges, or ads in transactional emails.</p>
-        </div>
-      </div>
-    </div>
-
-    <h3 style="margin-top:40px">Decisions the business still needs to make</h3>
-    <div class="tscroll"><table class="t">
-      <thead><tr><th scope="col">Decision</th><th scope="col">Why it matters</th><th scope="col">Needed by</th></tr></thead>
-      <tbody>
-        <tr><td><b>Feedback on this pack</b></td><td>Does the idea make sense? Do the brand and screens work? Anything missing?</td><td>Now</td></tr>
-        <tr><td><b>Start building (Phase 1)?</b></td><td>Approving the plan starts the private test site only. It isn't approval for anything after that.</td><td>After colleague feedback</td></tr>
-        <tr><td><b>Production budget</b></td><td>Hosting with backups for the public site, from about US$25 a month (estimate).</td><td>Before the public launch</td></tr>
-        <tr><td><b>Information Officer</b></td><td>Required under South African privacy law (POPIA).</td><td>Before the public launch</td></tr>
-        <tr><td><b>Business type and bank account</b></td><td>The payment partner needs them, first for test payments.</td><td>Phase 3</td></tr>
-        <tr><td><b>Who pays the card fee; how refunds are funded</b></td><td>Recommended: the business pays the card fee, shown openly. Refunds and chargebacks need a funded process before real money.</td><td>Before real payments</td></tr>
-        <tr><td><b>Approaching fines partners</b></td><td>A built-in fines lookup needs a partner and the owner's permission to approach one.</td><td>Only if wanted</td></tr>
-        <tr><td><b>Unpaid reservations</b></td><td>Default is no: nothing is confirmed until it's paid.</td><td>Only if wanted</td></tr>
-      </tbody>
-    </table></div>
-  </div>
-</section>
+{{part:cover}}
+{{part:summary}}
+{{part:brand}}
+{{part:screens}}
+{{part:desktop}}
+{{part:journeys}}
+{{part:roadmap}}
 </main>
-
-<footer class="foot">
-  <div class="wrap">
-    {{logo:mark}}
-    <p><b style="color:#fff">CarworX presentation pack · concept, not final.</b> All businesses, people, addresses, prices, ratings and reference numbers are fictional. No real endorsements, no live services, no tracking. Payment and fines screens are illustrations only.</p>
-    <p>Based on <a href="../../PLAN.md">PLAN 2.1</a> (§10, §22) and decisions D-001–D-034. Brand files: <a href="../brand/README.md">design/brand</a>. Static exports: <a href="exports/">exports/</a>. Checks: <a href="QA.md">QA.md</a>.</p>
-  </div>
-</footer>
-
-<script>
-// Hero motion: start the brand's own embed when it scrolls into view; replay on request.
-(function () {
-  var f = document.getElementById('hero'), b = document.getElementById('replay');
-  if (!f) return;
-  var doc = f.getAttribute('data-srcdoc');
-  function play() { f.srcdoc = doc; }
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { play(); io.disconnect(); } }, { rootMargin: '200px' });
-    io.observe(f);
-  } else play();
-  b.addEventListener('click', play);
-})();
-</script>
+{{part:footer}}
+{{part:script}}
 </body>
 </html>

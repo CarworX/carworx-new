@@ -1,17 +1,20 @@
-// Builds planning/design/pack/index.html from src/pack.html.
-// Inlines the locked Turbine brand files (unchanged geometry), the Sora font and the hero motion,
-// so the pack opens offline from a single file. Planning artefact, not application code.
+// Builds planning/design/pack/index.html from src/pack.html and src/parts/*.html.
+// Inlines the locked Turbine brand files (unchanged geometry), the Studio fonts (OFL, vendored in src/vendor/fonts)
+// and the hero motion, so the pack opens offline from a single file. Planning artefact, not application code.
 //
 //   node planning/design/pack/src/build.mjs
 //
-// Placeholders in pack.html:
-//   {{font}}               Sora SemiBold as a base64 @font-face src
-//   {{symbols}}            hidden <svg> with brand symbols (currentColor) and UI icons
+// Placeholders:
+//   {{part:NAME}}          contents of src/parts/NAME.html (expanded first)
+//   {{font:FILE}}          data: URI of src/vendor/fonts/FILE (woff2)
+//   {{symbols}}            hidden <svg> with brand symbols (currentColor), intro geometry, UI icons
 //   {{logo:NAME}}          <svg><use href="#cx-NAME"></svg>  NAME = lockup | mark | marksm | word
 //   {{icon:NAME}}          inline UI icon
+//   {{obj:NAME}}           a soft-3D service object (symbols defined in parts/objects.html)
+//   {{ill:NAME}}           a hand-drawn line illustration (symbols defined in parts/objects.html)
 //   {{img:PATH}}           data: URI of a brand export (PATH relative to brand/exports)
 //   {{srcdoc:PATH}}        attribute-escaped HTML of a brand export, for <iframe srcdoc>
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -19,6 +22,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const pack = join(here, '..');
 const brand = join(pack, '..', 'brand');
 const exp = (p) => join(brand, 'exports', p);
+const read = (p) => readFileSync(p, 'utf8');
 
 // Brand symbols: the white exports with their single fill swapped for currentColor. Paths untouched.
 const brandSymbols = {
@@ -29,7 +33,7 @@ const brandSymbols = {
 };
 const viewBoxes = {};
 function toSymbol(id, file) {
-  const svg = readFileSync(exp(file), 'utf8');
+  const svg = read(exp(file));
   const vb = svg.match(/viewBox="([^"]+)"/)[1];
   viewBoxes[id] = vb;
   const inner = svg
@@ -40,13 +44,24 @@ function toSymbol(id, file) {
   return `<symbol id="cx-${id}" viewBox="${vb}">${inner}</symbol>`;
 }
 
+// Intro geometry, taken from the same exports: one blade (used 5× at 72°) and the seven wordmark glyphs.
+// The intro animates only between the two official arrangements, so their transforms are checked here.
+const markSvg = read(exp('core/carworx-mark-white.svg'));
+const blade = markSvg.match(/<path transform="rotate\(0\)" d="([^"]+)"/)[1];
+const glyphs = [...read(exp('core/carworx-wordmark-white.svg')).matchAll(/<path d="([^"]+)"/g)].map((m) => m[1]);
+if (glyphs.length !== 7) throw new Error('expected 7 wordmark glyphs');
+const hz = read(exp('core/carworx-lockup-horizontal-white.svg'));
+const st = read(exp('core/carworx-lockup-stacked-white.svg'));
+for (const [svg, t] of [[hz, 'translate(92,92) scale(0.92) rotate(21.9494)'], [hz, 'translate(246,142) scale(1)'], [st, 'translate(303.18,160) scale(1.6) rotate(21.9494)'], [st, 'translate(0,480) scale(1)']]) {
+  if (!svg.includes(t)) throw new Error(`lockup transform changed: ${t}`);
+}
+if (!hz.includes(blade) || glyphs.some((g) => !hz.includes(g))) throw new Error('lockup geometry does not match mark/wordmark');
+const introSymbols = `<path id="cx-blade" d="${blade}"/>`
+  + `<g id="cx-rotor">${[0, 72, 144, 216, 288].map((a) => `<use href="#cx-blade" transform="rotate(${a})"/>`).join('')}</g>`
+  + glyphs.map((d, i) => `<path id="cx-g${i}" d="${d}"/>`).join('');
+
 // UI icons (concept). 24-unit grid, 1.8 stroke.
 const icons = {
-  wash: '<path d="M12 3c3 4 6 7.2 6 10.5A6 6 0 0 1 6 13.5C6 10.2 9 7 12 3z"/><path d="M9.5 14a2.5 2.5 0 0 0 2.5 2.5"/>',
-  repair: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L3.5 17.2a1.8 1.8 0 0 0 2.5 2.5l5.8-5.8a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.3-.5-.5-2.3z"/>',
-  glass: '<path d="M3 8c6-3 12-3 18 0l-2 9H5z"/><path d="M12 8.2l-1.2 3 2.2 1.2-1.2 3"/>',
-  tyre: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v5.3M12 15.2v5.3M3.5 12h5.3M15.2 12h5.3"/>',
-  fines: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M9.5 12h6M9.5 15.5h6"/>',
   search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
   pin: '<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
   clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
@@ -68,35 +83,48 @@ const icons = {
   bay: '<path d="M3 20V9l9-5 9 5v11"/><path d="M7 20v-7h10v7"/>',
   doc: '<path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 13h6M9 17h4"/>',
   star: '<path fill="currentColor" stroke="none" d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"/>',
-  x: '<path d="M6 6l12 12M18 6L6 18"/>',
   refresh: '<path d="M19 8a7.5 7.5 0 1 0 1 6"/><path d="M19.5 3.5V8H15"/>',
-  plus: '<path d="M12 5v14M5 12h14"/>',
   camera: '<path d="M4 8h3.5L9 5.5h6L16.5 8H20v11H4z"/><circle cx="12" cy="13.5" r="3.3"/>',
+  arrow: '<path d="M4 12h15M13 6l6 6-6 6"/>',
+  play: '<path d="M8 5.5v13l11-6.5z"/>',
 };
 const iconSymbols = Object.entries(icons)
   .map(([k, v]) => `<symbol id="i-${k}" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${v}</g></symbol>`)
   .join('');
 
-const mime = { '.svg': 'image/svg+xml', '.png': 'image/png', '.gif': 'image/gif', '.ttf': 'font/ttf' };
+const mime = { '.svg': 'image/svg+xml', '.png': 'image/png', '.gif': 'image/gif', '.ttf': 'font/ttf', '.woff2': 'font/woff2' };
 const dataUri = (abs) => `data:${mime[extname(abs)]};base64,${readFileSync(abs).toString('base64')}`;
 const attr = (s) => s.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
 
+let html = read(join(here, 'pack.html'));
+for (let i = 0; i < 3; i++) html = html.replace(/\{\{part:([\w-]+)\}\}/g, (_, n) => read(join(here, 'parts', `${n}.html`)));
+
+const objectIds = new Set([...html.matchAll(/<symbol id="o-([\w-]+)"/g)].map((m) => m[1]));
+const illIds = new Set([...html.matchAll(/<symbol id="il-([\w-]+)"/g)].map((m) => m[1]));
 const symbols = Object.entries(brandSymbols).map(([id, f]) => toSymbol(id, f)).join('');
-let html = readFileSync(join(here, 'pack.html'), 'utf8');
 const used = new Set();
 html = html
-  .replace('{{font}}', () => dataUri(join(brand, 'motion', 'fonts', 'Sora-SemiBold.ttf')))
-  .replace('{{symbols}}', () => `<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">${symbols}${iconSymbols}</svg>`)
+  .replace(/\{\{font:([\w.-]+)\}\}/g, (_, f) => { const p = join(here, 'vendor', 'fonts', f); if (!existsSync(p)) throw new Error(`missing font ${f}`); return dataUri(p); })
+  .replace('{{symbols}}', () => `<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>${introSymbols}</defs>${symbols}${iconSymbols}</svg>`)
   .replace(/\{\{logo:(\w+)\}\}/g, (_, id) => `<svg class="cx cx-${id}" viewBox="${viewBoxes[id]}" aria-hidden="true" focusable="false"><use href="#cx-${id}"/></svg>`)
   .replace(/\{\{icon:(\w+)\}\}/g, (_, id) => {
     if (!icons[id]) throw new Error(`unknown icon ${id}`);
     return `<svg class="ic" aria-hidden="true" focusable="false"><use href="#i-${id}"/></svg>`;
   })
+  .replace(/\{\{obj:([\w-]+)\}\}/g, (_, id) => {
+    if (!objectIds.has(id)) throw new Error(`unknown object ${id}`);
+    return `<svg class="ko" viewBox="0 0 80 80" aria-hidden="true" focusable="false"><use href="#o-${id}"/></svg>`;
+  })
+  .replace(/\{\{ill:([\w-]+)\}\}/g, (_, id) => {
+    if (!illIds.has(id)) throw new Error(`unknown illustration ${id}`);
+    return `<svg class="ill" viewBox="0 0 120 84" aria-hidden="true" focusable="false"><use href="#il-${id}"/></svg>`;
+  })
   .replace(/\{\{img:([^}]+)\}\}/g, (_, p) => { used.add(p); return dataUri(exp(p)); })
-  .replace(/\{\{srcdoc:([^}]+)\}\}/g, (_, p) => { used.add(p); return attr(readFileSync(exp(p), 'utf8')); });
+  .replace(/\{\{srcdoc:([^}]+)\}\}/g, (_, p) => { used.add(p); return attr(read(exp(p))); });
 
 const left = html.match(/\{\{[^}]*\}\}/g);
 if (left) throw new Error(`unresolved placeholders: ${left.join(', ')}`);
 if (/(src|href)="https?:/i.test(html)) throw new Error('network reference found');
+if (/@import|url\(["']?https?:/i.test(html)) throw new Error('network reference in CSS');
 writeFileSync(join(pack, 'index.html'), html);
-console.log(`index.html ${(html.length / 1024).toFixed(0)} KB; brand files inlined: ${[...Object.values(brandSymbols), ...used].join(', ')}`);
+console.log(`index.html ${(html.length / 1024).toFixed(0)} KB; brand files inlined: ${[...Object.values(brandSymbols), 'core/carworx-lockup-stacked-white.svg', ...used].join(', ')}`);

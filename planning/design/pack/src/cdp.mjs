@@ -41,6 +41,10 @@ export async function openBrowser() {
   async function load(url, width, scale = 1, media = []) {
     await S('Emulation.setDeviceMetricsOverride', { width, height: width < 768 ? 800 : 900, deviceScaleFactor: scale, mobile: width < 768 });
     await S('Emulation.setEmulatedMedia', { features: media });
+    // Go through about:blank so a URL that differs only by its hash still triggers a full load.
+    const blank = once('Page.loadEventFired');
+    await S('Page.navigate', { url: 'about:blank' });
+    await blank;
     const loaded = once('Page.loadEventFired');
     await S('Page.navigate', { url });
     await loaded;

@@ -1,0 +1,98 @@
+<!-- ================= 5. JOURNEYS ================= -->
+<section class="sec" id="journeys" aria-labelledby="journeys-h">
+  <div class="wrap">
+    <span class="eyebrow">Part 4 · Walkthroughs</span>
+    <h2 class="h2" id="journeys-h"><span class="ln">Two people,</span><span class="ln grey">two jobs.</span></h2>
+    <p class="lede">These show how bookings and quotes would work once payments are switched on (Phase 4). The first public site launches with search, listings and enquiries only. Thandi and Pieter are fictional. As you scroll, one booking travels along the steps and changes form.</p>
+
+    <!-- Thandi -->
+    <div id="j-thandi" class="jwrap">
+      <h3 class="sub-h" style="margin-top:var(--s8)"><small>Journey 1</small>Thandi books a wash</h3>
+      <div class="journey" data-journey>
+        <div class="jside">
+          <div class="persona">
+            <div class="who"><span class="av" aria-hidden="true">T</span><div><b>Thandi</b><br><span style="color:var(--muted)">Ferndale, Randburg</span></div></div>
+            <p>Works from home on Fridays. Wants the car washed at home on Saturday morning without driving anywhere.</p>
+            <p><b>Pays:</b> <span class="mono">R330</span> (R280 wash + R50 travel + R0 CarworX fee)</p>
+          </div>
+          <div class="stagebox" aria-hidden="true">
+            <span class="lbl-now">Thandi's booking</span>
+            <div class="face face-note on" data-f="0"><div class="sticky"><p>Sat 9:00 wash, at home</p><p>Ferndale</p></div></div>
+            <div class="face face-note" data-f="1"><div class="sticky"><p>Request sent</p><p>reply by 11:40 · R0 paid</p></div></div>
+            <div class="face face-tile" data-f="2"><div class="tile"><div class="row"><span class="tick">{{icon:check}}</span><div><b>Accepted</b><small>Bubbleworks · 30 min travel</small></div></div><div class="meta"><span>Sat, 09:00</span><span>Held 15 min</span></div></div></div>
+            <div class="face face-dial" data-f="3"><div class="dial"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="12"/><circle cx="100" cy="100" r="80" fill="none" stroke="#ff3b0a" stroke-width="12" stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="15"/></svg><div class="read"><b>14:32</b><small>pay R330</small></div></div></div>
+            <div class="face face-tile" data-f="4"><div class="tile"><div class="row"><span class="tick">{{icon:check}}</span><div><b>Booked and paid</b><small>Ref CX-2048</small></div></div><div class="meta"><span>Sat, 09:00</span><span>Paid to the business</span></div></div></div>
+            <div class="face face-rcpt" data-f="5"><div class="receipt-wrap"><div class="receipt"><h4>PAID · DIRECTLY</h4><div>Bubbleworks · demo</div><hr><div class="ln2"><span>Full wash</span><span>R280</span></div><div class="ln2"><span>Travel band</span><span>R50</span></div><div class="ln2"><span>CarworX fee</span><span>R0</span></div><hr><div class="ln2 tot"><span>TOTAL</span><span>R330</span></div></div></div></div>
+            <span class="rail"><i></i></span>
+          </div>
+        </div>
+        <div>
+          <ol class="steps">
+            <li data-f="0"><span class="thumbo"><span class="k">01</span>{{icon:home}}</span><div><span class="actor c">Thandi</span><b>Taps Wash &amp; Detailing on the home page.</b><p>All five services are equal and visible straight away. <a href="#s-home">Home screen</a></p></div></li>
+            <li data-f="0"><span class="thumbo"><span class="k">02</span>{{icon:pin}}</span><div><span class="actor c">Thandi</span><b>Filters to "At my place".</b><p>Bubbleworks Mobile Wash covers her suburb (approximately). No distance is shown, so their base stays private. Travel is R30–R60 by straight-line band. <a href="#s-search">Search results</a></p></div></li>
+            <li data-f="1"><span class="thumbo"><span class="k">03</span>{{icon:doc}}</span><div><span class="actor c">Thandi</span><b>Reads the listing and requests Sat 09:00.</b><p>She sees what CarworX checked and the prices. Bubbleworks has until 11:40 to reply; she hasn't paid anything. <a href="#s-listing">Listing</a> · <a href="#s-quote">Waiting state</a></p></div></li>
+            <li data-f="2"><span class="thumbo"><span class="k">04</span>{{icon:check}}</span><div><span class="actor p">Bubbleworks</span><b>Accepts and confirms 30 minutes of travel time.</b><p>They see "Ferndale", not her address. Accepting puts a 15-minute hold on the slot. <a href="#s-dashboard">Dashboard</a></p></div></li>
+            <li data-f="3"><span class="thumbo"><span class="k">05</span>{{icon:lock}}</span><div><span class="actor c">Thandi</span><b>Pays R330 on the payment partner's page.</b><p>The CarworX fee is R0 in the pilot. The money goes to Bubbleworks. <a href="#s-checkout">Checkout</a></p></div></li>
+            <li data-f="4"><span class="thumbo"><span class="k">06</span>{{icon:shield}}</span><div><span class="actor x">CarworX</span><b>Confirms only when the payment partner confirms.</b><p>"Checking your payment… please don't pay again." Then: booked, ref CX-2048. Only now does the assigned team see her full address.</p></div></li>
+            <li data-f="5"><span class="thumbo"><span class="k">07</span>{{icon:star}}</span><div><span class="actor c">Thandi</span><b>Gets her wash, then leaves a review.</b><p>Bubbleworks' view of her address is hidden 7 days after the job.</p></div></li>
+          </ol>
+          <div class="whatif">
+            <span class="hand" aria-hidden="true">?</span>
+            <div><h4>What if…</h4>
+            <ul>
+              <li><b>Bubbleworks doesn't reply by 11:40?</b> The request lapses, nothing is charged, and she's shown other businesses.</li>
+              <li><b>Her card fails?</b> Nothing is taken and the slot stays held until the 15 minutes run out.</li>
+              <li><b>The 15 minutes run out?</b> The slot is released. If her money arrives late anyway, she chooses rebook or a full refund. It's never confirmed silently.</li>
+              <li><b>She cancels, or the wash goes wrong?</b> Refund under the business's terms, or a reported problem with a case number.</li>
+            </ul></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pieter -->
+    <div id="j-pieter" class="jwrap">
+      <h3 class="sub-h" style="margin-top:var(--s10)"><small>Journey 2</small>Pieter gets a repair quote</h3>
+      <div class="journey" data-journey>
+        <div class="jside">
+          <div class="persona">
+            <div class="who"><span class="av" aria-hidden="true">P</span><div><b>Pieter</b><br><span style="color:var(--muted)">Bellville, Cape Town</span></div></div>
+            <p>His 2017 VW Polo's front brakes are squealing. He wants a clear price before any work starts.</p>
+            <p><b>Pays:</b> <span class="mono">R350</span> inspection, then <span class="mono">R2 430</span> for quote version 2</p>
+          </div>
+          <div class="stagebox" aria-hidden="true">
+            <span class="lbl-now">Pieter's repair</span>
+            <div class="face face-note on" data-f="0"><div class="sticky"><p>Polo brakes squealing</p><p>clear price first</p></div></div>
+            <div class="face face-dial" data-f="1"><div class="dial"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="12"/><circle cx="100" cy="100" r="80" fill="none" stroke="#ff3b0a" stroke-width="12" stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="40"/></svg><div class="read"><b>R350</b><small>inspection</small></div></div></div>
+            <div class="face face-rcpt" data-f="2"><div class="receipt-wrap"><div class="receipt"><h4>QUOTE · VERSION 1</h4><div>Ridgeview · demo</div><hr><div class="ln2 tot"><span>TOTAL</span><span>R2 650</span></div><div style="color:#5b6470">Valid 7 days</div></div></div></div>
+            <div class="face face-rcpt" data-f="3"><div class="receipt-wrap"><div class="receipt"><h4>QUOTE · VERSION 2</h4><div>Replaces version 1</div><hr><div class="ln2"><span>Brake pads</span><span>1 240</span></div><div class="ln2"><span>Skim discs</span><span>320</span></div><div class="ln2"><span>Labour</span><span>870</span></div><hr><div class="ln2 tot"><span>TOTAL</span><span>R2 430</span></div></div></div></div>
+            <div class="face face-dial" data-f="4"><div class="dial"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="12"/><circle cx="100" cy="100" r="80" fill="none" stroke="#ff3b0a" stroke-width="12" stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="15"/></svg><div class="read"><b>14:32</b><small>Fri 08:00 held</small></div></div></div>
+            <div class="face face-rcpt" data-f="5"><div class="receipt-wrap"><div class="receipt"><h4>CHANGE QUOTE · C1</h4><div>Rear pads worn</div><hr><div class="ln2 tot"><span>EXTRA</span><span>R1 150</span></div><div style="color:#5b6470">Needs his OK</div></div></div></div>
+            <div class="face face-tile" data-f="6"><div class="tile"><div class="row"><span class="tick">{{icon:check}}</span><div><b>Job done</b><small>Ridgeview · Polo 2017</small></div></div><div class="meta"><span>Quote v2 paid</span><span>Review left</span></div></div></div>
+            <span class="rail"><i></i></span>
+          </div>
+        </div>
+        <div>
+          <ol class="steps">
+            <li data-f="0"><span class="thumbo"><span class="k">01</span>{{icon:search}}</span><div><span class="actor c">Pieter</span><b>Taps Repairs &amp; Maintenance and finds Ridgeview Auto Care.</b><p>A workshop with an address, checked and visited by CarworX. <a href="#s-search">Search</a> · <a href="#s-listing">Listing</a></p></div></li>
+            <li data-f="1"><span class="thumbo"><span class="k">02</span>{{icon:cal}}</span><div><span class="actor c">Pieter</span><b>Books a fixed-price inspection for R350.</b><p>Same steps as Thandi: request, the workshop accepts, a 15-minute hold, then he pays. <a href="#s-checkout">Checkout</a></p></div></li>
+            <li data-f="2"><span class="thumbo"><span class="k">03</span>{{icon:doc}}</span><div><span class="actor p">Ridgeview</span><b>Inspects the car and sends quote version 1: R2 650.</b><p>A written quote with a visible expiry, 7 days by default. Once sent, it can't be edited. <a href="#s-dashboard">Write a quote</a></p></div></li>
+            <li data-f="3"><span class="thumbo"><span class="k">04</span>{{icon:refresh}}</span><div><span class="actor p">Ridgeview</span><b>Revises it to version 2: R2 430.</b><p>Version 1 is replaced and can no longer be paid, so there's never any doubt which price applies.</p></div></li>
+            <li data-f="4"><span class="thumbo"><span class="k">05</span>{{icon:clock}}</span><div><span class="actor c">Pieter</span><b>Approves version 2 before it expires and picks Fri 08:00.</b><p>Approving holds the slot for 15 minutes while he pays R2 430. <a href="#s-quote">Quote approval</a></p></div></li>
+            <li data-f="5"><span class="thumbo"><span class="k">06</span>{{icon:alert}}</span><div><span class="actor p">Ridgeview</span><b>Finds the rear pads worn too and sends change quote C1: R1 150.</b><p>He approves or declines it separately. His paid quote stays exactly as it was.</p></div></li>
+            <li data-f="6"><span class="thumbo"><span class="k">07</span>{{icon:star}}</span><div><span class="actor x">CarworX</span><b>Job done; Pieter reviews it.</b><p>If something's wrong he reports it, and a case number tracks it.</p></div></li>
+          </ol>
+          <div class="whatif">
+            <span class="hand" aria-hidden="true">?</span>
+            <div><h4>What if…</h4>
+            <ul>
+              <li><b>He waits more than 7 days?</b> The quote expires and can't be approved; he asks for a new one.</li>
+              <li><b>He declines the quote?</b> He has paid only for the inspection. No other charge.</li>
+              <li><b>Ridgeview gets paused by CarworX?</b> It can't take new bookings, and CarworX contacts people with existing ones.</li>
+            </ul></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

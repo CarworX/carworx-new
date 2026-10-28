@@ -1,0 +1,462 @@
+<!-- ================= 3. PHONE SCREENS ================= -->
+<section class="sec" id="screens" aria-labelledby="screens-h">
+  <div class="wrap">
+    <span class="eyebrow">Part 3 · Layouts, phone first</span>
+    <h2 class="h2" id="screens-h"><span class="ln">Eight phone screens,</span><span class="ln grey">with the moments that matter.</span></h2>
+    <p class="lede">Each group shows the main screen on a 360-pixel-wide phone, then the other states it must handle: waiting, expiring, failing, empty and paused. All businesses, people, prices and ratings are fictional.</p>
+    <p style="margin-top:var(--s3)"><span class="badge"><i></i>Concept, not final</span></p>
+
+    <!-- 3.1 HOME -->
+    <div class="group" id="s-home">
+      <div class="group-head"><h3><span class="k">01</span>Home: five equal shortcuts</h3><p>The five services get equal space and all five are visible on a small phone without scrolling (the orange dashed line marks the bottom of a 360 × 640 screen). Below them, we say honestly how many businesses there are.</p></div>
+      <figure class="phone" aria-label="Home screen mockup"><div class="shell">
+        <div class="scr">
+          <div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div>
+          <div class="ab">{{logo:lockup}}<span class="sp"></span>{{icon:bell}}{{icon:user}}</div>
+          <div class="bd">
+            <div class="row small"><span class="chip">{{icon:pin}} Near Ferndale, Randburg</span><span class="muted xs">Change</span></div>
+            <div class="search">{{icon:search}} Search a service or business</div>
+            <div>
+              <p class="h">What does your car need?</p>
+              <div class="shortcuts" data-shortcuts>
+                <div class="sc"><span class="sq">{{obj:wash}}</span><span><b>Wash &amp; Detailing</b><small>At a wash bay or at your door</small></span>{{icon:chev}}</div>
+                <div class="sc"><span class="sq">{{obj:repair}}</span><span><b>Repairs &amp; Maintenance</b><small>Services, brakes, diagnostics</small></span>{{icon:chev}}</div>
+                <div class="sc"><span class="sq">{{obj:glass}}</span><span><b>Glass Repair &amp; Replacement</b><small>Chips, cracks, windscreens</small></span>{{icon:chev}}</div>
+                <div class="sc"><span class="sq">{{obj:tyre}}</span><span><b>Tyres &amp; Wheel Alignment</b><small>Fitting, balancing, alignment</small></span>{{icon:chev}}</div>
+                <div class="sc"><span class="sq">{{obj:fines}}</span><span><b>Fines &amp; Vehicle Admin</b><small>Official links and admin help</small></span>{{icon:chev}}</div>
+              </div>
+            </div>
+            <div class="note">{{icon:info}}<span><b>CarworX is new.</b> We only show businesses that have applied and been checked, so there may be few near you. Don't see what you need? <u>Tell us</u> and we'll look for one.</span></div>
+            <div class="card"><p class="h2">How it works</p><p class="small muted">1. Request a time · 2. The business accepts · 3. Pay within 15 minutes · 4. Done. Repairs start with a quote you approve.</p></div>
+          </div>
+          <div class="tabs"><span class="on">{{icon:home}}Home</span><span>{{icon:search}}Search</span><span>{{icon:cal}}Bookings</span><span>{{icon:user}}Account</span></div>
+          <div class="fold" aria-hidden="true"><span>Bottom of a 360 × 640 screen</span></div>
+        </div></div>
+        <figcaption>Home, first open. Fictional location.</figcaption>
+      </figure>
+      <div class="states">
+        <div class="state"><header>State <span class="n">· Limited supply</span></header><div class="scr"><div class="bd">
+          {{ill:few}}
+          <div class="note w">{{icon:alert}}<span><b>Few businesses near Polokwane yet.</b> 1 wash business and 0 tyre businesses within 25 km.</span></div>
+          <div class="card"><p class="h2">Ask for a business here</p><p class="small muted">Tell us the service and rough area. We use it only to recruit businesses and to let you know.</p><span class="btn btn-s">Tell us what you need</span></div>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· No location yet</span></header><div class="scr"><div class="bd">
+          <p class="h2">Where's the car?</p>
+          <div class="search">{{icon:pin}} Suburb, town or postcode</div>
+          <p class="xs muted">You can browse with a suburb. We don't need your exact address until you book a business that comes to you.</p>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Error</span></header><div class="scr"><div class="bd">
+          {{ill:error}}
+          <div class="note e">{{icon:alert}}<span><b>We couldn't load this page.</b> Check your signal and try again. Nothing you entered was lost.</span></div>
+          <span class="btn btn-s">{{icon:refresh}} Try again</span>
+        </div></div></div>
+      </div>
+    </div>
+
+    <!-- 3.2 SEARCH -->
+    <div class="group" id="s-search">
+      <div class="group-head"><h3><span class="k">02</span>Search results: list and map</h3><p>The list always works; the map is optional. Distances are straight-line and say so. A business that comes to you shows no distance, because that would reveal where it is based. If nothing is near, we say so and offer to widen the search or record the need. Searches never widen silently.</p></div>
+      <figure class="phone" aria-label="Search results list mockup"><div class="shell">
+        <div class="scr">
+          <div class="sb"><span>09:42</span><span class="c">Concept, not final</span><span>4G</span></div>
+          <div class="ab">{{icon:back}}<span class="t">Wash &amp; Detailing</span>{{icon:search}}</div>
+          <div class="bd">
+            <div class="seg"><span class="on">{{icon:list}} List</span><span>{{icon:map}} Map</span></div>
+            <div class="chips"><span class="chip on">Within 25 km</span><span class="chip">At my place</span><span class="chip">At a wash bay</span><span class="chip">Can pay online</span></div>
+            <p class="xs muted">5 businesses near Ferndale, Randburg · nearest first · straight-line distance</p>
+            <div class="card">
+              <div class="between"><span class="h2">Gleamline Wash Bay</span><span class="demo">DEMO</span></div>
+              <div class="row xs muted">{{icon:bay}}<span> Wash bay · 3.2 km straight-line · <span class="stars">{{icon:star}}4.6</span> (38, demo)</span></div>
+              <div class="chips"><span class="lbl">{{icon:shield}}Operator checked</span><span class="lbl">{{icon:shield}}Visited by CarworX</span></div>
+              <div class="between small"><span>From <span class="price">R120</span></span><span class="muted">Next free: today 14:00</span></div>
+            </div>
+            <div class="card">
+              <div class="between"><span class="h2">Bubbleworks Mobile Wash</span><span class="demo">DEMO</span></div>
+              <div class="row xs muted">{{icon:car}} Comes to you · your suburb is in their area (approx.)</div>
+              <div class="chips"><span class="lbl">{{icon:shield}}Operator checked</span><span class="lbl n">Payments enabled</span></div>
+              <div class="between small"><span>From <span class="price">R180</span> + travel <span class="price">R30–R60</span></span></div>
+            </div>
+            <div class="card">
+              <div class="between"><span class="h2">Spotless Valet Co.</span><span class="demo">DEMO</span></div>
+              <div class="row xs muted">{{icon:bay}} Wash bay · 7.9 km straight-line · New, no reviews yet</div>
+              <div class="chips"><span class="lbl w">Enquiries only for now</span></div>
+            </div>
+          </div>
+          <div class="tabs"><span>{{icon:home}}Home</span><span class="on">{{icon:search}}Search</span><span>{{icon:cal}}Bookings</span><span>{{icon:user}}Account</span></div>
+        </div></div>
+        <figcaption>List first. Labels say exactly what was checked.</figcaption>
+      </figure>
+      <div class="states">
+        <div class="state"><header>View <span class="n">· Map (optional)</span></header><div class="scr"><div class="bd">
+          <div class="mapbox">
+            <svg viewBox="0 0 320 230" role="img" aria-label="Concept map: two wash bays as numbered pins, a shaded approximate service area for the mobile business, and your location">
+              <rect width="320" height="230" fill="#e9e3d7"/>
+              <path d="M0 70 C80 60 140 90 320 64" stroke="#fff" stroke-width="10" fill="none"/>
+              <path d="M110 0 C120 80 90 150 130 230" stroke="#fff" stroke-width="8" fill="none"/>
+              <path d="M0 170 L320 150" stroke="#fff" stroke-width="6" fill="none"/>
+              <path d="M220 0 L250 230" stroke="#fff" stroke-width="5" fill="none"/>
+              <rect x="150" y="90" width="52" height="40" rx="6" fill="#d6e2cc"/>
+              <circle cx="168" cy="118" r="70" fill="#8a97a6" fill-opacity=".22" stroke="#5b6470" stroke-dasharray="5 4"/>
+              <text x="190" y="62" font-size="11" font-family="system-ui" fill="#0d0f12">Bubbleworks: area, approx.</text>
+              <circle cx="132" cy="120" r="7" fill="#ff3b0a" stroke="#0d0f12" stroke-width="2"/>
+              <g font-family="system-ui" font-weight="700" font-size="12" text-anchor="middle">
+                <circle cx="96" cy="88" r="12" fill="#0d0f12"/><text x="96" y="92" fill="#fff">1</text>
+                <circle cx="252" cy="176" r="12" fill="#0d0f12"/><text x="252" y="180" fill="#fff">3</text>
+              </g>
+              <text x="116" y="140" font-size="11" font-family="system-ui" fill="#0d0f12">You</text>
+            </svg>
+          </div>
+          <p class="xs muted">Pins show businesses with a public address. Mobile businesses show only a rough shaded area, never their base.</p>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Nothing nearby</span></header><div class="scr"><div class="bd">
+          {{ill:nothing}}
+          <p class="h2">No tyre businesses within 25 km yet</p>
+          <p class="small muted">CarworX is new near Mahikeng. You can look further, or tell us what you need.</p>
+          <span class="btn btn-s">Look within 50 km</span>
+          <div class="card"><p class="small"><b>Ask for a business here</b></p>
+            <div class="input">Tyres &amp; Wheel Alignment</div>
+            <div class="check"><span class="box on">{{icon:check}}</span><span>Email me when one joins. Used only for this.</span></div>
+            <span class="btn btn-p">Send</span></div>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Search widened by you</span></header><div class="scr"><div class="bd">
+          <div class="note">{{icon:info}}<span>Now showing businesses up to <b>50 km</b> away, because you widened the search. <u>Back to 25 km</u></span></div>
+          <div class="card"><div class="between"><span class="h2">Kgosi Tyre &amp; Align</span><span class="demo">DEMO</span></div><p class="xs muted">38.4 km straight-line · Enquiries only for now</p></div>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Could not load</span></header><div class="scr"><div class="bd">
+          {{ill:error}}
+          <div class="note e">{{icon:alert}}<span><b>Results didn't load.</b> Your filters are kept. Try again in a moment.</span></div>
+          <span class="btn btn-s">{{icon:refresh}} Try again</span>
+        </div></div></div>
+      </div>
+    </div>
+
+    <!-- 3.3 LISTING -->
+    <div class="group" id="s-listing">
+      <div class="group-head"><h3><span class="k">03</span>Business listing</h3><p>Prices, times and what CarworX checked, with how and when. A request is not an instant booking: the business must accept it first. A paused business can't take new bookings.</p></div>
+      <figure class="phone" aria-label="Business listing mockup"><div class="shell">
+        <div class="scr">
+          <div class="sb"><span>09:44</span><span class="c">Concept, not final</span><span>4G</span></div>
+          <div class="ab">{{icon:back}}<span class="t">Bubbleworks Mobile Wash</span></div>
+          <div class="bd">
+            <div class="thumb"><svg viewBox="0 0 320 132" fill="none" stroke="#0d0f12" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".55" aria-hidden="true"><path d="M70 100 Q66 80 82 74 L106 68 L126 46 Q160 38 202 46 L226 68 L244 74 Q258 80 254 100Z"/><circle cx="108" cy="102" r="12" fill="#fff"/><circle cx="216" cy="102" r="12" fill="#fff"/><path d="M146 26c3 4 5 7 5 9a5 5 0 0 1-10 0c0-2 2-5 5-9zM176 16c2 3 4 5 4 7a4 4 0 0 1-8 0c0-2 2-4 4-7z"/></svg><span>Photo placeholder · business's own photos go here</span></div>
+            <div class="between"><span class="h">Bubbleworks Mobile Wash</span><span class="demo">DEMO</span></div>
+            <div class="row small muted">{{icon:car}}<span> Comes to you · Randburg and surrounds (approx.) · <span class="stars">{{icon:star}}4.8</span> (52, demo)</span></div>
+            <div class="card">
+              <p class="h2">What CarworX checked</p>
+              <div class="row small">{{icon:shield}}<span><b>Operator/contact checked</b>: video call, 12 Oct 2026</span></div>
+              <div class="row small">{{icon:shield}}<span><b>Payments enabled</b>: can take online payment</span></div>
+              <p class="xs muted">Not visited: mobile businesses have no premises to visit.</p>
+            </div>
+            <div class="card">
+              <p class="h2">Services</p>
+              <div class="lines">
+                <div><span>Exterior wash · 45 min</span><span class="price">R180</span></div>
+                <div><span>Full wash, in and out · 1 h 30</span><span class="price">R280</span></div>
+                <div><span>Engine bay clean · 40 min</span><span class="price">R150</span></div>
+              </div>
+              <p class="xs muted">Travel: R30 up to 10 km, R50 for 10–20 km, R60 for 20–30 km, measured in a straight line from their area, not driving distance.</p>
+            </div>
+            <span class="btn btn-p">Request a time</span>
+            <span class="btn btn-s">Ask a question</span>
+            <p class="xs muted">Bubbleworks has 2 business hours to accept a request. You pay only after they accept.</p>
+          </div>
+        </div></div>
+        <figcaption>A mobile business: its base is never shown.</figcaption>
+      </figure>
+      <div class="states">
+        <div class="state"><header>State <span class="n">· Business paused</span></header><div class="scr"><div class="bd">
+          {{ill:paused}}
+          <div class="note e">{{icon:alert}}<span><b>Not taking new bookings.</b> CarworX has paused this business while we look into a report. If you have a booking with them, we'll contact you.</span></div>
+          <span class="btn btn-s">See similar businesses</span>
+        </div></div></div>
+        <div class="state"><header>Variant <span class="n">· Wash bay with an address</span></header><div class="scr"><div class="bd">
+          <div class="between"><span class="h2">Gleamline Wash Bay</span><span class="demo">DEMO</span></div>
+          <div class="row small muted">{{icon:pin}} 14 Example Rd, Ferndale (shown with permission)</div>
+          <div class="chips"><span class="lbl">{{icon:shield}}Operator checked</span><span class="lbl">{{icon:shield}}Business registration checked</span><span class="lbl">{{icon:shield}}Visited by CarworX</span></div>
+          <p class="xs muted">Open Mon–Sat 08:00–17:00</p>
+        </div></div></div>
+        <div class="state"><header>Variant <span class="n">· Enquiries only</span></header><div class="scr"><div class="bd">
+          <div class="note">{{icon:info}}<span>Spotless Valet Co. isn't taking online bookings yet. Send a question and they'll reply by email.</span></div>
+          <span class="btn btn-p">Ask a question</span>
+        </div></div></div>
+      </div>
+    </div>
+
+    <!-- 3.4 BOOKING + QUOTE -->
+    <div class="group" id="s-quote">
+      <div class="group-head"><h3><span class="k">04</span>Booking and quote approval</h3><p>For repairs the workshop sends a written quote with an expiry date. The customer approves that exact version. A revised quote replaces the old one, which can no longer be paid. Extra work found later needs its own change quote.</p></div>
+      <figure class="phone" aria-label="Quote approval mockup"><div class="shell">
+        <div class="scr">
+          <div class="sb"><span>10:20</span><span class="c">Concept, not final</span><span>4G</span></div>
+          <div class="ab">{{icon:back}}<span class="t">Your quote</span></div>
+          <div class="bd">
+            <div class="between"><span class="h2">Ridgeview Auto Care</span><span class="demo">DEMO</span></div>
+            <div class="chips"><span class="lbl n">Quote version 2</span><span class="lbl w">{{icon:clock}}Expires Wed 4 Nov, 10:15</span></div>
+            <p class="xs muted">VW Polo 2017 · front brakes squealing · after the R350 inspection on Wed 28 Oct</p>
+            <div class="rcpt"><span class="cap">WRITTEN QUOTE · VERSION 2</span>
+              <div><span>Front brake pads (parts)</span><span class="price">R1 240</span></div>
+              <div><span>Skim front discs</span><span class="price">R320</span></div>
+              <div><span>Labour, 1.5 hours</span><span class="price">R870</span></div>
+              <div><span>CarworX fee (free pilot)</span><span class="price">R0</span></div>
+              <div class="tot"><span>Total, incl. VAT</span><span class="price">R2 430</span></div>
+            </div>
+            <div class="note">{{icon:info}}<span>This replaces version 1 (<span class="strike">R2 650</span>), which can no longer be paid.</span></div>
+            <p class="small"><b>Choose a time</b></p>
+            <div class="chips"><span class="slot">Thu 08:00</span><span class="slot on">Fri 08:00</span><span class="slot off">Fri 13:00</span></div>
+            <span class="btn btn-p">Approve version 2 and pay</span>
+            <div class="btn-row"><span class="btn btn-s">Ask a question</span><span class="btn btn-s">Decline</span></div>
+            <p class="xs muted">Approving holds Friday 08:00 for 15 minutes while you pay. Work that isn't in this quote needs a new quote that you approve.</p>
+          </div>
+        </div></div>
+        <figcaption>Pieter's repair quote (see Journeys).</figcaption>
+      </figure>
+      <div class="states">
+        <div class="state"><header>State <span class="n">· Waiting for the business</span></header><div class="scr"><div class="bd">
+          {{ill:sent}}
+          <div class="row">{{icon:clock}}<span class="h2">Request sent to Bubbleworks</span></div>
+          <p class="small">They have until <b>11:40 today</b> to accept (2 business hours). You haven't paid anything.</p>
+          <div class="bar"><i style="width:35%"></i></div>
+          <p class="xs muted">Business hours: Mon–Sat 08:00–17:00, excluding public holidays.</p>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· No reply in time</span></header><div class="scr"><div class="bd">
+          {{ill:noreply}}
+          <div class="note w">{{icon:alert}}<span><b>Bubbleworks didn't reply by 11:40.</b> Your request has lapsed. Nothing was charged.</span></div>
+          <span class="btn btn-p">See other wash businesses</span>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Quote expired</span></header><div class="scr"><div class="bd">
+          {{ill:expired}}
+          <div class="note w">{{icon:clock}}<span><b>Quote version 2 expired on Wed 4 Nov.</b> It can't be approved any more. Prices may have changed.</span></div>
+          <span class="btn btn-s">Ask Ridgeview for a new quote</span>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Change quote during work</span></header><div class="scr"><div class="bd">
+          <div class="between"><span class="h2">Change quote C1</span><span class="lbl w">Needs your OK</span></div>
+          <p class="small">The rear pads are also worn: <span class="price">R1 150</span> extra. Your paid quote (version 2, R2 430) stays exactly as it is.</p>
+          <div class="btn-row"><span class="btn btn-p">Approve and pay</span><span class="btn btn-s">Not now</span></div>
+        </div></div></div>
+        <div class="state"><header>Variant <span class="n">· Travel charge</span></header><div class="scr"><div class="bd">
+          <div class="lines">
+            <div><span>Full wash, in and out</span><span class="price">R280</span></div>
+            <div><span>Travel, 10–20 km band</span><span class="price">R50</span></div>
+          </div>
+          <p class="xs muted">The band is measured in a straight line, not by road. Bubbleworks confirmed 30 minutes of travel time for this slot.</p>
+        </div></div></div>
+      </div>
+    </div>
+
+    <!-- 3.5 CHECKOUT -->
+    <div class="group" id="s-checkout">
+      <div class="group-head"><h3><span class="k">05</span>Checkout and what happens after</h3><p>Once the business accepts, the slot is held for 15 minutes. Payment happens on the payment partner's secure page. We confirm only when the payment partner tells us the money arrived, never just because the browser came back. In this pack nothing is charged: payments would run in test mode.</p></div>
+      <figure class="phone" aria-label="Checkout mockup"><div class="shell">
+        <div class="scr">
+          <div class="sb"><span>10:05</span><span class="c">Concept, not final</span><span>4G</span></div>
+          <div class="ab">{{icon:back}}<span class="t">Pay to confirm</span></div>
+          <div class="bd">
+            <div class="card hold">
+              <div class="dial" role="img" aria-label="14 minutes 32 seconds left"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="12"/><circle cx="100" cy="100" r="80" fill="none" stroke="#ff3b0a" stroke-width="12" stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="15"/></svg><div class="read"><b>14:32</b><small>held</small></div></div>
+              <div style="margin:0"><b class="small">Your slot is held</b><p class="xs muted" style="margin:4px 0 0">If the time runs out, the slot is released and nothing is charged.</p></div>
+            </div>
+            <div class="card">
+              <p class="h2">Bubbleworks Mobile Wash <span class="demo">DEMO</span></p>
+              <p class="small muted">Sat 31 Oct · 09:00–10:30 · at your address in Ferndale</p>
+              <div class="lines">
+                <div><span>Full wash, in and out</span><span class="price">R280</span></div>
+                <div><span>Travel, 10–20 km band</span><span class="price">R50</span></div>
+                <div><span>CarworX fee (free pilot)</span><span class="price">R0</span></div>
+                <div class="tot"><span>Total</span><span class="price">R330</span></div>
+              </div>
+            </div>
+            <span class="btn btn-p">{{icon:lock}} Pay R330 securely</span>
+            <p class="xs muted">You'll go to our payment partner's page to pay. The money goes to Bubbleworks. Cancellation: free up to 24 hours before (business's terms, demo).</p>
+          </div>
+        </div></div>
+        <figcaption>Thandi's wash (see Journeys).</figcaption>
+      </figure>
+      <div class="states">
+        <div class="state"><header>State <span class="n">· Checking payment</span></header><div class="scr"><div class="bd">
+          <div class="row"><img src="{{img:motion/carworx-loader-ink.svg}}" width="40" height="40" alt=""><span class="h2">Checking your payment…</span></div>
+          <p class="small">We're waiting for the payment partner to confirm. <b>Please don't pay again.</b> This page updates by itself.</p>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Payment failed</span></header><div class="scr"><div class="bd">
+          {{ill:card}}
+          <div class="note e">{{icon:alert}}<span><b>The payment didn't go through.</b> Nothing was taken. Your slot is still held for <b class="price">09:12</b>.</span></div>
+          <span class="btn btn-p">Try again</span>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Hold expired</span></header><div class="scr"><div class="bd">
+          {{ill:expired}}
+          <div class="note w">{{icon:clock}}<span><b>Your 15 minutes ran out.</b> The slot was released and nothing was charged.</span></div>
+          <span class="btn btn-s">Check if Sat 09:00 is still free</span>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Paid, needs sorting out</span></header><div class="scr"><div class="bd">
+          <div class="note w">{{icon:alert}}<span><b>Your payment of R330 arrived after the hold ran out.</b> Your booking isn't confirmed yet. Choose what you'd like:</span></div>
+          <span class="btn btn-p">Rebook Sat 09:00 (still free)</span>
+          <span class="btn btn-s">Get a full refund</span>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Confirmed</span></header><div class="scr"><div class="bd">
+          <div class="tile" style="box-shadow:var(--sh-1)"><div class="row"><span class="tick">{{icon:check}}</span><div><b>Booked and paid</b><small>Bubbleworks, Sat 31 Oct, 09:00–10:30</small></div></div><div class="meta"><span>Ref CX-2048</span><span>Paid to the business</span></div></div>
+          <p class="xs muted">Your full address goes only to the staff member assigned to the job, and only now that it's confirmed.</p>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Cancelled and refunded</span></header><div class="scr"><div class="bd">
+          <div class="between"><span class="h2">Booking cancelled</span><span class="lbl n">Refund processing</span></div>
+          <div class="stepper"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+          <p class="small">R330 back to your card: requested → <b>processing</b> → paid back. Banks can take a few working days.</p>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Problem reported</span></header><div class="scr"><div class="bd">
+          {{ill:review}}
+          <div class="between"><span class="h2">Case CX-2048-1</span><span class="lbl w">Open</span></div>
+          <p class="small">"Interior not cleaned." We've asked Bubbleworks for their side and will reply within 1 business day.</p>
+        </div></div></div>
+      </div>
+    </div>
+
+    <!-- 3.6 PROVIDER DASHBOARD -->
+    <div class="group" id="s-dashboard">
+      <div class="group-head"><h3><span class="k">06</span>Business dashboard</h3><p>What a business sees: requests with a reply deadline, today's jobs per bay or team, and payment status. A mobile business sees only the suburb until a booking is confirmed.</p></div>
+      <figure class="phone" aria-label="Business dashboard mockup"><div class="shell">
+        <div class="scr">
+          <div class="sb"><span>09:58</span><span class="c">Concept, not final</span><span>4G</span></div>
+          <div class="ab">{{logo:lockup}}<span class="sp"></span><span class="small">Business</span></div>
+          <div class="bd">
+            <div class="between"><span class="h">Bubbleworks</span><span class="lbl n">Test payments</span></div>
+            <p class="small muted">Wed 28 Oct</p>
+            <p class="h2">New requests (2)</p>
+            <div class="card">
+              <div class="between"><b class="small">Full wash, in and out</b><span class="lbl w">{{icon:clock}}Reply by 11:40</span></div>
+              <p class="xs muted">Sat 31 Oct 09:00 · Ferndale (suburb only until confirmed) · R280 + R50 travel</p>
+              <p class="xs">Travel time you need for this slot: <b>30 min</b> <u>change</u></p>
+              <div class="btn-row"><span class="btn btn-p">Accept</span><span class="btn btn-s">Decline</span></div>
+            </div>
+            <div class="card">
+              <div class="between"><b class="small">Exterior wash</b><span class="lbl w">{{icon:clock}}Reply by 13:05</span></div>
+              <p class="xs muted">Thu 29 Oct 15:00 · Blairgowrie · R180 + R30 travel</p>
+            </div>
+            <p class="h2">Today</p>
+            <div class="card lines">
+              <div><span>Team A · 08:00–09:30</span><span class="lbl">Paid</span></div>
+              <div><span>Team A · 11:00–12:00</span><span class="lbl w">Waiting for payment, 12 min</span></div>
+              <div><span>Team B · 13:00–14:30</span><span class="lbl">Paid</span></div>
+            </div>
+            <div class="note">{{icon:info}}<span>1 refund processing (R180). Payouts go straight to your bank account through the payment partner.</span></div>
+          </div>
+          <div class="tabs"><span class="on">{{icon:home}}Today</span><span>{{icon:cal}}Calendar</span><span>{{icon:doc}}Quotes</span><span>{{icon:user}}Business</span></div>
+        </div></div>
+        <figcaption>Requests show a reply-by time.</figcaption>
+      </figure>
+      <div class="states">
+        <div class="state"><header>Screen <span class="n">· Write a quote (workshop)</span></header><div class="scr"><div class="bd">
+          <p class="h2">Quote for Pieter · VW Polo 2017</p>
+          <div class="field"><b>Line items</b><div class="input">Front brake pads (parts) · R1 240</div><div class="input">Skim front discs · R320</div><div class="input">Labour 1.5 h · R870</div></div>
+          <div class="between small"><span>Valid for</span><b>7 days</b></div>
+          <span class="btn btn-d">Send quote version 2</span>
+          <p class="xs muted">Once sent, a quote can't be edited. A revision becomes version 3 and replaces this one.</p>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Confirmed mobile job</span></header><div class="scr"><div class="bd">
+          <div class="note ok">{{icon:check}}<span><b>Confirmed and paid.</b> Address now visible to the assigned team only: 8 Demo St, Ferndale. Hidden 7 days after the job.</span></div>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Your listing is paused</span></header><div class="scr"><div class="bd">
+          <div class="note e">{{icon:alert}}<span><b>Your listing is paused</b> while we look into a customer report (case CX-2048-1). You can't take new bookings. Existing bookings: please contact support.</span></div>
+          <span class="btn btn-s">Contact support</span>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Dispute on a payment</span></header><div class="scr"><div class="bd">
+          <div class="between"><span class="h2">Card dispute · R280</span><span class="lbl e">Evidence due</span></div>
+          <p class="small">The customer's bank has queried this payment. Upload photos or messages that show the job was done.</p>
+          <span class="btn btn-s">{{icon:camera}} Add evidence</span>
+        </div></div></div>
+      </div>
+      <div class="dash-wrap" data-reveal>
+        <p class="eyebrow" style="margin-bottom:var(--s2)">On a computer · the same dashboard · demo numbers</p>
+        <div class="dash-glow" aria-hidden="true"></div>
+        <div class="dash" role="img" aria-label="Business dashboard on a computer for Bubbleworks (demo): 12 requests this week, R3 960 paid directly, average reply 1 hour 7 minutes against 2 hours, CarworX fee R0">
+          <div class="dbar"><div class="who"><span class="av">BW</span><div><b>Bubbleworks Mobile Wash</b><small>Randburg and surrounds · demo</small></div></div><div class="ptabs"><span class="on">Requests</span><span>Quotes</span><span>Payments</span></div></div>
+          <div class="dgrid">
+            <div class="kpi"><small>Requests this week</small><span class="num">12</span><div class="foot"><div class="bar"><i style="--w:60%"></i></div>+3</div></div>
+            <div class="kpi"><small>Paid to you directly</small><span class="num"><sub>R</sub>3 960</span><div class="foot">This week · 14 bookings</div></div>
+            <div class="kpi"><small>Average reply</small><span class="num">1h07</span><div class="foot"><div class="bar"><i style="--w:56%"></i></div>of 2 h</div></div>
+            <div class="kpi fee"><small>CarworX fee</small><span class="num"><sub>R</sub>0</span><div class="foot">Free during the pilot</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.7 PROVIDER APPLICATION -->
+    <div class="group" id="s-apply">
+      <div class="group-head"><h3><span class="k">07</span>Business application</h3><p>Businesses apply and a person at CarworX reviews them. Each label says what was checked and how. A mobile business's home base stays private: customers see only a rough area.</p></div>
+      <figure class="phone" aria-label="Business application mockup"><div class="shell">
+        <div class="scr">
+          <div class="sb"><span>16:10</span><span class="c">Concept, not final</span><span>4G</span></div>
+          <div class="ab">{{icon:back}}<span class="t">List your business</span><span class="small">2 of 4</span></div>
+          <div class="bd">
+            <div class="stepper"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+            <p class="h">Where do you work?</p>
+            <div class="seg"><span>{{icon:bay}} At my premises</span><span class="on">{{icon:car}} I go to customers</span></div>
+            <div class="field"><b>Your base (kept private)</b><div class="input">Search an address…</div></div>
+            <div class="note">{{icon:lock}}<span>Customers never see your base. They see a rough area. Repeated searches could still hint at it, so we limit them and will explain more before launch.</span></div>
+            <div class="field"><b>How far will you travel?</b><div class="chips"><span class="chip">10 km</span><span class="chip on">20 km</span><span class="chip">30 km</span></div></div>
+            <div class="field"><b>Travel charges (straight-line bands)</b><div class="input">0–10 km R30 · 10–20 km R50</div></div>
+            <div class="check"><span class="box on">{{icon:check}}</span><span>I agree that CarworX can contact me to check my details.</span></div>
+            <span class="btn btn-p">Continue</span>
+          </div>
+        </div></div>
+        <figcaption>Step 2 of 4: area and travel.</figcaption>
+      </figure>
+      <div class="states">
+        <div class="state"><header>State <span class="n">· Under review</span></header><div class="scr"><div class="bd">
+          {{ill:review}}
+          <div class="row">{{icon:clock}}<span class="h2">Application received</span></div>
+          <p class="small">A person at CarworX will check it and call or video-call you. You'll get an email when your listing goes live.</p>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· We need one more thing</span></header><div class="scr"><div class="bd">
+          <div class="note w">{{icon:alert}}<span><b>Please add a photo of your signage or vehicle.</b> We use it only to check your listing, then delete it within 30 days.</span></div>
+          <span class="btn btn-s">{{icon:camera}} Add photo</span>
+        </div></div></div>
+        <div class="state"><header>State <span class="n">· Live, with labels</span></header><div class="scr"><div class="bd">
+          <div class="row small">{{icon:check}}<span><b>Operator/contact checked</b>: video call</span></div>
+          <div class="row small">{{icon:check}}<span><b>Business registration checked</b>: where relevant</span></div>
+          <div class="row small muted">{{icon:clock}}<span><b>Visited by CarworX</b>: not yet</span></div>
+          <div class="row small muted">{{icon:lock}}<span><b>Payments enabled</b>: later, after legal and payment checks</span></div>
+          <p class="xs muted">Labels can't be bought.</p>
+        </div></div></div>
+      </div>
+    </div>
+
+    <!-- 3.8 FINES -->
+    <div class="group" id="s-fines">
+      <div class="group-head"><h3><span class="k">08</span>Fines guidance</h3><p>At launch CarworX doesn't look up fines. It explains the options and links to official channels, clearly marked as leaving CarworX. It never asks for an ID number, and never says "no fines" because a search found nothing.</p></div>
+      <figure class="phone" aria-label="Fines guidance mockup"><div class="shell">
+        <div class="scr">
+          <div class="sb"><span>12:30</span><span class="c">Concept, not final</span><span>4G</span></div>
+          <div class="ab">{{icon:back}}<span class="t">Fines &amp; Vehicle Admin</span></div>
+          <div class="bd">
+            <p class="h">Got a traffic fine? Here's what to do.</p>
+            <div class="note">{{icon:info}}<span>CarworX doesn't look up fines yet. These official channels can. <b>We never ask for your ID number.</b></span></div>
+            <div class="card">
+              <p class="h2">Check and pay</p>
+              <div class="between small"><span>National fines channel</span><span class="row muted xs">Official {{icon:ext}}</span></div>
+              <div class="between small"><span>Your municipality's traffic department</span><span class="row muted xs">Official {{icon:ext}}</span></div>
+              <p class="xs muted">Links open outside CarworX. Official sources are confirmed before launch.</p>
+            </div>
+            <div class="note w">{{icon:alert}}<span><b>"No results" doesn't mean "no fines".</b> Not every fine shows up everywhere.</span></div>
+            <div class="card"><p class="h2">Guides</p>
+              <div class="between small"><span>Paying, disputing or asking for more time</span>{{icon:chev}}</div>
+              <div class="between small"><span>Renewing your licence disc</span>{{icon:chev}}</div>
+            </div>
+            <div class="card"><p class="h2">Admin help near you</p><p class="small muted">Listed businesses that help with licence renewals and roadworthy bookings.</p></div>
+            <p class="xs muted">Towing: shown as a referral only. CarworX doesn't dispatch tow trucks.</p>
+          </div>
+          <div class="tabs"><span>{{icon:home}}Home</span><span class="on">{{icon:search}}Search</span><span>{{icon:cal}}Bookings</span><span>{{icon:user}}Account</span></div>
+        </div></div>
+        <figcaption>Guidance and official referrals only.</figcaption>
+      </figure>
+      <div class="states">
+        <div class="state"><header>State <span class="n">· Leaving CarworX</span></header><div class="scr"><div class="bd">
+          {{ill:leave}}
+          <p class="h2">You're going to an official site</p>
+          <p class="small">CarworX doesn't run this site and can't see what you enter there.</p>
+          <div class="btn-row"><span class="btn btn-p">Continue {{icon:ext}}</span><span class="btn btn-s">Stay</span></div>
+        </div></div></div>
+        <div class="state"><header>Later <span class="n">· Built-in lookup (not planned yet)</span></header><div class="scr"><div class="bd">
+          <div class="note">{{icon:lock}}<span>A built-in fines lookup needs a partner, legal checks and the owner's go-ahead. It's not part of the first versions.</span></div>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
