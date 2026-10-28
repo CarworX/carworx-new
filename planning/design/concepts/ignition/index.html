@@ -1,0 +1,1411 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarworX Ignition</title>
+<meta name="description" content="CarworX web design concept: Ignition. Night-time, high-precision car care booking for South Africa. Concept, not final.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d0f12; --void:#08090b; --graphite:#1c2128; --graphite-2:#242a33;
+  --steel:#8a97a6; --text:#eef1f4; --text-2:#b3bcc6; --text-3:#919dab;
+  --line:rgba(138,151,166,.16); --line-2:rgba(138,151,166,.32); --line-3:rgba(138,151,166,.55);
+  --signal:#ff3b0a; --signal-soft:#ff6a33; --gold:#ffb547; --ok:#7fe0b0;
+  --glass:linear-gradient(180deg,rgba(40,46,56,.62),rgba(16,19,24,.78));
+  --glass-edge:rgba(255,255,255,.09);
+  --f-display:"Archivo",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+  --gut:clamp(16px,4vw,56px);
+  --maxw:1320px;
+  --nav-h:72px;
+  --spring:cubic-bezier(.2,.9,.22,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--ink);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ink);color:var(--text);font-family:var(--f-display);font-size:16px;line-height:1.55;font-weight:400;font-stretch:100%;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+.mono{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.num{font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* engineering grid behind everything */
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:96px 96px;background-position:center -1px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,#000 0%,transparent 75%);mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,#000 0%,transparent 75%);opacity:.55}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;display:block}
+main,footer{position:relative;z-index:2}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:8;height:var(--nav-h);display:flex;align-items:center;transition:background .4s,border-color .4s;border-bottom:1px solid transparent}
+.nav.solid{background:rgba(10,12,15,.72);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);border-color:var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:28px}
+.brand{display:block;line-height:0;flex:none}
+.lockup-nav{height:30px;width:auto;aspect-ratio:852.35/184;display:block}
+.lockup-nav .lk-mark{transition:opacity .6s}
+.intro .lockup-nav .lk-word,.pre .lockup-nav .lk-mark{opacity:0}
+.nav-links{display:flex;gap:26px;margin-left:auto;list-style:none;padding:0;margin-top:0;margin-bottom:0}
+.nav-links a{text-decoration:none;color:var(--text-2);font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-status{display:flex;align-items:center;gap:8px;color:var(--text-3)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 3px rgba(255,59,10,.18),0 0 12px var(--signal);animation:pulse 2.4s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(255,59,10,0),0 0 18px var(--signal)}}
+.nav-fade{transition:opacity .6s .1s,transform .6s var(--spring) .1s}
+.pre .nav-fade{opacity:0;transform:translateY(-8px)}
+
+/* ---------- pills ---------- */
+.pill{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px 0 24px;border-radius:999px;font-weight:600;font-size:15px;text-decoration:none;white-space:nowrap;transition:transform .35s var(--spring),box-shadow .35s,background .25s;border:0;cursor:pointer}
+.pill svg{width:16px;height:16px;transition:transform .35s var(--spring)}
+.pill:hover svg{transform:translateX(3px)}
+.pill-signal{background:var(--signal);color:var(--ink);box-shadow:0 0 0 1px rgba(255,120,60,.5) inset,0 10px 40px -10px rgba(255,59,10,.7)}
+.pill-signal:hover{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(255,160,110,.7) inset,0 16px 50px -10px rgba(255,59,10,.9)}
+.pill-ghost{background:rgba(255,255,255,.04);color:var(--text);box-shadow:0 0 0 1px var(--line-2) inset}
+.pill-ghost:hover{background:rgba(255,255,255,.08)}
+.pill-sm{height:38px;padding:0 16px;font-size:13.5px}
+
+/* ---------- intro overlay ---------- */
+#intro{position:fixed;inset:0;z-index:7;pointer-events:none}
+.done #intro{display:none}
+.xh{position:absolute;background:var(--line-3);transform-origin:center}
+.xh-h{left:0;right:0;height:1px}
+.xh-v{top:0;bottom:0;width:1px}
+.boot{position:absolute;left:var(--gut);bottom:28px;color:var(--text-3);line-height:1.9;font-size:10.5px}
+.boot span{display:block;opacity:0}
+.boot b{color:var(--gold);font-weight:500}
+.iword{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.iword-svg{display:block;width:100%;height:100%;overflow:visible}
+#glyph{position:absolute;left:0;top:0}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:100vh;min-height:100svh;padding-top:calc(var(--nav-h) + 8px);display:flex;flex-direction:column}
+.hero-grid{flex:1;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:center;gap:24px}
+.eyebrow{color:var(--text-3);display:flex;align-items:center;gap:10px;margin:0 0 22px}
+.eyebrow i{display:inline-block;width:28px;height:1px;background:var(--signal)}
+h1,h2,h3{margin:0;font-weight:600;font-stretch:108%;letter-spacing:-.035em}
+h1{font-size:clamp(46px,6.3vw,96px);line-height:.94}
+h1 .l2{display:block;color:var(--text-3)}
+h2{font-size:clamp(36px,4.6vw,68px);line-height:.98}
+h2 .dim{color:var(--text-3)}
+.sub{font-size:clamp(16px,1.25vw,18.5px);color:var(--text-2);max-width:31em;margin:26px 0 30px;line-height:1.55}
+.cta-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.roll{display:flex;align-items:center;gap:10px;color:var(--text-3);min-width:0}
+.roll-win{height:18px;overflow:hidden;position:relative;color:var(--text);font-family:var(--f-display);text-transform:none;letter-spacing:0;font-size:14px;font-weight:500;min-width:0}
+.roll-reel{display:block;transition:transform .7s var(--spring)}
+.roll-reel span{display:block;height:18px;line-height:18px;white-space:nowrap}
+[data-st]{transition:opacity .9s var(--spring),transform .9s var(--spring),filter .9s;transition-delay:calc(var(--d,0)*90ms)}
+.pre [data-st]{opacity:0;transform:translateY(34px);filter:blur(8px)}
+
+.hero-stage{position:relative;height:100%;min-height:440px;display:grid;place-items:center}
+.seat{position:relative;width:min(100%,560px,62vh);aspect-ratio:1}
+.seat-fallback{position:absolute;inset:11.5%;display:none}
+.nogl .seat-fallback{display:block}
+.mark-still{width:100%;height:100%;display:block}
+.dial{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.dial .tk{stroke:var(--line-3);stroke-width:1;vector-effect:non-scaling-stroke}
+.dial .tk.mj{stroke:var(--text-2)}
+.dial .lbl{font-family:var(--f-mono);font-size:7.5px;fill:var(--text-3);letter-spacing:.05em}
+.dial .lbl.on{fill:var(--gold)}
+.dial .rim{fill:none;stroke:var(--line-2);vector-effect:non-scaling-stroke}
+.dial .ptr{fill:var(--signal)}
+.hud{transition:opacity .7s,transform .8s var(--spring)}
+.pre .hud{opacity:0;transform:scale(.96)}
+.corner{position:absolute;width:22px;height:22px;border-color:var(--text-2);border-style:solid;border-width:0}
+.c-tl{left:-4%;top:-4%;border-left-width:1px;border-top-width:1px}
+.c-tr{right:-4%;top:-4%;border-right-width:1px;border-top-width:1px}
+.c-bl{left:-4%;bottom:-4%;border-left-width:1px;border-bottom-width:1px}
+.c-br{right:-4%;bottom:-4%;border-right-width:1px;border-bottom-width:1px}
+.badge{position:absolute;display:flex;flex-direction:column;gap:3px;padding:7px 10px;border:1px solid var(--line-2);background:rgba(10,12,15,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:4px;color:var(--text-3);font-size:10px;white-space:nowrap}
+.badge b{color:var(--text);font-weight:500;font-size:12px;letter-spacing:.04em}
+.badge b.g{color:var(--gold)}
+.b-rpm{left:-8%;top:6%}
+.b-ang{right:-8%;top:14%}
+.b-sts{left:-6%;bottom:8%}
+.b-svc{right:-10%;bottom:4%;max-width:220px}
+.b-svc b{white-space:normal}
+.hairx{position:absolute;left:50%;top:-7%;bottom:-7%;width:1px;background:linear-gradient(transparent,var(--line-2) 20%,var(--line-2) 80%,transparent)}
+.hairy{position:absolute;top:50%;left:-7%;right:-7%;height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 20%,var(--line-2) 80%,transparent)}
+.cur{position:fixed;left:0;top:0;z-index:6;pointer-events:none;color:var(--text-3);font-size:10px;opacity:0;transition:opacity .3s;white-space:nowrap}
+.cur::before{content:"";position:absolute;left:-7px;top:-7px;width:14px;height:14px;background:linear-gradient(var(--gold),var(--gold)) center/1px 100% no-repeat,linear-gradient(var(--gold),var(--gold)) center/100% 1px no-repeat}
+.cur span{position:absolute;left:12px;top:8px}
+.cur.on{opacity:1}
+
+/* five shortcuts: instrument cluster */
+.cluster{list-style:none;margin:0 auto;padding-top:10px;padding-bottom:34px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.svc{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto auto;column-gap:14px;row-gap:4px;align-items:center;height:100%;padding:16px 16px 18px;border-radius:14px;text-decoration:none;background:var(--glass);box-shadow:0 0 0 1px var(--glass-edge) inset,0 20px 40px -24px #000;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:transform .45s var(--spring),box-shadow .3s;overflow:hidden}
+.svc:hover{transform:translateY(-3px)}
+.svc-idx{grid-column:2;color:var(--text-3);justify-self:end;align-self:start}
+.svc-rotor{grid-row:1/3;grid-column:1;width:46px;height:46px;transition:transform .7s var(--spring)}
+.svc-rotor path{fill:none;stroke:var(--steel);stroke-width:5;transition:fill .35s,stroke .35s}
+.svc-rotor path.hl{fill:var(--text);stroke:var(--text)}
+.svc-name{grid-column:1/3;font-weight:600;font-size:15.5px;line-height:1.2;letter-spacing:-.01em;margin-top:10px}
+.svc-meta{grid-column:1/3;color:var(--text-3);font-size:10.5px}
+.svc-bar{position:absolute;left:16px;right:16px;bottom:0;height:2px;background:var(--line)}
+.svc-bar i{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--signal),var(--gold))}
+.svc.on{box-shadow:0 0 0 1px rgba(255,181,71,.45) inset,0 24px 50px -24px rgba(255,59,10,.45)}
+.svc.on .svc-idx{color:var(--gold)}
+.cluster-item{transition:opacity .8s var(--spring),transform .8s var(--spring);transition-delay:calc(var(--d,0)*70ms + 450ms)}
+.pre .cluster-item{opacity:0;transform:translateY(30px)}
+
+/* ---------- section scaffolding ---------- */
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.rv{transition:opacity 1s var(--spring),transform 1s var(--spring),filter 1s;transition-delay:calc(var(--d,0)*80ms)}
+.rv:not(.in){opacity:0;transform:translateY(40px);filter:blur(6px)}
+
+/* ---------- how it works: telemetry ---------- */
+.how{position:relative;height:440vh}
+.pin{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;overflow:hidden}
+.how-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(24px,4vw,64px);align-items:center;padding-top:var(--nav-h)}
+.steps{list-style:none;margin:30px 0 0;padding:0}
+.steps li{position:relative;padding:12px 0 12px 46px;border-top:1px solid var(--line);color:var(--text-3);transition:color .4s}
+.steps li::before{content:attr(data-n);position:absolute;left:0;top:14px;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em}
+.steps li b{display:block;font-weight:600;font-size:16.5px;letter-spacing:-.01em;line-height:1.3}
+.steps li span{display:block;font-size:14px;line-height:1.45;max-height:0;overflow:hidden;opacity:0;transition:max-height .5s var(--spring),opacity .4s,margin .4s}
+.steps li.on{color:var(--text)}
+.steps li.on::before{color:var(--gold)}
+.steps li.on span{max-height:5em;opacity:1;margin-top:4px;color:var(--text-2)}
+.scope{position:relative;border-radius:18px;background:var(--glass);box-shadow:0 0 0 1px var(--glass-edge) inset,0 40px 80px -40px #000;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);padding:18px clamp(14px,2vw,24px) 16px;overflow:hidden}
+.scope::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(138,151,166,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(138,151,166,.07) 1px,transparent 1px);background-size:100% 25%,10% 100%}
+.scope-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--text-3)}
+.tabs{display:flex;gap:4px;padding:3px;border-radius:999px;background:rgba(0,0,0,.35);box-shadow:0 0 0 1px var(--line) inset}
+.tab{border:0;background:transparent;border-radius:999px;padding:6px 12px;color:var(--text-3);cursor:pointer;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;transition:background .3s,color .3s;white-space:nowrap}
+.tab.on{background:rgba(255,255,255,.09);color:var(--text)}
+.clock{color:var(--gold)}
+.readouts{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin:16px 0 10px;background:var(--line);border-radius:10px;overflow:hidden}
+.ro{background:rgba(12,14,18,.82);padding:12px 14px 13px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.ro-k{color:var(--text-3);font-size:10px}
+.ro-v{font-size:clamp(26px,3vw,42px);font-weight:300;font-stretch:100%;letter-spacing:-.02em;line-height:1.05;white-space:nowrap}
+.ro-u{color:var(--text-3);font-size:10px}
+.ro.hot .ro-v{color:var(--gold)}
+.ro.ok .ro-u{color:var(--ok)}
+.lanes{position:relative}
+.lane{transition:opacity .5s}
+.lane:not(.on){position:absolute;inset:0;opacity:0;pointer-events:none}
+.ch{position:relative;padding:7px 0 0}
+.ch-h{display:flex;gap:10px;align-items:baseline;color:var(--text-3);font-size:10.5px;min-width:0}
+.ch-h b{color:var(--text-2);font-weight:600;flex:none}
+.ch-h .ch-n{flex:none}
+.ch-s{margin-left:auto;text-transform:none;letter-spacing:.01em;font-family:var(--f-display);font-size:12.5px;color:var(--text-2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ch.live .ch-s{color:var(--text)}
+.ch.live .ch-h b{color:var(--gold)}
+.trace{display:block;width:100%;height:30px;overflow:visible}
+.trace path{fill:none;vector-effect:non-scaling-stroke;stroke-linejoin:miter}
+.tr-bg{stroke:rgba(138,151,166,.35);stroke-width:1;stroke-dasharray:3 4}
+.tr-win{fill:rgba(255,181,71,.06)!important;stroke:rgba(255,181,71,.35);stroke-width:1;stroke-dasharray:2 3}
+.tr-fg{stroke:var(--text);stroke-width:1.6}
+.ch.live .tr-fg{stroke:var(--signal-soft);filter:drop-shadow(0 0 5px rgba(255,59,10,.75))}
+.fgclip{clip-path:inset(0 calc(100% - var(--ph,0%)) 0 0)}
+.playhead{position:absolute;top:0;bottom:-4px;left:var(--ph,0%);width:1px;background:var(--gold);box-shadow:0 0 12px var(--gold);pointer-events:none}
+.playhead::before{content:"";position:absolute;top:-5px;left:-4px;border:4px solid transparent;border-top-color:var(--gold);border-top-width:6px}
+.axis{position:relative;height:18px;margin-top:8px;border-top:1px solid var(--line-2);padding-top:6px;color:var(--text-3);font-size:9.5px}
+.axis span{position:absolute;top:6px;transform:translateX(-50%);white-space:nowrap}
+.axis span:first-child{transform:none}
+.axis span.end{transform:translateX(-100%)}
+.brk{position:absolute;top:-6px;height:12px;width:10px;margin-left:-5px;pointer-events:none}
+.brk::before,.brk::after{content:"";position:absolute;top:0;bottom:0;width:1px;background:var(--line-3);transform:skewX(-15deg)}
+.brk::before{left:3px}.brk::after{right:3px}
+
+/* ---------- product glimpse ---------- */
+.glimpse{position:relative;height:420vh}
+.gl-in{position:relative;width:100%;height:100%;display:flex;flex-direction:column;padding-top:calc(var(--nav-h) + 12px)}
+.gl-cap{display:flex;align-items:center;gap:14px;color:var(--text-3)}
+.gl-cap b{color:var(--gold);font-weight:500}
+.rail{position:relative;flex:1;perspective:1600px;overflow:hidden;min-height:0}
+.card{position:absolute;left:50%;top:50%;will-change:transform,filter;transform-style:preserve-3d}
+.card-in{transform-origin:center center}
+.ticker{position:relative;overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:11px 0;color:var(--text-3);margin-bottom:18px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.ticker-t{display:flex;width:max-content;animation:tick 38s linear infinite}
+.ticker-t span{padding-right:44px;white-space:nowrap}
+.ticker-t span i{display:inline-block;width:5px;height:5px;background:var(--signal);margin-right:14px;vertical-align:middle;transform:rotate(45deg)}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* dark-glass device frames */
+.phone{width:300px;height:620px;border-radius:44px;padding:10px;background:linear-gradient(160deg,#2a3039,#0b0d10 60%);box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 0 0 1px #000,0 60px 100px -40px #000,0 0 80px -30px rgba(255,59,10,.35)}
+.scr{position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:radial-gradient(120% 60% at 50% 0%,#1d232c,#0c0e12 70%);font-size:13px;color:var(--text);display:flex;flex-direction:column}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:14px 22px 6px;font-family:var(--f-mono);font-size:11px;font-weight:600}
+.sb i{display:inline-block;width:16px;height:8px;border:1px solid var(--text-2);border-radius:2px;margin-left:6px;position:relative}
+.sb i::after{content:"";position:absolute;inset:1px 4px 1px 1px;background:var(--text-2)}
+.island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:86px;height:24px;border-radius:20px;background:#000}
+.pad{padding:8px 16px}
+.field{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:12px;background:rgba(255,255,255,.06);box-shadow:0 0 0 1px var(--line) inset;font-weight:500}
+.field small{margin-left:auto;color:var(--text-3);font-family:var(--f-mono);font-size:9.5px;letter-spacing:.06em}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{height:26px;display:inline-flex;align-items:center;padding:0 10px;border-radius:999px;font-size:11.5px;font-weight:500;background:rgba(255,255,255,.05);box-shadow:0 0 0 1px var(--line) inset;color:var(--text-2);white-space:nowrap}
+.chip.on{background:var(--text);color:var(--ink);box-shadow:none}
+.chip.sg{background:rgba(255,59,10,.14);color:var(--gold);box-shadow:0 0 0 1px rgba(255,106,51,.4) inset}
+.minimap{height:118px;margin:10px 16px;border-radius:14px;overflow:hidden;position:relative;background:#0b0e12;box-shadow:0 0 0 1px var(--line) inset}
+.minimap svg{width:100%;height:100%;display:block}
+.res{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:11px 0;border-top:1px solid var(--line)}
+.res b{font-weight:600;font-size:13.5px;letter-spacing:-.01em}
+.res .p{font-family:var(--f-mono);font-weight:600;font-size:13px;text-align:right}
+.res small{color:var(--text-3);font-size:11px}
+.res .tag{grid-column:1/3;display:flex;gap:6px;margin-top:4px}
+.mini{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3)}
+.hero-img{height:150px;position:relative;background:radial-gradient(80% 90% at 70% 30%,rgba(255,106,51,.35),transparent 60%),radial-gradient(60% 80% at 20% 90%,rgba(255,181,71,.18),transparent 60%),#11151a;overflow:hidden}
+.hero-img::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1.3px);background-size:9px 9px;-webkit-mask-image:linear-gradient(transparent,#000);mask-image:linear-gradient(transparent,#000)}
+.hero-img .mini{position:absolute;left:16px;bottom:12px;z-index:1;color:var(--text-2)}
+.svcrow{display:grid;grid-template-columns:1fr auto;padding:9px 12px;border-radius:12px;gap:0 8px;align-items:center}
+.svcrow.on{background:rgba(255,255,255,.07);box-shadow:0 0 0 1px rgba(255,181,71,.45) inset}
+.svcrow b{font-weight:600;font-size:13px}
+.svcrow small{color:var(--text-3);font-size:11px}
+.svcrow .p{font-family:var(--f-mono);font-weight:600;font-size:13px}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.slot{height:34px;display:grid;place-items:center;border-radius:10px;font-family:var(--f-mono);font-size:12px;font-weight:600;background:rgba(255,255,255,.05);box-shadow:0 0 0 1px var(--line) inset;color:var(--text-2)}
+.slot.on{background:var(--text);color:var(--ink);box-shadow:none}
+.slot.x{color:#5f6a77;text-decoration:line-through}
+.note{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;color:var(--text-2);line-height:1.4;padding:10px 12px;border-radius:12px;background:rgba(255,181,71,.07);box-shadow:0 0 0 1px rgba(255,181,71,.22) inset}
+.note::before{content:"";flex:none;width:6px;height:6px;margin-top:5px;border-radius:50%;background:var(--gold)}
+.btn{height:46px;border-radius:999px;display:grid;place-items:center;font-weight:600;font-size:14px}
+.btn.sg{background:var(--signal);color:var(--ink)}
+.btn.gh{box-shadow:0 0 0 1px var(--line-2) inset;color:var(--text)}
+.ql{display:grid;grid-template-columns:1fr auto;padding:8px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+.ql span:last-child{font-family:var(--f-mono);font-weight:500}
+.ql.tot{border:0;padding-top:12px;font-weight:600;font-size:14px}
+.ql.tot span:last-child{font-size:20px;font-family:var(--f-display);font-weight:300;letter-spacing:-.02em}
+.valid{display:flex;align-items:center;gap:10px}
+.valid .bar{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
+.valid .bar i{display:block;height:100%;width:86%;background:linear-gradient(90deg,var(--gold),var(--signal))}
+
+.desk{width:880px;border-radius:16px;overflow:hidden;background:#0c0e12;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 60px 100px -40px #000,0 0 90px -30px rgba(255,59,10,.3);container-type:inline-size}
+.desk-bar{display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;background:#15191f;border-bottom:1px solid var(--line)}
+.desk-bar i{width:9px;height:9px;border-radius:50%;background:#2c333d}
+.desk-bar .url{margin:0 auto;padding:3px 14px;border-radius:6px;background:rgba(255,255,255,.05);font-family:var(--f-mono);font-size:10.5px;color:var(--text-3)}
+.dash{display:grid;grid-template-columns:150px 1fr;min-height:470px}
+.dnav{border-right:1px solid var(--line);padding:16px 12px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--text-3)}
+.dnav b{color:var(--text);font-weight:600;font-size:13px;margin:0 8px 14px;line-height:1.25}
+.dnav span{padding:7px 8px;border-radius:8px}
+.dnav span.on{background:rgba(255,255,255,.07);color:var(--text)}
+.dmain{padding:18px 20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.dtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.dtop h4{margin:0;font-size:18px;font-weight:600;letter-spacing:-.02em}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.kpi{padding:12px 14px;border-radius:12px;background:var(--glass);box-shadow:0 0 0 1px var(--glass-edge) inset;min-width:0}
+.kpi .v{font-size:32px;font-weight:300;letter-spacing:-.03em;line-height:1.1;margin-top:6px;white-space:nowrap}
+.kpi .v small{font-size:14px;color:var(--text-3);margin-left:2px}
+.kpi.hot{background:linear-gradient(140deg,rgba(255,59,10,.22),rgba(255,181,71,.08) 60%,rgba(20,24,30,.6));box-shadow:0 0 0 1px rgba(255,106,51,.35) inset}
+.kpi.hot .v{color:var(--gold)}
+.reqs{border-radius:12px;box-shadow:0 0 0 1px var(--line) inset;overflow:hidden}
+.rq{display:grid;grid-template-columns:1.2fr 1.3fr .8fr .9fr auto;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--line);font-size:12.5px}
+.rq:first-child{border-top:0;color:var(--text-3)}
+.rq .t{font-family:var(--f-mono);font-weight:600;color:var(--gold)}
+.rq .acts{display:flex;gap:6px}
+.rq .acts span{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:600;background:var(--text);color:var(--ink)}
+.rq .acts span+span{background:transparent;color:var(--text-2);box-shadow:0 0 0 1px var(--line-2) inset}
+.dlow{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+.spark{padding:12px 14px;border-radius:12px;box-shadow:0 0 0 1px var(--line) inset}
+.spark svg{width:100%;height:70px;display:block;margin-top:8px}
+@container (max-width:640px){
+  .dash{grid-template-columns:1fr}
+  .dnav{display:none}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rq{grid-template-columns:1fr auto}
+  .rq>span:nth-child(2),.rq>span:nth-child(3){display:none}
+  .rq .acts{grid-column:1/3}
+  .rq:first-child{display:none}
+  .dlow{grid-template-columns:1fr}
+}
+
+/* ---------- for businesses ---------- */
+.biz{position:relative;padding:clamp(120px,16vw,220px) 0 clamp(100px,12vw,180px)}
+.biz-grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(30px,5vw,80px);align-items:center}
+.fee{position:relative}
+.fee .k{color:var(--text-3)}
+.odo{display:flex;align-items:flex-start;font-size:clamp(150px,22vw,330px);line-height:.86;font-weight:300;letter-spacing:-.06em;font-stretch:96%;margin:10px 0 8px}
+.odo .r{color:var(--text-3)}
+.odo .win{height:.86em;overflow:hidden;display:inline-block}
+.odo .reel{display:flex;flex-direction:column;will-change:transform}
+.odo .reel span{height:.86em;display:block}
+.odo .cents{font-size:.24em;color:var(--text-3);letter-spacing:-.02em;margin-top:.22em;margin-left:.12em}
+.fee .unit{display:flex;gap:16px;flex-wrap:wrap;color:var(--text-3)}
+.fee .unit b{color:var(--gold);font-weight:500}
+.spec{margin:30px 0 34px;padding:0;list-style:none;border-top:1px solid var(--line-2)}
+.spec li{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:16px;padding:13px 0;border-bottom:1px solid var(--line)}
+.spec li .mono{color:var(--text-3);padding-top:3px}
+.spec li span:last-child{color:var(--text);font-size:15.5px}
+.biz .sub{margin-top:20px}
+
+/* ---------- footer ---------- */
+.foot{border-top:1px solid var(--line);padding:56px 0 36px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.5))}
+.foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;align-items:flex-start}
+.lockup-foot{width:min(300px,70vw);height:auto;aspect-ratio:852.35/184;display:block}
+.foot-cols{display:flex;gap:56px;flex-wrap:wrap}
+.foot-cols ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--text-2)}
+.foot-cols ul li:first-child{color:var(--text-3);margin-bottom:6px}
+.foot-cols a{text-decoration:none}
+.foot-cols a:hover{color:var(--text)}
+.foot-meta{display:flex;gap:12px 28px;flex-wrap:wrap;align-items:center;margin-top:48px;padding-top:18px;border-top:1px solid var(--line);color:var(--text-3)}
+.concept{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;color:var(--ink);background:var(--gold);font-weight:600}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){
+  .cluster{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .b-rpm{left:-2%}.b-ang{right:-2%}.b-sts{left:0}.b-svc{right:-2%}
+}
+@media (max-width:520px){
+  .nav-status{display:none}
+  .nav .pill{margin-left:auto}
+  h1{font-size:42px}
+}
+@media (max-width:860px){
+  :root{--nav-h:62px}
+  .nav-links{display:none}
+  .nav .wrap{gap:14px}
+  .nav-status{margin-left:auto}
+  .lockup-nav{height:26px}
+  .hero-grid{grid-template-columns:minmax(0,1fr);gap:8px}
+  .hero-stage{order:-1;min-height:0;padding:10px 0 6px}
+  .seat{width:min(78vw,380px)}
+  .badge{font-size:9px;padding:5px 7px}
+  .badge b{font-size:10.5px}
+  .b-rpm{left:-9%;top:-2%}
+  .b-ang{right:-9%;top:4%}
+  .b-sts{display:none}
+  .b-svc{right:-9%;bottom:-4%;max-width:160px}
+  .cluster{grid-template-columns:minmax(0,1fr);gap:8px;padding-top:26px}
+  .svc{grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;padding:12px 14px 14px;column-gap:12px;row-gap:0}
+  .svc-rotor{grid-row:1/3;width:38px;height:38px}
+  .svc-name{grid-column:2;margin-top:0;font-size:15px}
+  .svc-meta{grid-column:2}
+  .svc-idx{grid-column:3;grid-row:1/3;align-self:center}
+  .how{height:520vh}
+  .how-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+  .how-copy h2{font-size:32px}
+  .steps{margin-top:12px}
+  .steps li{display:none;border:0;padding-top:4px;padding-bottom:0}
+  .steps li.on{display:block}
+  .steps li span{max-height:none;opacity:1}
+  .eyebrow{margin-bottom:12px}
+  .tabs{display:none}
+  .ro{padding:9px 10px}
+  .ro-v{font-size:24px}
+  .ro-k,.ro-u{font-size:8.5px;letter-spacing:.04em}
+  .scope{padding:14px 12px 12px}
+  .ch-h{gap:6px}
+  .ch-h .ch-n{display:none}
+  .ch-s{font-size:11.5px}
+  .trace{height:24px}
+  .biz-grid{grid-template-columns:minmax(0,1fr)}
+  .spec li{grid-template-columns:minmax(0,1fr);gap:2px}
+  .foot-cols{gap:32px}
+}
+@media (max-height:760px) and (min-width:861px){
+  .steps li{padding:8px 0 8px 46px}
+  .readouts{margin:10px 0 6px}
+}
+
+/* reduced motion: still frames, no pinned scrubbing for the card rail */
+.rm [data-st],.rm .rv,.rm .hud,.rm .cluster-item,.rm .nav-fade{transition:none!important;opacity:1!important;transform:none!important;filter:none!important}
+.rm .ticker-t{animation:none}
+.rm .dot{animation:none}
+.rm .glimpse{height:auto}
+.rm .glimpse .pin{position:relative;height:auto;overflow:visible}
+.rm .rail{display:flex;flex-wrap:wrap;justify-content:center;gap:40px;padding:40px 0;overflow:visible}
+.rm .card{position:relative;left:auto;top:auto;transform:none!important;filter:none!important;opacity:1!important}
+</style>
+</head>
+<body class="pre intro">
+
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<!-- intro: glyphs lock into the wordmark, the wave ignites, the rotor spools up -->
+<div id="intro" aria-hidden="true">
+  <div class="xh xh-h" id="xhH"></div>
+  <div class="xh xh-v" id="xhV"></div>
+  <canvas id="glyph"></canvas>
+  <div class="iword" id="iword"><svg class="iword-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 606.35 100" role="img" aria-label="CarworX"><g transform="translate(0,100) scale(1)" fill="#ffffff"><path d="M50.96,2.6L50.96,2.6Q37.4,2.6 27.67,-2.19Q17.95,-6.99 11.85,-14.66Q5.75,-22.33 2.88,-31.37Q0,-40.41 0,-48.77L0,-48.77L0,-51.78Q0,-61.1 2.95,-70.14Q5.89,-79.18 12.05,-86.58Q18.22,-93.97 27.74,-98.42Q37.26,-102.88 50.27,-102.88L50.27,-102.88Q63.84,-102.88 73.9,-98.01Q83.97,-93.15 90,-84.32Q96.03,-75.48 97.26,-63.7L97.26,-63.7L77.67,-63.7Q76.58,-70.55 72.81,-75.27Q69.04,-80 63.29,-82.4Q57.53,-84.79 50.27,-84.79L50.27,-84.79Q42.88,-84.79 37.12,-82.26Q31.37,-79.73 27.53,-75.07Q23.7,-70.41 21.71,-64.11Q19.73,-57.81 19.73,-50.14L19.73,-50.14Q19.73,-42.74 21.71,-36.44Q23.7,-30.14 27.67,-25.41Q31.64,-20.68 37.47,-18.08Q43.29,-15.48 50.96,-15.48L50.96,-15.48Q62.19,-15.48 69.93,-21.03Q77.67,-26.58 79.32,-36.58L79.32,-36.58L98.9,-36.58Q97.53,-25.89 91.64,-16.99Q85.75,-8.08 75.48,-2.74Q65.21,2.6 50.96,2.6Z"/><path d="M173.15,0L158.08,0L158.08,-22.05L154.93,-22.05L154.93,-46.58Q154.93,-53.01 151.78,-56.16Q148.63,-59.32 142.05,-59.32L142.05,-59.32Q138.63,-59.32 133.84,-59.18Q129.04,-59.04 124.18,-58.84Q119.32,-58.63 115.48,-58.36L115.48,-58.36L115.48,-74.52Q118.63,-74.79 122.6,-75.07Q126.58,-75.34 130.75,-75.41Q134.93,-75.48 138.63,-75.48L138.63,-75.48Q150.14,-75.48 157.74,-72.47Q165.34,-69.45 169.25,-63.01Q173.15,-56.58 173.15,-46.16L173.15,-46.16L173.15,0ZM134.11,1.92L134.11,1.92Q126.03,1.92 119.93,-0.96Q113.84,-3.84 110.48,-9.18Q107.12,-14.52 107.12,-22.05L107.12,-22.05Q107.12,-30.27 111.16,-35.48Q115.21,-40.68 122.53,-43.29Q129.86,-45.89 139.73,-45.89L139.73,-45.89L156.99,-45.89L156.99,-34.52L139.45,-34.52Q132.88,-34.52 129.38,-31.3Q125.89,-28.08 125.89,-23.01L125.89,-23.01Q125.89,-17.95 129.38,-14.79Q132.88,-11.64 139.45,-11.64L139.45,-11.64Q143.42,-11.64 146.78,-13.08Q150.14,-14.52 152.4,-18.01Q154.66,-21.51 154.93,-27.53L154.93,-27.53L159.59,-22.19Q158.9,-14.38 155.82,-9.04Q152.74,-3.7 147.33,-0.89Q141.92,1.92 134.11,1.92Z"/><path d="M212.05,0L193.01,0L193.01,-74.38L208.08,-74.38L208.08,-42.88L207.67,-42.88Q207.67,-58.9 214.52,-67.12Q221.37,-75.34 234.66,-75.34L234.66,-75.34L237.4,-75.34L237.4,-58.77L232.19,-58.77Q222.6,-58.77 217.33,-53.63Q212.05,-48.49 212.05,-38.77L212.05,-38.77L212.05,0Z"/><path d="M287.12,0L273.15,0L287.26,-71.92L309.18,-71.92L325.48,0L310.41,0L293.84,-71.51L301.78,-71.51L287.12,0ZM282.6,0L267.53,0L267.4,-15.62L282.6,-15.62L282.6,0ZM277.4,0L259.86,0L239.59,-74.38L258.08,-74.38L277.4,0ZM330.27,0L315.21,0L315.21,-15.62L330.41,-15.62L330.27,0ZM337.67,0L321.23,0L338.36,-74.38L355.62,-74.38L337.67,0Z"/><path d="M404.93,2.6L404.93,2.6Q395.07,2.6 387.53,-0.55Q380,-3.7 374.79,-9.11Q369.59,-14.52 366.92,-21.37Q364.25,-28.22 364.25,-35.62L364.25,-35.62L364.25,-38.49Q364.25,-46.16 367.05,-53.08Q369.86,-60 375.14,-65.41Q380.41,-70.82 387.95,-73.9Q395.48,-76.99 404.93,-76.99L404.93,-76.99Q414.38,-76.99 421.92,-73.9Q429.45,-70.82 434.73,-65.41Q440,-60 442.74,-53.08Q445.48,-46.16 445.48,-38.49L445.48,-38.49L445.48,-35.62Q445.48,-28.22 442.81,-21.37Q440.14,-14.52 434.93,-9.11Q429.73,-3.7 422.19,-0.55Q414.66,2.6 404.93,2.6ZM404.93,-13.7L404.93,-13.7Q411.92,-13.7 416.71,-16.78Q421.51,-19.86 423.97,-25.14Q426.44,-30.41 426.44,-37.12L426.44,-37.12Q426.44,-43.97 423.9,-49.25Q421.37,-54.52 416.51,-57.6Q411.64,-60.68 404.93,-60.68L404.93,-60.68Q398.22,-60.68 393.36,-57.6Q388.49,-54.52 385.89,-49.25Q383.29,-43.97 383.29,-37.12L383.29,-37.12Q383.29,-30.41 385.82,-25.14Q388.36,-19.86 393.15,-16.78Q397.95,-13.7 404.93,-13.7Z"/><path d="M480.14,0L461.1,0L461.1,-74.38L476.16,-74.38L476.16,-42.88L475.75,-42.88Q475.75,-58.9 482.6,-67.12Q489.45,-75.34 502.74,-75.34L502.74,-75.34L505.48,-75.34L505.48,-58.77L500.27,-58.77Q490.68,-58.77 485.41,-53.63Q480.14,-48.49 480.14,-38.77L480.14,-38.77L480.14,0Z"/><path d="M507.4,0L528.22,0L606.35,-100L585.53,-100ZM508.49,-100L529.32,-100L605.25,0L584.43,0Z"/></g></svg></div>
+  <div class="boot mono" id="boot">
+    <span>CX/IGN 1.0 · cold start</span>
+    <span>geometry · turbine · 5 blades · sweep 110°</span>
+    <span>hub r21 · tip r100 · log-spiral</span>
+    <span>x-stroke · <b>38.0°</b></span>
+    <span>signal · #ff3b0a · gold · #ffb547</span>
+    <span><b>ready</b></span>
+  </div>
+</div>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="CarworX home"><svg class="lockup lockup-nav" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 852.35 184" role="img" aria-label="CarworX"><g class="lk-mark" transform="translate(92,92) scale(0.92) rotate(21.9494)" fill="#ffffff"><path transform="rotate(0)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(72)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(144)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(216)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(288)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/></g><g class="lk-word" transform="translate(246,142) scale(1)" fill="#ffffff"><path d="M50.96,2.6L50.96,2.6Q37.4,2.6 27.67,-2.19Q17.95,-6.99 11.85,-14.66Q5.75,-22.33 2.88,-31.37Q0,-40.41 0,-48.77L0,-48.77L0,-51.78Q0,-61.1 2.95,-70.14Q5.89,-79.18 12.05,-86.58Q18.22,-93.97 27.74,-98.42Q37.26,-102.88 50.27,-102.88L50.27,-102.88Q63.84,-102.88 73.9,-98.01Q83.97,-93.15 90,-84.32Q96.03,-75.48 97.26,-63.7L97.26,-63.7L77.67,-63.7Q76.58,-70.55 72.81,-75.27Q69.04,-80 63.29,-82.4Q57.53,-84.79 50.27,-84.79L50.27,-84.79Q42.88,-84.79 37.12,-82.26Q31.37,-79.73 27.53,-75.07Q23.7,-70.41 21.71,-64.11Q19.73,-57.81 19.73,-50.14L19.73,-50.14Q19.73,-42.74 21.71,-36.44Q23.7,-30.14 27.67,-25.41Q31.64,-20.68 37.47,-18.08Q43.29,-15.48 50.96,-15.48L50.96,-15.48Q62.19,-15.48 69.93,-21.03Q77.67,-26.58 79.32,-36.58L79.32,-36.58L98.9,-36.58Q97.53,-25.89 91.64,-16.99Q85.75,-8.08 75.48,-2.74Q65.21,2.6 50.96,2.6Z"/><path d="M173.15,0L158.08,0L158.08,-22.05L154.93,-22.05L154.93,-46.58Q154.93,-53.01 151.78,-56.16Q148.63,-59.32 142.05,-59.32L142.05,-59.32Q138.63,-59.32 133.84,-59.18Q129.04,-59.04 124.18,-58.84Q119.32,-58.63 115.48,-58.36L115.48,-58.36L115.48,-74.52Q118.63,-74.79 122.6,-75.07Q126.58,-75.34 130.75,-75.41Q134.93,-75.48 138.63,-75.48L138.63,-75.48Q150.14,-75.48 157.74,-72.47Q165.34,-69.45 169.25,-63.01Q173.15,-56.58 173.15,-46.16L173.15,-46.16L173.15,0ZM134.11,1.92L134.11,1.92Q126.03,1.92 119.93,-0.96Q113.84,-3.84 110.48,-9.18Q107.12,-14.52 107.12,-22.05L107.12,-22.05Q107.12,-30.27 111.16,-35.48Q115.21,-40.68 122.53,-43.29Q129.86,-45.89 139.73,-45.89L139.73,-45.89L156.99,-45.89L156.99,-34.52L139.45,-34.52Q132.88,-34.52 129.38,-31.3Q125.89,-28.08 125.89,-23.01L125.89,-23.01Q125.89,-17.95 129.38,-14.79Q132.88,-11.64 139.45,-11.64L139.45,-11.64Q143.42,-11.64 146.78,-13.08Q150.14,-14.52 152.4,-18.01Q154.66,-21.51 154.93,-27.53L154.93,-27.53L159.59,-22.19Q158.9,-14.38 155.82,-9.04Q152.74,-3.7 147.33,-0.89Q141.92,1.92 134.11,1.92Z"/><path d="M212.05,0L193.01,0L193.01,-74.38L208.08,-74.38L208.08,-42.88L207.67,-42.88Q207.67,-58.9 214.52,-67.12Q221.37,-75.34 234.66,-75.34L234.66,-75.34L237.4,-75.34L237.4,-58.77L232.19,-58.77Q222.6,-58.77 217.33,-53.63Q212.05,-48.49 212.05,-38.77L212.05,-38.77L212.05,0Z"/><path d="M287.12,0L273.15,0L287.26,-71.92L309.18,-71.92L325.48,0L310.41,0L293.84,-71.51L301.78,-71.51L287.12,0ZM282.6,0L267.53,0L267.4,-15.62L282.6,-15.62L282.6,0ZM277.4,0L259.86,0L239.59,-74.38L258.08,-74.38L277.4,0ZM330.27,0L315.21,0L315.21,-15.62L330.41,-15.62L330.27,0ZM337.67,0L321.23,0L338.36,-74.38L355.62,-74.38L337.67,0Z"/><path d="M404.93,2.6L404.93,2.6Q395.07,2.6 387.53,-0.55Q380,-3.7 374.79,-9.11Q369.59,-14.52 366.92,-21.37Q364.25,-28.22 364.25,-35.62L364.25,-35.62L364.25,-38.49Q364.25,-46.16 367.05,-53.08Q369.86,-60 375.14,-65.41Q380.41,-70.82 387.95,-73.9Q395.48,-76.99 404.93,-76.99L404.93,-76.99Q414.38,-76.99 421.92,-73.9Q429.45,-70.82 434.73,-65.41Q440,-60 442.74,-53.08Q445.48,-46.16 445.48,-38.49L445.48,-38.49L445.48,-35.62Q445.48,-28.22 442.81,-21.37Q440.14,-14.52 434.93,-9.11Q429.73,-3.7 422.19,-0.55Q414.66,2.6 404.93,2.6ZM404.93,-13.7L404.93,-13.7Q411.92,-13.7 416.71,-16.78Q421.51,-19.86 423.97,-25.14Q426.44,-30.41 426.44,-37.12L426.44,-37.12Q426.44,-43.97 423.9,-49.25Q421.37,-54.52 416.51,-57.6Q411.64,-60.68 404.93,-60.68L404.93,-60.68Q398.22,-60.68 393.36,-57.6Q388.49,-54.52 385.89,-49.25Q383.29,-43.97 383.29,-37.12L383.29,-37.12Q383.29,-30.41 385.82,-25.14Q388.36,-19.86 393.15,-16.78Q397.95,-13.7 404.93,-13.7Z"/><path d="M480.14,0L461.1,0L461.1,-74.38L476.16,-74.38L476.16,-42.88L475.75,-42.88Q475.75,-58.9 482.6,-67.12Q489.45,-75.34 502.74,-75.34L502.74,-75.34L505.48,-75.34L505.48,-58.77L500.27,-58.77Q490.68,-58.77 485.41,-53.63Q480.14,-48.49 480.14,-38.77L480.14,-38.77L480.14,0Z"/><path d="M507.4,0L528.22,0L606.35,-100L585.53,-100ZM508.49,-100L529.32,-100L605.25,0L584.43,0Z"/></g></svg></a>
+    <ul class="nav-links nav-fade">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#product">Product</a></li>
+      <li><a href="#business">For businesses</a></li>
+    </ul>
+    <span class="nav-status mono nav-fade"><span class="dot"></span>Pilot · ZA</span>
+    <a class="pill pill-ghost pill-sm nav-fade" href="#business">List your business</a>
+  </div>
+</header>
+
+<div class="cur mono" id="cur" aria-hidden="true"><span id="curT">X 0000 · Y 0000</span></div>
+
+<main>
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow mono" data-st style="--d:0"><i></i>Car care · South Africa</p>
+      <h1 data-st style="--d:1"><span>Car care,</span> <span class="l2">precisely booked.</span></h1>
+      <p class="sub" data-st style="--d:2">Find washes, repairs, glass, tyres and fines help near you. Ask a question, request a time and pay the business directly. CarworX never holds your money.</p>
+      <div class="cta-row" data-st style="--d:3">
+        <a class="pill pill-signal" href="#product">Find a service near me <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8"/></svg></a>
+        <span class="roll mono" aria-hidden="true">Indexing
+          <span class="roll-win"><span class="roll-reel" id="rollReel"></span></span>
+        </span>
+      </div>
+    </div>
+    <div class="hero-stage" aria-hidden="true">
+      <div class="seat" id="seat">
+        <div class="seat-fallback"><svg class="mark-still" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="CarworX"><g transform="translate(100,100) scale(1) rotate(21.9494)" fill="#ffffff"><path transform="rotate(0)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(72)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(144)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(216)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(288)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/></g></svg></div>
+        <div class="hud">
+          <div class="hairx"></div><div class="hairy"></div>
+          <svg class="dial" id="dial" viewBox="-130 -130 260 260"></svg>
+          <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+          <div class="badge mono b-rpm"><span>Rotor</span><b class="num" id="rpm">0000 rpm</b></div>
+          <div class="badge mono b-ang"><span>X-stroke</span><b class="g">38.0°</b></div>
+          <div class="badge mono b-sts"><span>Status</span><b>Pilot · R0 fee</b></div>
+          <div class="badge mono b-svc"><span id="svcIdx">Svc 01 / 05</span><b id="svcName">Wash &amp; Detailing</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="wrap cluster" id="cluster" aria-label="Services"></ul>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="how" id="how">
+  <div class="pin">
+    <div class="wrap how-grid">
+      <div class="how-copy">
+        <p class="eyebrow mono"><i></i>How it works</p>
+        <h2>Nothing is instant. <span class="dim">Everything is timed.</span></h2>
+        <ol class="steps" id="steps">
+          <li><b>Send a request</b><span>Pick a service and a time. Nothing is booked yet, and nothing is charged.</span></li>
+          <li><b>Accepted within 2 business hours</b><span>The business has 2 business hours to accept. If they don't, you're free to ask another.</span></li>
+          <li><b>Your slot is held for 15 minutes</b><span>On accept, the time is yours for 15 minutes while you pay on a secure payment partner's page.</span></li>
+          <li><b>Pay the business directly</b><span>Money goes straight to the business. CarworX never holds it.</span></li>
+          <li><b>Repairs start with a written quote</b><span>Valid for 7 days. You approve that exact quote, then pay.</span></li>
+          <li><b>Extra work means a new quote</b><span>Anything beyond the approved quote needs a new quote you approve first.</span></li>
+        </ol>
+      </div>
+      <div class="scope" id="scope" role="img" aria-label="Timing diagram. Booking: request sent, accepted within 2 business hours, slot held 15 minutes, paid directly to the business. Repair: written quote valid 7 days, approved, paid; extra work needs a new approved quote.">
+        <div class="scope-head mono">
+          <span>Telemetry</span>
+          <div class="tabs" aria-hidden="true"><button class="tab on" data-tab="0" tabindex="-1">Booking · Thandi</button><button class="tab" data-tab="1" tabindex="-1">Repair quote · Pieter</button></div>
+          <span class="clock num" id="clock">T+0:00:00</span>
+        </div>
+        <div class="readouts" id="readouts">
+          <div class="ro"><span class="ro-k mono"></span><span class="ro-v num"></span><span class="ro-u mono"></span></div>
+          <div class="ro"><span class="ro-k mono"></span><span class="ro-v num"></span><span class="ro-u mono"></span></div>
+          <div class="ro"><span class="ro-k mono"></span><span class="ro-v num"></span><span class="ro-u mono"></span></div>
+        </div>
+        <div class="lanes" id="lanes"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRODUCT GLIMPSE ================= -->
+<section class="glimpse" id="product">
+  <div class="pin">
+    <div class="gl-in">
+      <div class="wrap sec-head">
+        <div>
+          <p class="eyebrow mono"><i></i>Product</p>
+          <h2>Dark glass. <span class="dim">Crisp numbers.</span></h2>
+        </div>
+        <p class="gl-cap mono" aria-live="polite"><b class="num" id="glN">01 / 04</b><span id="glT">Search results</span></p>
+      </div>
+      <div class="rail" id="rail">
+
+        <!-- 1 search results -->
+        <div class="card" data-t="Search results"><div class="card-in"><div class="phone"><div class="scr">
+          <div class="island"></div>
+          <div class="sb"><span>09:41</span><span>5G<i></i></span></div>
+          <div class="pad" style="padding-top:14px">
+            <div class="field"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="#b3bcc6" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="#b3bcc6" stroke-width="1.6"/></svg>Wash &amp; Detailing<small>Rosebank</small></div>
+            <div class="chips" style="margin-top:10px"><span class="chip on">Open Sat</span><span class="chip">Mobile</span><span class="chip">≤ 5 km</span><span class="chip">From R150</span></div>
+          </div>
+          <div class="minimap"><svg viewBox="0 0 268 118" aria-hidden="true">
+            <g stroke="rgba(138,151,166,.22)" fill="none"><path d="M-10 30 C60 40 120 10 280 26"/><path d="M-10 84 C80 70 150 100 280 80"/><path d="M40 -10 C50 40 30 80 60 130"/><path d="M150 -10 C140 50 170 80 160 130"/><path d="M210 -10 L230 130"/></g>
+            <g stroke="rgba(138,151,166,.45)" fill="none" stroke-width="2"><path d="M-10 58 C70 50 170 70 280 54"/></g>
+            <circle cx="134" cy="62" r="22" fill="rgba(255,181,71,.08)" stroke="rgba(255,181,71,.35)" stroke-dasharray="2 3"/>
+            <circle cx="134" cy="62" r="4" fill="#eef1f4"/>
+            <g font-family="JetBrains Mono" font-size="9" font-weight="600" text-anchor="middle"><circle cx="96" cy="40" r="9" fill="#ff3b0a"/><text x="96" y="43" fill="#0d0f12">1</text><circle cx="176" cy="82" r="9" fill="#eef1f4"/><text x="176" y="85" fill="#0d0f12">2</text><circle cx="214" cy="34" r="9" fill="#eef1f4"/><text x="214" y="37" fill="#0d0f12">3</text></g>
+          </svg></div>
+          <div class="pad" style="padding-top:0">
+            <p class="mini" style="margin:2px 0 4px">3 near Rosebank · Sat 31 Oct</p>
+            <div class="res"><b>Keyes Ave Detail Bay</b><span class="p">R180</span><small>★ 4.8 · 1.2 km · bay</small><small style="text-align:right">from</small><span class="tag"><span class="chip sg">Slots Sat</span></span></div>
+            <div class="res"><b>Jellicoe Hand Wash</b><span class="p">R150</span><small>★ 4.6 · 2.4 km · bay</small><small style="text-align:right">from</small></div>
+            <div class="res"><b>Gloss on the Go</b><span class="p">R220</span><small>★ 4.9 · mobile</small><small style="text-align:right">+R40 travel</small><span class="tag"><span class="chip">Band B · 5–10 km</span></span></div>
+          </div>
+        </div></div></div></div>
+
+        <!-- 2 listing -->
+        <div class="card" data-t="Listing and time slots"><div class="card-in"><div class="phone"><div class="scr">
+          <div class="hero-img"><div class="island"></div><div class="sb" style="position:relative;z-index:1"><span>09:42</span><span>5G<i></i></span></div><span class="mini">Bay 2 · Keyes Ave, Rosebank</span></div>
+          <div class="pad" style="padding-top:12px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:19px;letter-spacing:-.02em;font-weight:600">Keyes Ave Detail Bay</b><span class="mini" style="color:var(--gold)">★ 4.8</span></div>
+            <p class="mini" style="margin:4px 0 10px">Wash &amp; Detailing · open Sat 07:30–15:00</p>
+            <div class="svcrow"><div><b>Express wash</b><br><small>40 min</small></div><span class="p">R180</span></div>
+            <div class="svcrow on"><div><b>Interior detail</b><br><small>2 h 30 min</small></div><span class="p">R650</span></div>
+            <div class="svcrow"><div><b>Full valet</b><br><small>3 h</small></div><span class="p">R890</span></div>
+            <p class="mini" style="margin:12px 0 8px">Sat 31 Oct</p>
+            <div class="slots"><span class="slot x">08:00</span><span class="slot on">09:00</span><span class="slot">10:30</span><span class="slot">13:00</span></div>
+            <div class="note" style="margin-top:12px">This is a request. The business has 2 business hours to accept.</div>
+            <div class="btn sg" style="margin-top:12px">Send request · R650</div>
+          </div>
+        </div></div></div></div>
+
+        <!-- 3 quote approval -->
+        <div class="card" data-t="Repair quote approval"><div class="card-in"><div class="phone"><div class="scr">
+          <div class="island"></div>
+          <div class="sb"><span>14:05</span><span>5G<i></i></span></div>
+          <div class="pad" style="padding-top:14px">
+            <p class="mini" style="margin:0">Written quote · Q-0418</p>
+            <b style="display:block;font-size:20px;letter-spacing:-.02em;font-weight:600;margin-top:4px;line-height:1.15">Front brakes, Pieter's Polo</b>
+            <p style="margin:4px 0 12px;color:var(--text-3);font-size:12px">Moreleta Brake &amp; Clutch · Pretoria East</p>
+            <div class="valid"><span class="mini" style="color:var(--gold)">Valid 6 d</span><span class="bar"><i></i></span><span class="mini">to Thu 5 Nov</span></div>
+            <div style="margin-top:12px">
+              <div class="ql"><span>Front brake pads (pair)</span><span>R1 150.00</span></div>
+              <div class="ql"><span>Skim front discs</span><span>R680.00</span></div>
+              <div class="ql"><span>Labour · 1.5 h</span><span>R975.00</span></div>
+              <div class="ql"><span style="color:var(--text-3)">VAT 15%</span><span>R420.75</span></div>
+              <div class="ql tot"><span>Total</span><span class="num">R3 225.75</span></div>
+            </div>
+            <div class="btn sg" style="margin-top:10px">Approve this exact quote</div>
+            <div class="btn gh" style="margin-top:8px">Ask a question</div>
+            <p style="font-size:11px;color:var(--text-3);margin:10px 2px 0;line-height:1.4">Extra work needs a new quote you approve. You pay the business directly.</p>
+          </div>
+        </div></div></div></div>
+
+        <!-- 4 business dashboard -->
+        <div class="card" data-t="Business dashboard"><div class="card-in"><div class="desk">
+          <div class="desk-bar"><i></i><i></i><i></i><span class="url">carworx.app/business</span></div>
+          <div class="dash">
+            <div class="dnav"><b>Keyes Ave Detail Bay</b><span class="on">Requests</span><span>Calendar</span><span>Quotes</span><span>Services &amp; prices</span><span>Travel bands</span><span>Payouts</span></div>
+            <div class="dmain">
+              <div class="dtop"><h4>Requests</h4><div class="chips"><span class="chip on">Waiting · 3</span><span class="chip">Accepted</span><span class="chip">Paid</span></div></div>
+              <div class="kpis">
+                <div class="kpi hot"><span class="mini">Oldest request</span><div class="v num">1:12<small>:40</small></div><span class="mini">left to accept</span></div>
+                <div class="kpi"><span class="mini">Waiting</span><div class="v num">3</div><span class="mini">requests</span></div>
+                <div class="kpi"><span class="mini">Paid to you · week</span><div class="v num">R8 640</div><span class="mini">direct, via partner</span></div>
+                <div class="kpi"><span class="mini">CarworX fee</span><div class="v num">R0<small>.00</small></div><span class="mini">pilot</span></div>
+              </div>
+              <div class="reqs">
+                <div class="rq mini"><span>Customer</span><span>Service</span><span>Time</span><span>To accept</span><span></span></div>
+                <div class="rq"><span>Thandi M.</span><span>Interior detail · R650</span><span>Sat 09:00</span><span class="t">1:12:40</span><span class="acts"><span>Accept</span><span>Decline</span></span></div>
+                <div class="rq"><span>Lebo K.</span><span>Express wash · R180</span><span>Sat 10:30</span><span class="t">1:48:05</span><span class="acts"><span>Accept</span><span>Decline</span></span></div>
+                <div class="rq"><span>Sipho N.</span><span>Full valet · mobile +R40</span><span>Sat 13:00</span><span class="t">1:55:30</span><span class="acts"><span>Accept</span><span>Decline</span></span></div>
+              </div>
+              <div class="dlow">
+                <div class="spark"><span class="mini">Bookings · last 7 days</span>
+                  <svg viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="sg1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff6a33" stop-opacity=".35"/><stop offset="1" stop-color="#ff6a33" stop-opacity="0"/></linearGradient></defs><path d="M0 52 L50 44 L100 48 L150 30 L200 34 L250 16 L300 22 L300 70 L0 70Z" fill="url(#sg1)"/><path d="M0 52 L50 44 L100 48 L150 30 L200 34 L250 16 L300 22" fill="none" stroke="#ffb547" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>
+                </div>
+                <div class="spark"><span class="mini">Travel bands · mobile</span>
+                  <div class="ql" style="font-size:12px"><span>A · 0–5 km</span><span>R0</span></div>
+                  <div class="ql" style="font-size:12px"><span>B · 5–10 km</span><span>R40</span></div>
+                  <div class="ql" style="font-size:12px;border:0"><span>C · 10–20 km</span><span>R90</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div></div></div>
+
+      </div>
+      <div class="ticker mono" aria-hidden="true"><div class="ticker-t" id="ticker"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOR BUSINESSES ================= -->
+<section class="biz" id="business">
+  <div class="wrap biz-grid">
+    <div class="fee rv">
+      <p class="k mono">CarworX fee · pilot</p>
+      <div class="odo num" aria-label="R0.00"><span class="r" aria-hidden="true">R</span><span class="win" aria-hidden="true"><span class="reel" id="reel"></span></span><span class="cents" aria-hidden="true">.00</span></div>
+      <p class="unit mono"><span>per booking</span><b>free listing during the pilot</b></p>
+    </div>
+    <div>
+      <p class="eyebrow mono rv"><i></i>For businesses</p>
+      <h2 class="rv" style="--d:1">Free to list. <span class="dim">R0 to us.</span></h2>
+      <p class="sub rv" style="--d:2">During the pilot, listing on CarworX is free and the CarworX fee is R0. Customers pay you directly through a secure payment partner.</p>
+      <ul class="spec rv" style="--d:3">
+        <li><span class="mono">Listing</span><span>Free during the pilot</span></li>
+        <li><span class="mono">CarworX fee</span><span>R0</span></li>
+        <li><span class="mono">Payments</span><span>Straight to you, via a secure payment partner</span></li>
+        <li><span class="mono">Requests</span><span>You have 2 business hours to accept</span></li>
+        <li><span class="mono">Repairs</span><span>Send a written quote, valid 7 days</span></li>
+        <li><span class="mono">Mobile</span><span>Set a travel charge for each distance band</span></li>
+      </ul>
+      <a class="pill pill-signal rv" style="--d:4" href="#top">List your business, free <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8"/></svg></a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <svg class="lockup lockup-foot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 852.35 184" role="img" aria-label="CarworX"><g class="lk-mark" transform="translate(92,92) scale(0.92) rotate(21.9494)" fill="#ffffff"><path transform="rotate(0)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(72)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(144)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(216)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/><path transform="rotate(288)" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/></g><g class="lk-word" transform="translate(246,142) scale(1)" fill="#ffffff"><path d="M50.96,2.6L50.96,2.6Q37.4,2.6 27.67,-2.19Q17.95,-6.99 11.85,-14.66Q5.75,-22.33 2.88,-31.37Q0,-40.41 0,-48.77L0,-48.77L0,-51.78Q0,-61.1 2.95,-70.14Q5.89,-79.18 12.05,-86.58Q18.22,-93.97 27.74,-98.42Q37.26,-102.88 50.27,-102.88L50.27,-102.88Q63.84,-102.88 73.9,-98.01Q83.97,-93.15 90,-84.32Q96.03,-75.48 97.26,-63.7L97.26,-63.7L77.67,-63.7Q76.58,-70.55 72.81,-75.27Q69.04,-80 63.29,-82.4Q57.53,-84.79 50.27,-84.79L50.27,-84.79Q42.88,-84.79 37.12,-82.26Q31.37,-79.73 27.53,-75.07Q23.7,-70.41 21.71,-64.11Q19.73,-57.81 19.73,-50.14L19.73,-50.14Q19.73,-42.74 21.71,-36.44Q23.7,-30.14 27.67,-25.41Q31.64,-20.68 37.47,-18.08Q43.29,-15.48 50.96,-15.48L50.96,-15.48Q62.19,-15.48 69.93,-21.03Q77.67,-26.58 79.32,-36.58L79.32,-36.58L98.9,-36.58Q97.53,-25.89 91.64,-16.99Q85.75,-8.08 75.48,-2.74Q65.21,2.6 50.96,2.6Z"/><path d="M173.15,0L158.08,0L158.08,-22.05L154.93,-22.05L154.93,-46.58Q154.93,-53.01 151.78,-56.16Q148.63,-59.32 142.05,-59.32L142.05,-59.32Q138.63,-59.32 133.84,-59.18Q129.04,-59.04 124.18,-58.84Q119.32,-58.63 115.48,-58.36L115.48,-58.36L115.48,-74.52Q118.63,-74.79 122.6,-75.07Q126.58,-75.34 130.75,-75.41Q134.93,-75.48 138.63,-75.48L138.63,-75.48Q150.14,-75.48 157.74,-72.47Q165.34,-69.45 169.25,-63.01Q173.15,-56.58 173.15,-46.16L173.15,-46.16L173.15,0ZM134.11,1.92L134.11,1.92Q126.03,1.92 119.93,-0.96Q113.84,-3.84 110.48,-9.18Q107.12,-14.52 107.12,-22.05L107.12,-22.05Q107.12,-30.27 111.16,-35.48Q115.21,-40.68 122.53,-43.29Q129.86,-45.89 139.73,-45.89L139.73,-45.89L156.99,-45.89L156.99,-34.52L139.45,-34.52Q132.88,-34.52 129.38,-31.3Q125.89,-28.08 125.89,-23.01L125.89,-23.01Q125.89,-17.95 129.38,-14.79Q132.88,-11.64 139.45,-11.64L139.45,-11.64Q143.42,-11.64 146.78,-13.08Q150.14,-14.52 152.4,-18.01Q154.66,-21.51 154.93,-27.53L154.93,-27.53L159.59,-22.19Q158.9,-14.38 155.82,-9.04Q152.74,-3.7 147.33,-0.89Q141.92,1.92 134.11,1.92Z"/><path d="M212.05,0L193.01,0L193.01,-74.38L208.08,-74.38L208.08,-42.88L207.67,-42.88Q207.67,-58.9 214.52,-67.12Q221.37,-75.34 234.66,-75.34L234.66,-75.34L237.4,-75.34L237.4,-58.77L232.19,-58.77Q222.6,-58.77 217.33,-53.63Q212.05,-48.49 212.05,-38.77L212.05,-38.77L212.05,0Z"/><path d="M287.12,0L273.15,0L287.26,-71.92L309.18,-71.92L325.48,0L310.41,0L293.84,-71.51L301.78,-71.51L287.12,0ZM282.6,0L267.53,0L267.4,-15.62L282.6,-15.62L282.6,0ZM277.4,0L259.86,0L239.59,-74.38L258.08,-74.38L277.4,0ZM330.27,0L315.21,0L315.21,-15.62L330.41,-15.62L330.27,0ZM337.67,0L321.23,0L338.36,-74.38L355.62,-74.38L337.67,0Z"/><path d="M404.93,2.6L404.93,2.6Q395.07,2.6 387.53,-0.55Q380,-3.7 374.79,-9.11Q369.59,-14.52 366.92,-21.37Q364.25,-28.22 364.25,-35.62L364.25,-35.62L364.25,-38.49Q364.25,-46.16 367.05,-53.08Q369.86,-60 375.14,-65.41Q380.41,-70.82 387.95,-73.9Q395.48,-76.99 404.93,-76.99L404.93,-76.99Q414.38,-76.99 421.92,-73.9Q429.45,-70.82 434.73,-65.41Q440,-60 442.74,-53.08Q445.48,-46.16 445.48,-38.49L445.48,-38.49L445.48,-35.62Q445.48,-28.22 442.81,-21.37Q440.14,-14.52 434.93,-9.11Q429.73,-3.7 422.19,-0.55Q414.66,2.6 404.93,2.6ZM404.93,-13.7L404.93,-13.7Q411.92,-13.7 416.71,-16.78Q421.51,-19.86 423.97,-25.14Q426.44,-30.41 426.44,-37.12L426.44,-37.12Q426.44,-43.97 423.9,-49.25Q421.37,-54.52 416.51,-57.6Q411.64,-60.68 404.93,-60.68L404.93,-60.68Q398.22,-60.68 393.36,-57.6Q388.49,-54.52 385.89,-49.25Q383.29,-43.97 383.29,-37.12L383.29,-37.12Q383.29,-30.41 385.82,-25.14Q388.36,-19.86 393.15,-16.78Q397.95,-13.7 404.93,-13.7Z"/><path d="M480.14,0L461.1,0L461.1,-74.38L476.16,-74.38L476.16,-42.88L475.75,-42.88Q475.75,-58.9 482.6,-67.12Q489.45,-75.34 502.74,-75.34L502.74,-75.34L505.48,-75.34L505.48,-58.77L500.27,-58.77Q490.68,-58.77 485.41,-53.63Q480.14,-48.49 480.14,-38.77L480.14,-38.77L480.14,0Z"/><path d="M507.4,0L528.22,0L606.35,-100L585.53,-100ZM508.49,-100L529.32,-100L605.25,0L584.43,0Z"/></g></svg>
+      <div class="foot-cols">
+        <ul><li class="mono">Drivers</li><li><a href="#top">Find a service</a></li><li><a href="#how">How it works</a></li><li><a href="#top">Fines &amp; Vehicle Admin</a></li></ul>
+        <ul><li class="mono">Businesses</li><li><a href="#business">List your business</a></li><li><a href="#product">Dashboard</a></li></ul>
+      </div>
+    </div>
+    <div class="foot-meta mono">
+      <span class="concept">Concept, not final</span>
+      <span>Ignition direction · Oct 2026</span>
+      <span>All businesses, people, prices and ratings are fictional</span>
+      <span>carworx.app</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// CarworX Turbine: pure geometry for the mark (no Node or browser APIs, so the preview can inline it).
+// Mark space: centred on (0,0), tip radius 100, y down, 0° = straight up, clockwise positive.
+
+const COLOR = {
+  ink: '#0d0f12',
+  graphite: '#1c2128',
+  steel: '#8a97a6',
+  paper: '#f4efe6',
+  white: '#ffffff',
+  black: '#000000',
+  signal: '#ff3b0a',
+};
+
+const BLADES = 5;
+const PITCH = 360 / BLADES;
+
+// Two optical sizes. "full" for 48 px and up; "small" (heavier blades, bigger hub) below that.
+const MARK = {
+  full:  { rHub: 21, rTip: 100, sweep: 110, lead: 50, trail: -14, rootRound: 0.04, p: 0.42, q: 0.9 },
+  small: { rHub: 27, rTip: 100, sweep: 92, lead: 64, trail: -10, rootRound: 0.04, p: 0.45, q: 0.85 },
+};
+
+// The X's rising stroke angle (degrees from vertical). Sora's own X is ~35°; 38° gives it lean.
+const X_ANGLE = 38;
+
+const rad = (d) => (d * Math.PI) / 180;
+const f2 = (n) => (Math.abs(n) < 1e-9 ? 0 : +n.toFixed(2));
+const params = (v) => (typeof v === 'string' ? MARK[v] : v);
+
+// Centreline: a logarithmic spiral from hub to tip, the path air takes through an impeller.
+// theta grows with ln(r), so the blade meets every radius at the same angle.
+function centre(p, s) {
+  const r = p.rHub + (p.rTip - p.rHub) * s;
+  const th = (rad(p.sweep) * Math.log(r / p.rHub)) / Math.log(p.rTip / p.rHub);
+  return { r, th };
+}
+const toXY = (r, th) => [r * Math.sin(th), -r * Math.cos(th)];
+
+// Thickness either side of the centreline: a skewed beta curve, full near the root, needle at the tip.
+// A negative trail value pulls the trailing edge over to the lead side, so the blade is a scythe, not a leaf.
+function profile(s, amp, root, p, q) {
+  const peak = p / (p + q);
+  const norm = Math.pow(peak, p) * Math.pow(1 - peak, q);
+  const a = (Math.pow(s, p) * Math.pow(1 - s, q)) / norm;
+  const easeRoot = s < root ? Math.sin((Math.PI / 2) * (s / root)) : 1;
+  return amp * a * easeRoot;
+}
+
+// Blade outline, lead edge hub→tip then trail edge tip→hub. k scales the thickness (0 = bare airflow line).
+function bladeOutline(variant = 'full', n = 96, k = 1) {
+  const p = params(variant);
+  const lead = [], trail = [];
+  for (let i = 0; i <= n; i++) {
+    const s = i / n;
+    const { r, th } = centre(p, s);
+    lead.push(toXY(r, th + (k * profile(s, p.lead, p.rootRound, p.p, p.q)) / r));
+    trail.push(toXY(r, th - (k * profile(s, p.trail, p.rootRound, p.p, p.q)) / r));
+  }
+  return { lead, trail: trail.reverse() };
+}
+
+// Catmull-Rom to cubic Béziers for an open run of points.
+function smooth(pts, move = true) {
+  let d = move ? `M${f2(pts[0][0])},${f2(pts[0][1])}` : '';
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += `C${f2(c1[0])},${f2(c1[1])} ${f2(c2[0])},${f2(c2[1])} ${f2(p2[0])},${f2(p2[1])}`;
+  }
+  return d;
+}
+
+function thin(pts, keep) {
+  const out = [];
+  for (let i = 0; i <= keep; i++) out.push(pts[Math.round((i / keep) * (pts.length - 1))]);
+  return out;
+}
+
+function bladePath(variant = 'full', k = 1, keep = 40) {
+  const { lead, trail } = bladeOutline(variant, 96, k);
+  const t = thin(trail, keep);
+  return smooth(thin(lead, keep)) + `L${f2(t[0][0])},${f2(t[0][1])}` + smooth(t, false) + 'Z';
+}
+
+// The airflow line along the centreline, with its length for dash drawing.
+function streamline(variant = 'full', n = 32) {
+  const p = params(variant);
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const { r, th } = centre(p, i / n);
+    pts.push(toXY(r, th));
+  }
+  let len = 0;
+  for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+  return { d: smooth(pts), len };
+}
+
+// Blade-tip direction of the unrotated top blade, degrees from vertical, clockwise.
+function tipTangent(variant = 'full') {
+  const p = params(variant);
+  const a = centre(p, 0.97), b = centre(p, 1);
+  const [x1, y1] = toXY(a.r, a.th), [x2, y2] = toXY(b.r, b.th);
+  return (Math.atan2(x2 - x1, -(y2 - y1)) * 180) / Math.PI;
+}
+
+// Resting rotation: turns the rotor so one blade's tip runs exactly parallel to the X's rising stroke.
+function restAngle(variant = 'full') {
+  return (((X_ANGLE - tipTangent(variant)) % PITCH) + PITCH) % PITCH;
+}
+
+// A rotor group. d defaults to the finished blade.
+function rotorSVG({ cx = 0, cy = 0, radius = 100, fill = COLOR.ink, variant = 'full', rotate = restAngle(variant), d = bladePath(variant), attrs = '' } = {}) {
+  const k = radius / 100;
+  let s = `<g transform="translate(${f2(cx)},${f2(cy)}) scale(${+k.toFixed(4)}) rotate(${+rotate.toFixed(4)})" fill="${fill}"${attrs}>`;
+  for (let i = 0; i < BLADES; i++) s += `<path transform="rotate(${i * PITCH})" d="${d}"/>`;
+  return s + '</g>';
+}
+
+
+(() => {
+'use strict';
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const body = document.body;
+const $ = (s, r = document) => r.querySelector(s);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const sstep = (x) => x * x * (3 - 2 * x);
+const eOut = (x) => 1 - Math.pow(1 - x, 3);
+const eInOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+const pad = (n, l = 2) => String(Math.floor(n)).padStart(l, '0');
+const NS = 'http://www.w3.org/2000/svg';
+if (RM) body.classList.add('rm');
+
+/* ---------------- data ---------------- */
+const SERVICES = [
+  ['Wash & Detailing', 'Bay or mobile'],
+  ['Repairs & Maintenance', 'Written quote · 7 days'],
+  ['Glass Repair & Replacement', 'Chips to windscreens'],
+  ['Tyres & Wheel Alignment', 'Fit · balance · align'],
+  ['Fines & Vehicle Admin', 'Straight guidance'],
+];
+const REST = restAngle('full');
+const POINTER = 347.95;           // a resting blade-tip angle near 12 o'clock (rest + 110° sweep + 3 × 72°)
+const BLADE = bladePath('full');
+
+/* ---------------- dial + cluster ---------------- */
+const dial = $('#dial');
+(function buildDial() {
+  let s = '<circle class="rim" r="126"/><circle class="rim" r="104" stroke-dasharray="1 5"/>';
+  s += '<g id="dialRot">';
+  for (let i = 0; i < 120; i++) {
+    const a = i * 3, mj = i % 24 === 0;
+    s += `<line class="tk${mj ? ' mj' : ''}" x1="0" y1="${mj ? -119 : -121}" x2="0" y2="-125" transform="rotate(${a})"/>`;
+  }
+  s += '</g><g id="dialLbl"></g>';
+  s += `<path class="ptr" d="M0,-127 l-4.5,-8 h9z" transform="rotate(${POINTER})"/>`;
+  dial.innerHTML = s;
+  const g = $('#dialLbl');
+  SERVICES.forEach((_, k) => {
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('class', 'lbl'); t.setAttribute('text-anchor', 'middle'); t.setAttribute('dominant-baseline', 'middle');
+    t.textContent = '0' + (k + 1);
+    g.appendChild(t);
+  });
+})();
+const dialRot = $('#dialRot'), dialLbls = [...$('#dialLbl').children];
+
+const cluster = $('#cluster');
+SERVICES.forEach(([name, meta], k) => {
+  const li = document.createElement('li');
+  li.className = 'cluster-item'; li.style.setProperty('--d', k);
+  const hl = (3 - k + 5) % 5;
+  let blades = '';
+  for (let i = 0; i < 5; i++) blades += `<path${i === hl ? ' class="hl"' : ''} transform="rotate(${(REST + i * 72).toFixed(3)})" d="${BLADE}"/>`;
+  li.innerHTML = `<a class="svc" href="#product" data-i="${k}">
+    <svg class="svc-rotor" viewBox="-104 -104 208 208" aria-hidden="true">${blades}</svg>
+    <span class="svc-idx mono">0${k + 1}</span>
+    <span class="svc-name">${name.replace('&', '&amp;')}</span>
+    <span class="svc-meta mono">${meta}</span>
+    <span class="svc-bar"><i></i></span></a>`;
+  cluster.appendChild(li);
+});
+const svcEls = [...cluster.querySelectorAll('.svc')];
+$('#rollReel').innerHTML = SERVICES.map(([n]) => `<span>${n.replace('&', '&amp;')}</span>`).join('');
+
+/* ratchet: indexes one blade (72°) per step, always forward, damped spring with a small overshoot */
+const R = { idx: 0, target: 0, ang: 0, vel: 0, auto: !RM, last: 0 };
+const AUTO_MS = 3800;
+function select(i, user) {
+  if (user) R.auto = false;
+  const d = (i - R.idx + 5) % 5;
+  if (!d) return;
+  R.idx = i; R.target += d * 72; R.last = performance.now();
+  if (RM) R.ang = R.target;
+  paintSelection();
+}
+function paintSelection() {
+  svcEls.forEach((el, k) => el.classList.toggle('on', k === R.idx));
+  $('#svcIdx').textContent = `Svc 0${R.idx + 1} / 05`;
+  $('#svcName').textContent = SERVICES[R.idx][0];
+  $('#rollReel').style.transform = `translateY(${-18 * R.idx}px)`;
+  dialLbls.forEach((t, k) => t.classList.toggle('on', k === R.idx));
+}
+svcEls.forEach((el) => {
+  const i = +el.dataset.i;
+  el.addEventListener('pointerenter', () => select(i, true));
+  el.addEventListener('focus', () => select(i, true));
+});
+paintSelection();
+function stepSpring(dt) {
+  const w = 13, z = .74;
+  if (!(dt > 0)) return;
+  let n = Math.max(1, Math.ceil(dt / (1 / 240)));
+  const h = dt / n;
+  while (n--) {
+    const a = -2 * z * w * R.vel - w * w * (R.ang - R.target);
+    R.vel += a * h; R.ang += R.vel * h;
+  }
+}
+
+/* ---------------- intro timeline (seconds) ---------------- */
+const K = .93;
+const T = {
+  glyph: [.12 * K, 1.42 * K], wordIn: [1.2 * K, 1.6 * K], wordUp: [1.8 * K, 2.4 * K],
+  ignite: [1.25 * K, 2.55 * K], morph: [2.15 * K, 3.2 * K], spin: [2.4 * K, 3.55 * K],
+  seat: [3.25 * K, 4.0 * K], hud: 3.2 * K, copy: 3.45 * K, end: 4.15 * K,
+};
+const clock = { start: performance.now(), frozen: null, skipped: false };
+const introT = () => (clock.frozen != null ? clock.frozen : (performance.now() - clock.start) / 1000);
+function skip() { if (introT() < T.end && clock.frozen == null) { clock.start = performance.now() - T.end * 1000; } }
+if (RM || scrollY > 40) clock.start -= 99e3;
+['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((e) => addEventListener(e, skip, { passive: true }));
+
+/* spool: turbo lag, surge, braking, then a 1.8° overshoot on a damped spring */
+function spinOffset(t) {
+  const [a, b] = T.spin;
+  if (t <= a) return -720;
+  if (t < b) { const g = Math.pow((t - a) / (b - a), 1.35); return -720 * (1 - sstep(g)); }
+  const s = t - b;
+  return 1.8 * 3.9 * Math.exp(-6 * s) * Math.sin(10 * s);
+}
+
+/* ---------------- glyph lock (Mac mini) ---------------- */
+const iword = $('#iword'), gcv = $('#glyph'), gx = gcv.getContext('2d');
+const WM = { w: 606.35, h: 100 };
+const wordPaths = [...iword.querySelectorAll('path')].map((p) => new Path2D(p.getAttribute('d')));
+const CH = '01{}[]<>/\\=+*#%&;:~^|_$@░▒▓█▚▞'.split('');
+let G = null;
+function layoutGlyphs() {
+  const W = innerWidth, H = innerHeight, mobile = W < 700;
+  const wd = Math.min(W * (mobile ? .8 : .56), 760);
+  const hd = wd * WM.h / WM.w;
+  const cols = mobile ? 64 : 92, cell = wd / cols, rows = Math.ceil(WM.h / (WM.w / cols)) + 2;
+  const off = document.createElement('canvas'); off.width = cols; off.height = rows;
+  const o = off.getContext('2d');
+  o.setTransform(cols / WM.w, 0, 0, cols / WM.w, 0, 1); // one spare cell row above the cap line
+  o.translate(0, 100);
+  o.fillStyle = '#fff'; wordPaths.forEach((p) => o.fill(p));
+  const data = o.getImageData(0, 0, cols, rows).data;
+  const cells = [];
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+    const cov = data[(y * cols + x) * 4 + 3] / 255;
+    const noise = cov < .05 && Math.random() < .2;
+    if (cov < .05 && !noise) continue;
+    const r = Math.random();
+    cells.push({ x, y, cov, noise, r, lock: T.glyph[0] + .35 + (x / cols) * .62 + r * .22, ch: (Math.random() * CH.length) | 0 });
+  }
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  gcv.width = Math.round(wd * dpr); gcv.height = Math.round(rows * cell * dpr);
+  gcv.style.width = wd + 'px'; gcv.style.height = rows * cell + 'px';
+  G = { wd, hd, cell, cols, rows, cells, dpr, cx: W / 2, cy: H * (mobile ? .4 : .46) };
+}
+function drawGlyphs(t) {
+  if (!G) return;
+  const { cell, cells, dpr } = G;
+  gx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  gx.clearRect(0, 0, gcv.width, gcv.height);
+  gx.font = `500 ${cell * 1.08}px "JetBrains Mono", monospace`;
+  gx.textAlign = 'center'; gx.textBaseline = 'middle';
+  if (t < T.glyph[0]) return;
+  for (const c of cells) {
+    const px = c.x * cell, py = c.y * cell;
+    if (t < c.lock) {
+      if (c.noise && t > c.lock - .15) continue;
+      const k = (c.ch + Math.floor(t * 26 + c.r * 40)) % CH.length;
+      const hot = c.r > .93;
+      gx.globalAlpha = c.noise ? .22 + .2 * c.r : .45 + .55 * c.r;
+      gx.fillStyle = hot ? '#ff6a33' : c.r > .7 ? '#eef1f4' : '#8a97a6';
+      gx.fillText(CH[k], px + cell / 2, py + cell / 2);
+    } else if (!c.noise && c.cov > .42) {
+      const flash = clamp(1 - (t - c.lock) / .12);
+      gx.globalAlpha = 1;
+      gx.fillStyle = flash > 0 ? `rgb(255,${Math.round(181 + 74 * (1 - flash))},${Math.round(71 + 184 * (1 - flash))})` : '#fff';
+      gx.fillRect(px + .5, py + .5, cell - 1, cell - 1);
+    }
+  }
+  gx.globalAlpha = 1;
+}
+
+/* ---------------- intro DOM choreography ---------------- */
+const navLockup = $('.lockup-nav');
+const boot = [...$('#boot').children];
+let introDone = false, heroIn = false;
+function placeIntro(t) {
+  const W = innerWidth, H = innerHeight, mobile = W < 700;
+  // wordmark: centre → up → nav (FLIP into the lockup)
+  const up = eInOut(seg(t, ...T.wordUp));
+  const fly = eInOut(seg(t, T.seat[0] - .1, T.seat[1] - .1));
+  const s0 = G.wd / WM.w;
+  let s = lerp(s0, s0 * (mobile ? .9 : .62), up), x = G.cx - WM.w * s / 2, y = lerp(G.cy, H * (mobile ? .2 : .22), up) - WM.h * s / 2;
+  if (fly > 0) {
+    // the wordmark's box inside the nav lockup: translate(246,142) in an 852.35 × 184 viewBox, cap 100
+    const lr = navLockup.getBoundingClientRect(), k = lr.width / 852.35;
+    const cx0 = G.cx, cy0 = y + WM.h * s / 2;
+    const cx1 = lr.left + (246 + WM.w / 2) * k, cy1 = lr.top + (42 + WM.h / 2) * k, s1 = k;
+    const cs = lerp(s, s1, fly), cx = lerp(cx0, cx1, fly), cy = lerp(cy0, cy1, fly);
+    s = cs; x = cx - WM.w * s / 2; y = cy - WM.h * s / 2;
+  }
+  iword.style.width = WM.w + 'px'; iword.style.height = WM.h + 'px';
+  iword.style.transform = `translate(${x}px,${y}px) scale(${s})`;
+  const wIn = seg(t, ...T.wordIn);
+  iword.style.opacity = wIn;
+  iword.style.filter = wIn < 1 ? `blur(${(1 - wIn) * 6}px)` : 'none';
+  // glyph canvas sits exactly on the wordmark while it locks
+  gcv.style.transform = `translate(${G.cx - G.wd / 2}px,${G.cy - G.hd / 2 - G.cell}px)`;
+  gcv.style.opacity = 1 - seg(t, T.wordIn[0] + .15, T.wordIn[1] + .1);
+  // crosshair hairlines draw out from the centre, then hand over to the HUD
+  const xo = eOut(seg(t, 0, .5)), xf = 1 - seg(t, T.seat[0], T.seat[0] + .4);
+  const xh = $('#xhH'), xv = $('#xhV');
+  xh.style.top = H * .58 + 'px'; xh.style.transform = `scaleX(${xo})`; xh.style.opacity = xf * .7;
+  xv.style.left = W / 2 + 'px'; xv.style.transform = `scaleY(${xo})`; xv.style.opacity = xf * .7;
+  boot.forEach((b, i) => { b.style.opacity = clamp(seg(t, .1 + i * .28, .2 + i * .28)) * (1 - seg(t, T.seat[0], T.seat[0] + .3)); });
+  if (!heroIn && t >= T.copy) { heroIn = true; body.classList.remove('pre'); }
+  if (t >= T.end && !introDone) {
+    introDone = true; body.classList.add('done'); body.classList.remove('pre', 'intro');
+    R.last = performance.now();
+  }
+}
+
+/* ---------------- WebGL: wave → voxel rotor ---------------- */
+const cv = $('#gl');
+const gl = cv.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: true, powerPreference: 'high-performance' });
+if (!gl) body.classList.add('nogl');
+const VS = `
+attribute vec3 aWave; attribute vec4 aRotor; attribute vec2 aInfo;
+uniform vec2 uView, uCenter;
+uniform float uWaveX, uDpr, uTime, uIgnite, uMorph, uRot, uTiltX, uTiltY, uSlice, uHeat, uFade, uScan, uScanAmp, uCell, uScale, uWaveY, uWaveAmp, uWaveW;
+varying vec3 vCol; varying float vA, vVox;
+void main(){
+  float seed = aWave.z, kind = aInfo.x, inv = aInfo.y, t = uTime;
+  float u = aWave.x, v = aWave.y, dep = v*.5 + .5;
+  float h = sin(u*3.6 + t*1.15 + v*2.2)*.5 + sin(u*8.3 - t*1.7 + v*4.1)*.2 + sin(u*1.4 - t*.45)*.3;
+  float env = exp(-u*u*1.35);
+  vec2 wp = vec2(uWaveX + u*uWaveW, uWaveY + v*uWaveAmp*.5 + h*env*uWaveAmp);
+  float reach = uIgnite*1.35 - abs(u);
+  float ign = smoothstep(0., .3, reach);
+  float front = exp(-reach*reach*70.) * step(.001, uIgnite) * (1. - smoothstep(.85, 1., uIgnite));
+  float shim = .5 + .5*sin(t*4.2 + seed*71.);
+  float crest = clamp(h*env, 0., 1.);
+  vec3 cW = mix(vec3(1., .231, .039), vec3(1., .71, .28), clamp(.45 + h*.7 + v*.25, 0., 1.));
+  cW = mix(cW, vec3(1., .93, .8), crest*crest*.6 + front*.6);
+  float aW = (ign*env*(.25 + .75*shim)*(.3 + .7*dep) + front*.8)*.85;
+  float sW = (1.1 + 1.6*dep + front*2.)*uDpr;
+  vec2 rp = vec2(0.); vec3 cR = vec3(0.); float aR = 0., sR = 1.;
+  if (kind < .5) {
+    float layer = aRotor.z, s = aRotor.w;
+    float scan = exp(-pow(layer - uScan, 2.)*1.4)*uScanAmp;
+    vec2 q = aRotor.xy*(1. + uSlice*.05*layer + scan*.03);
+    float c = cos(uRot), sn = sin(uRot);
+    q = vec2(q.x*c - q.y*sn, q.x*sn + q.y*c);
+    vec3 p = vec3(q, layer*uCell*(1. + uSlice*2.4));
+    float cx = cos(uTiltX), sx = sin(uTiltX);
+    p = vec3(p.x, p.y*cx - p.z*sx, p.y*sx + p.z*cx);
+    float cy = cos(uTiltY), sy = sin(uTiltY);
+    p = vec3(p.x*cy + p.z*sy, p.y, -p.x*sy + p.z*cy);
+    float shade = .78 + .22*clamp(p.z/(uCell*6.) + .5, 0., 1.);
+    cR = vec3(.94, .955, .97)*shade;
+    vec3 hot = mix(vec3(1., .71, .28), vec3(1., .231, .039), s);
+    cR = mix(cR, hot, uHeat*(1. - .45*s));
+    cR = mix(cR, vec3(1., .74, .36), scan*.55);
+    aR = inv*(1. + scan*.5);
+    float f = 640./(640. - p.z);
+    rp = uCenter + p.xy*uScale*f;
+    sR = uCell*uScale*f*uDpr*.9;
+  }
+  float m = clamp(uMorph*1.7 - seed*.7, 0., 1.);
+  m = m*m*(3. - 2.*m);
+  vec2 pos; vec3 col; float a, sz;
+  if (kind < .5) {
+    vec2 sw = vec2(sin(seed*31. + t*2.), cos(seed*17. + t*1.6))*m*(1. - m)*70.;
+    pos = mix(wp, rp, m) + sw; col = mix(cW, cR, m); a = mix(aW, aR, m); sz = mix(sW, sR, m); vVox = m;
+  } else {
+    pos = wp + vec2(0., -m*40.); col = cW; a = aW*(1. - m); sz = sW; vVox = 0.;
+  }
+  vec2 cl = pos/uView*2. - 1.;
+  gl_Position = vec4(cl.x, -cl.y, 0., 1.);
+  gl_PointSize = max(sz, 1.);
+  vCol = col; vA = a*uFade;
+}`;
+const FS = `
+precision mediump float;
+varying vec3 vCol; varying float vA, vVox;
+void main(){
+  vec2 q = gl_PointCoord;
+  float inner = step(.12, q.x)*step(.12, q.y)*step(q.x, .88)*step(q.y, .88);
+  float a = vA*mix(1., .72 + .28*inner, vVox);
+  gl_FragColor = vec4(vCol*a, a);
+}`;
+let P = null, U = {}, NPTS = 0, CELL = 2.6;
+function compile(type, src) {
+  const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function voxels(cell) {
+  const polys = [];
+  const { lead, trail } = bladeOutline('full', 96, 1);
+  const base = lead.concat(trail);
+  for (let i = 0; i < 5; i++) {
+    const a = (REST + i * 72) * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+    polys.push(base.map(([x, y]) => [x * c - y * s, x * s + y * c]));
+  }
+  const inside = (pts, x, y) => {
+    let o = false;
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+      const [xi, yi] = pts[i], [xj, yj] = pts[j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) o = !o;
+    }
+    return o;
+  };
+  const out = [];
+  for (let y = -101 + cell / 2; y < 101; y += cell) for (let x = -101 + cell / 2; x < 101; x += cell) {
+    const r = Math.hypot(x, y);
+    if (r < 20 || r > 101) continue;
+    if (!polys.some((p) => inside(p, x, y))) continue;
+    const s = clamp((r - 21) / 79);
+    const L = Math.max(1, Math.round(1 + Math.pow(1 - s, 1.25) * 6));
+    for (let l = 0; l < L; l++) out.push([x, y, l - (L - 1) / 2, s, 1 / L]);
+  }
+  return out;
+}
+function buildGL() {
+  if (!gl) return;
+  try {
+    P = gl.createProgram();
+    gl.attachShader(P, compile(gl.VERTEX_SHADER, VS)); gl.attachShader(P, compile(gl.FRAGMENT_SHADER, FS));
+    gl.linkProgram(P);
+    if (!gl.getProgramParameter(P, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(P));
+  } catch (e) { console.warn('Ignition: WebGL unavailable, showing still mark.', e.message); P = null; body.classList.add('nogl'); return; }
+  gl.useProgram(P);
+  const vox = voxels(CELL);
+  const dust = innerWidth < 700 ? 3500 : 9000;
+  NPTS = vox.length + dust;
+  const rows = 44, cols = Math.ceil(NPTS / rows);
+  const slots = Array.from({ length: rows * cols }, (_, i) => i);
+  for (let i = slots.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [slots[i], slots[j]] = [slots[j], slots[i]]; }
+  const W = new Float32Array(NPTS * 3), Ro = new Float32Array(NPTS * 4), In = new Float32Array(NPTS * 2);
+  for (let i = 0; i < NPTS; i++) {
+    const sl = slots[i], cx = sl % cols, ry = (sl / cols) | 0;
+    W[i * 3] = (cx / (cols - 1)) * 2 - 1 + (Math.random() - .5) * .004;
+    W[i * 3 + 1] = (ry / (rows - 1)) * 2 - 1;
+    W[i * 3 + 2] = Math.random();
+    if (i < vox.length) { const v = vox[i]; Ro.set([v[0], v[1], v[2], v[3]], i * 4); In.set([0, v[4]], i * 2); }
+    else In.set([1, 0], i * 2);
+  }
+  const attr = (name, data, size) => {
+    const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(P, name); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+  };
+  attr('aWave', W, 3); attr('aRotor', Ro, 4); attr('aInfo', In, 2);
+  ['uView', 'uCenter', 'uDpr', 'uTime', 'uIgnite', 'uMorph', 'uRot', 'uTiltX', 'uTiltY', 'uSlice', 'uHeat', 'uFade', 'uScan', 'uScanAmp', 'uCell', 'uScale', 'uWaveY', 'uWaveAmp', 'uWaveW', 'uWaveX']
+    .forEach((n) => (U[n] = gl.getUniformLocation(P, n)));
+  gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+  gl.clearColor(0, 0, 0, 0);
+}
+let DPR = 1;
+function sizeGL() {
+  if (!gl) return;
+  DPR = Math.min(devicePixelRatio || 1, 1.75);
+  cv.width = Math.round(innerWidth * DPR); cv.height = Math.round(innerHeight * DPR);
+  gl.viewport(0, 0, cv.width, cv.height);
+}
+
+/* ---------------- telemetry (how it works) ---------------- */
+const LANES = [
+  { name: 'book', clockSpan: [0, 7200 + 900], readouts: null, axis: [[0, 'T0'], [6, 'Request'], [28, '+0:47 accepted'], [62, '≤ 2 business h'], [64.5, null], [100, 'Booked', 'end']],
+    chans: [
+      { id: 'CH1', n: 'Request', on: [[3, 6]], st: [[0, 'Idle'], [3, 'Sent · Interior detail · Sat 09:00 · Rosebank']] },
+      { id: 'CH2', n: 'Accept window', win: [6, 62], on: [[6, 28]], st: [[0, '—'], [6, 'Waiting for Keyes Ave Detail Bay'], [28, 'Accepted after 0:47']] },
+      { id: 'CH3', n: 'Slot hold', on: [[29, 80]], st: [[0, '—'], [29, 'Slot held for you · 15:00'], [80, 'Released into the booking']] },
+      { id: 'CH4', n: 'Payment', on: [[76, 80]], st: [[0, '—'], [76, 'Paid on partner page → the business, R650']] },
+      { id: 'CH5', n: 'Booking', on: [[80, 100]], st: [[0, 'Requested'], [28, 'Accepted'], [29, 'Held'], [80, 'Confirmed · Sat 31 Oct, 09:00']] },
+    ] },
+  { name: 'quote', axis: [[0, 'D0'], [16.7, 'D1'], [33.3, 'D2'], [50, 'D3'], [66.7, 'D4'], [83.3, 'D5'], [100, 'D7', 'end']],
+    chans: [
+      { id: 'CH1', n: 'Quote', on: [[2, 5]], st: [[0, 'Idle'], [2, 'Written quote Q-0418 · R3 225.75']] },
+      { id: 'CH2', n: 'Valid', win: [5, 100], on: [[5, 100]], st: [[0, '—'], [5, 'Valid 7 days · to Thu 5 Nov']] },
+      { id: 'CH3', n: 'Approve', on: [[26, 29]], st: [[0, '—'], [26, 'Pieter approves this exact quote']] },
+      { id: 'CH4', n: 'Payment', on: [[31, 34], [74, 77]], st: [[0, '—'], [31, 'Paid to Moreleta Brake & Clutch'], [74, 'Extra paid, after approval']] },
+      { id: 'CH5', n: 'Extra work', on: [[55, 58], [66, 69]], st: [[0, 'None'], [55, 'Worn caliper found: new quote Q-0418-B'], [66, 'Q-0418-B approved separately']] },
+    ] },
+];
+function wave(on) {
+  const hi = 6, lo = 26; let d = `M0,${lo}`;
+  on.forEach(([a, b]) => { d += ` L${a * 10},${lo} L${a * 10},${hi} L${b * 10},${hi} L${b * 10},${lo}`; });
+  return d + ` L1000,${lo}`;
+}
+const lanesEl = $('#lanes');
+LANES.forEach((L, li) => {
+  const el = document.createElement('div');
+  el.className = 'lane' + (li === 0 ? ' on' : '');
+  let s = '<div style="position:relative">';
+  L.chans.forEach((c) => {
+    s += `<div class="ch"><div class="ch-h mono"><b>${c.id}</b><span class="ch-n">${c.n}</span><span class="ch-s"></span></div>
+      <svg class="trace" viewBox="0 0 1000 30" preserveAspectRatio="none" aria-hidden="true">
+      ${c.win ? `<path class="tr-win" d="M${c.win[0] * 10},4 H${c.win[1] * 10} V28 H${c.win[0] * 10}Z"/>` : ''}
+      <path class="tr-bg" d="${wave(c.on)}"/><g class="fgclip"><path class="tr-fg" d="${wave(c.on)}"/></g></svg></div>`;
+  });
+  s += `<div class="playhead"></div>`;
+  s += '</div><div class="axis mono">' + (L.name === 'book' ? '<i class="brk" style="left:28.5%"></i><i class="brk" style="left:80.5%"></i>' : '') + L.axis.filter((a) => a[1]).map(([x, t, c]) => `<span${c ? ` class="${c}"` : ''} style="left:${x}%">${t}</span>`).join('') + '</div>';
+  el.innerHTML = s;
+  lanesEl.appendChild(el);
+  L.el = el; L.chEls = [...el.querySelectorAll('.ch')];
+});
+const steps = [...$('#steps').children].map((li, i) => (li.dataset.n = '0' + (i + 1), li)), roEls = [...$('#readouts').children], tabs = [...document.querySelectorAll('.tab')];
+const fmtHMS = (s) => `${Math.floor(s / 3600)}:${pad((s % 3600) / 60)}:${pad(s % 60)}`;
+const fmtMS = (s) => `${pad(s / 60)}:${pad(s % 60)}`;
+function setRo(i, k, v, u, cls) {
+  const el = roEls[i];
+  el.children[0].textContent = k; el.children[1].textContent = v; el.children[2].textContent = u;
+  el.className = 'ro' + (cls ? ' ' + cls : '');
+}
+let lastLane = -1;
+function updateHow(s) {
+  const lane = s < .5 ? 0 : 1;
+  const x = lane === 0 ? clamp(s / .46) * 100 : clamp((s - .52) / .44) * 100;
+  if (lane !== lastLane) {
+    LANES.forEach((L, i) => L.el.classList.toggle('on', i === lane));
+    tabs.forEach((t, i) => t.classList.toggle('on', i === lane));
+    lastLane = lane;
+  }
+  const L = LANES[lane];
+  L.el.style.setProperty('--ph', x + '%');
+  L.chEls.forEach((el, i) => {
+    const c = L.chans[i];
+    let st = c.st[0][1]; c.st.forEach(([at, txt]) => { if (x >= at) st = txt; });
+    const sEl = el.querySelector('.ch-s'); if (sEl.textContent !== st) sEl.textContent = st;
+    el.classList.toggle('live', c.on.some(([a, b]) => x >= a && x <= b + 1.5));
+  });
+  let step;
+  if (lane === 0) {
+    step = x < 6 ? 0 : x < 28 ? 1 : x < 76 ? 2 : 3;
+    // time model: 0–28% covers the first 47 min of a 2 h window; 29–80% is the 15-minute hold
+    const accEl = Math.round(clamp((x - 6) / 22) * 47 * 60);
+    const accLeft = 7200 - accEl;
+    setRo(0, 'Accept window', fmtHMS(accLeft), x >= 28 ? 'accepted · time to spare' : 'business hours left', x >= 6 && x < 28 ? 'hot' : x >= 28 ? 'ok' : '');
+    const held = Math.round(clamp((x - 29) / 51) * 11.25 * 60);
+    setRo(1, 'Slot hold', fmtMS(900 - held), x >= 80 ? 'paid · slot confirmed' : x >= 29 ? 'held while you pay' : 'starts on accept', x >= 29 && x < 80 ? 'hot' : x >= 80 ? 'ok' : '');
+    setRo(2, 'CarworX fee', 'R0', 'pilot · paid to business', '');
+    $('#clock').textContent = 'T+' + fmtHMS(accEl + held);
+  } else {
+    step = x < 26 ? 4 : x < 55 ? 4 : 5;
+    const days = 7 * (1 - clamp((x - 5) / 95));
+    const d = Math.floor(days), h = Math.floor((days - d) * 24);
+    setRo(0, 'Quote valid', x < 5 ? '7d 00h' : `${d}d ${pad(h)}h`, 'then it expires', x >= 5 ? 'hot' : '');
+    setRo(1, 'Approved', x >= 66 ? 'R4 090.75' : x >= 26 ? 'R3 225.75' : 'R0.00', x >= 66 ? 'two quotes, both approved' : x >= 26 ? 'this exact quote' : 'waiting for you', x >= 26 ? 'ok' : '');
+    setRo(2, 'CarworX fee', 'R0', 'pilot · paid to business', '');
+    $('#clock').textContent = 'D+' + (7 - days).toFixed(2);
+  }
+  steps.forEach((li, i) => li.classList.toggle('on', i === step));
+}
+
+/* ---------------- product rail ---------------- */
+const rail = $('#rail'), cards = [...rail.children];
+$('#ticker').innerHTML = (() => {
+  const f = ['R0 CarworX fee during the pilot', '2 business hours to accept', '15-minute slot hold', '7-day written quotes', 'Pay the business directly', 'Travel charge by distance band', 'Free listing for businesses'];
+  const one = f.map((x) => `<span><i></i>${x}</span>`).join('');
+  return one + one;
+})();
+function fitCards() {
+  const rw = rail.clientWidth, rh = rail.clientHeight || innerHeight * .6;
+  cards.forEach((c) => {
+    const inner = c.firstElementChild, dev = inner.firstElementChild;
+    const isDesk = dev.classList.contains('desk');
+    if (isDesk) dev.style.width = Math.min(880, rw - 32) + 'px';
+    const w = dev.offsetWidth, h = dev.offsetHeight;
+    const k = RM ? Math.min(1, (rw - 32) / w) : Math.min(1, (rh - 24) / h, (rw - 32) / w);
+    inner.style.transform = `scale(${k})`;
+    inner.style.width = w + 'px'; inner.style.height = h + 'px';
+    c.style.width = w * k + 'px'; c.style.height = h * k + 'px';
+    inner.style.transformOrigin = '0 0';
+    c.dataset.w = w * k;
+  });
+}
+function updateRail(s) {
+  const f = clamp(s) * (cards.length - 1);
+  const sp = Math.min(innerWidth * .4, 540);
+  cards.forEach((c, k) => {
+    const d = k - f, ad = Math.abs(d);
+    const x = d * sp, sc = 1 - Math.min(ad, 2) * .13, bl = Math.min(ad, 2) * 7;
+    c.style.transform = `translate(-50%,-50%) translateX(${x}px) rotateY(${clamp(-d, -1.5, 1.5) * 16}deg) scale(${sc})`;
+    c.style.filter = ad < .04 ? 'none' : `blur(${bl.toFixed(1)}px) saturate(${1 - Math.min(ad, 1) * .4})`;
+    c.style.opacity = clamp(1 - Math.max(0, ad - .3) * .55, 0, 1);
+    c.style.zIndex = 10 - Math.round(ad * 2);
+  });
+  const n = Math.round(f);
+  $('#glN').textContent = `0${n + 1} / 0${cards.length}`;
+  $('#glT').textContent = cards[n].dataset.t;
+}
+
+/* ---------------- business odometer ---------------- */
+const reel = $('#reel');
+reel.innerHTML = '9876543210'.split('').map((d) => `<span>${d}</span>`).join('');
+
+/* ---------------- reveals ---------------- */
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .15 });
+document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+
+/* ---------------- cursor HUD ---------------- */
+const cur = $('#cur'), curT = $('#curT'), hero = $('.hero');
+if (matchMedia('(pointer:fine)').matches && !RM) {
+  hero.addEventListener('pointermove', (e) => {
+    cur.classList.add('on');
+    cur.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
+    curT.textContent = `X ${pad(e.clientX, 4)} · Y ${pad(e.clientY, 4)}`;
+  });
+  hero.addEventListener('pointerleave', () => cur.classList.remove('on'));
+}
+
+/* ---------------- frame loop ---------------- */
+const feeEl = $('.fee'), nav = $('#nav'), seatEl = $('#seat'), how = $('#how'), glimpse = $('#product'), biz = $('#business');
+const rpmEl = $('#rpm');
+let prevAng = 0, prevNow = performance.now(), rpmShown = 0, t0 = performance.now();
+const prog = (el) => { const r = el.getBoundingClientRect(); return clamp(-r.top / (r.height - innerHeight)); };
+
+function frame(now) {
+  const dt = clamp((now - prevNow) / 1000, 0, .05); prevNow = now;
+  const t = introT();
+  const time = RM ? 2 : (now - t0) / 1000;
+  const W = innerWidth, H = innerHeight, mobile = W < 700;
+
+  if (!introDone) placeIntro(t);
+  if (!introDone) drawGlyphs(t);
+
+  // ratchet
+  if (R.auto && introDone && now - R.last > AUTO_MS && !document.hidden) {
+    const hr = hero.getBoundingClientRect();
+    if (hr.bottom > H * .5) select((R.idx + 1) % 5, false); else R.last = now;
+  }
+  if (!RM) stepSpring(dt);
+  const bar = svcEls[R.idx].querySelector('.svc-bar i');
+  svcEls.forEach((el) => { const b = el.querySelector('.svc-bar i'); if (b !== bar) b.style.transform = 'scaleX(0)'; });
+  bar.style.transform = `scaleX(${R.auto && introDone ? clamp((now - R.last) / AUTO_MS) : 1})`;
+
+  const spin = RM ? 0 : spinOffset(t);
+  const totalAng = R.ang + spin;
+  const omega = (totalAng - prevAng) / Math.max(dt, 1e-3); prevAng = totalAng;
+  rpmShown = lerp(rpmShown, Math.abs(omega) / 6 * 100, .2);
+  rpmEl.textContent = pad(Math.min(99999, rpmShown), 4) + ' rpm';
+  dialRot.setAttribute('transform', `rotate(${R.ang.toFixed(3)})`);
+  dialLbls.forEach((el, k) => {
+    const a = (POINTER - k * 72 + R.ang) * Math.PI / 180;
+    el.setAttribute('x', (Math.sin(a) * 112).toFixed(2)); el.setAttribute('y', (-Math.cos(a) * 112).toFixed(2));
+  });
+
+  nav.classList.toggle('solid', scrollY > 30);
+
+  // sections
+  const hp = prog(how);
+  updateHow(hp);
+  if (!RM) updateRail(prog(glimpse));
+  const br = biz.getBoundingClientRect(), fr = feeEl.getBoundingClientRect();
+  const bq = clamp((H - br.top) / (H * .9));
+  reel.style.transform = `translateY(${-(RM ? 9 : sstep(bq) * 9) * 0.86}em)`;
+
+  // GL
+  if (P) {
+    const hr = hero.getBoundingClientRect();
+    const heroP = clamp(-hr.top / hr.height);
+    const sr = seatEl.getBoundingClientRect();
+    const seatC = [sr.left + sr.width / 2, sr.top + sr.height / 2], seatS = sr.width / 2 / 130;
+    const iC = [W / 2, H * .58], iS = Math.min(W * (mobile ? .3 : .17), H * .26) / 100;
+    const sk = eInOut(seg(t, ...T.seat));
+    const bizVis = clamp(Math.min((H - br.top) / (H * .6), (br.bottom) / (H * .6)));
+    const heroMode = heroP < .98;
+    const ign = seg(t, ...T.ignite);
+    const settle = seg(t, T.seat[1], T.seat[1] + 1.2);
+    let u;
+    if (heroMode) {
+      const vel = Math.abs(R.vel);
+      u = {
+        uCenter: [lerp(iC[0], seatC[0], sk), lerp(iC[1], seatC[1], sk)], uScale: lerp(iS, seatS, sk),
+        uIgnite: ign, uMorph: RM ? 1 : seg(t, ...T.morph), uWaveX: W / 2, uWaveY: H * .58, uWaveAmp: Math.min(H * .2, 170), uWaveW: W * .56,
+        uRot: (totalAng) * Math.PI / 180,
+        uTiltX: RM ? 0 : (.16 + Math.sin(time * .37) * .06) * settle + heroP * .9,
+        uTiltY: RM ? 0 : Math.sin(time * .5) * .26 * settle + heroP * .5,
+        uSlice: RM ? 0 : heroP * 1.4 + Math.min(vel / 500, .5),
+        uHeat: RM ? 0 : clamp(seg(t, ...T.ignite) * (1 - seg(t, T.spin[1], T.end + .6))) + Math.min(vel / 700, .35),
+        uScan: Math.sin(time * .8) * 5, uScanAmp: RM ? 0 : settle * .8,
+        uFade: 1 - sstep(seg(heroP, .45, .9)),
+      };
+    } else {
+      u = {
+        uCenter: seatC, uScale: seatS, uIgnite: RM ? 1 : sstep(clamp(bq * 1.2)), uMorph: 0,
+        uWaveX: fr.left + fr.width / 2, uWaveY: fr.top + fr.height * .5, uWaveAmp: Math.min(fr.height * .45, 150), uWaveW: mobile ? W * .6 : fr.width * .75,
+        uRot: 0, uTiltX: 0, uTiltY: 0, uSlice: 0, uHeat: 0, uScan: 0, uScanAmp: 0, uFade: bizVis * .6,
+      };
+    }
+    if (u.uFade > .002) {
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform2f(U.uView, W, H); gl.uniform1f(U.uDpr, DPR); gl.uniform1f(U.uTime, time); gl.uniform1f(U.uCell, CELL);
+      for (const k in u) Array.isArray(u[k]) ? gl.uniform2f(U[k], u[k][0], u[k][1]) : gl.uniform1f(U[k], u[k]);
+      gl.drawArrays(gl.POINTS, 0, NPTS);
+      cv.style.visibility = 'visible';
+    } else cv.style.visibility = 'hidden';
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------------- boot ---------------- */
+function resize() { layoutGlyphs(); sizeGL(); fitCards(); }
+addEventListener('resize', resize);
+layoutGlyphs(); buildGL(); sizeGL();
+(document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(fitCards);
+fitCards();
+if (RM || scrollY > 40) { body.classList.remove('pre', 'intro'); }
+requestAnimationFrame(frame);
+
+// capture hook for stills: __ign.seek(seconds) freezes the intro clock
+window.__ign = {
+  seek(t) { clock.frozen = t; introDone = false; heroIn = false; body.classList.add('pre', 'intro'); body.classList.remove('done'); },
+  hold() { R.auto = false; },
+  release() { clock.frozen = null; clock.start = performance.now() - T.end * 1000; },
+  T,
+};
+})();
+</script>
+</body>
+</html>
