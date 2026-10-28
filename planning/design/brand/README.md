@@ -67,12 +67,12 @@ The hero animation is an 8-second sequence in eight beats, all driven by one tim
 7. **Lock:** the rotor overshoots by 1.8° and settles on a damped spring. The last frame matches the static logo exactly.
 8. **Glint:** a band of halation sweeps across the logo, then it holds.
 
-**The light behind the logo moves with the rotor:**
-- The two steel lights orbit once while the rotor makes four turns, like gears at 4:1.
-- They come up from dark with the ignition, brighten as the rotor speeds up and flash at the boost.
-- A soft beam crosses the background with the glint.
-- During the hold they keep breathing slowly.
-- The email GIF holds the light still to stay small (272 KB).
+**The light behind the logo moves for the whole film and is driven by the rotor:**
+- **Key light:** a tight steel glow laps the frame on a wide ellipse, once per cut, so the loop closes exactly. While the rotor spools, the lap speeds up, as if the turbo drags it. In the hold it keeps cruising at about 60–170 px/s at 1080p, never stopping.
+- **Counter light:** a larger, dimmer glow laps the other way, on the opposite side.
+- **Turbine rays:** five soft shafts spread out from behind the hub, 72° apart like the blades. They rotate with the same warp: fast during the spool, slow in the hold.
+- **Level:** everything comes up from dark with the ignition, brightens with rotor speed and flashes at the boost. A soft beam crosses the background with the glint.
+- **Stills and posters** use the moment at 7.0 s. The email GIF holds the light there too, to stay small.
 
 **Rules**
 - Mechanical, not bouncy.

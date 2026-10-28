@@ -253,45 +253,68 @@ function spoolSpeed(t) {
   return u <= 0 || u >= 1 ? 0 : (Math.pow(u, 2.2) * Math.pow(1 - u, 1.3)) / V_PEAK;
 }
 
-// The light behind the logo is driven by the rotor:
-// - Orbit: the two lights circle the rotor at a 4:1 gear ratio, one full orbit while the rotor makes
-//   its four turns, so they settle exactly where they began (the loop has no seam).
-// - Level: they come up from dark with the ignition, surge with rotor speed and flash at the boost.
+// The light behind the logo moves for the whole cut and is driven by the rotor:
+// - Key light: a tight glow that laps the frame on a wide ellipse, once per cut (the loop has no seam).
+//   The lap is time-warped by the spool, so the turbo visibly drags it, and it keeps cruising in the hold.
+// - Counter light: a larger, dimmer glow on the opposite side, lapping the other way.
+// - Rays: five blurred shafts from behind the hub, 72° apart like the blades, geared to the same warp.
+// - Level: everything comes up with the ignition, surges with rotor speed and flashes at the boost.
 // - Sweep: a soft beam crosses the background with the glint.
-// - Breath: a slow drift, periodic over the cut, keeps the hold alive.
+const WARP = 0.6, RAY_PITCHES = 4;
+function lightPhase(S, tLocal) {
+  const splash = S.cut === 'splash';
+  const t = heroTime(S, tLocal), D = splash ? 8 : S.duration, tp = splash ? t : tLocal;
+  const [a, b] = BEATS.spool;
+  return (1 - WARP) * (tp / D) + WARP * spoolE((t - a) / (b - a));
+}
+function keyLight(S, tLocal) {
+  const A = 2 * Math.PI * lightPhase(S, tLocal) - 2.2;
+  return { x: S.w / 2 + 0.35 * S.w * Math.cos(A), y: S.h / 2 + 0.2 * S.h * Math.sin(A), A };
+}
 function background(S, tLocal) {
   const t = heroTime(S, tLocal);
   const exit = S.cut === 'loop' ? ease.inOutCubic(seg(tLocal, ...BEATS.exit)) : 0;
-  const period = S.cut === 'splash' ? 8 : S.duration;
-  const P = 2 * Math.PI * (tLocal / period);
   const k = Math.max(S.w, S.h);
-  const C = cam(S, t);
-  const ox = S.w / 2 + (C.x - S.w / 2) * 0.35, oy = S.h / 2 + (C.y - S.h / 2) * 0.35;
-  const geared = ((rotorAngle(t) - rotorAngle(0)) / TURNS) * (Math.PI / 180); // 0 → 2π across the spool
-  const phi = -2.95 + geared + 0.22 * Math.sin(P);
-  const rho = 0.15 * k * (1 + 0.18 * Math.cos(P));
+  const ph = lightPhase(S, tLocal), K = keyLight(S, tLocal);
   const ig = ease.inOutCubic(seg(t, 0.1, 1.4)) * (1 - exit);
+  const sp = spoolSpeed(t) * (1 - exit);
   const flash = Math.exp(-Math.pow((t - (BEATS.boost[0] + 0.2)) / 0.28, 2)) * (1 - exit);
-  const level = 0.42 + 0.48 * ig + 0.45 * spoolSpeed(t) * (1 - exit) + 0.4 * flash + 0.05 * Math.sin(2 * P);
-  const L = (ang, r, rx, ry, id, op) => {
-    const x = ox + r * Math.cos(ang), y = oy + r * Math.sin(ang) * 0.6;
-    const rot = 9 * Math.sin(ang) - 4;
-    return `<ellipse cx="${f2(x)}" cy="${f2(y)}" rx="${f2(rx * k)}" ry="${f2(ry * k)}" fill="url(#${id})" opacity="${f2(Math.min(1, op))}" transform="rotate(${f2(rot)} ${f2(x)} ${f2(y)})"/>`;
-  };
+  const level = 0.45 + 0.4 * ig + 0.35 * sp + 0.35 * flash;
+  const L = (x, y, rx, ry, rot, id, op) =>
+    `<ellipse cx="${f2(x)}" cy="${f2(y)}" rx="${f2(rx)}" ry="${f2(ry)}" fill="url(#${id})" opacity="${f2(Math.min(1, op))}" transform="rotate(${f2(rot)} ${f2(x)} ${f2(y)})"/>`;
+  const B = Math.PI - 2 * Math.PI * ph + 0.6;
+  const cx2 = S.w / 2 + 0.26 * S.w * Math.cos(B), cy2 = S.h / 2 + 0.16 * S.h * Math.sin(B);
   let body = `<rect width="${S.w}" height="${S.h}" fill="${COLOR.ink}"/>` +
-    L(phi, rho, 0.46, 0.2, 'g1', level) +
-    L(phi + Math.PI + 0.25, rho * 1.3, 0.36, 0.15, 'g2', level * 0.95);
-  let defs = '';
+    L(cx2, cy2, 0.34 * k, 0.2 * k, 12 * Math.sin(B), 'g2', level * 0.9) +
+    L(K.x, K.y, 0.2 * k, 0.13 * k, 14 * Math.sin(K.A) - 6, 'g1', level);
+  // Rays from behind the hub, following the camera so they stay seated behind the rotor.
+  const C = cam(S, t);
+  const rayOp = (0.1 + 0.9 * ig) * (0.5 + 0.5 * sp + 0.6 * flash);
+  const rot = 72 * RAY_PITCHES * ph;
+  // Soft edges come from stacked wedges of growing width (a full-frame blur costs seconds per frame).
+  const len = 0.95 * k;
+  let rays = '';
+  for (const half of [0.02, 0.04, 0.06, 0.08, 0.1, 0.12]) {
+    let d = '';
+    for (let i = 0; i < BLADES; i++) {
+      const a0 = ((rot + i * PITCH - 90) * Math.PI) / 180;
+      const p = (ang) => `${f2(C.x + len * Math.cos(ang))},${f2(C.y + len * Math.sin(ang))}`;
+      d += `M${f2(C.x)},${f2(C.y)}L${p(a0 - half)}L${p(a0 + half)}Z`;
+    }
+    rays += `<path d="${d}" fill="url(#ray)"/>`;
+  }
+  body += `<g opacity="${f2(Math.min(1, rayOp))}">${rays}</g>`;
+  let defs = `<radialGradient id="ray" gradientUnits="userSpaceOnUse" cx="${f2(C.x)}" cy="${f2(C.y)}" r="${f2(0.7 * k)}"><stop offset="0" stop-color="#a9b8cb" stop-opacity="0"/><stop offset=".12" stop-color="#a9b8cb" stop-opacity=".045"/><stop offset=".45" stop-color="#a9b8cb" stop-opacity=".02"/><stop offset="1" stop-color="#a9b8cb" stop-opacity="0"/></radialGradient>`;
   const gl = seg(t, BEATS.glint[0] - 0.15, BEATS.glint[1] + 0.25);
   if (gl > 0 && gl < 1) {
     const span = S.w + 1.2 * k, bx = -0.6 * k + span * ease.inOutCubic(gl), bw = 0.22 * k;
-    defs = `<linearGradient id="beam" gradientUnits="userSpaceOnUse" x1="${f2(bx - bw)}" y1="${f2(S.h / 2 + bw * 0.78)}" x2="${f2(bx + bw)}" y2="${f2(S.h / 2 - bw * 0.78)}"><stop offset="0" stop-color="#b9c6d6" stop-opacity="0"/><stop offset=".5" stop-color="#b9c6d6" stop-opacity="${f2(0.16 * Math.sin(Math.PI * gl))}"/><stop offset="1" stop-color="#b9c6d6" stop-opacity="0"/></linearGradient>`;
+    defs += `<linearGradient id="beam" gradientUnits="userSpaceOnUse" x1="${f2(bx - bw)}" y1="${f2(S.h / 2 + bw * 0.78)}" x2="${f2(bx + bw)}" y2="${f2(S.h / 2 - bw * 0.78)}"><stop offset="0" stop-color="#b9c6d6" stop-opacity="0"/><stop offset=".5" stop-color="#b9c6d6" stop-opacity="${f2(0.16 * Math.sin(Math.PI * gl))}"/><stop offset="1" stop-color="#b9c6d6" stop-opacity="0"/></linearGradient>`;
     body += `<rect width="${S.w}" height="${S.h}" fill="url(#beam)"/>`;
   }
   return { defs, body: body + `<rect width="${S.w}" height="${S.h}" fill="url(#vig)"/>` };
 }
 
-const DEFS_BG = `${glow('g1', '#9fb0c5', 0.3)}${glow('g2', '#7489a3', 0.24)}` +
+const DEFS_BG = `${glow('g1', '#a3b4c9', 0.4)}${glow('g2', '#7489a3', 0.22)}` +
   `<radialGradient id="vig" cx=".5" cy=".5" r=".72"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></radialGradient>`;
 
 const BLOOM = `<radialGradient id="bloom"><stop offset="0" stop-color="#eef3f8" stop-opacity=".95"/><stop offset=".35" stop-color="#c9d4e0" stop-opacity=".35"/><stop offset="1" stop-color="#c9d4e0" stop-opacity="0"/></radialGradient>`;
