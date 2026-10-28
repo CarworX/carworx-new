@@ -6,7 +6,7 @@
       "fps": "12/1",
       "pix_fmt": "bgra",
       "duration": null,
-      "bytes": 285425,
+      "bytes": 276554,
       "audio": false
     },
     "carworx-hero-16x9-transparent.webm": {
@@ -24,7 +24,7 @@
       "fps": "60/1",
       "pix_fmt": "yuv420p",
       "duration": 8,
-      "bytes": 4558743,
+      "bytes": 3551367,
       "audio": false
     },
     "carworx-hero-1x1.mp4": {
@@ -33,7 +33,7 @@
       "fps": "60/1",
       "pix_fmt": "yuv420p",
       "duration": 8,
-      "bytes": 2834143,
+      "bytes": 2109382,
       "audio": false
     },
     "carworx-hero-9x16.mp4": {
@@ -42,7 +42,7 @@
       "fps": "60/1",
       "pix_fmt": "yuv420p",
       "duration": 8,
-      "bytes": 4345480,
+      "bytes": 3357359,
       "audio": false
     },
     "carworx-loader-ink.gif": {
@@ -60,7 +60,7 @@
       "fps": "60/1",
       "pix_fmt": "yuv420p",
       "duration": 8.6,
-      "bytes": 5275505,
+      "bytes": 4113423,
       "audio": false
     },
     "carworx-splash-1x1.mp4": {
@@ -69,7 +69,7 @@
       "fps": "60/1",
       "pix_fmt": "yuv420p",
       "duration": 1.6,
-      "bytes": 825038,
+      "bytes": 661887,
       "audio": false
     },
     "carworx-splash-9x16.mp4": {
@@ -78,7 +78,7 @@
       "fps": "60/1",
       "pix_fmt": "yuv420p",
       "duration": 1.6,
-      "bytes": 1388946,
+      "bytes": 1103861,
       "audio": false
     }
   },
@@ -142,6 +142,6 @@
     }
   ],
   "loopSeam": {
-    "maxChannelDelta": 4
+    "maxChannelDelta": 2
   }
 }

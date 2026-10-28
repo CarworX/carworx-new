@@ -225,10 +225,9 @@ function spoolSpeed(t) {
 // - Key light: a tight glow that laps the frame on a wide ellipse, once per cut (the loop has no seam).
 //   The lap is time-warped by the spool, so the turbo visibly drags it, and it keeps cruising in the hold.
 // - Counter light: a larger, dimmer glow on the opposite side, lapping the other way.
-// - Rays: five blurred shafts from behind the hub, 72° apart like the blades, geared to the same warp.
-// - Level: everything comes up with the ignition, surges with rotor speed and flashes at the boost.
+// - Level: both come up with the ignition, surge with rotor speed and flash at the boost.
 // - Sweep: a soft beam crosses the background with the glint.
-const WARP = 0.6, RAY_PITCHES = 4;
+const WARP = 0.6;
 function lightPhase(S, tLocal) {
   const splash = S.cut === 'splash';
   const t = heroTime(S, tLocal), D = splash ? 8 : S.duration, tp = splash ? t : tLocal;
@@ -255,24 +254,7 @@ function background(S, tLocal) {
   let body = `<rect width="${S.w}" height="${S.h}" fill="${COLOR.ink}"/>` +
     L(cx2, cy2, 0.34 * k, 0.2 * k, 12 * Math.sin(B), 'g2', level * 0.9) +
     L(K.x, K.y, 0.2 * k, 0.13 * k, 14 * Math.sin(K.A) - 6, 'g1', level);
-  // Rays from behind the hub, following the camera so they stay seated behind the rotor.
-  const C = cam(S, t);
-  const rayOp = (0.1 + 0.9 * ig) * (0.5 + 0.5 * sp + 0.6 * flash);
-  const rot = 72 * RAY_PITCHES * ph;
-  // Soft edges come from stacked wedges of growing width (a full-frame blur costs seconds per frame).
-  const len = 0.95 * k;
-  let rays = '';
-  for (const half of [0.02, 0.04, 0.06, 0.08, 0.1, 0.12]) {
-    let d = '';
-    for (let i = 0; i < BLADES; i++) {
-      const a0 = ((rot + i * PITCH - 90) * Math.PI) / 180;
-      const p = (ang) => `${f2(C.x + len * Math.cos(ang))},${f2(C.y + len * Math.sin(ang))}`;
-      d += `M${f2(C.x)},${f2(C.y)}L${p(a0 - half)}L${p(a0 + half)}Z`;
-    }
-    rays += `<path d="${d}" fill="url(#ray)"/>`;
-  }
-  body += `<g opacity="${f2(Math.min(1, rayOp))}">${rays}</g>`;
-  let defs = `<radialGradient id="ray" gradientUnits="userSpaceOnUse" cx="${f2(C.x)}" cy="${f2(C.y)}" r="${f2(0.7 * k)}"><stop offset="0" stop-color="#a9b8cb" stop-opacity="0"/><stop offset=".12" stop-color="#a9b8cb" stop-opacity=".045"/><stop offset=".45" stop-color="#a9b8cb" stop-opacity=".02"/><stop offset="1" stop-color="#a9b8cb" stop-opacity="0"/></radialGradient>`;
+  let defs = '';
   const gl = seg(t, BEATS.glint[0] - 0.15, BEATS.glint[1] + 0.25);
   if (gl > 0 && gl < 1) {
     const span = S.w + 1.2 * k, bx = -0.6 * k + span * ease.inOutCubic(gl), bw = 0.22 * k;
