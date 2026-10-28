@@ -79,3 +79,4 @@ Current next step: Claude creates the presentation pack; Codex reviews; owner ga
 | ID | Topic | Decision | Agreed by | Links |
 |---|---|---|---|---|
 | D-034 | Q-018, §22 | Owner locks the **Turbine** logo; the other eight concepts are removed. §22 part 2 becomes one locked direction expanded (palette, type, tone, app icon) rather than 2–3 options. Pack-scope change only; no technical decision is reopened and no Phase 1 approval is implied. | Owner | Claude chat 2026-10-27; [Claude 05](claude/05-design-motion-approach.md); [brand](design/brand/README.md) |
+| D-035 | Q-018, §22 | Owner rejects the §22 pack's visual design (logo and motion kept) and picks the **Studio** web direction (light dotted canvas, tactile floating objects, frosted UI) over Ignition and Showroom. Studio is refined before the pack is rebuilt in it. Pack-scope change only. | Owner | Claude chat 2026-10-28; [concepts](design/concepts/BRIEF.md); [Studio notes](design/concepts/studio/NOTES.md) |
