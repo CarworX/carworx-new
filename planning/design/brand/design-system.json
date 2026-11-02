@@ -907,14 +907,13 @@
     "Guidelines"
   ],
   "lastChange": {
-    "by": "Claude",
-    "at": "2026-11-02T15:27:54.220Z",
+    "by": "Gerrard",
+    "at": "2026-11-02T18:49:18.000Z",
     "via": "Claude Code",
-    "note": "Added the Studio UI language (D-036, D-040): tokens v4, Geist, Geist Mono and Caveat, 15 components with bundle.css, Objects, Illustrations and Glyphs assets, new brand book and cover."
+    "note": "Previews run live again: removed the bundle namespace, since this system has no components/bundle.js (it was forcing static previews, which can't load uploaded images)."
   },
   "layout": "files",
   "libraries": [],
-  "namespace": "CarworX",
   "sections": {},
   "title": "CarworX"
 }
