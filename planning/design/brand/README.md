@@ -1,6 +1,11 @@
 # CarworX brand: Turbine
 
-**Status:** the owner locked the Turbine logo on 2026-10-27 (D-034). This is the refined, final drawing of that logo. The app UI palette, imagery and tone of voice are still **concept, not final**.
+**Status:** the owner locked the Turbine logo on 2026-10-27 (D-034). This is the refined, final drawing of that logo. The app UI language is **Studio** (D-036), still **concept, not final** until Codex has reviewed it and Phase 1 builds it in code.
+
+**Design system:** the Studio tokens, type, components and guidelines live in the CarworX Design System project in Claude (D-040) and are mirrored here as the source of truth for Phase 1:
+- [`tokens.json`](tokens.json) (v4: Turbine brand colours plus Studio roles, type, spacing, radii, shadows) and [`design-system.json`](design-system.json) (the system's index, with asset ids).
+- [`studio/`](studio/): the brand book ([`studio/README.md`](studio/README.md)), compiled `tokens.css`, the component stylesheet `components/bundle.css` (class prefix `cx-`) and one folder per component with its guidelines and preview. The previews load assets by their design-system ids (`/_blob/…`), so they render inside the design system, not from disk.
+- [`exports/studio/`](exports/studio/): the service objects, state illustrations, UI glyphs and the Geist, Geist Mono and Caveat fonts (SIL OFL, licences beside them).
 
 ## The name
 

@@ -1,8 +1,8 @@
 # Status
 
-## 🟢 Baton: **CLAUDE**
+## 🟢 Baton: **CODEX**
 
-Claude: build the **Studio design system** as a Design System project in Claude, then mirror it into `design/brand/tokens.json` and `design-system.json` (D-040). Then baton to Codex to review the rebuilt pack ([Claude 07](claude/07-pack-studio.md)), the design system and D-037–D-040 together; after approval the owner merges `planning/design-motion-toolkit` to `main`.
+Codex: review the rebuilt **§22 pack** ([Claude 07](claude/07-pack-studio.md)), the **Studio design system** ([Claude 08](claude/08-design-system.md); mirrored in [design/brand/](design/brand/README.md)) and decisions D-037–D-040, on branch `planning/design-motion-toolkit`. After approval the owner merges the branch to `main`; Phase 1 then starts local-only (D-038).
 
 **Phase: 1 approved (D-038), not started.** Phase 1 starts local-only with synthetic data once the design system is reviewed. No accounts, deployments, outreach or paid automation by agents.
 
@@ -12,7 +12,7 @@ Claude: build the **Studio design system** as a Design System project in Claude,
 |---|---|---|
 | PLAN | Version 2.1 | Technically signed (D-033) and **owner-approved for Phase 1 only** (D-038) |
 | §22 | Presentation pack (Turbine + Studio) | Phase 0b closed: colleagues saw it, no changes (D-037). Codex review still to be recorded |
-| DS | Studio design system (D-040) | Claude building in Claude Design; mirror into tokens.json; Codex reviews |
+| DS | Studio design system (D-040) | Built by Claude ([08](claude/08-design-system.md)) in the CarworX Design System project and mirrored into `design/brand/`; Codex reviews |
 | T-20 | Q-016 funded refund process | Owner decision at G-PAY; agents aligned (D-026, D-031) |
 
 **AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee/funding choices still require the owner before G-PAY.
@@ -26,7 +26,7 @@ Claude: build the **Studio design system** as a Design System project in Claude,
 
 ## Next steps
 
-1. **Claude:** Studio design system in Claude Design, mirrored into the repo tokens (D-040).
+1. ~~Claude: Studio design system~~ Done: [Claude 08](claude/08-design-system.md).
 2. **Codex 05:** review the rebuilt pack, the design system and D-037–D-040.
 3. **Owner:** merge `planning/design-motion-toolkit` to `main` after Codex approves; complete the §15 Phase 1 prerequisites.
 4. **Phase 1 (approved, D-038):** monorepo scaffold, CI, local dev, Studio tokens in Tailwind with a living component page, auth, first tables with RLS, then staging; exit A1–A7 including the restore drill.
@@ -48,3 +48,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 9 | 2026-10-28 | Claude | Built the §22 pack (Stage A) in `design/pack/`: one offline HTML with the Turbine brand and hero motion, 8 phone screen groups with §10 states, desktop home/search, Thandi and Pieter journeys, roadmap/decisions, summary, 16 PNG + PDF exports and QA.md (UNVERIFIED items listed). Branch `planning/design-motion-toolkit`. Baton to Codex for review. |
 | 10 | 2026-10-28 | Claude | Owner chose then approved the Studio web direction (D-035, D-036) after two refinement passes. Rebuilt the §22 pack in Studio: Studio intro, Turbine rules + Studio UI language, 8 screen groups with §10 states, desktop home/search, scroll-linked journeys, roadmap; fonts bundled offline; 27 PNG + 42-page PDF checked by eye; QA.md rewritten. Baton to Codex for review. |
 | 11 | 2026-11-02 | Claude | Recorded owner decisions: Phase 0b closed, no colleague changes (D-037); PLAN 2.1 approved for Phase 1 only, local-only start (D-038); Q-023 yes (D-039); Studio design system built in Claude Design first (D-040). Baton stays with Claude for the design system, then Codex reviews. |
+| 12 | 2026-11-02 | Claude | Built the Studio design system (D-040) in the CarworX Design System project in Claude: tokens v4, Geist/Geist Mono/Caveat, 15 components with bundle.css, objects, illustrations, glyphs, brand book and cover; mirrored into `design/brand/`. Baton to Codex to review pack, design system and D-037–D-040. |

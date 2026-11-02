@@ -5,20 +5,882 @@
       "name": "Logos",
       "tile": "l",
       "order": [
-        "carworx-turbine-mark.svg",
-        "carworx-turbine-lockup.svg"
+        "carworx-lockup-horizontal-black.svg",
+        "carworx-lockup-horizontal-ink.svg",
+        "carworx-lockup-horizontal-on-ink.png",
+        "carworx-lockup-horizontal-on-ink.svg",
+        "carworx-lockup-horizontal-on-paper.png",
+        "carworx-lockup-horizontal-on-paper.svg",
+        "carworx-lockup-horizontal-white.svg",
+        "carworx-lockup-stacked-black.svg",
+        "carworx-lockup-stacked-ink.svg",
+        "carworx-lockup-stacked-on-ink.png",
+        "carworx-lockup-stacked-on-ink.svg",
+        "carworx-lockup-stacked-on-paper.png",
+        "carworx-lockup-stacked-on-paper.svg",
+        "carworx-lockup-stacked-white.svg",
+        "carworx-mark-black.svg",
+        "carworx-mark-ink.png",
+        "carworx-mark-ink.svg",
+        "carworx-mark-small-black.svg",
+        "carworx-mark-small-ink.svg",
+        "carworx-mark-small-white.svg",
+        "carworx-mark-white.png",
+        "carworx-mark-white.svg",
+        "carworx-wordmark-black.svg",
+        "carworx-wordmark-ink.svg",
+        "carworx-wordmark-white.svg"
       ],
       "files": {
-        "carworx-turbine-mark.svg": {
-          "name": "carworx-turbine-mark.svg",
-          "blob": "7177548aee66ecf661d909db60c770d3",
-          "size": 503,
+        "carworx-lockup-horizontal-black.svg": {
+          "name": "carworx-lockup-horizontal-black.svg",
+          "blob": "bc65cba11a6630ee86c77eb826d065ea",
+          "size": 18467,
           "type": "image/svg+xml"
         },
-        "carworx-turbine-lockup.svg": {
-          "name": "carworx-turbine-lockup.svg",
-          "blob": "dff83a38074fa995ad0b90021f0f74e1",
-          "size": 1682,
+        "carworx-lockup-horizontal-ink.svg": {
+          "name": "carworx-lockup-horizontal-ink.svg",
+          "blob": "3c19073785e492d397dd569ccd18c8a3",
+          "size": 18467,
+          "type": "image/svg+xml"
+        },
+        "carworx-lockup-horizontal-on-ink.png": {
+          "name": "carworx-lockup-horizontal-on-ink.png",
+          "blob": "185b77d5923e0d30008cea3f0743bb4b",
+          "size": 47451,
+          "type": "image/png"
+        },
+        "carworx-lockup-horizontal-on-ink.svg": {
+          "name": "carworx-lockup-horizontal-on-ink.svg",
+          "blob": "d7e1145ad23da572c951584c23f8aae0",
+          "size": 18558,
+          "type": "image/svg+xml"
+        },
+        "carworx-lockup-horizontal-on-paper.png": {
+          "name": "carworx-lockup-horizontal-on-paper.png",
+          "blob": "3bacc31d63e9383a9a0aed5382802935",
+          "size": 47756,
+          "type": "image/png"
+        },
+        "carworx-lockup-horizontal-on-paper.svg": {
+          "name": "carworx-lockup-horizontal-on-paper.svg",
+          "blob": "78ebfda2297a4f9e410fefa0279a2de1",
+          "size": 18558,
+          "type": "image/svg+xml"
+        },
+        "carworx-lockup-horizontal-white.svg": {
+          "name": "carworx-lockup-horizontal-white.svg",
+          "blob": "c35fbf70326108c81afb28004df7427f",
+          "size": 18467,
+          "type": "image/svg+xml"
+        },
+        "carworx-lockup-stacked-black.svg": {
+          "name": "carworx-lockup-stacked-black.svg",
+          "blob": "af17c0a533ee6b9142bb5c94ac676f31",
+          "size": 18469,
+          "type": "image/svg+xml"
+        },
+        "carworx-lockup-stacked-ink.svg": {
+          "name": "carworx-lockup-stacked-ink.svg",
+          "blob": "41da34fea1666d6e2069c8ea1f97c3b2",
+          "size": 18469,
+          "type": "image/svg+xml"
+        },
+        "carworx-lockup-stacked-on-ink.png": {
+          "name": "carworx-lockup-stacked-on-ink.png",
+          "blob": "6041bae2bbf79264e348e37b4ce82d8d",
+          "size": 50534,
+          "type": "image/png"
+        },
+        "carworx-lockup-stacked-on-ink.svg": {
+          "name": "carworx-lockup-stacked-on-ink.svg",
+          "blob": "ce968615baed7ace29a1a84a918ed785",
+          "size": 18557,
+          "type": "image/svg+xml"
+        },
+        "carworx-lockup-stacked-on-paper.png": {
+          "name": "carworx-lockup-stacked-on-paper.png",
+          "blob": "09ef0cec166d56d2868fc1c4820df432",
+          "size": 50903,
+          "type": "image/png"
+        },
+        "carworx-lockup-stacked-on-paper.svg": {
+          "name": "carworx-lockup-stacked-on-paper.svg",
+          "blob": "7219351dc20be70bb4d65baeb3da1d7d",
+          "size": 18557,
+          "type": "image/svg+xml"
+        },
+        "carworx-lockup-stacked-white.svg": {
+          "name": "carworx-lockup-stacked-white.svg",
+          "blob": "c40e7d04658208e2078cc6541076d244",
+          "size": 18469,
+          "type": "image/svg+xml"
+        },
+        "carworx-mark-black.svg": {
+          "name": "carworx-mark-black.svg",
+          "blob": "7b50dcc5e9fca160ebf88628b3936d40",
+          "size": 14642,
+          "type": "image/svg+xml"
+        },
+        "carworx-mark-ink.png": {
+          "name": "carworx-mark-ink.png",
+          "blob": "4bc612f799b68e550bfbd044bdc99200",
+          "size": 36023,
+          "type": "image/png"
+        },
+        "carworx-mark-ink.svg": {
+          "name": "carworx-mark-ink.svg",
+          "blob": "c1efe10b25b70d10f3ae7d902298e3e4",
+          "size": 14642,
+          "type": "image/svg+xml"
+        },
+        "carworx-mark-small-black.svg": {
+          "name": "carworx-mark-small-black.svg",
+          "blob": "4997acc6e9bad50bbcfde094a5c6ee76",
+          "size": 14942,
+          "type": "image/svg+xml"
+        },
+        "carworx-mark-small-ink.svg": {
+          "name": "carworx-mark-small-ink.svg",
+          "blob": "88b6cb9f2e44bd9173023ff39330d81b",
+          "size": 14942,
+          "type": "image/svg+xml"
+        },
+        "carworx-mark-small-white.svg": {
+          "name": "carworx-mark-small-white.svg",
+          "blob": "a395cf0bbcd821d4f83c197e64bea5b8",
+          "size": 14942,
+          "type": "image/svg+xml"
+        },
+        "carworx-mark-white.png": {
+          "name": "carworx-mark-white.png",
+          "blob": "b7da41340a3ae9212e03d4cd5bf47d6d",
+          "size": 34759,
+          "type": "image/png"
+        },
+        "carworx-mark-white.svg": {
+          "name": "carworx-mark-white.svg",
+          "blob": "8438eb7111a6ee107fc3ee12e3d48d22",
+          "size": 14642,
+          "type": "image/svg+xml"
+        },
+        "carworx-wordmark-black.svg": {
+          "name": "carworx-wordmark-black.svg",
+          "blob": "315ec524b38d4dbe21a4b6067647d074",
+          "size": 3969,
+          "type": "image/svg+xml"
+        },
+        "carworx-wordmark-ink.svg": {
+          "name": "carworx-wordmark-ink.svg",
+          "blob": "b456bc6b9bbcc7971b27e73a8216c888",
+          "size": 3969,
+          "type": "image/svg+xml"
+        },
+        "carworx-wordmark-white.svg": {
+          "name": "carworx-wordmark-white.svg",
+          "blob": "578738505ff0f6c8fc7f3f7406354d93",
+          "size": 3969,
+          "type": "image/svg+xml"
+        }
+      }
+    },
+    "Icons": {
+      "name": "Icons",
+      "tile": "m",
+      "order": [
+        "android-adaptive-background-432.png",
+        "android-adaptive-foreground-432.png",
+        "android-monochrome-432.png",
+        "apple-touch-icon-180.png",
+        "carworx-app-icon-1024.png",
+        "carworx-app-icon.svg",
+        "favicon-16.png",
+        "favicon-32.png",
+        "favicon-48.png",
+        "ios-app-icon-1024.png",
+        "pwa-icon-192.png",
+        "pwa-icon-512.png",
+        "pwa-icon-maskable-512.png"
+      ],
+      "files": {
+        "android-adaptive-background-432.png": {
+          "name": "android-adaptive-background-432.png",
+          "blob": "f1370965df40cc2c392ae0365c5a7e29",
+          "size": 1652,
+          "type": "image/png"
+        },
+        "android-adaptive-foreground-432.png": {
+          "name": "android-adaptive-foreground-432.png",
+          "blob": "08d2142564c5578977c2fb9e647a7a8f",
+          "size": 7681,
+          "type": "image/png"
+        },
+        "android-monochrome-432.png": {
+          "name": "android-monochrome-432.png",
+          "blob": "904fa88967392f7a55d203c6e5bbfbe0",
+          "size": 7681,
+          "type": "image/png"
+        },
+        "apple-touch-icon-180.png": {
+          "name": "apple-touch-icon-180.png",
+          "blob": "91910c195d2b36c274617cbd5c1e4aa2",
+          "size": 2928,
+          "type": "image/png"
+        },
+        "carworx-app-icon-1024.png": {
+          "name": "carworx-app-icon-1024.png",
+          "blob": "48e3443cc0491d7982764d1617b8dc2d",
+          "size": 30728,
+          "type": "image/png"
+        },
+        "carworx-app-icon.svg": {
+          "name": "carworx-app-icon.svg",
+          "blob": "b7a017518135fd837d6b8d443266a99f",
+          "size": 14713,
+          "type": "image/svg+xml"
+        },
+        "favicon-16.png": {
+          "name": "favicon-16.png",
+          "blob": "de38a382b93b97ee9dea17ff842783ff",
+          "size": 507,
+          "type": "image/png"
+        },
+        "favicon-32.png": {
+          "name": "favicon-32.png",
+          "blob": "ca92f66a6a38588242b899c128405539",
+          "size": 989,
+          "type": "image/png"
+        },
+        "favicon-48.png": {
+          "name": "favicon-48.png",
+          "blob": "cc6f518aac65fe9f2978e2a119ae70d9",
+          "size": 1446,
+          "type": "image/png"
+        },
+        "ios-app-icon-1024.png": {
+          "name": "ios-app-icon-1024.png",
+          "blob": "8fc2b014a359093ea76fc86284a82853",
+          "size": 22953,
+          "type": "image/png"
+        },
+        "pwa-icon-192.png": {
+          "name": "pwa-icon-192.png",
+          "blob": "4c76eea4c7f6c9049b922b9b59b565c5",
+          "size": 4607,
+          "type": "image/png"
+        },
+        "pwa-icon-512.png": {
+          "name": "pwa-icon-512.png",
+          "blob": "658ed9e65b3c6e5e3924cd078573eae2",
+          "size": 13369,
+          "type": "image/png"
+        },
+        "pwa-icon-maskable-512.png": {
+          "name": "pwa-icon-maskable-512.png",
+          "blob": "5fc4dc4d40c18800c67884b00f2fc770",
+          "size": 8519,
+          "type": "image/png"
+        }
+      }
+    },
+    "Social": {
+      "name": "Social",
+      "tile": "l",
+      "order": [
+        "facebook-cover-1640x624.png",
+        "instagram-post-1080.png",
+        "linkedin-banner-1584x396.png",
+        "profile-1080-ink.png",
+        "profile-1080-paper.png",
+        "share-card-1200x630.png",
+        "story-1080x1920.png",
+        "whatsapp-business-640.png",
+        "x-header-1500x500.png"
+      ],
+      "files": {
+        "facebook-cover-1640x624.png": {
+          "name": "facebook-cover-1640x624.png",
+          "blob": "95e652848466f868145491d56ccf2970",
+          "size": 975982,
+          "type": "image/png"
+        },
+        "instagram-post-1080.png": {
+          "name": "instagram-post-1080.png",
+          "blob": "566622feb809143e41355761315f3b77",
+          "size": 913029,
+          "type": "image/png"
+        },
+        "linkedin-banner-1584x396.png": {
+          "name": "linkedin-banner-1584x396.png",
+          "blob": "5461cfbebf4d0320e2fa818a62008057",
+          "size": 664284,
+          "type": "image/png"
+        },
+        "profile-1080-ink.png": {
+          "name": "profile-1080-ink.png",
+          "blob": "5a471eee90a103581ba75e7ac09e6a60",
+          "size": 24419,
+          "type": "image/png"
+        },
+        "profile-1080-paper.png": {
+          "name": "profile-1080-paper.png",
+          "blob": "a00519712bbc90d24b22decca1b7a47e",
+          "size": 24666,
+          "type": "image/png"
+        },
+        "share-card-1200x630.png": {
+          "name": "share-card-1200x630.png",
+          "blob": "6990b789273465d251436ab96086d632",
+          "size": 680313,
+          "type": "image/png"
+        },
+        "story-1080x1920.png": {
+          "name": "story-1080x1920.png",
+          "blob": "502264936b2b35e257f28989001b472f",
+          "size": 1660507,
+          "type": "image/png"
+        },
+        "whatsapp-business-640.png": {
+          "name": "whatsapp-business-640.png",
+          "blob": "1ea028d75ce259cd713ab4a88213704b",
+          "size": 12548,
+          "type": "image/png"
+        },
+        "x-header-1500x500.png": {
+          "name": "x-header-1500x500.png",
+          "blob": "81962ecfe0404ff712641e7c8bb14b45",
+          "size": 752865,
+          "type": "image/png"
+        }
+      }
+    },
+    "Print": {
+      "name": "Print",
+      "tile": "l",
+      "order": [
+        "business-card-back-300dpi.png",
+        "business-card-back.svg",
+        "business-card-front-300dpi.png",
+        "business-card-front.svg",
+        "door-decal-black.svg",
+        "door-decal-white.svg",
+        "email-signature-600-white.png",
+        "email-signature-600.png",
+        "embroidery-stamp-mark-black.svg",
+        "invoice-quote-header.png",
+        "invoice-quote-header.svg",
+        "letterhead-header-a4.svg",
+        "receipt-logo-384-1bit.png",
+        "service-bay-banner-4x1.png",
+        "service-bay-banner-4x1.svg",
+        "windscreen-sticker-white.svg",
+        "workshop-sign-3x1.png",
+        "workshop-sign-3x1.svg"
+      ],
+      "files": {
+        "business-card-back-300dpi.png": {
+          "name": "business-card-back-300dpi.png",
+          "blob": "fd968c5476781efe4bd078cb0b6b48c4",
+          "size": 13398,
+          "type": "image/png"
+        },
+        "business-card-back.svg": {
+          "name": "business-card-back.svg",
+          "blob": "0d2acf579338dd93b004280cf1edb6eb",
+          "size": 18564,
+          "type": "image/svg+xml"
+        },
+        "business-card-front-300dpi.png": {
+          "name": "business-card-front-300dpi.png",
+          "blob": "baf4772ef56107f89fb62d97efbebe0c",
+          "size": 11332,
+          "type": "image/png"
+        },
+        "business-card-front.svg": {
+          "name": "business-card-front.svg",
+          "blob": "5d55f023bd70e8d1a30f049aba37d578",
+          "size": 14689,
+          "type": "image/svg+xml"
+        },
+        "door-decal-black.svg": {
+          "name": "door-decal-black.svg",
+          "blob": "ccc93d7eba6f917af634fe36d6327f60",
+          "size": 18478,
+          "type": "image/svg+xml"
+        },
+        "door-decal-white.svg": {
+          "name": "door-decal-white.svg",
+          "blob": "d35bc76d2af252cfa8471c63703a790e",
+          "size": 18478,
+          "type": "image/svg+xml"
+        },
+        "email-signature-600-white.png": {
+          "name": "email-signature-600-white.png",
+          "blob": "f6fbe529db8faf4c9afbf3212fe35260",
+          "size": 21771,
+          "type": "image/png"
+        },
+        "email-signature-600.png": {
+          "name": "email-signature-600.png",
+          "blob": "e705f26001f90d4d58fc1f5d103782d9",
+          "size": 26119,
+          "type": "image/png"
+        },
+        "embroidery-stamp-mark-black.svg": {
+          "name": "embroidery-stamp-mark-black.svg",
+          "blob": "ef9e6ffa3e1faec0ff6c4917e72c06bb",
+          "size": 14948,
+          "type": "image/svg+xml"
+        },
+        "invoice-quote-header.png": {
+          "name": "invoice-quote-header.png",
+          "blob": "8bc6fc8c3c183ad4310ddfcc9d3d9c80",
+          "size": 24184,
+          "type": "image/png"
+        },
+        "invoice-quote-header.svg": {
+          "name": "invoice-quote-header.svg",
+          "blob": "b1d3ae81c2ec634eb5ad0aaee6308f1c",
+          "size": 18553,
+          "type": "image/svg+xml"
+        },
+        "letterhead-header-a4.svg": {
+          "name": "letterhead-header-a4.svg",
+          "blob": "c888870ae84b22937d06075052f45d19",
+          "size": 18606,
+          "type": "image/svg+xml"
+        },
+        "receipt-logo-384-1bit.png": {
+          "name": "receipt-logo-384-1bit.png",
+          "blob": "07343f29554d9bdf3d96117de3d9b0a3",
+          "size": 982,
+          "type": "image/png"
+        },
+        "service-bay-banner-4x1.png": {
+          "name": "service-bay-banner-4x1.png",
+          "blob": "4aa48cfdc53a3801518918895e2c9d1a",
+          "size": 53475,
+          "type": "image/png"
+        },
+        "service-bay-banner-4x1.svg": {
+          "name": "service-bay-banner-4x1.svg",
+          "blob": "db0d4b8ea7c8db53e64958854c2a85af",
+          "size": 18558,
+          "type": "image/svg+xml"
+        },
+        "windscreen-sticker-white.svg": {
+          "name": "windscreen-sticker-white.svg",
+          "blob": "47adff7c517d4e8dc38343a51265fcab",
+          "size": 18488,
+          "type": "image/svg+xml"
+        },
+        "workshop-sign-3x1.png": {
+          "name": "workshop-sign-3x1.png",
+          "blob": "60a0631cab47db73147ab7df63664eee",
+          "size": 49265,
+          "type": "image/png"
+        },
+        "workshop-sign-3x1.svg": {
+          "name": "workshop-sign-3x1.svg",
+          "blob": "26864fb5668b06984fc490a0bc170be7",
+          "size": 18571,
+          "type": "image/svg+xml"
+        }
+      }
+    },
+    "Motion": {
+      "name": "Motion",
+      "tile": "l",
+      "order": [
+        "carworx-hero-16x9.mp4",
+        "carworx-hero-1x1.mp4",
+        "carworx-hero-9x16.mp4",
+        "carworx-splash-9x16.mp4",
+        "carworx-splash-1x1.mp4",
+        "carworx-loader-ink.gif",
+        "carworx-loop-16x9.mp4",
+        "carworx-hero-16x9-transparent.webm",
+        "carworx-email-480x252.gif"
+      ],
+      "files": {
+        "carworx-hero-16x9.mp4": {
+          "name": "carworx-hero-16x9.mp4",
+          "blob": "43be5fced7b59ddb4aae294a6924ec02",
+          "size": 3551367,
+          "type": "video/mp4"
+        },
+        "carworx-hero-1x1.mp4": {
+          "name": "carworx-hero-1x1.mp4",
+          "blob": "b59ec166590ff46283c4aafd67d55a6e",
+          "size": 2109382,
+          "type": "video/mp4"
+        },
+        "carworx-hero-9x16.mp4": {
+          "name": "carworx-hero-9x16.mp4",
+          "blob": "06099545324c5f3ef5d777ee7a38313c",
+          "size": 3357359,
+          "type": "video/mp4"
+        },
+        "carworx-splash-9x16.mp4": {
+          "name": "carworx-splash-9x16.mp4",
+          "blob": "653b29b2ef10651a592850361f6df64d",
+          "size": 1103861,
+          "type": "video/mp4"
+        },
+        "carworx-splash-1x1.mp4": {
+          "name": "carworx-splash-1x1.mp4",
+          "blob": "c1a8351332638b85ad90dae98af2c803",
+          "size": 661887,
+          "type": "video/mp4"
+        },
+        "carworx-loader-ink.gif": {
+          "name": "carworx-loader-ink.gif",
+          "blob": "39dd8267a508034484479abe1f61ad49",
+          "size": 22020,
+          "type": "image/gif"
+        },
+        "carworx-loop-16x9.mp4": {
+          "name": "carworx-loop-16x9.mp4",
+          "blob": "39eb4186ba512e7a9d91fe7e9c7eb2ab",
+          "size": 4113423,
+          "type": "video/mp4"
+        },
+        "carworx-hero-16x9-transparent.webm": {
+          "name": "carworx-hero-16x9-transparent.webm",
+          "blob": "2cd3443062d1184cdd38b0d538299e83",
+          "size": 3030658,
+          "type": "video/webm"
+        },
+        "carworx-email-480x252.gif": {
+          "name": "carworx-email-480x252.gif",
+          "blob": "3b5098d33e2e3d08cf077c797f731a2d",
+          "size": 276554,
+          "type": "image/gif"
+        }
+      }
+    },
+    "Guidelines": {
+      "name": "Guidelines",
+      "tile": "l",
+      "order": [
+        "carworx-logo-usage.png",
+        "carworx-logo-usage.svg"
+      ],
+      "files": {
+        "carworx-logo-usage.png": {
+          "name": "carworx-logo-usage.png",
+          "blob": "657a8f68d13766f3c51cbe3f13042d8a",
+          "size": 210725,
+          "type": "image/png"
+        },
+        "carworx-logo-usage.svg": {
+          "name": "carworx-logo-usage.svg",
+          "blob": "d5bd8eb552384651bf11f2d426d9fd68",
+          "size": 242828,
+          "type": "image/svg+xml"
+        }
+      }
+    },
+    "Objects": {
+      "name": "Objects",
+      "tile": "m",
+      "order": [
+        "carworx-object-wash-detailing.svg",
+        "carworx-object-repairs-maintenance.svg",
+        "carworx-object-glass-repair.svg",
+        "carworx-object-tyres-alignment.svg",
+        "carworx-object-fines-admin.svg"
+      ],
+      "files": {
+        "carworx-object-wash-detailing.svg": {
+          "name": "carworx-object-wash-detailing.svg",
+          "blob": "d91888c4f003943315733674ad403425",
+          "size": 2728,
+          "type": "image/svg+xml"
+        },
+        "carworx-object-repairs-maintenance.svg": {
+          "name": "carworx-object-repairs-maintenance.svg",
+          "blob": "29a54244022e2d82291dc57067a09b83",
+          "size": 2454,
+          "type": "image/svg+xml"
+        },
+        "carworx-object-glass-repair.svg": {
+          "name": "carworx-object-glass-repair.svg",
+          "blob": "ad21c1763648fbed4dd54d4d9ccc75ae",
+          "size": 2546,
+          "type": "image/svg+xml"
+        },
+        "carworx-object-tyres-alignment.svg": {
+          "name": "carworx-object-tyres-alignment.svg",
+          "blob": "6d24bfdccbd44ba94317ac05539bab7c",
+          "size": 2600,
+          "type": "image/svg+xml"
+        },
+        "carworx-object-fines-admin.svg": {
+          "name": "carworx-object-fines-admin.svg",
+          "blob": "23617b94a5747c7280396f3173122229",
+          "size": 2671,
+          "type": "image/svg+xml"
+        }
+      }
+    },
+    "Illustrations": {
+      "name": "Illustrations",
+      "tile": "m",
+      "order": [
+        "carworx-ill-few.svg",
+        "carworx-ill-nothing.svg",
+        "carworx-ill-error.svg",
+        "carworx-ill-expired.svg",
+        "carworx-ill-card.svg",
+        "carworx-ill-paused.svg",
+        "carworx-ill-noreply.svg",
+        "carworx-ill-review.svg",
+        "carworx-ill-leave.svg",
+        "carworx-ill-sent.svg"
+      ],
+      "files": {
+        "carworx-ill-few.svg": {
+          "name": "carworx-ill-few.svg",
+          "blob": "2ac5e56265e8c13e3d82d5159a5c688d",
+          "size": 574,
+          "type": "image/svg+xml"
+        },
+        "carworx-ill-nothing.svg": {
+          "name": "carworx-ill-nothing.svg",
+          "blob": "21d8bafb87733488b338aa0523936606",
+          "size": 557,
+          "type": "image/svg+xml"
+        },
+        "carworx-ill-error.svg": {
+          "name": "carworx-ill-error.svg",
+          "blob": "8449e720168ce15c3d731b5f615c6bad",
+          "size": 424,
+          "type": "image/svg+xml"
+        },
+        "carworx-ill-expired.svg": {
+          "name": "carworx-ill-expired.svg",
+          "blob": "be61d9c10c117227aa67eb00f114fd5f",
+          "size": 519,
+          "type": "image/svg+xml"
+        },
+        "carworx-ill-card.svg": {
+          "name": "carworx-ill-card.svg",
+          "blob": "5e7a66fcdaa5312686216a92e90a97b2",
+          "size": 492,
+          "type": "image/svg+xml"
+        },
+        "carworx-ill-paused.svg": {
+          "name": "carworx-ill-paused.svg",
+          "blob": "2e6b2396f5b351342d1a837d57b6b3a8",
+          "size": 434,
+          "type": "image/svg+xml"
+        },
+        "carworx-ill-noreply.svg": {
+          "name": "carworx-ill-noreply.svg",
+          "blob": "21a9ecdae2b0aaaa8d3374107d3123aa",
+          "size": 360,
+          "type": "image/svg+xml"
+        },
+        "carworx-ill-review.svg": {
+          "name": "carworx-ill-review.svg",
+          "blob": "810baa409f474830ad88dd3f1d4258f5",
+          "size": 434,
+          "type": "image/svg+xml"
+        },
+        "carworx-ill-leave.svg": {
+          "name": "carworx-ill-leave.svg",
+          "blob": "58970f93aabfb6e9889061ccdd56e843",
+          "size": 415,
+          "type": "image/svg+xml"
+        },
+        "carworx-ill-sent.svg": {
+          "name": "carworx-ill-sent.svg",
+          "blob": "a2ee9c76b2a483849b9ce2a988f9d8e5",
+          "size": 374,
+          "type": "image/svg+xml"
+        }
+      }
+    },
+    "Glyphs": {
+      "name": "Glyphs",
+      "tile": "xs",
+      "order": [
+        "carworx-icon-alert.svg",
+        "carworx-icon-arrow.svg",
+        "carworx-icon-back.svg",
+        "carworx-icon-bay.svg",
+        "carworx-icon-bell.svg",
+        "carworx-icon-cal.svg",
+        "carworx-icon-camera.svg",
+        "carworx-icon-car.svg",
+        "carworx-icon-check.svg",
+        "carworx-icon-chev.svg",
+        "carworx-icon-clock.svg",
+        "carworx-icon-doc.svg",
+        "carworx-icon-ext.svg",
+        "carworx-icon-home.svg",
+        "carworx-icon-info.svg",
+        "carworx-icon-list.svg",
+        "carworx-icon-lock.svg",
+        "carworx-icon-map.svg",
+        "carworx-icon-pin.svg",
+        "carworx-icon-play.svg",
+        "carworx-icon-refresh.svg",
+        "carworx-icon-search.svg",
+        "carworx-icon-shield.svg",
+        "carworx-icon-star.svg",
+        "carworx-icon-user.svg"
+      ],
+      "files": {
+        "carworx-icon-alert.svg": {
+          "name": "carworx-icon-alert.svg",
+          "blob": "8eef64d303ead1fd443c71cbea45437f",
+          "size": 268,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-arrow.svg": {
+          "name": "carworx-icon-arrow.svg",
+          "blob": "fe068c9d99a80e8e2a838a6ad229b710",
+          "size": 230,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-back.svg": {
+          "name": "carworx-icon-back.svg",
+          "blob": "d94c3ffccd07ab66053df7299171ae55",
+          "size": 223,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-bay.svg": {
+          "name": "carworx-icon-bay.svg",
+          "blob": "8dabab755ca23bd69f716f2f155e8221",
+          "size": 258,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-bell.svg": {
+          "name": "carworx-icon-bell.svg",
+          "blob": "1cda5e66353bfac247c6a8fe72278de8",
+          "size": 285,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-cal.svg": {
+          "name": "carworx-icon-cal.svg",
+          "blob": "efc20fe035ae8494ecc3f00fbf6adfc5",
+          "size": 297,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-camera.svg": {
+          "name": "carworx-icon-camera.svg",
+          "blob": "1a21303ef17a7340ef538ea14ea8cd2d",
+          "size": 284,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-car.svg": {
+          "name": "carworx-icon-car.svg",
+          "blob": "798e7142f45c358a2186489c75057e02",
+          "size": 320,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-check.svg": {
+          "name": "carworx-icon-check.svg",
+          "blob": "6ec99c7167b147dad0d57ad53d89f1f4",
+          "size": 231,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-chev.svg": {
+          "name": "carworx-icon-chev.svg",
+          "blob": "5c4e064a68ff686e580c4df6c6b4dd0e",
+          "size": 221,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-clock.svg": {
+          "name": "carworx-icon-clock.svg",
+          "blob": "a68164ab694c0bced17cbb3d78aa76f1",
+          "size": 264,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-doc.svg": {
+          "name": "carworx-icon-doc.svg",
+          "blob": "89b43567383232e161f92e333dc12cb4",
+          "size": 263,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-ext.svg": {
+          "name": "carworx-icon-ext.svg",
+          "blob": "b1b65420c7dce754ccdf96e3c330cd37",
+          "size": 242,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-home.svg": {
+          "name": "carworx-icon-home.svg",
+          "blob": "7388d95ab6bdfc2c7e5e99936819982e",
+          "size": 262,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-info.svg": {
+          "name": "carworx-icon-info.svg",
+          "blob": "560f37391085b1eece93e78a1f4eee43",
+          "size": 270,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-list.svg": {
+          "name": "carworx-icon-list.svg",
+          "blob": "3b71af18031871ef9d25387a4bfb11ce",
+          "size": 264,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-lock.svg": {
+          "name": "carworx-icon-lock.svg",
+          "blob": "da04db8ef1f290edb89186ae0fbd0dfd",
+          "size": 287,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-map.svg": {
+          "name": "carworx-icon-map.svg",
+          "blob": "ae50dc9932cb71c9bf13bd1ff821fd4f",
+          "size": 275,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-pin.svg": {
+          "name": "carworx-icon-pin.svg",
+          "blob": "be9c5932aae03736f8af230fa483249e",
+          "size": 306,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-play.svg": {
+          "name": "carworx-icon-play.svg",
+          "blob": "d952fe3f1290886058bc34d0afd6ddd3",
+          "size": 226,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-refresh.svg": {
+          "name": "carworx-icon-refresh.svg",
+          "blob": "af6b11f48604bd1247a05e0fd8078d5a",
+          "size": 264,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-search.svg": {
+          "name": "carworx-icon-search.svg",
+          "blob": "5d4c8ffe3889ae0ca7ead88538a4a95a",
+          "size": 264,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-shield.svg": {
+          "name": "carworx-icon-shield.svg",
+          "blob": "ed7173f2931b3c8cc9b2ed59730f8357",
+          "size": 302,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-star.svg": {
+          "name": "carworx-icon-star.svg",
+          "blob": "1e6eb6a1dcd7faec1c4bbd769dd7515b",
+          "size": 312,
+          "type": "image/svg+xml"
+        },
+        "carworx-icon-user.svg": {
+          "name": "carworx-icon-user.svg",
+          "blob": "978e1412ac0ab6ce920110e0a074336d",
+          "size": 296,
           "type": "image/svg+xml"
         }
       }
@@ -34,13 +896,21 @@
     "sections": []
   },
   "groups": [
-    "Logos"
+    "Logos",
+    "Objects",
+    "Illustrations",
+    "Glyphs",
+    "Icons",
+    "Social",
+    "Print",
+    "Motion",
+    "Guidelines"
   ],
   "lastChange": {
-    "at": "2026-10-27T21:30:00Z",
     "by": "Claude",
-    "note": "Owner locked the Turbine logo; removed the other concepts (Blocks, Slipstream, Circuit, Pit Signal, Gauge, Keyfob, High Beam, Tread).",
-    "via": "Claude Code"
+    "at": "2026-11-02T15:27:54.220Z",
+    "via": "Claude Code",
+    "note": "Added the Studio UI language (D-036, D-040): tokens v4, Geist, Geist Mono and Caveat, 15 components with bundle.css, Objects, Illustrations and Glyphs assets, new brand book and cover."
   },
   "layout": "files",
   "libraries": [],
