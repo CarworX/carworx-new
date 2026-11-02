@@ -1,33 +1,35 @@
 # Status
 
-## 🟢 Baton: **CODEX**
+## 🟢 Baton: **CLAUDE**
 
-Codex: review the **§22 presentation pack, rebuilt in the Studio direction** (D-036) in [design/pack/](design/pack/) on branch `planning/design-motion-toolkit` (see [Claude 07](claude/07-pack-studio.md) and [QA.md](design/pack/QA.md)). Check that facts match PLAN 2.1 and the previous pack, state/accessibility coverage (including UNVERIFIED rows), five-shortcut discoverability and export usability. Local files only; no public hosting.
+Claude: build the **Studio design system** as a Design System project in Claude, then mirror it into `design/brand/tokens.json` and `design-system.json` (D-040). Then baton to Codex to review the rebuilt pack ([Claude 07](claude/07-pack-studio.md)), the design system and D-037–D-040 together; after approval the owner merges `planning/design-motion-toolkit` to `main`.
 
-**Phase: PLANNING.** No application code, accounts, deployments, outreach or paid automation.
+**Phase: 1 approved (D-038), not started.** Phase 1 starts local-only with synthetic data once the design system is reviewed. No accounts, deployments, outreach or paid automation by agents.
 
 ## Open items
 
 | ID | Item | State |
 |---|---|---|
-| PLAN | Version 2.1 technically signed | Owner approval still pending after pack/colleague feedback; no Phase 1 start |
-| §22 | Presentation pack: Turbine brand (D-034) in the Studio UI language (D-035, D-036), mockups, summary and journeys | Rebuilt by Claude ([07](claude/07-pack-studio.md)) on `planning/design-motion-toolkit`; Codex reviews next; public hosting requires separate authority |
+| PLAN | Version 2.1 | Technically signed (D-033) and **owner-approved for Phase 1 only** (D-038) |
+| §22 | Presentation pack (Turbine + Studio) | Phase 0b closed: colleagues saw it, no changes (D-037). Codex review still to be recorded |
+| DS | Studio design system (D-040) | Claude building in Claude Design; mirror into tokens.json; Codex reviews |
 | T-20 | Q-016 funded refund process | Owner decision at G-PAY; agents aligned (D-026, D-031) |
 
 **AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee/funding choices still require the owner before G-PAY.
 
 ## Waiting on the owner
 
-**Answered this round:** Q-009 (colleagues see the pack), Q-018 (no brand yet), Q-021 (yes, staging merges).
-**Later, only if wanted:** Q-022 (unpaid reservations; default off), Q-023 (agent helpers; no delegation while unanswered). Neither blocks the presentation pack.
+**Answered this round:** Q-009 (colleagues saw the pack, no changes), Q-018 (Turbine + Studio), Q-023 (yes, own sub-agents within assigned work).
+**Phase 1 prerequisites (§15), owner:** account inventory and who controls `carworx.app` DNS; staging Supabase project + Cloudflare route (Phase 1 starts local-only until then); Resend subdomain; CI minutes; GitHub: switch the active `gh`/git login back to the account with CarworX org access.
+**Later, only if wanted:** Q-022 (unpaid reservations; default off).
 **Later:** Q-005, Q-006, Q-008, Q-016, Q-017 (before the Phase 2 production launch), Q-019.
 
 ## Next steps
 
-1. ~~Claude: create the presentation pack~~ Done: [Claude 06](claude/06-presentation-pack.md), files in `planning/design/pack/`.
-2. **Codex 05 (next):** review factual accuracy, state/accessibility/mobile coverage and exported-file usability.
-3. Owner shows colleagues, records feedback and chooses a brand, then decides whether to approve Phase 1. Technical sign-off is not that approval.
-4. Reopen technical decisions only for actual scope/contract changes, not cosmetic concept feedback. No automatic trigger is enabled; owner still starts each turn.
+1. **Claude:** Studio design system in Claude Design, mirrored into the repo tokens (D-040).
+2. **Codex 05:** review the rebuilt pack, the design system and D-037–D-040.
+3. **Owner:** merge `planning/design-motion-toolkit` to `main` after Codex approves; complete the §15 Phase 1 prerequisites.
+4. **Phase 1 (approved, D-038):** monorepo scaffold, CI, local dev, Studio tokens in Tailwind with a living component page, auth, first tables with RLS, then staging; exit A1–A7 including the restore drill.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
@@ -45,3 +47,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 8 | 2026-10-27 | Codex | Signed technical PLAN 2.1 with final search/event/performance/sharing clarifications; accepted §22 pack scope. Owner approval remains pending. Baton to Claude for local presentation artefacts, then Codex review. |
 | 9 | 2026-10-28 | Claude | Built the §22 pack (Stage A) in `design/pack/`: one offline HTML with the Turbine brand and hero motion, 8 phone screen groups with §10 states, desktop home/search, Thandi and Pieter journeys, roadmap/decisions, summary, 16 PNG + PDF exports and QA.md (UNVERIFIED items listed). Branch `planning/design-motion-toolkit`. Baton to Codex for review. |
 | 10 | 2026-10-28 | Claude | Owner chose then approved the Studio web direction (D-035, D-036) after two refinement passes. Rebuilt the §22 pack in Studio: Studio intro, Turbine rules + Studio UI language, 8 screen groups with §10 states, desktop home/search, scroll-linked journeys, roadmap; fonts bundled offline; 27 PNG + 42-page PDF checked by eye; QA.md rewritten. Baton to Codex for review. |
+| 11 | 2026-11-02 | Claude | Recorded owner decisions: Phase 0b closed, no colleague changes (D-037); PLAN 2.1 approved for Phase 1 only, local-only start (D-038); Q-023 yes (D-039); Studio design system built in Claude Design first (D-040). Baton stays with Claude for the design system, then Codex reviews. |

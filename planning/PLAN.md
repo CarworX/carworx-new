@@ -398,8 +398,8 @@ Reporting keeps booked value, completed net value, fees billed, fees reversed an
 
 | ID | Decision | Status / needed by |
 |---|---|---|
-| Q-009 | Colleague involvement | **Answered:** the two colleagues see the presentation pack (§22) before approval |
-| Q-018 | Brand | **Answered:** none yet; choose from directions in §22 |
+| Q-009 | Colleague involvement | **Answered:** the two colleagues saw the presentation pack (§22); no changes (D-037) |
+| Q-018 | Brand | **Answered:** Turbine logo (D-034); Studio UI direction (D-035, D-036) |
 | Q-021 | Standing staging-merge permission | **Answered: yes** (merges only) |
 | Q-005 | Business type and bank account for Paystack | Phase 3 test keys; G-PAY |
 | Q-006 | Information Officer | G-PROD |
@@ -408,7 +408,7 @@ Reporting keeps booked value, completed net value, fees billed, fees reversed an
 | Q-017 | Production budget (Supabase Pro proposed) | **Before the Phase 2 production launch** |
 | Q-019 | GitHub Team | Optional |
 | Q-022 (new) | Binding *unpaid* reservations before G-PAY? Default: **no** | Phase 3, if wanted |
-| Q-023 (new) | Allow each agent's own sub-agents or parallel tasks within assigned work (no extra spend)? | Phase 1 |
+| Q-023 | Allow each agent's own sub-agents or parallel tasks within assigned work (no extra spend)? | **Answered: yes** (D-039) |
 | — | Proposed defaults: 2-business-hour acknowledgement, 1-business-day support response, 25 km search, 15-minute hold, 7-day quote expiry, retention periods marked PROPOSED | Phase 3 / G-PROD |
 
 ## 21. What approval means
