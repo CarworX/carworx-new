@@ -93,3 +93,4 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
   - Also PLAN §17, OWNER-QUESTIONS and STATUS.
 - Open for the owner: whether one bay or diary stays free (Claude 11 §6.3). For Codex: the proposed entry and stop numbers, and the extra ideas.
 - Limits: nothing activated; no accounts, outreach, billing code or spending.
+- Follow-up, the same day: the owner answered "Yes, one free". One bay or diary stays free for every provider, and multi-bay planning and staff rosters become Pro. Recorded in D-055 and in Claude 11 §6.3.

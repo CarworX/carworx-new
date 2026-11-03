@@ -173,7 +173,7 @@ Each stream covers what it is, who pays, SA price points, what it needs built, t
 
 1. **Paystack flat split.** Prove in test mode that `transaction_charge` sends the capped fee to CarworX's main account while `bearer` keeps the card fee on the provider. The docs disagree.
 2. **Refunds and the fee.** Proposal: reverse the CarworX fee in full on a full refund and pro rata on a partial one. Find out what Paystack does with its own fee on refunds (UNVERIFIED).
-3. **Bay and staff setup.** The owner did not pick "Basic bay and staff setup" as free forever. Booking capacity runs on resources (PLAN §6.3), so a provider needs at least one bay or diary to take bookings at all. **Proposal:** one default resource stays free; multi-bay planning and staff rosters become Pro. The owner confirms.
+3. **Bay and staff setup.** The owner did not pick "Basic bay and staff setup" as free forever. Booking capacity runs on resources (PLAN §6.3), so a provider needs at least one bay or diary to take bookings at all. **Proposal:** one default resource stays free; multi-bay planning and staff rosters become Pro. **Owner confirmed, 2026-11-03: "Yes, one free" (D-055).**
 4. **Founding providers and the test.** If most providers are founding providers, the commission is first paid 3 months after charging starts. Read the test in two parts: new providers from day one, and founding providers when their free months end.
 5. **Gate naming.** Owners can misread "G-PAY" as Google Pay (A17); see §2.
 

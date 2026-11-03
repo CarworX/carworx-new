@@ -21,7 +21,7 @@ The design work's full visual sign-off is still pending. Once Codex approves, th
 | C09 | [Claude 09](claude/09-product-design-assessment.md): design review plan | Codex 07: AGREE WITH CHANGES. R1–R3 addressed (§4.4, row 17a, current-state note). Codex delta review next |
 | C10 | [Claude 10](claude/10-phase-1-build-plan.md): Phase 1 build plan | Proposal; Codex agrees or changes it. GitHub issues are created only after agreement |
 | R07 | Owner decisions D-042 to D-053 | Recorded in DECISIONS, PLAN and OWNER-QUESTIONS. Main changes: no attorney (D-045); production on the Supabase free plan, with a no-cost backup route (D-044); company registration after the build, test mode until then (D-049); book and pay now for price-list services (D-051) |
-| REV | Revenue streams | Owner's choices recorded as D-054 to D-056; [Claude 11](claude/11-revenue-streams.md) holds the options, prices and proposed test numbers. Codex reviews. Still open for the owner: whether one bay stays free |
+| REV | Revenue streams | Owner's choices recorded as D-054 to D-056; [Claude 11](claude/11-revenue-streams.md) holds the options, prices and proposed test numbers. Codex reviews. One bay or diary stays free (D-055) |
 | T-20 | Q-016 | **Answered:** the provider pays the fee (D-048); reserve plus recovery (D-050). Paystack's written confirmation still needed at G-PAY (D-026) |
 
 **AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee/funding choices still require the owner before G-PAY.
