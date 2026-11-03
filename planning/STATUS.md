@@ -1,13 +1,14 @@
 # Status
 
-## 🟢 Baton: **CODEX**
+## 🟢 Baton: **CLAUDE**
 
-Codex: please review on `planning/design-motion-toolkit`:
-1. **The Claude 09 delta for [Codex 07](codex/07-claude09-review.md) R1–R3.** The new §4.4 gives each screenshot row a saved-image route or marks it BLOCKED. Row 17a adds control and non-text contrast. A current-state note sits under the status line.
-2. **[Claude 10](claude/10-phase-1-build-plan.md), the Phase 1 build plan:** tasks T1–T5 (Claude) and K1–K4 (Codex), file ownership, order and the issue list. Questions for you are in §9.
-3. **Owner decisions D-042 to D-057** (round 07), including the revenue choices in [Claude 11](claude/11-revenue-streams.md) and its proposed numbers, and the PLAN, OWNER-QUESTIONS and STATUS edits that follow from them. These are owner decisions: please check that the records are consistent, and raise any technical consequences.
+Claude: respond to [Codex 08](codex/08-phase1-and-revenue-review.md), reviewing head `280373e`.
 
-The design work's full visual sign-off is still pending. Once Codex approves, the owner merges the branch to `main`, and Phase 1 starts local-only (D-038). No audit, live publication or application work is started by this turn.
+- **Claude 09:** R2 contrast and R3 current state accepted. R1 remains open: capture the sibling state panels as well as phone figures; correct the mobile cover mapping. The C5 audit is still unstarted.
+- **Claude 10:** AGREE WITH CHANGES. Amend B1 real Google-test prerequisites, B2 auth/security acceptance coverage, B3 backup contract, and shared-file ownership. Codex accepts K1–K4 with those changes and proposes Gitleaks CLI plus daily encrypted exports to existing owner-controlled private storage; destination and recovery remain to be agreed and demonstrated.
+- **Claude 11 / PLAN:** reconcile the current revenue roadmap with D-054–D-056 (S1), define fee-exposed cohorts before declaring commission success or starting Pro (V1), and respond to the fee/refund/reminder points (V2). D-057 capacity remains a later technical contract to propose.
+
+The owner directions D-042–D-057 stand. This documentation review does not give full visual design sign-off. The owner merges the design branch after that review; Phase 1 then starts local-only under D-038 and the §15 prerequisites.
 
 **Phase: 1 approved (D-038), not started.** Phase 1 starts local-only with synthetic data once the design system is reviewed. No accounts, deployments, outreach or paid automation by agents.
 
@@ -17,14 +18,14 @@ The design work's full visual sign-off is still pending. Once Codex approves, th
 |---|---|---|
 | PLAN | Version 2.1 | Technically signed (D-033) and **owner-approved for Phase 1 only** (D-038) |
 | §22 | Presentation pack (Turbine + Studio) | Phase 0b closed (D-037). Expiry correction independently accepted by Codex 07 in source, assembled HTML, both checkout PNGs and PDF pages 22–23 |
-| DS | Studio design system (D-040) and system states (D-041) | Built by Claude ([08](claude/08-design-system.md), [states](design/states/NOTES.md)) in the CarworX Design System project and mirrored into `design/brand/`. The same expiry-copy correction is live in version 32. Codex reviews |
-| C09 | [Claude 09](claude/09-product-design-assessment.md): design review plan | Codex 07: AGREE WITH CHANGES. R1–R3 addressed (§4.4, row 17a, current-state note). Codex delta review next |
-| C10 | [Claude 10](claude/10-phase-1-build-plan.md): Phase 1 build plan | Proposal; Codex agrees or changes it. GitHub issues are created only after agreement |
-| R07 | Owner decisions D-042 to D-053 | Recorded in DECISIONS, PLAN and OWNER-QUESTIONS. Main changes: no attorney (D-045); production on the Supabase free plan, with a no-cost backup route (D-044); company registration after the build, test mode until then (D-049); book and pay now for price-list services (D-051) |
-| REV | Revenue streams | Owner's choices recorded as D-054 to D-056; [Claude 11](claude/11-revenue-streams.md) holds the options, prices and proposed test numbers. Codex reviews. One bay or diary stays free (D-055) |
+| DS | Studio design system (D-040) and system states (D-041) | Built by Claude ([08](claude/08-design-system.md), [states](design/states/NOTES.md)) in the CarworX Design System project and mirrored into `design/brand/`. Repo expiry copy accepted by Codex 07; Claude reports live version 32, not independently verified. Full review pending |
+| C09 | [Claude 09](claude/09-product-design-assessment.md): design review plan | Codex 08: R2/R3 accepted; R1 needs sibling-state selectors and a minor mobile mapping correction. C4/C5 retain their scope and prerequisites |
+| C10 | [Claude 10](claude/10-phase-1-build-plan.md): Phase 1 build plan | Codex 08: AGREE WITH CHANGES (B1–B3, ownership). K1–K4 accepted conditionally; issues follow agreement |
+| R07 | Owner decisions D-042 to D-057 | Recorded in DECISIONS, PLAN and OWNER-QUESTIONS. Main changes: no attorney (D-045); production on the Supabase free plan, with a no-cost backup route (D-044); company registration after the build, test mode until then (D-049); book and pay now for price-list services (D-051); provider-set concurrent capacity (D-057). Codex 08 identifies PLAN reconciliation S1 and later contracts |
+| REV | Revenue streams | Owner's choices recorded as D-054 to D-056; [Claude 11](claude/11-revenue-streams.md) holds the options, prices and proposed test numbers. Codex 08: AGREE WITH CHANGES (V1/V2, PLAN S1). One bay or diary stays free (D-055), with provider-set capacity (D-057) |
 | T-20 | Q-016 | **Answered:** the provider pays the fee (D-048); reserve plus recovery (D-050). Paystack's written confirmation still needed at G-PAY (D-026) |
 
-**AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee/funding choices still require the owner before G-PAY.
+**AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee bearer and funding choices are answered (D-048, D-050). Paystack confirmation, company/bank readiness and the funded process remain G-PAY requirements.
 
 ## Waiting on the owner
 
@@ -40,11 +41,10 @@ The design work's full visual sign-off is still pending. Once Codex approves, th
 
 ## Next steps
 
-1. ~~Claude: Studio design system~~ Done: [Claude 08](claude/08-design-system.md).
-2. ~~Claude: amend Claude 09 for Codex 07 R1–R3~~ Done (turn 17). **Codex:** review the delta, Claude 10 and D-042 to D-053. C4 and C5 keep their existing scope and permission limits.
-3. **Owner:** merge `planning/design-motion-toolkit` to `main` after Codex approves; complete the §15 Phase 1 prerequisites.
-4. **Phase 1 (approved, D-038):** per [Claude 10](claude/10-phase-1-build-plan.md) once agreed. The GitHub issues come first, then T1 (scaffold), then the tasks in parallel; exit A1–A7, including the restore drill from the no-cost backup route (D-044).
-5. **Later proposals (not Phase 1):** the D-051 booking flows, the fines partner plan (D-052), the legal drafts (D-045), the retention schedule (D-053) and the revenue streams.
+1. **Claude:** amend Claude 09/10/11 and PLAN for Codex 08, accepting or counterproposing the requested changes explicitly. Keep prior history and owner decisions. No issue creation until the Phase 1 task plan is agreed.
+2. **Design review:** C4/C5 remain pending within Claude 09's prerequisites; Codex reviews the resulting evidence independently. No full visual or accessibility sign-off is recorded by this planning review.
+3. **Owner:** merge `planning/design-motion-toolkit` to `main` after design approval and complete the §15 prerequisites. The backup destination/operator is selected before K4 hosted validation; real Google auth needs the owner's OAuth client locally as well as on staging.
+4. **Phase 1:** issue backlog after task-plan agreement, then scaffold and assigned tasks; local-only start, staging exits A1–A7 when prerequisites exist. D-051 booking, D-057 capacity, fines integration, legal/retention research and revenue experiments retain their later phases/gates.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
@@ -70,3 +70,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 16 | 2026-11-03 | Codex | Published Codex 07: C1–C3 accepted within verified scope; pack QA/build/checkout PNGs/PDF checked; approved-states QA 16/16 clean. Claude 09 AGREE WITH CHANGES for R1 saved evidence, R2 contrast coverage, R3 summary. Baton to Claude; complete design/merge sign-off remains pending. |
 | 17 | 2026-11-03 | Claude | Recorded owner decisions D-042 to D-053 (round 07: sign-in, Information Officer, Supabase free plan, no attorney, supply focus, accounting research, fee bearer, company registration, refund funding, booking modes, fines plan, retention). Amended Claude 09 for Codex 07 R1–R3 and published [Claude 10](claude/10-phase-1-build-plan.md), the Phase 1 build plan. Revenue streams are being discussed in a separate session. Baton to Codex. |
 | 18 | 2026-11-03 | Claude | Published [Claude 11](claude/11-revenue-streams.md), the revenue discussion from a separate Claude session (20 owner answers, SA prices with sources, a testing order), and recorded the owner's choices as D-054 to D-056. Baton stays with Codex. |
+| 19 | 2026-11-03 | Codex | Reviewed `280373e`: Claude 09 R2/R3 accepted, R1 state selectors remain; Claude 10/11 AGREE WITH CHANGES for Google prerequisites, security/backup evidence, current PLAN records and fee-exposed revenue cohorts. Published [Codex 08](codex/08-phase1-and-revenue-review.md); baton to Claude. Full visual/merge sign-off pending. |

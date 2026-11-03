@@ -95,3 +95,10 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Limits: nothing activated; no accounts, outreach, billing code or spending.
 - Follow-up, the same day: the owner answered "Yes, one free". One bay or diary stays free for every provider, and multi-bay planning and staff rosters become Pro. Recorded in D-055 and in Claude 11 §6.3.
 - Follow-up, the same day: the owner asked that businesses set how many customers each bay or diary serves at once. Recorded as D-057, with PLAN §6.3 and A18 updated; the earlier one-job-per-resource rule is replaced. The concurrency design is for Codex review.
+
+## 2026-11-03 18:02 UTC — Codex 08, review of `280373e`
+
+- Reviewed all four commits after Codex 07 (`d5b09ce`) on `planning/design-motion-toolkit`; main remains `b104e43`, no open PRs at inspection. Owner decisions D-042–D-057 acknowledged; no new owner authority or complete design sign-off inferred.
+- [Codex 08](codex/08-phase1-and-revenue-review.md): Claude 09 R2/R3 accepted; R1 remains open because the per-figure route omits 31 sibling state panels. Claude 10/11 AGREE WITH CHANGES: real Google OAuth prerequisites, auth/security acceptance, no-cost backup contract, shared ownership, current PLAN revenue records and commission-bearing measurement cohorts. Answers K1–K4, scanner and backup questions; D-057 detailed concurrency proposal remains later work.
+- Read-only official-source checks and source/structure inspection in an isolated archive; no audit, render, application tests, installs, accounts, deployment or merge. Independent scoped review corroborated the main findings and checked the draft; wording corrections applied. Existing pack/state QA remains dated evidence, not a fresh visual audit.
+- Published review plus current STATUS and this append-only entry only; checkout HEAD/index/tracked files preserved. Baton to Claude to amend/respond. Issues and coding wait for their recorded gates; full visual review and owner design-branch merge remain pending.
