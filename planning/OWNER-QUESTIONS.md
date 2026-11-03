@@ -35,7 +35,7 @@ The original questions above are preserved as history. The entries below superse
 ## Still open / later activation dependencies
 
 - Q-005: exact business/bank readiness and Paystack marketplace approval, before paid activation.
-- Q-006: Information Officer identity/registration and responsible-party assessment, before launch.
+- Q-006: Information Officer identity/registration and responsible-party assessment, before launch. *(Identity answered 2026-11-03: the owner, D-043. Registration and the responsible-party assessment remain before G-PROD.)*
 - Q-008: permission for external fines-partner outreach, before sending anything; referral launch is already accepted.
 - Q-009: whether colleague sign-off is required for the final structure; not assumed. *(Since answered: round 04 below, and closed in round 06, D-037.)*
 - Q-016: processing-fee bearer, refund funding and chargeback responsibilities, before paid activation.
@@ -101,3 +101,21 @@ These answers are recorded as decisions in [DECISIONS.md](DECISIONS.md), round 0
 **Still open:**
 - Q-022 (optional), plus Q-005, Q-006, Q-008, Q-016, Q-017 and Q-019, at the stages listed in PLAN §20.
 - The §15 Phase 1 prerequisites.
+
+## Owner answers — 2026-11-03, Claude chat (round 07)
+
+These answers are recorded as decisions in [DECISIONS.md](DECISIONS.md), round 07.
+
+- **Sign-in (D-042):** Google, or email and password. Admins also need a TOTP code. No SMS or WhatsApp sign-in in v1.
+- **Q-006 ANSWERED (D-043):** asked "Will you be CarworX's Information Officer?", the owner answered "Yes, me". No deputy is named for now. The owner registers with the Information Regulator before G-PROD.
+- **Q-017 ANSWERED FOR THE DATABASE (D-044):** "we won't be using supabase pro for now, the site will go live without it". The public site launches on the Supabase free plan. The agents agree a no-cost backup route and a plan for pausing before G-PROD. The automation budget (G-AUTO) is still open.
+- **Legal documents (D-045):** "we won't be getting an attorney, just make sure you and codex cross reference with actual south african law". The agents draft and cross-reference every legal document against the primary law; no attorney review.
+- **First supply (D-046):** servicing and repairs first.
+- **Q-005 PARTLY ANSWERED (D-047):** "one of my colleagues is an accountant, but need you to still find south african tax and accounting laws, you and codex will have full research and decision making, but he will then review after... are there any reliable payment providers that would not need us to register the business? if not, we can go ahead and do that and use paystack after we have registered the business".
+- **Q-016 (a) ANSWERED (D-048):** the provider pays the card fee (A1).
+- **Q-005 ANSWERED (D-049):** "don't draft any emails and this is not a sole proprietorship, I have cofounders/colleagues, so will likely require us to register the business, add that to the backlog, we will test payments with a non live account for now and register the business and access live payments once everything else has been built".
+- **Q-016 (b) ANSWERED (D-050):** reserve plus recovery (B2).
+- **Q-022 ANSWERED (D-051):** "I would say no, but it depends, for example, car washes, should not be enquiry based, they would likely have a price list, therefore people should be able to make immediate payments, any other services that also have a similar price list structure should allow for immediate payments, other services will obviously have an initial enquiry process maybe first on the app, to get a range, then the actual amount after in person enquiry and then have them send the quote through the app and pay from there".
+- **Q-008 ANSWERED (D-052):** after the explanation, "Plan a partner lookup". Referral links at launch; the owner contacts partners later.
+- **Retention (D-053):** "Agents set, accountant checks".
+- **Revenue streams:** the owner asked for this to be discussed in its own session; results come back for recording.

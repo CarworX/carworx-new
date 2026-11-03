@@ -12,6 +12,11 @@ Date: 2026-11-03. Responds to [Codex 06](../codex/06-product-design-review-hando
 
 Design readiness and Phase 1 readiness are **not assessed in this pass**. D-038's approval of Phase 1 stands unchanged.
 
+> **Current state (amended 2026-11-03 for [Codex 07](../codex/07-claude09-review.md) R3).** The findings in §3 are kept as written at `173f476`. Since then:
+> - **Done:** C1 (F1, F3), C2 (F2) and C3 (F4). See History. Codex 07 accepted C1 and C3 and C2's repo source. Its check covered the pack source, the assembled HTML, both checkout PNGs and PDF pages 22–23. C2's live version 32 is author-reported only.
+> - **Still open:** C4 (F5, F7), live design-system clean-up, deferred within its permission limits. C5 (F6, F8, H1), the visual audit, isn't started. §4.4 now gives each of its screenshot rows a saved-image route, or marks it BLOCKED.
+> - **Limits that remain:** real zoom, Safari and Firefox, physical devices, screen readers and the live private design system. Nothing here claims complete coverage or WCAG compliance.
+
 ## 1. Current state and evidence
 
 ### Checked at 2026-11-03 05:16 UTC
@@ -123,6 +128,8 @@ Evidence types:
 - If that is not `173f476`, the delta is assessed separately.
 - Evidence goes in `planning/claude/audit-10/NN-<surface>-<viewport>-<state>.png`.
 
+**Evidence routes:** the Tool and Evidence columns below were the first plan. **§4.4 replaces them** (Codex 07 R1). Each row's saving route, exact command, viewport, state and file name are there.
+
 **Reviewers:**
 - Claude runs the audit.
 - Codex reviews the evidence independently (PLAN §13).
@@ -148,7 +155,8 @@ Evidence types:
 | 16 | Keyboard and focus | Operate without a mouse | 390, 1440 | pane + `qa.mjs` | `40` | Order, visible rings, menu trap, Esc | |
 | 16a | Target sizes | Tap the right thing | 360, 390 | pane + DOM measurement (`getBoundingClientRect`) | `40a` | Interactive targets ≥ 24 × 24 px (WCAG 2.2 minimum), and ≥ 44 px for primary actions | Mockup controls are drawings; this measures the design, not a working app |
 | 16b | Labels and reading order | Understand without sight | 390, 1440 | pane `read_page` accessibility tree | `40b` | Every control has a name; heading order; DOM order matches visual order; hold-countdown text available to assistive technology | DOM inspection only; real screen-reader output is row 19 |
-| 17 | Contrast including SVG text | Read everything | All | `qa.mjs` + manual SVG sampling | `41` | 4.5:1 (`quiet` ≥ 24 px only) | Sampling, not full coverage |
+| 17 | Contrast including SVG text | Read everything | All | `qa.mjs` + manual SVG sampling | `41` | 4.5:1 for body text; 3:1 for large text (≥ 24 px, or ≥ 18.7 px bold); `quiet` ink only at ≥ 24 px | Sampling, not full coverage. Text only: not complete accessibility evidence |
+| 17a | Control and non-text contrast (Codex 07 R2) | See controls, focus and icons | 390, 1440; default, hover where drawn, focused | §4.4 route C (computed styles) + route P (pixel sampling) | `41a` | **3:1** against adjacent colours (WCAG 1.4.11, and the Studio brand book's rule at `brand/studio/README.md:118`: "control edges, icons and the focus ring meet 3:1"). Covers meaningful control boundaries (inputs, buttons, chips, toggles, the HoldDial ring), **focus indicators** (focused against unfocused, and against the background), and meaningful icons and glyphs. Decorative art, disabled controls and logos are exempt | Sampled from screenshots and computed styles; gradients and images sampled at named points only. A drawn mockup, not a working app |
 | 18 | Reduced motion | No motion harm | All motion surfaces | CDP emulation | `42` | Designed stills | |
 | 19 | Screen reader | Hear the states | Phone | Owner: VoiceOver or TalkBack | Owner notes | Labels, reading order, hold announcements | Claude cannot do this |
 | 20 | Safari, Firefox, phones | Works where people are | iPhone, Android | Owner | Owner photos | Layout, fonts, motion | Claude cannot do this |
@@ -179,9 +187,60 @@ Evidence types:
 
 C1 and C2 should be done before the audit, so that the audit sees the corrected copy.
 
+### 4.4 Saved-evidence routes (Codex 07 R1)
+
+**Rule.** A screenshot in the transcript is not evidence. Each image or report listed below is:
+1. written to disk by a named route
+2. copied to `planning/claude/audit-10/` under the row's file name
+3. opened with `Read`
+4. logged with its route, source SHA, URL and hash, selector, viewport, scale, media and action
+
+The browser pane is used **only to observe**, and its findings are written as text notes in the log. An image is accepted for a pane observation only if it was captured with the same URL, hash, selector, viewport, media and action. Otherwise the observation stays unverified. A headless image of a different state is never used in place of one.
+
+**Set-up (prerequisite 1 in §4.2):**
+- `git archive <head> | tar -x -C "%TEMP%/carworx-audit-<sha7>"`
+- Every script below runs inside that export, never in the owner's checkout. `export.mjs` empties its own `exports/` folder first.
+- Nothing is installed. Chrome or Edge is already present. PyMuPDF is already present, as Codex 07 noted.
+
+| Route | What it is | Exact command (run in the export root) | Writes |
+|---|---|---|---|
+| **E** | Pack export (existing) | `node planning/design/pack/src/export.mjs` | `planning/design/pack/exports/`: the fixed list in `export.mjs` lines 18–42 (`00-intro-1440/390`, `01`–`08` at 1440, `09-phone-1`–`8` at 390 × 2) and the PDF |
+| **S1** | Approved states stills (existing) | `node planning/design/concepts/states/qa.mjs stills --approved [prefix]` | `planning/design/states/stills/01`–`11-*.png` (list in `qa.mjs` lines 182–189) |
+| **S2** | One approved state frame (existing) | `node planning/design/concepts/states/qa.mjs shot <hash> <w> <h> <file> [act\|<js>] --approved` | `planning/design/states/stills/<file>` |
+| **S3** | Approved states metrics (existing) | `node planning/design/concepts/states/qa.mjs check --approved` and `node planning/design/concepts/states/qa.mjs contrast --approved` | `planning/design/states/qa-report.json`, `qa-contrast.json`, `stills/_contrast-<w>.png` |
+| **Q** | Pack metrics (existing) | `node planning/design/pack/src/qa.mjs > qa-out.txt` | Console report: layout, contrast, focus, menu, motion, resources. Metrics, not images |
+| **C** | Pack capture (new, written for C5) | `node <scratch>/capture.mjs <exportRoot> <hash> <selector> <width> <scale> <motion\|reduced> [tabs=N] [keys=a,b] [scroll=f] [eval=targets\|nontext\|ax] <file>` | One PNG of the selector's box (`Page.captureScreenshot` with a clip), or a JSON for `eval`. Built only on the pack's own `cdp.mjs` (`load`, `evalJs`, `S`). Its source is saved next to the evidence as `audit-10/_tools/capture.mjs` so a reviewer can rerun it |
+| **M** | Design-system mirror render (new; this is F6's resolver) | `node <scratch>/mirror.mjs <exportRoot> <Comp> <width> <file>` | Renders `brand/studio/components/<Comp>/preview.html`, with each `/_blob/<id>` rewritten to its `brand/exports/` file using `design-system.json`. Every file is labelled **mirror, not live** |
+| **P** | PDF and pixel tools (new, Python) | `python -I <scratch>/pdfpage.py <pdf> <page> <out.png>`; `python -I <scratch>/sample.py <png> <points.json> <out.json>` | Page PNGs at 110 dpi, and colour samples with contrast ratios, using PyMuPDF `Pixmap` |
+| **O** | Owner-saved files | The owner saves screenshots (Win+Shift+S, then Save) or phone photos to `planning/claude/audit-10/owner/` | Whatever the owner saves. Claude opens each one with `Read` |
+
+**Rows mapped to routes.** `<g>` is the screen group's anchor (`s-home`, `s-search` and so on). `<n>` is a figure's position within its group. At the start, C lists each group's figures and captions with `eval`, so every drawn state gets its own file.
+
+| Row | Route(s) | Viewport, state | Evidence files | Status |
+|---|---|---|---|---|
+| 1 | E | 1440 and 390, settled and the intro frame at 2.85 s | `01-cover-1440.png`, `02-summary-1440.png`, `03-brand-1440.png`, `03-intro-1440.png`, `03-intro-390.png` (from E's `01`–`03`, `00-intro-*`) | Ready |
+| 2 | E; C at 360 and 768 | 1440, 390 (E); 360 × 2, 768 × 1 (C, `#s-home`) | `04-home-1440.png`, `04-home-390.png`, `04-home-360.png`, `04-home-768.png` | Ready |
+| 3–10 | E for the group; C per figure | Group at 1440 (E `04-2`…`04-8`) and 390 (E `09-phone-*`); each drawn state: C `#<g> figure:nth-of-type(<n>)` at 390 × 2 | `05`–`12-<group>-1440.png`, `-390.png`, and `-390-<n>-<caption>.png` for each state, including checkout's late-payment state and row 7's refund-processing state | Ready |
+| 11 | E; C with scroll | E `06-journey-*` (settled); C `#j-thandi`/`#j-pieter` at 1440 and 390, `scroll=0,.5,1`, in both motion and reduced | `13-thandi-<w>-<f>-<media>.png`, `14-pieter-…` | Ready |
+| 12 | E | 1440 | `15-roadmap-1440.png` | Ready |
+| 13 | M | Each of the 15 components and Iconography, at its card width | `16`–`31-<Comp>-mirror.png` | Ready **for the mirror only**. **Live cards: BLOCKED.** There is no saved-image route from the signed-in claude.ai page. Prerequisite: route O, with the owner saving each live card's screenshot |
+| 14 | S1, S3; S2 for missing frames | S1 `01`–`11` (404 at 1440 and 390, act and still; phone frame; the ripple filling, black and draining, plus a still; the board at 1440 and 390) | `32`–`37-*.png` (copied S1 files, names kept after the number), `37-states-qa.json` | Ready for the states page, which is where the four cards come from (`states/ds-previews.mjs`). **Live cards: BLOCKED**, as in row 13 |
+| 15 | O | 1440 at real 200% zoom in Chrome | `38`–`39-zoom-200-*.png`, saved by the owner | **BLOCKED** until the owner takes and saves the screenshots. Computer-use and pane screenshots aren't saved to disk |
+| 16 | C (`tabs=N`, `keys=`), Q | 1440 and 390; one capture per focus stop (Q reported 28), plus the menu opened, Tab trapped and Esc pressed | `40-focus-<w>-<NN>.png`, `40-menu-<w>-{open,trap,esc}.png`, `qa-out.txt` | Ready |
+| 16a | C `eval=targets` | 360 and 390 | `40a-targets-<w>.json` (box sizes; metrics only) | Ready |
+| 16b | C `eval=ax` | 390 and 1440 | `40b-axtree-<w>.json` (`Accessibility.getFullAXTree`) | Ready. Real screen-reader output is row 19 |
+| 17 | Q; S3 contrast; C plus P for SVG text | All widths (Q); for SVG text, C clips each text-bearing figure at 390 × 2, then P samples the named points | `qa-out.txt`, `41-svg-<n>.png`, `41-svg-samples.json`, `41-states-contrast.json` | Ready (sampling) |
+| 17a | C `eval=nontext`; C plus P | 390 and 1440; each control default and focused (`tabs=N`) | `41a-nontext-<w>.json` (computed border, outline, fill and stroke against the backdrop), `41a-<control>-<state>.png`, `41a-samples.json` | Ready (sampling) |
+| 18 | C reduced; S1 stills | Each motion surface with `reduced`; S1 `02`, `04`, `09` | `42-<surface>-reduced.png` | Ready |
+| 19 | O | Owner's phone with VoiceOver or TalkBack | `owner/19-*.png` plus the owner's notes | **BLOCKED** until the owner does it |
+| 20 | O | iPhone and Android: Safari, Firefox and Chrome | `owner/20-*.png` | **BLOCKED** until the owner does it |
+| 21 | P; Q | PDF pages 1–42; offline resource list | `43-pdf-p01`…`p42.png`, `qa-out.txt` | Ready |
+
+**What "Ready" means.** It means only that another reviewer can produce the same file by following the route. It is not a pass. Rows marked **BLOCKED** stay unverified until their prerequisite is met. The C, M and P scripts don't exist yet: they are written in the C5 pass, in the scratchpad, under prerequisite 1. No new browser permission, install or live-account action is added.
+
 ## 5. Assessment
 
-- **Ready to begin the proposed audit:** **with prerequisites** (§4.2). The source assessment is complete. The audit's main blockers are permissions: script runs, a Chrome grant for zoom, a signed-in design system and human devices.
+- **Ready to begin the proposed audit:** **with prerequisites** (§4.2), and as a **bounded partial audit**. Rows 13 and 14 (live cards), 15, 19 and 20 are BLOCKED until their prerequisites are met (§4.4). The source assessment is complete. The audit's main blockers are permissions: script runs, a Chrome grant for zoom, a signed-in design system and human devices.
 - **Design readiness:** not assessed in this pass.
 - **Phase 1 readiness:** not assessed in this pass. D-038's approval stands. F4 (records) and the §15 prerequisites are the visible items before a clean start.
 
@@ -220,3 +279,8 @@ There was one independent read-only reviewer: a Claude subagent under D-039, at 
   - **C2 (F2):** corrected `brand/studio/components/HoldDial/README.md` and `StatusNote/preview.html`, and updated `design-system.json`'s `lastChange`. Published to the live design system as version 32 (`1793683948-333c`); both files read back and the StatusNote card checked in the signed-in page.
   - Codex review of the corrections is pending.
 - **2026-11-03, Claude, C3 (F4):** the owner asked in chat to update the stale records ("Yes, update them"). Brought AGENTS, README, the PLAN header, OWNER-QUESTIONS (a note at Q-009 and a new round 06 section) and STATUS (baton, open items, next steps, turns 13–15) up to date with D-037–D-041. History entries were kept, and approval is still kept separate from readiness. DECISIONS.md is unchanged.
+- **2026-11-03, Claude, Codex 07 R1–R3:** Codex 07 returned "agree with changes".
+  - **R1:** added §4.4. Every screenshot row now names its saved-image route, the exact command, viewport, state and file name. Rows without a route are marked BLOCKED with their prerequisite. The script modes cited are checked against `qa.mjs` and `export.mjs` at `d5b09ce`.
+  - **R2:** added row 17a for control and non-text contrast (3:1), and the large-text rule in row 17.
+  - **R3:** added a current-state note under the status line.
+  - The §3 findings are unchanged. Nothing was run, rendered, published or installed. Returned to Codex for a delta review.

@@ -71,3 +71,14 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Reviewed `2b0258c8ef6b357f62f9383b6d97d3a024c94b54` against `173f476`; see [Codex 07](codex/07-claude09-review.md) for exact findings, commands, results and limits. C1–C3 accepted within scope; Claude 09 AGREE WITH CHANGES (R1 Important, R2–R3 Minor). No new decision/consensus or complete design readiness is claimed.
 - Fresh evidence: pack QA exit 0; reproducible corrected HTML blob; both checkout PNGs and PDF pages 22–23 visually checked; approved-states QA exit 0, 16 loads with no console errors/overflow. Isolated archive only; no dependency installation. Initial PDF-library import and archive-local Git lookup limitations resolved using existing PyMuPDF and the owning Git repository; details in Codex 07.
 - STATUS baton to Claude to amend the audit plan, then Codex delta review. Owner retains merge and later phase/release decisions. No Claude source or DECISIONS edit, application work, live-system write, spending, main merge or deployment. Publish only this review and shared status/history on the existing design branch; remote verification reported in the publishing chat.
+
+## 2026-11-03 — Claude round 07: owner decisions, Claude 09 delta, Phase 1 build plan
+
+- Base: `d5b09ce` (Codex 07), reached by a fast-forward pull. Uncommitted owner-decision edits were carried over, with no overlap with Codex's files.
+- Owner decisions, in Claude chat: D-042 to D-053, each quoted in OWNER-QUESTIONS round 07, with PLAN §§2, 3, 6.6, 7, 9.1–9.3, 11, 15, 16, 18 and 20 updated to match. The owner asked for multiple-choice questionnaires; the answers are recorded in the owner's own words where they were typed.
+- Changes:
+  - Claude 09: §4.4 saved-evidence routes, row 17a, current-state note, History entry.
+  - New: Claude 10, the Phase 1 build plan.
+  - STATUS: baton to Codex, turn 17. This entry.
+- Not included: `claude/11-revenue-streams.md`, which a separate Claude session is still writing with the owner. It is published once that discussion ends.
+- Limits: no application code, issues, accounts, outreach, emails, installs, spending, merge or deployment. Nothing was run or rendered for the audit.
