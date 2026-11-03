@@ -115,7 +115,8 @@ body[data-ground="dark"] .dock button[aria-current="true"]{background:#fff;color
 body[data-ground="dark"] .dock .tog{background:rgba(255,255,255,.06)}
 body[data-ground="dark"] .dock .tog button[aria-pressed="true"]{background:rgba(255,255,255,.16);box-shadow:none}
 body[data-ground="dark"] .dock :focus-visible{outline-color:#fff}
-.dock .view{display:none} body[data-kind="load"] .dock .view{display:flex}
+.dock .view[hidden]{display:none}
+.dock button.tx{font-family:var(--f-sans);font-size:13px;padding:0 14px;white-space:nowrap}
 @media (max-width:700px){
   .dock .grp:not(.on) button:not(.gl){display:none}
   .dock .cap .hint,.dock .cap .nf{display:none}
@@ -297,6 +298,7 @@ body[data-ground="dark"] .dock :focus-visible{outline-color:#fff}
 .dr-cap{position:fixed;left:50%;transform:translateX(-50%);font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;color:var(--muted);white-space:nowrap}
 canvas.mini{display:block}
 
+
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion:reduce){ .pill,.pill .arr,.chip{transition:none} }
 .reduce .pill,.reduce .chip{transition:none}
@@ -394,8 +396,7 @@ canvas.mini{display:block}
 </main>
 
 <nav class="dock" id="dock" aria-label="Concept switcher">
-  <div class="cap"><b id="dName">Ink in water</b><span class="hint" id="dHint"></span><span class="nf">CONCEPT, NOT FINAL</span>
-    <div class="tog view" role="group" aria-label="Loading view"><button type="button" data-view="splash" aria-pressed="true">Splash</button><button type="button" data-view="use" aria-pressed="false">In use</button></div>
+  <div class="cap"><b id="dName"></b><span class="hint" id="dHint"></span><span class="nf">CONCEPT, NOT FINAL</span>    <div class="tog view" role="group" aria-label="View" hidden></div>
     <div class="tog" role="group" aria-label="Motion"><button type="button" id="dStill" aria-pressed="false" title="Preview the reduced-motion still (R)">Still</button></div>
   </div>
   <div class="row">
@@ -1176,28 +1177,33 @@ SCENES['404-5'] = (() => {
 /* =====================================================================
    Loading concepts. Each has a splash (full screen) and an "in use" board.
    ===================================================================== */
+// The board's pieces: a page mock, the two busy pills and a results list whose last row is loading.
+const MOCK = (body) => `<div class="mock"><div class="mock-top"><b>Wash&nbsp;&amp; Detailing near Ferndale</b><span class="mchips"><span class="mchip">Open Saturday</span><span class="mchip">Within 10 km</span></span></div>
+      <div class="mock-body" aria-busy="true">${body}</div></div>`;
+const PILLS = (btn, btn2) => `<div class="bstack"><button type="button" class="pill busy" aria-disabled="true"><span>Sending request</span><span class="arr" aria-hidden="true">${btn}</span></button>
+      <button type="button" class="pill light busy" aria-disabled="true"><span>Loading more results</span><span class="arr" aria-hidden="true">${btn2}</span></button></div>`;
+const ROWS = (card) => `<ul class="rlist">
+        <li class="rc2"><span class="th"><svg viewBox="0 0 80 80" aria-hidden="true"><use href="#ob-wash"/></svg></span><div><b>Shine Studio</b><small>Rosebank · 2.4 km straight-line</small></div><span class="tag">DEMO</span></li>
+        <li class="rc2"><span class="th p"><svg viewBox="0 0 80 80" aria-hidden="true"><use href="#ob-wash"/></svg></span><div><b>Gleamline</b><small>Ferndale · 3.1 km straight-line</small></div><span class="tag">DEMO</span></li>
+        <li class="rc2" aria-busy="true">${card}</li>
+      </ul>`;
 function useBoard(sceneEl, { title, grey, page, btn, btn2, card, cardText, sizes, note }) {
   const u = $('.use', sceneEl);
   u.innerHTML = `<div class="use-h"><p class="eyebrow">In use · concept, not final</p><h2>${title}<br><span class="grey">${grey}</span></h2></div>
   <div class="use-g">
     <section class="u u-page"><span class="eyebrow">In a page</span>
-      <div class="mock"><div class="mock-top"><b>Wash&nbsp;&amp; Detailing near Ferndale</b><span class="mchips"><span class="mchip">Open Saturday</span><span class="mchip">Within 10 km</span></span></div>
-      <div class="mock-body" aria-busy="true">${page}</div></div></section>
+      ${MOCK(page)}</section>
     <section class="u u-btn"><span class="eyebrow">In a button</span>
-      <div class="bstack"><button type="button" class="pill busy" aria-disabled="true"><span>Sending request</span><span class="arr" aria-hidden="true">${btn}</span></button>
-      <button type="button" class="pill light busy" aria-disabled="true"><span>Loading more results</span><span class="arr" aria-hidden="true">${btn2}</span></button></div>
+      ${PILLS(btn, btn2)}
       <p class="caption">${note || 'The label says what is happening. The button keeps its size, so nothing jumps.'}</p></section>
     <section class="u u-list"><span class="eyebrow">On a card or list</span>
-      <ul class="rlist">
-        <li class="rc2"><span class="th"><svg viewBox="0 0 80 80" aria-hidden="true"><use href="#ob-wash"/></svg></span><div><b>Shine Studio</b><small>Rosebank · 2.4 km straight-line</small></div><span class="tag">DEMO</span></li>
-        <li class="rc2"><span class="th p"><svg viewBox="0 0 80 80" aria-hidden="true"><use href="#ob-wash"/></svg></span><div><b>Gleamline</b><small>Ferndale · 3.1 km straight-line</small></div><span class="tag">DEMO</span></li>
-        <li class="rc2" aria-busy="true">${card}</li>
-      </ul></section>
+      ${ROWS(card)}</section>
     ${sizes ? `<section class="u u-sizes"><span class="eyebrow">Sizes</span>${sizes}</section>` : ''}
   </div>`;
   return u;
 }
 const cardRow = (thumb, line) => `<span class="th">${thumb}</span><div><b>Bubbles &amp; Co</b><small>Northcliff · 4.0 km straight-line</small></div><span class="ld">${line}</span>`;
+function miniCanvas(host, w, h) { const c = document.createElement('canvas'); c.className = 'mini'; c.setAttribute('aria-hidden', 'true'); host.appendChild(c); c._w = w; c._h = h; return c; }
 
 /* ---------- Loading · 1  Rotor spool ---------- */
 // A spool engine: lag and surge up to speed, run while loading, brake exactly onto the logo, settle 1.8°.
@@ -1252,7 +1258,6 @@ function ticks(ctx, x, y, R, p, alpha = 1) { // the housing dial: 60 ticks, lit 
   }
   ctx.restore();
 }
-function miniCanvas(host, w, h) { const c = document.createElement('canvas'); c.className = 'mini'; c.setAttribute('aria-hidden', 'true'); host.appendChild(c); c._w = w; c._h = h; return c; }
 
 SCENES['load-1'] = (() => {
   const el = $('#s-load-1'), cv = $('.splash .fx', el), ctx = cv.getContext('2d'), pct = $('.sp-pct', el), pv = $('.v', pct), pl = $('small', pct);
@@ -1402,6 +1407,8 @@ function roller(host) {
     requestAnimationFrame(() => { s.className = 'in'; }); cur = s;
   };
 }
+// The hold dial in a button: a plain spinning arc, white on the ink pill, blue on the light pill.
+const SPIN = (dark) => `<svg class="spin-ring" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="${dark ? 'rgba(255,255,255,.22)' : 'rgba(13,15,18,.12)'}" stroke-width="2.2"/><g class="arc"><path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" fill="none" stroke="${dark ? '#fff' : '#3d6dff'}" stroke-width="2.2" stroke-linecap="round"/></g></svg>`;
 SCENES['load-3'] = (() => {
   const el = $('#s-load-3'); let dials = [], T = 0;
   return {
@@ -1416,13 +1423,10 @@ SCENES['load-3'] = (() => {
       const u = useBoard(el, {
         title: 'Hold dial', grey: 'A ring that fills one honest step at a time.',
         page: `<div style="display:flex;flex-direction:column;align-items:center"><div class="hp"></div><div class="lcap hp-l" style="width:min(100%,360px)"></div></div>`,
-        btn: '<svg class="spin-ring" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="rgba(13,15,18,.12)" stroke-width="2.2"/><g class="arc"><path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" fill="none" stroke="#3d6dff" stroke-width="2.2" stroke-linecap="round"/></g></svg>',
-        btn2: '<svg class="spin-ring" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="rgba(13,15,18,.12)" stroke-width="2.2"/><g class="arc"><path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" fill="none" stroke="#3d6dff" stroke-width="2.2" stroke-linecap="round"/></g></svg>',
+        btn: SPIN(true), btn2: SPIN(false),
         card: cardRow('<span class="hc"></span>', '<span class="hc-l" style="width:150px;font-size:13px;height:20px"></span>'),
         note: 'In a button the dial becomes a plain spinning arc: there is no room for steps, so it does not pretend to count them.',
       });
-      $$('.u-btn .pill:not(.light) .spin-ring circle', u).forEach((c) => c.setAttribute('stroke', 'rgba(255,255,255,.22)'));
-      $$('.u-btn .pill:not(.light) .spin-ring path', u).forEach((c) => c.setAttribute('stroke', '#fff'));
       dials.push(new HoldDial($('.hp', u), 132, { roll: roller($('.hp-l', u)) }));
       const cl = $('.hc-l', u); cl.style.display = 'block';
       const cardLines = ['Checking Saturday times…', 'Loading listed prices…', 'Checking Saturday times…', 'Loading listed prices…'];
@@ -1442,14 +1446,15 @@ SCENES['load-3'] = (() => {
 })();
 
 /* ---------- Loading · 4  Skeleton screens and the five key-caps pressing in turn ---------- */
+const sk = (w, h, r = 8, extra = '') => `<span class="sk" style="display:block;width:${w};height:${h}px;border-radius:${r}px;${extra}"></span>`;
+const skCard = (i) => `<div class="skc"><span class="sk t"></span><div class="ls">${sk(['62%', '54%', '70%', '58%'][i % 4], 16, 8)}${sk('86%', 11)}${sk('40%', 11)}<div style="display:flex;gap:8px;margin-top:6px">${sk('84px', 28, 999)}${sk('64px', 28, 999)}</div></div></div>`;
+const skRow = () => `<span class="sk" style="width:52px;height:52px;border-radius:12px"></span><div style="display:flex;flex-direction:column;gap:8px">${sk('70%', 12)}${sk('90%', 10)}</div>${sk('44px', 22, 6)}`;
+function skSync(root) { // one sweep crosses the whole page: each block's shimmer starts by its x position
+  const vw = innerWidth; $$('.sk', root).forEach((s) => { const b = s.getBoundingClientRect(); s.style.setProperty('--d', (-(1 - (b.left + b.width / 2) / vw) * .55).toFixed(3) + 's'); });
+}
 SCENES['load-4'] = (() => {
-  const el = $('#s-load-4');
-  const sk = (w, h, r = 8, extra = '') => `<span class="sk" style="display:block;width:${w};height:${h}px;border-radius:${r}px;${extra}"></span>`;
+  const el = $('#s-load-4'), card = skCard, sync = () => skSync(el);
   const keys = SERVICES.map(([k, l], i) => `<div class="kc" style="--kd:${(i * .12).toFixed(2)}s"><svg viewBox="0 0 80 80" aria-hidden="true"><use href="#ob-${k}"/></svg><span>${l}</span></div>`).join('');
-  const card = (i) => `<div class="skc"><span class="sk t"></span><div class="ls">${sk(['62%', '54%', '70%', '58%'][i % 4], 16, 8)}${sk('86%', 11)}${sk('40%', 11)}<div style="display:flex;gap:8px;margin-top:6px">${sk('84px', 28, 999)}${sk('64px', 28, 999)}</div></div></div>`;
-  function sync() { // one sweep crosses the whole page: each block's shimmer starts by its x position
-    const vw = innerWidth; $$('.sk', el).forEach((s) => { const b = s.getBoundingClientRect(); s.style.setProperty('--d', (-(1 - (b.left + b.width / 2) / vw) * .55).toFixed(3) + 's'); });
-  }
   return {
     el, hint: 'Frosted skeletons with one soft shimmer, and the five keys pressing in turn.', loader: true,
     init() {
@@ -1463,7 +1468,7 @@ SCENES['load-4'] = (() => {
         page: `<div style="width:100%;align-self:start">${card(0)}${card(1)}</div>`,
         btn: '<span class="mini-keys" style="color:#fff">' + [0, 1, 2, 3, 4].map((i) => `<i style="--kd:${i * .12}s"></i>`).join('') + '</span>',
         btn2: '<span class="mini-keys" style="color:#0d0f12">' + [0, 1, 2, 3, 4].map((i) => `<i style="--kd:${i * .12}s"></i>`).join('') + '</span>',
-        card: `<span class="sk" style="width:52px;height:52px;border-radius:12px"></span><div style="display:flex;flex-direction:column;gap:8px">${sk('70%', 12)}${sk('90%', 10)}</div>${sk('44px', 22, 6)}`,
+        card: skRow(),
         note: 'In a button the five keys shrink to five dots that press in turn.',
       });
     },
@@ -1505,15 +1510,27 @@ function rippleField(ctx, W, H, T, o) {
   ctx.fillStyle = 'rgba(42,84,212,.4)'; ctx.fill(pB);
   ctx.fillStyle = COL.blue; ctx.fill(pC);
 }
+// Blade pulse: on one 72° index solid ink runs from the hub out to the tips and stays; on the next it runs back.
+// One fill with a radial gradient in mark units (drawMark's transform), pale ink at 14 % beyond a 2 %-of-R feathered front.
+// Same result as the pale mark with an ink copy clipped to a circle; the front starts just inside the hub and ends just past the tips.
+const MK_S = { rHub: 27, rTip: 100 }, PALE = 'rgba(13,15,18,.14)';
+function bladePulse(c, t, small) {
+  const T = t + .9, k = Math.floor(T / 1.2), p = E.inOutCubic(clamp((T - k * 1.2) / .45));
+  const f = 2, hub = (small ? MK_S : MK).rHub - f, tip = MK.rTip + f, r = k % 2 ? lerp(tip, hub, p) : lerp(hub, tip, p), o = tip + f;
+  const g = c.createRadialGradient(0, 0, 0, 0, 0, o);
+  g.addColorStop(clamp((r - f / 2) / o), COL.ink); g.addColorStop(clamp((r + f / 2) / o), PALE);
+  return g;
+}
+function rippleScene(c, w, h, d, t, o) {
+  c.setTransform(d, 0, 0, d, 0, 0); c.fillStyle = o.bg || COL.canvas; c.fillRect(0, 0, w, h);
+  const R = o.R, cx = w / 2, cy = o.cy ?? h / 2, small = R < 24, rest = small ? REST_S : REST;
+  rippleField(c, w, h, reduced ? .28 : t, { cx, cy, R, pitch: o.pitch, base: o.base, speed: o.speed, off: o.off ?? 1, maxA: reduced ? .9 : 1 });
+  if (R > 0) { c.fillStyle = reduced ? COL.ink : bladePulse(c, t, small); drawMark(c, cx, cy, R, reduced ? rest : biAngle(t + .9, rest), small); }
+}
 SCENES['load-5'] = (() => {
   const el = $('#s-load-5'), cv = $('.splash .fx', el), ctx = cv.getContext('2d'), cap = $('.dr-cap', el);
   let W = 0, H = 0, dpr = 1, T = 0, minis = [];
-  function scene(c, w, h, d, t, o) {
-    c.setTransform(d, 0, 0, d, 0, 0); c.fillStyle = o.bg || COL.canvas; c.fillRect(0, 0, w, h);
-    const R = o.R, cx = w / 2, cy = o.cy ?? h / 2;
-    rippleField(c, w, h, reduced ? .28 : t, { cx, cy, R, pitch: o.pitch, base: o.base, speed: o.speed, off: o.off ?? 1, maxA: reduced ? .9 : 1 });
-    if (R > 0) { c.fillStyle = COL.ink; drawMark(c, cx, cy, R, reduced ? (R < 24 ? REST_S : REST) : biAngle(t + .9, R < 24 ? REST_S : REST), R < 24); }
-  }
+  const scene = rippleScene;
   return {
     el, hint: 'Each 72° index of the rotor sends a pressure wave across the grid.', loader: true,
     init() {
@@ -1550,21 +1567,28 @@ SCENES['load-5'] = (() => {
   };
 })();
 
+
 /* =====================================================================
    Shell: dock, routing, one rAF loop, pause when hidden.
+   Each page lists its routes: { id (the hash), scene, group (dock group), label (dock button), title (dock caption) }.
+   A scene may offer views ([[key, label]], first is the default), skip() to stand still, and onView(v).
    ===================================================================== */
 const LIST = [
   ['404-1', 'Ink in water'], ['404-2', 'Aurora over water'], ['404-3', 'Fireworks'], ['404-4', 'Dot-grid lens'], ['404-5', 'Lost objects'],
   ['load-1', 'Rotor spool'], ['load-2', 'Blade index'], ['load-3', 'Hold dial'], ['load-4', 'Skeleton screens'], ['load-5', 'Dot-grid ripple'],
-];
+].map(([id, name]) => {
+  const group = id.startsWith('404') ? '404' : 'load', n = id.slice(-1), kind = group === '404' ? '404' : 'Loading';
+  return { id, scene: id, group, label: n, title: `${kind} ${n} · ${name}`, aria: `${kind} concept ${n}: ${name}` };
+});
+for (const e of LIST) if (e.group === 'load') SCENES[e.scene].views = [['splash', 'Splash'], ['use', 'In use']];
 let active = null, activeId = null, raf = 0, last = 0;
-const dock = $('#dock');
-for (const [id] of LIST) {
-  const kind = id.startsWith('404') ? '404' : 'load', n = id.slice(-1);
-  const b = document.createElement('button'); b.type = 'button'; b.textContent = n; b.dataset.id = id; b.setAttribute('aria-label', `${kind === '404' ? '404' : 'Loading'} concept ${n}: ${LIST.find((x) => x[0] === id)[1]}`);
-  $(`.grp[data-kind="${kind}"]`, dock).appendChild(b);
+const dock = $('#dock'), entry = (id) => LIST.find((x) => x.id === id);
+for (const e of LIST) {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = e.label; b.dataset.id = e.id;
+  if (e.tx) b.className = 'tx'; if (e.aria) b.setAttribute('aria-label', e.aria);
+  $(`.grp[data-kind="${e.group}"]`, dock).appendChild(b);
 }
-const lastOf = { '404': '404-1', load: 'load-1' };
+const lastOf = {}; for (const e of LIST) lastOf[e.group] = lastOf[e.group] || e.id;
 dock.addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.id) go(b.dataset.id);
@@ -1572,39 +1596,54 @@ dock.addEventListener('click', (e) => {
   else if (b.dataset.view) setView(b.dataset.view);
   else if (b.id === 'dStill') setReduced(!reduced, true);
 });
+const viewsOf = (S) => (typeof S.views === 'function' ? S.views() : S.views) || null;
+function drawViews() { // the dock's view toggle follows the active scene
+  const vs = viewsOf(active), t = $('.view', dock), v = active.el.dataset.view, keys = vs ? vs.map((x) => x.join()).join('|') : '';
+  t.hidden = !vs;
+  if (t._k !== keys) { t._k = keys; t.innerHTML = vs ? vs.map(([k, l]) => `<button type="button" data-view="${k}">${l}</button>`).join('') : ''; }
+  $$('button', t).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
+}
+function pickView(S, want) { // a view the scene offers now, else its default; none when it offers none
+  const vs = viewsOf(S), has = (k) => vs && vs.some((x) => x[0] === k);
+  if (!vs) { if (S.el.dataset.view !== 'splash') delete S.el.dataset.view; return; }
+  S.el.dataset.view = has(want) ? want : has(S.el.dataset.view) ? S.el.dataset.view : vs[0][0];
+}
 function setView(v) {
-  if (!active || !active.loader) return;
-  active.el.dataset.view = v; $$('.view button', dock).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
-  active.resize(); writeHash();
+  const vs = active && viewsOf(active); if (!vs || !vs.some((x) => x[0] === v)) return;
+  active.el.dataset.view = v; drawViews();
+  active.resize(); active.onView && active.onView(v); writeHash(); play();
 }
 function setReduced(v, user) { reduced = v; applyReduce(); $('#dStill').setAttribute('aria-pressed', String(v)); if (user) flags[v ? 'add' : 'delete']('still'); if (active) { active.resize(); active.start && active.start(); } writeHash(); play(); }
-function writeHash() { if (!activeId) return; const v = active.loader && active.el.dataset.view === 'use' ? '/use' : ''; history.replaceState(null, '', '#' + activeId + v + [...flags].map((f) => '&' + f).join('')); }
+function writeHash() {
+  if (!activeId) return; const vs = viewsOf(active), v = active.el.dataset.view;
+  history.replaceState(null, '', '#' + activeId + (vs && v && v !== vs[0][0] ? '/' + v : '') + [...flags].map((f) => '&' + f).join(''));
+}
+const fits = () => active.el.classList.toggle('fits', entry(activeId).group === '404' && active.el.scrollHeight <= innerHeight + 1);
 function go(id, view) {
-  const S = SCENES[id]; if (!S) return;
+  const e = entry(id), S = e && SCENES[e.scene]; if (!S) return;
   if (active) { active.el.classList.remove('on'); active.stop && active.stop(); }
-  active = S; activeId = id; lastOf[id.startsWith('404') ? '404' : 'load'] = id;
+  active = S; activeId = id; lastOf[e.group] = id;
   if (!S.ready) { S.init(); S.ready = true; }
   S.el.classList.add('on');
-  if (S.loader) S.el.dataset.view = view || S.el.dataset.view || 'splash';
-  const kind = id.startsWith('404') ? '404' : 'load';
-  document.body.dataset.kind = kind; document.body.dataset.ground = S.el.dataset.ground;
-  $$('.grp', dock).forEach((g) => g.classList.toggle('on', g.dataset.kind === kind));
+  pickView(S, view);
+  document.body.dataset.kind = e.group; document.body.dataset.ground = S.el.dataset.ground;
+  $$('.grp', dock).forEach((g) => g.classList.toggle('on', g.dataset.kind === e.group));
   $$('button[data-id]', dock).forEach((b) => b.setAttribute('aria-current', String(b.dataset.id === id)));
-  $$('.view button', dock).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === (S.el.dataset.view || 'splash'))));
-  $('#dName').textContent = `${kind === '404' ? '404' : 'Loading'} ${id.slice(-1)} · ${LIST.find((x) => x[0] === id)[1]}`;
+  drawViews();
+  $('#dName').textContent = e.title;
   $('#dHint').textContent = S.hint || '';
-  S.resize(); S.start && S.start();
-  S.el.classList.toggle('fits', kind === '404' && S.el.scrollHeight <= innerHeight + 1);
-  writeHash(); play();
+  S.resize(); S.start && S.start(); S.onView && S.onView(S.el.dataset.view);
+  fits(); writeHash(); play();
 }
 function loop(ms) {
   raf = requestAnimationFrame(loop);
   const t = ms / 1000, dt = Math.min(.05, Math.max(0, t - last)); last = t;
-  if (!active || (reduced && !active.loader)) return;
+  if (!active || (reduced && !active.loader) || (active.skip && active.skip())) return;
   const t0 = performance.now(); active.frame(t, dt); STATS.push(performance.now() - t0);
 }
 const STATS = { a: [], push(v) { this.a.push(v); if (this.a.length > 600) this.a.shift(); }, read() { const s = [...this.a].sort((x, y) => x - y); return { n: s.length, avg: s.reduce((p, c) => p + c, 0) / (s.length || 1), p95: s[Math.floor(s.length * .95)] || 0, max: s[s.length - 1] || 0 }; }, clear() { this.a = []; } };
-window.__states = { stats: () => STATS.read(), clear: () => STATS.clear(), go, setView, setReduced };
+// review hooks: stats, routing, and pause + paint(t) so a still can be taken at an exact moment
+window.__states = { stats: () => STATS.read(), clear: () => STATS.clear(), go, setView, setReduced, pause: () => pause(), scene: (k) => SCENES[k] };
 function play() { if (!raf && !document.hidden) { last = performance.now() / 1000; raf = requestAnimationFrame(loop); } }
 function pause() { cancelAnimationFrame(raf); raf = 0; }
 document.addEventListener('visibilitychange', () => (document.hidden ? pause() : play()));
@@ -1618,24 +1657,28 @@ const route = (e) => {
 };
 ['pointermove', 'pointerdown', 'pointerup'].forEach((t) => addEventListener(t, route, { passive: true }));
 document.documentElement.addEventListener('pointerleave', () => { PTR.t = -99; active && active.leave && active.leave(); });
-addEventListener('resize', () => { if (!active) return; active.resize(); active.el.classList.toggle('fits', active.el.id.includes('404') && active.el.scrollHeight <= innerHeight + 1); });
+addEventListener('resize', () => {
+  if (!active) return; const v = active.el.dataset.view;
+  pickView(active, v); drawViews(); active.resize(); active.onView && active.onView(active.el.dataset.view); fits();
+  if (active.el.dataset.view !== v) writeHash();
+});
 addEventListener('keydown', (e) => {
   if (e.target.closest('input,textarea')) return;
-  const i = LIST.findIndex((x) => x[0] === activeId);
-  if (e.key === 'ArrowRight') go(LIST[(i + 1) % LIST.length][0]);
-  else if (e.key === 'ArrowLeft') go(LIST[(i + LIST.length - 1) % LIST.length][0]);
+  const i = LIST.findIndex((x) => x.id === activeId), vs = active && viewsOf(active);
+  if (e.key === 'ArrowRight') go(LIST[(i + 1) % LIST.length].id);
+  else if (e.key === 'ArrowLeft') go(LIST[(i + LIST.length - 1) % LIST.length].id);
   else if (e.key === 'h' || e.key === 'H') document.body.classList.toggle('clean');
   else if (e.key === 'r' || e.key === 'R') setReduced(!reduced, true);
-  else if (e.key === 'u' || e.key === 'U') setView(active.el.dataset.view === 'use' ? 'splash' : 'use');
+  else if ((e.key === 'u' || e.key === 'U') && vs) { const k = vs.findIndex((x) => x[0] === active.el.dataset.view); setView(vs[(k + 1) % vs.length][0]); }
 });
 
-// start: #404-1, #load-3/use, flags &clean &still
+// start: the first route, or #<route>[/<view>], flags &clean &still
 (function boot() {
   const [route0] = location.hash.slice(1).split('&');
-  const [id, view] = (route0 || '404-1').split('/');
+  const [id, view] = (route0 || LIST[0].id).split('/');
   if (flags.has('clean')) document.body.classList.add('clean');
   $('#dStill').setAttribute('aria-pressed', String(reduced));
-  const start = () => go(SCENES[id] ? id : '404-1', view === 'use' ? 'use' : undefined);
+  const start = () => go(entry(id) ? id : LIST[0].id, view);
   (document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]) : Promise.resolve()).then(start);
 })();
 </script>

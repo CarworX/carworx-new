@@ -1,10 +1,10 @@
-// States concepts: builds index.html from src/template.html.
+// States: builds the concepts page (index.html) and the approved page (../../states/index.html) from src/template.html.
 // It injects the real Turbine paths from brand/exports/core (never redrawn) and the Studio service objects
 // from concepts/studio/index.html, and checks every path and transform before writing.
 // Usage: node build.mjs
-import { readFileSync, writeFileSync, statSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { restAngle } from '../../brand/motion/shape.mjs';
 
 const here = fileURLToPath(new URL('./', import.meta.url));
@@ -65,11 +65,22 @@ sprite += `</defs></svg>`;
 
 const lockupH = `<svg viewBox="${H.vb}" role="img" aria-label="CarworX"><g fill="currentColor"><g transform="${H.mark}"><use href="#cx-mark"/></g><g transform="${H.word}"><use href="#cx-word"/></g></g></svg>`;
 
-let html = readFileSync(join(here, 'src/template.html'), 'utf8');
-const swap = (key, val) => { if (!html.includes(key)) fail('placeholder missing: ' + key); html = html.split(key).join(val); };
-swap('<!--SPRITE-->', sprite);
-swap('<!--LOCKUP-H-->', lockupH);
-swap('__REST__', String(REST));
-swap('__REST_S__', String(REST_S));
-writeFileSync(join(here, 'index.html'), html);
-console.log(`index.html written, ${(statSync(join(here, 'index.html')).size / 1024).toFixed(1)} KB. Rest angles ${REST}° / ${REST_S}°, lockups verified.`);
+// Two pages from the one template. Blocks marked <!--@concepts-->…<!--@end--> or /*@approved*/…/*@end*/ belong to one page only.
+//   concepts: all ten concepts, here in concepts/states/index.html
+//   approved: the chosen 404 (lens) and loaders (hold dial, skeleton, ripple), in planning/design/states/index.html
+const template = readFileSync(join(here, 'src/template.html'), 'utf8');
+const OUT = { concepts: join(here, 'index.html'), approved: join(here, '../../states/index.html') };
+for (const [page, file] of Object.entries(OUT)) {
+  let html = template.replace(/<!--@(\w+)-->\n?([\s\S]*?)<!--@end-->\n?|\/\*@(\w+)\*\/\n?([\s\S]*?)\/\*@end\*\/\n?/g,
+    (_, a, x, b, y) => ((a || b) === page ? (x ?? y) : ''));
+  if (/@(concepts|approved|end)\b/.test(html)) fail(`${page}: unbalanced block markers`);
+  const swap = (key, val) => { if (!html.includes(key)) fail(`${page}: placeholder missing: ${key}`); html = html.split(key).join(val); };
+  swap('<!--SPRITE-->', sprite);
+  swap('<!--LOCKUP-H-->', lockupH);
+  swap('__REST__', String(REST));
+  swap('__REST_S__', String(REST_S));
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, html);
+  console.log(`${page}: ${relative(here, file)} written, ${(statSync(file).size / 1024).toFixed(1)} KB.`);
+}
+console.log(`Rest angles ${REST}° / ${REST_S}°, mark, wordmark and lockups verified.`);

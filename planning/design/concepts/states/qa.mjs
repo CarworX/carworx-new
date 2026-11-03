@@ -1,6 +1,7 @@
 // States QA: console errors and horizontal overflow at 1440 and 390 px for every concept (motion and still),
 // JS time per frame, and the stills (404s with a simulated pointer path).
 // Usage: node qa.mjs check | stills | shot <hash> <w> <h> <file> [path]
+// Add --approved to run against the approved page in planning/design/states/ (its stills and report go there).
 // Needs a local Chrome or Edge. WebGL runs on SwiftShader in headless mode.
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -9,8 +10,9 @@ import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = fileURLToPath(new URL('./', import.meta.url));
-const base = pathToFileURL(join(here, 'index.html')).href;
-const [mode = 'check', ...args] = process.argv.slice(2);
+const AP = process.argv.includes('--approved'), dir = AP ? join(here, '../../states') : here;
+const base = pathToFileURL(join(dir, 'index.html')).href;
+const [mode = 'check', ...args] = process.argv.slice(2).filter((a) => a !== '--approved');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const lerp = (a, b, t) => a + (b - a) * t;
 const exe = ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(existsSync);
@@ -72,8 +74,8 @@ async function path(pts, ms = 900, buttons = 0) { // smooth Catmull-Rom path thr
 const click = async (x, y) => { await mouse('mouseMoved', x * cur.w, y * cur.h); await mouse('mousePressed', x * cur.w, y * cur.h, 1); await sleep(40); await mouse('mouseReleased', x * cur.w, y * cur.h); };
 async function shot(file) {
   const { data } = await S('Page.captureScreenshot', { format: 'png' });
-  mkdirSync(join(here, 'stills'), { recursive: true });
-  writeFileSync(join(here, 'stills', file), Buffer.from(data, 'base64'));
+  mkdirSync(join(dir, 'stills'), { recursive: true });
+  writeFileSync(join(dir, 'stills', file), Buffer.from(data, 'base64'));
   console.log('  still', file);
 }
 const overflow = () => js(`(() => { const s = document.querySelector('.scene.on'); return { doc: document.documentElement.scrollWidth - innerWidth, scene: s.scrollWidth - s.clientWidth, sceneH: s.scrollHeight, vh: innerHeight }; })()`);
@@ -91,7 +93,20 @@ const ACT = {
     for (let i = 1; i <= 14; i++) { await mouse('mouseMoved', b[0] + i * 9, b[1] + i * 13, 1); await sleep(16); }
     await mouse('mouseReleased', b[0] + 126, b[1] + 182); await sleep(260); await path([[.3, .4], [.7, .3]], 500); await sleep(300); },
 };
-const ALL = ['404-1', '404-2', '404-3', '404-4', '404-5', 'load-1', 'load-1/use', 'load-2', 'load-2/use', 'load-3', 'load-3/use', 'load-4', 'load-4/use', 'load-5', 'load-5/use'];
+// approved page: the lens, mid-pulse; and the phone frame, steered from outside (the mouse reaches the framed page)
+ACT['404'] = async () => { await path([[.2, .2], [.4, .3], [.5, .26]], 900); await click(.5, .26); await sleep(320); };
+const phoneRect = () => js(`(() => { const r = document.querySelector('.ph-scr').getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; })()`);
+ACT['404/phone'] = async () => { await sleep(1500); const [x, y, w, h] = await phoneRect(), P = (fx, fy) => [(x + w * fx) / cur.w, (y + h * fy) / cur.h];
+  await path([P(.15, .25), P(.4, .32), P(.62, .3)], 900); const c = P(.62, .3); await click(c[0], c[1]); await sleep(320); };
+// the framed page's own frame times: its default execution context, found among the target's contexts
+async function frameStats() {
+  const main = (await S('Page.getFrameTree')).frameTree.frame.id;
+  const ctx = events.filter((e) => e.method === 'Runtime.executionContextCreated' && e.params.context.auxData?.isDefault && e.params.context.auxData.frameId !== main).pop();
+  if (!ctx) return null;
+  const ev = (expression) => S('Runtime.evaluate', { expression, contextId: ctx.params.context.id, awaitPromise: true, returnByValue: true }).then((r) => r.result.value);
+  await ev('window.__states.clear()'); await sleep(1500); return ev('window.__states.stats()');
+}
+const ALL = AP ? ['404', '404/phone', 'between', 'use'] : ['404-1', '404-2', '404-3', '404-4', '404-5', 'load-1', 'load-1/use', 'load-2', 'load-2/use', 'load-3', 'load-3/use', 'load-4', 'load-4/use', 'load-5', 'load-5/use'];
 
 try {
   if (mode === 'contrast' || mode === 'objects') {
@@ -151,14 +166,40 @@ try {
       await load(hash + '&clean', w, h, reduced);
       if (ACT[hash] && !reduced) await ACT[hash](); else await sleep(1500);
       await js('window.__states.clear()'); await sleep(1500);
-      const st = await js('window.__states.stats()'), of = await overflow(), pr = problems();
-      rows.push({ w, reduced, hash, errors: pr.length, overflowX: Math.max(of.doc, of.scene), tall: of.sceneH > of.vh ? of.sceneH - of.vh : 0, jsAvg: +st.avg.toFixed(2), jsP95: +st.p95.toFixed(2), frames: st.n });
+      let st = await js('window.__states.stats()'), framed = false;
+      if (hash.endsWith('/phone') && !st.n) { const f = await frameStats(); if (f) { st = f; framed = true; } }
+      const of = await overflow(), pr = problems();
+      rows.push({ w, reduced, hash: hash + (framed ? ' (framed page)' : ''), errors: pr.length, overflowX: Math.max(of.doc, of.scene), tall: of.sceneH > of.vh ? of.sceneH - of.vh : 0, jsAvg: +st.avg.toFixed(2), jsP95: +st.p95.toFixed(2), frames: st.n });
       if (pr.length) console.log(w, reduced ? 'still' : 'motion', hash, pr);
     } catch (e) { rows.push({ w, reduced, hash, errors: 'QA: ' + e.message }); }
     console.table(rows);
-    const file = join(here, 'qa-report.json'), prev = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : [];
+    const file = join(dir, 'qa-report.json'), prev = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : [];
     const keep = prev.filter((p) => !rows.some((r) => r.w === p.w && r.reduced === p.reduced && r.hash === p.hash));
     writeFileSync(file, JSON.stringify([...keep, ...rows], null, 1));
+  } else if (mode === 'stills' && AP) {
+    const only = args[0];
+    const L = [ // [hash, w, h, file, how]: 'act' runs the pointer path, a number paints the ripple at that time, 'board' captures the full height
+      ['404', 1440, 900, '01-404-desktop.png', 'act'], ['404', 1440, 900, '02-404-desktop-still.png', 'still'],
+      ['404', 390, 844, '03-404-phone.png', 'act'], ['404', 390, 844, '04-404-phone-still.png', 'still'],
+      ['404/phone', 1440, 900, '05-404-phone-frame.png', 'act'],
+      // the pulse on the 1.2 s ratchet clock: k = floor((T + .9) / 1.2); even k fills out, odd k drains back. Exactly mid-way the two
+      // are the same picture (same front radius, moving the other way), so both are taken 40 % into their run (.209 s): front 40 % out, then 60 % out.
+      ['between', 1440, 900, '06-between-filling.png', 1.709], ['between', 1440, 900, '07-between-black.png', 2.3], ['between', 1440, 900, '08-between-draining.png', 2.909],
+      ['between', 1440, 900, '09-between-still.png', 'still'],
+      ['use', 1440, 900, '10-board.png', 'board'], ['use', 390, 844, '11-board-mobile.png', 'board'],
+    ];
+    for (const [hash, w, h, file, how] of L) {
+      if (only && !file.startsWith(only)) continue;
+      try {
+        await load(hash + '&clean', w, h, how === 'still');
+        if (how === 'act') await ACT[hash]();
+        else if (typeof how === 'number') { await sleep(800); await js(`window.__states.pause(); window.__states.scene('load-5').paint(${how})`); await sleep(100); }
+        else if (how === 'board') { await sleep(2600); const H = await js("document.querySelector('.scene.on').scrollHeight"); await S('Emulation.setDeviceMetricsOverride', { width: w, height: H, deviceScaleFactor: w < 700 ? 2 : 1, mobile: w < 700 }); await sleep(900); }
+        else await sleep(1200);
+        await shot(file);
+        const pr = problems(); if (pr.length) console.log('   problems:', pr);
+      } catch (e) { console.log('  FAILED', file, e.message); }
+    }
   } else if (mode === 'stills') {
     const only = args[0];
     const L = [

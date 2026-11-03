@@ -2,7 +2,9 @@
 
 **Status:** concept, not final (2026-11-02). Five 404 pages and five loading screens for CarworX in the approved Studio language. Built for the owner to look at quickly and pick favourites.
 
-**Open:** `index.html` (one self-contained file, 133 KB). Nothing else is needed except Google Fonts.
+**Chosen (2026-11-03, D-041):** 404 · 4 Dot-grid lens; loaders 3 Hold dial (buttons, multi-step waits in a page), 4 Skeleton (cards and lists, known layouts in a page) and 5 Dot-grid ripple (between pages, with the blade pulse). Rotor spool and Blade index are retired. The approved set lives in [`../../states/`](../../states/NOTES.md); this page stays as the record of what was explored.
+
+**Open:** `index.html` (one self-contained file, 135 KB). Nothing else is needed except Google Fonts.
 
 ## How to review
 
@@ -193,6 +195,7 @@ Businesses are DEMO, and distances say straight-line.
 
 - **Idea:** the canvas itself carries the wait.
 - **Motion:** the rotor sits in the middle of the dot grid and indexes one blade every 1.2 s. Each index sends a pressure wave, with a smaller echo behind it, across the grid. Dots swell, turn blue and push outward as the crest passes. It echoes the boost ring in the hero film.
+- **Blade pulse (added 2026-11-03, the owner's request):** at rest the blades are pale (ink at 14 %). On one index solid ink runs from the hub out to the tips and stays; on the next it runs from the tips back to the hub, so the blades are pale again; then out, back, out. The front moves on the ratchet clock, `p = inOutCubic(u / .45)` into each 1.2 s step, with a 2 %-of-R feathered edge, and uses the small mark's hub below 24 px. It is one fill with a radial gradient in the mark's own units, which gives exactly the pale mark plus an ink copy clipped to a circle. It runs on the splash rotor and both mini rotors on the In use board; the button patches have no rotor. With reduced motion the rotor rests as the solid ink logo. Only the fill changes, never the path or the rest angle.
 - **In use:**
   - a rippling dot panel in the page
   - a 5 × 5 dot patch with no rotor in each button
@@ -218,9 +221,9 @@ Businesses are DEMO, and distances say straight-line.
 | File | What it is |
 |---|---|
 | `index.html` | The built page. Open this. |
-| `src/template.html` | Source, with placeholders for the brand sprite. |
-| `build.mjs` | `node build.mjs` verifies the logo files and writes `index.html`. |
-| `qa.mjs` | `node qa.mjs check [1440|390] [motion|still]`, `contrast`, `objects`, `stills [prefix]`, `shot <hash> <w> <h> <file> [act]`. It needs a local Chrome or Edge. Run `check` one width and setting at a time: one long run of software WebGL wore the headless browser out. |
+| `src/template.html` | Source for this page and the approved page, with placeholders for the brand sprite. Blocks marked `<!--@concepts-->` / `/*@approved*/` … `@end` belong to one page only. |
+| `build.mjs` | `node build.mjs` verifies the logo files and writes both `index.html` here and `../../states/index.html`. |
+| `qa.mjs` | `node qa.mjs check [1440|390] [motion|still]`, `contrast`, `objects`, `stills [prefix]`, `shot <hash> <w> <h> <file> [act]`. Add `--approved` to run `check` or `stills` on the approved page. It needs a local Chrome or Edge. Run `check` one width and setting at a time: one long run of software WebGL wore the headless browser out. |
 | `qa-report.json` | The last `check` run. |
 | `qa-contrast.json`, `qa-objects.json` | The last `contrast` and `objects` runs. |
 | `stills/` | 35 PNGs, listed below. |
@@ -266,7 +269,7 @@ All checks ran in headless Chrome 156 through the DevTools protocol (`node qa.mj
   | Blade index, splash / in use | 0.1 / 0.2, 0.2 / 0.6 | 0.1 / 0.4, 0.2 / 0.5 |
   | Hold dial, splash / in use | 0.4 / 1.1, 0.4 / 1.4 | 0.4 / 1.2, 0.4 / 1.1 |
   | Skeleton (CSS only) | 0 / 0 | 0 / 0 |
-  | Dot ripple, splash / in use | 4.8 / 8.3, 3.2 / 7.2 | 1.8 / 3.6, 1.4 / 2.7 |
+  | Dot ripple, splash / in use (with the blade pulse, re-measured 2026-11-03) | 3.7 / 5.3, 2.5 / 3.6 | 1.3 / 2.0, 1.2 / 1.7 |
 
   - The dot ripple caches its grid geometry, which halved its cost.
   - The dot lens re-rasterises only the rotor's dots, from one reused canvas, while the rotor indexes. Before that, its index spikes reached 30–40 ms.
@@ -279,7 +282,8 @@ All checks ran in headless Chrome 156 through the DevTools protocol (`node qa.mj
   - At rest, every visible object sits below the header and clear of the lockup.
   - Dragging the note onto the lockup leaves the lockup topmost at that point. The flung object passes under it.
 - **Reduced motion:** the 404s run no loop at all. The loaders tick only to change a number, a lit blade or a status line.
-- **Size:** `index.html` is 133 KB. The stills total 8.3 MB and are separate files.
+- **Re-run after the blade pulse and the shared shell (2026-11-03):** all 60 loads again, with no errors, no overflow, every 404 fitting 390 × 844, and no view over 12 ms at the 95th percentile. Stills `14`, `15`, `30` and `50` were recaptured.
+- **Size:** `index.html` is 135 KB. The stills total 8.3 MB and are separate files.
 - **Brand check:** `build.mjs` checks the paths and transforms listed under *Brand handling* on every build.
 
 ## Not verified

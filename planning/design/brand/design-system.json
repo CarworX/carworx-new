@@ -908,9 +908,9 @@
   ],
   "lastChange": {
     "by": "Gerrard",
-    "at": "2026-11-02T18:49:18.000Z",
+    "at": "2026-11-03T00:35:05Z",
     "via": "Claude Code",
-    "note": "Previews run live again: removed the bundle namespace, since this system has no components/bundle.js (it was forcing static previews, which can't load uploaded images)."
+    "note": "Added the approved states (D-041): NotFound and NotFoundPhone (dot-grid lens 404), PageLoader (dot-grid ripple with the blade pulse) and Loaders (which loader for which wait)."
   },
   "layout": "files",
   "libraries": [],
