@@ -1,15 +1,10 @@
 # Status
 
-## 🟢 Baton: **CODEX**
+## 🟢 Baton: **CLAUDE**
 
-Codex: please review the following on branch `planning/design-motion-toolkit`:
-- the rebuilt **§22 pack** ([Claude 07](claude/07-pack-studio.md)), with the hold-expiry correction that [Codex 05](codex/05-pack-review.md) required (`ac5fcce`)
-- the **Studio design system** ([Claude 08](claude/08-design-system.md); mirrored in [design/brand/](design/brand/README.md))
-- the approved **404 and loaders** (D-041; [design/states/](design/states/NOTES.md))
-- [Claude 09](claude/09-product-design-assessment.md), the assessment requested in [Codex 06](codex/06-product-design-review-handoff.md)
-- decisions D-037–D-041
+Claude: address **R1–R3 in [Codex 07](codex/07-claude09-review.md)**. The expiry correction and shared-record reconciliation are accepted within the verified scope. Claude 09's audit plan is **AGREE WITH CHANGES**: each promised screenshot needs a concrete capture/save/inspect route or an explicit blocked row. No full visual audit, live publication or application work is started by this request.
 
-`codex/05` is the earlier review of the pack (`6c607e5`, 2026-10-28); this review comes after it. Once Codex approves, the owner merges the branch to `main` and Phase 1 starts local-only (D-038).
+Codex independently checked the corrected pack, its rebuild, two checkout PNGs, PDF pages 22–23, pack QA and 16 approved-state QA loads at `2b0258c`. Complete design-system/state visual sign-off and merge readiness remain pending. D-038's owner approval stands; the owner retains the branch merge after the relevant review is complete.
 
 **Phase: 1 approved (D-038), not started.** Phase 1 starts local-only with synthetic data once the design system is reviewed. No accounts, deployments, outreach or paid automation by agents.
 
@@ -18,9 +13,9 @@ Codex: please review the following on branch `planning/design-motion-toolkit`:
 | ID | Item | State |
 |---|---|---|
 | PLAN | Version 2.1 | Technically signed (D-033) and **owner-approved for Phase 1 only** (D-038) |
-| §22 | Presentation pack (Turbine + Studio) | Phase 0b closed: colleagues saw it, no changes (D-037). The hold-expiry copy that Codex 05 required is corrected (`ac5fcce`). Codex review of the current pack still to be recorded |
+| §22 | Presentation pack (Turbine + Studio) | Phase 0b closed (D-037). Expiry correction independently accepted by Codex 07 in source, assembled HTML, both checkout PNGs and PDF pages 22–23 |
 | DS | Studio design system (D-040) and system states (D-041) | Built by Claude ([08](claude/08-design-system.md), [states](design/states/NOTES.md)) in the CarworX Design System project and mirrored into `design/brand/`. The same expiry-copy correction is live in version 32. Codex reviews |
-| C09 | [Claude 09](claude/09-product-design-assessment.md): design review plan | Delivered; an independent subagent review answered Yes. Corrections C1–C3 done; C4 (design-system API clean-up) and C5 (visual audit, needs owner permissions) are open |
+| C09 | [Claude 09](claude/09-product-design-assessment.md): design review plan | Codex 07: AGREE WITH CHANGES. R1 saved-evidence route is Important; R2 control contrast and R3 current-state summary are Minor. Claude amends; Codex delta review follows |
 | T-20 | Q-016 funded refund process | Owner decision at G-PAY; agents aligned (D-026, D-031) |
 
 **AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee/funding choices still require the owner before G-PAY.
@@ -40,8 +35,7 @@ Codex: please review the following on branch `planning/design-motion-toolkit`:
 ## Next steps
 
 1. ~~Claude: Studio design system~~ Done: [Claude 08](claude/08-design-system.md).
-2. **Codex (next review, after Codex 05 and 06):** the pack and its expiry correction, the design system, the states (D-041), Claude 09 and D-037–D-041.
-   - Claude, if the owner wants them: C4 (design-system API clean-up) and C5 (the visual audit).
+2. **Claude:** amend Claude 09 for Codex 07 R1–R3; provide exact saved-image routes or named blocked rows, control/non-text contrast coverage and a current correction-status summary. **Codex:** review the delta. C4 live-system cleanup and C5 full visual audit retain their existing scope/permission limits.
 3. **Owner:** merge `planning/design-motion-toolkit` to `main` after Codex approves; complete the §15 Phase 1 prerequisites.
 4. **Phase 1 (approved, D-038):** monorepo scaffold, CI, local dev, Studio tokens in Tailwind with a living component page, auth, first tables with RLS, then staging; exit A1–A7 including the restore drill.
 
@@ -66,3 +60,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 13 | 2026-11-03 | Claude | Built five 404 and five loading concepts (`cd6160d`). The owner chose the Dot-grid lens 404, plus the hold dial, skeleton and dot-grid ripple loaders by scenario, with the ripple's blade pulse (D-041). Built the approved states page and four design-system cards (`e189775`). Baton stays with Codex. |
 | 14 | 2026-11-03 | Codex | Published [Codex 06](codex/06-product-design-review-handoff.md), asking Claude for an assessment only, and the historical [Codex 05](codex/05-pack-review.md) pack review (`173f476`). STATUS was not updated in that commit; Claude recorded this row in turn 15. |
 | 15 | 2026-11-03 | Claude | Published [Claude 09](claude/09-product-design-assessment.md) (`c24ea44`), which an independent subagent review answered Yes. At the owner's request: corrected the hold-expiry copy in the pack and the design system (`ac5fcce`, live version 32), and brought AGENTS, README, the PLAN header, OWNER-QUESTIONS and STATUS up to date with D-037–D-041. Baton to Codex. |
+| 16 | 2026-11-03 | Codex | Published Codex 07: C1–C3 accepted within verified scope; pack QA/build/checkout PNGs/PDF checked; approved-states QA 16/16 clean. Claude 09 AGREE WITH CHANGES for R1 saved evidence, R2 contrast coverage, R3 summary. Baton to Claude; complete design/merge sign-off remains pending. |
