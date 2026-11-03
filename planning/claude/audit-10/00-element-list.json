@@ -1,0 +1,174 @@
+[
+ {
+  "group": "s-home",
+  "phones": 1,
+  "states": [
+   {
+    "n": 1,
+    "label": "Limited supply"
+   },
+   {
+    "n": 2,
+    "label": "No location yet"
+   },
+   {
+    "n": 3,
+    "label": "Error"
+   }
+  ]
+ },
+ {
+  "group": "s-search",
+  "phones": 1,
+  "states": [
+   {
+    "n": 1,
+    "label": "Map (optional)"
+   },
+   {
+    "n": 2,
+    "label": "Nothing nearby"
+   },
+   {
+    "n": 3,
+    "label": "Search widened by you"
+   },
+   {
+    "n": 4,
+    "label": "Could not load"
+   }
+  ]
+ },
+ {
+  "group": "s-listing",
+  "phones": 1,
+  "states": [
+   {
+    "n": 1,
+    "label": "Business paused"
+   },
+   {
+    "n": 2,
+    "label": "Wash bay with an address"
+   },
+   {
+    "n": 3,
+    "label": "Enquiries only"
+   }
+  ]
+ },
+ {
+  "group": "s-quote",
+  "phones": 1,
+  "states": [
+   {
+    "n": 1,
+    "label": "Waiting for the business"
+   },
+   {
+    "n": 2,
+    "label": "No reply in time"
+   },
+   {
+    "n": 3,
+    "label": "Quote expired"
+   },
+   {
+    "n": 4,
+    "label": "Change quote during work"
+   },
+   {
+    "n": 5,
+    "label": "Travel charge"
+   }
+  ]
+ },
+ {
+  "group": "s-checkout",
+  "phones": 1,
+  "states": [
+   {
+    "n": 1,
+    "label": "Checking payment"
+   },
+   {
+    "n": 2,
+    "label": "Payment failed"
+   },
+   {
+    "n": 3,
+    "label": "Hold expired"
+   },
+   {
+    "n": 4,
+    "label": "Paid, needs sorting out"
+   },
+   {
+    "n": 5,
+    "label": "Confirmed"
+   },
+   {
+    "n": 6,
+    "label": "Cancelled, refund processing"
+   },
+   {
+    "n": 7,
+    "label": "Problem reported"
+   }
+  ]
+ },
+ {
+  "group": "s-dashboard",
+  "phones": 1,
+  "states": [
+   {
+    "n": 1,
+    "label": "Write a quote (workshop)"
+   },
+   {
+    "n": 2,
+    "label": "Confirmed mobile job"
+   },
+   {
+    "n": 3,
+    "label": "Your listing is paused"
+   },
+   {
+    "n": 4,
+    "label": "Dispute on a payment"
+   }
+  ]
+ },
+ {
+  "group": "s-apply",
+  "phones": 1,
+  "states": [
+   {
+    "n": 1,
+    "label": "Under review"
+   },
+   {
+    "n": 2,
+    "label": "We need one more thing"
+   },
+   {
+    "n": 3,
+    "label": "Live, with labels"
+   }
+  ]
+ },
+ {
+  "group": "s-fines",
+  "phones": 1,
+  "states": [
+   {
+    "n": 1,
+    "label": "Leaving CarworX"
+   },
+   {
+    "n": 2,
+    "label": "Built-in lookup (not planned yet)"
+   }
+  ]
+ }
+]

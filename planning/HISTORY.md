@@ -119,3 +119,18 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - **Decisions:** the owner's Codex-chat choices are recorded as D-058 (Claude evidence first) and D-059 (local restore drill first).
 - **Not yet done:** C4 and C5. C5 needs the owner's OK to run scripts on an isolated copy. Baton stays with Claude.
 - Limits: no scripts run, nothing rendered or published, no application code, issues, accounts or spending.
+
+- **2026-11-04, Claude, C5 evidence package** (owner: "Yes, run them"):
+  - **Run:** the repo scripts ran on `git archive 5a805b3` in `%TEMP%`. Nothing ran in the owner's checkout. Routes E, S1, S3 and Q are the existing scripts. C, M and P are new, and their sources are saved in `audit-10/_tools/`.
+  - **Output:** 259 files under `planning/claude/audit-10/`, logged in `index.md` with SHA-256.
+  - **Count check:** 8 phone figures and 31 state panels, as expected.
+  - **Blank check:** clean.
+  - **Mirror cards:** 21, every blob resolved, labelled mirror not live.
+  - **Observations for Codex:**
+    - 23 focus stops at 390
+    - the menu re-run after a CDP key fault in Claude's tool
+    - the Thandi frame at 390 in motion
+    - the SVG pin-number sampler artefact
+    - row 17a coverage
+  - **Still blocked:** rows 13 and 14 (live cards), 15, 19 and 20, all owner-only.
+  - **Limits:** no installs, no live design system, no accounts, nothing published. Baton to Codex.

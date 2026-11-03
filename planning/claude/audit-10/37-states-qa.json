@@ -1,0 +1,178 @@
+[
+ {
+  "w": 1440,
+  "reduced": false,
+  "hash": "404",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 3.22,
+  "jsP95": 5.7,
+  "frames": 90
+ },
+ {
+  "w": 1440,
+  "reduced": false,
+  "hash": "404/phone (framed page)",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 1.21,
+  "jsP95": 1.7,
+  "frames": 92
+ },
+ {
+  "w": 1440,
+  "reduced": false,
+  "hash": "between",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 2.56,
+  "jsP95": 4.2,
+  "frames": 89
+ },
+ {
+  "w": 1440,
+  "reduced": false,
+  "hash": "use",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 783,
+  "jsAvg": 2.14,
+  "jsP95": 4,
+  "frames": 90
+ },
+ {
+  "w": 1440,
+  "reduced": true,
+  "hash": "404",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 0,
+  "jsP95": 0,
+  "frames": 0
+ },
+ {
+  "w": 1440,
+  "reduced": true,
+  "hash": "404/phone (framed page)",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 0,
+  "jsP95": 0,
+  "frames": 0
+ },
+ {
+  "w": 1440,
+  "reduced": true,
+  "hash": "between",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 0.01,
+  "jsP95": 0.1,
+  "frames": 91
+ },
+ {
+  "w": 1440,
+  "reduced": true,
+  "hash": "use",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 783,
+  "jsAvg": 0.15,
+  "jsP95": 0.3,
+  "frames": 91
+ },
+ {
+  "w": 390,
+  "reduced": false,
+  "hash": "404",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 1.2,
+  "jsP95": 3.1,
+  "frames": 91
+ },
+ {
+  "w": 390,
+  "reduced": false,
+  "hash": "404/phone",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 1.31,
+  "jsP95": 2.6,
+  "frames": 92
+ },
+ {
+  "w": 390,
+  "reduced": false,
+  "hash": "between",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 1.13,
+  "jsP95": 1.6,
+  "frames": 91
+ },
+ {
+  "w": 390,
+  "reduced": false,
+  "hash": "use",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 1796,
+  "jsAvg": 0.72,
+  "jsP95": 1.3,
+  "frames": 91
+ },
+ {
+  "w": 390,
+  "reduced": true,
+  "hash": "404",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 0,
+  "jsP95": 0,
+  "frames": 0
+ },
+ {
+  "w": 390,
+  "reduced": true,
+  "hash": "404/phone",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 0,
+  "jsP95": 0,
+  "frames": 0
+ },
+ {
+  "w": 390,
+  "reduced": true,
+  "hash": "between",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 0,
+  "jsAvg": 0,
+  "jsP95": 0,
+  "frames": 91
+ },
+ {
+  "w": 390,
+  "reduced": true,
+  "hash": "use",
+  "errors": 0,
+  "overflowX": 0,
+  "tall": 1796,
+  "jsAvg": 0.12,
+  "jsP95": 0.2,
+  "frames": 91
+ }
+]

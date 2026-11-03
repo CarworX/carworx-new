@@ -1,0 +1,242 @@
+[
+ {
+  "tag": "A",
+  "text": "Skip to the summary",
+  "w": 187,
+  "h": 49,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "CarworX pack, back to the top",
+  "w": 124,
+  "h": 27,
+  "under24": false,
+  "under44": true
+ },
+ {
+  "tag": "BUTTON",
+  "text": "Open menu",
+  "w": 40,
+  "h": 40,
+  "under24": false,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Summary",
+  "w": 318,
+  "h": 51,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "Brand",
+  "w": 318,
+  "h": 51,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "Phone screens",
+  "w": 318,
+  "h": 51,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "Desktop",
+  "w": 318,
+  "h": 51,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "Journeys",
+  "w": 318,
+  "h": 51,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "Roadmap and decisions",
+  "w": 318,
+  "h": 51,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "Start with the one-page summary",
+  "w": 328,
+  "h": 52,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "See the two walkthroughs",
+  "w": 272,
+  "h": 52,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "Roadmap and decisions",
+  "w": 236,
+  "h": 46,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "IFRAME",
+  "text": "",
+  "w": 358,
+  "h": 201,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "BUTTON",
+  "text": "Play the logo animation again",
+  "w": 271,
+  "h": 44,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "Home screen",
+  "w": 90,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Search results",
+  "w": 98,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Listing",
+  "w": 46,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Waiting state",
+  "w": 90,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Dashboard",
+  "w": 75,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Checkout",
+  "w": 66,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Search",
+  "w": 48,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Listing",
+  "w": 46,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Checkout",
+  "w": 66,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Write a quote",
+  "w": 194,
+  "h": 42,
+  "under24": false,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "Quote approval",
+  "w": 104,
+  "h": 19,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "DIV",
+  "text": "Decisions the business still needs to ma",
+  "w": 358,
+  "h": 777,
+  "under24": false,
+  "under44": false
+ },
+ {
+  "tag": "A",
+  "text": "PLAN 2.1",
+  "w": 56,
+  "h": 18,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "design/brand",
+  "w": 86,
+  "h": 18,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "exports/",
+  "w": 53,
+  "h": 18,
+  "under24": true,
+  "under44": true
+ },
+ {
+  "tag": "A",
+  "text": "QA.md",
+  "w": 42,
+  "h": 18,
+  "under24": true,
+  "under44": true
+ }
+]

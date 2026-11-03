@@ -1,15 +1,18 @@
 # Status
 
-## 🟢 Baton: **CLAUDE**
+## 🟢 Baton: **CODEX**
 
-Claude's response to [Codex 08](codex/08-phase1-and-revenue-review.md) is published (turn 19):
-- **Claude 09 R1:** fixed in §4.4. It captures the 8 phone figures and the 31 sibling state panels, with count checks, and corrects the mobile cover mapping.
-- **Claude 10:** B1–B3, ownership and the CI bootstrap are agreed in §10, with the task rows amended.
-- **Claude 11:** V1 and V2 are answered in §10.
-- **PLAN S1:** reconciled.
-- **Decisions:** the owner's choices are recorded as D-058 (Claude evidence first) and D-059 (local drill first).
+The **C5 evidence package** is published in [`claude/audit-10/`](claude/audit-10/index.md) (turn 20), with the owner's OK to run the repo scripts on an isolated copy:
+- **Source:** `git archive 5a805b3`.
+- **Routes:** E, S1, S3, Q, C, M and P.
+- **Contents:** 259 files, each with a SHA-256.
+- **Counts:** the count check matched (8 phone figures and 31 state panels), and no crop came out blank. Route M resolved all 41 `/_blob/` ids for the 21 mirror cards.
+- **Observations:** five are listed for Codex in the index. They are not findings yet.
+- **Owner-only rows:** 13 and 14 (live cards), 15, 19 and 20 stay BLOCKED until the owner does them (route O).
 
-**Still with Claude:** C4 (mirror and API gaps) and the **C5 evidence package** in `claude/audit-10/`, under the [handoff note](research/codex-phase1-execution-handoff.md). C5 needs the owner's OK to run the repo scripts on an isolated copy (Claude 09 §4.2). Codex then reviews the correction delta and the C5 package together.
+**Codex next:** review the Codex 08 correction delta (`5a805b3`) and the C5 package together, then judge each row.
+
+**Still with Claude:** C4, the mirror and API gaps (F5, F7). Live publication needs the owner's OK.
 
 The owner directions D-042–D-057 stand. This documentation review does not give full visual design sign-off. The owner merges the design branch after that review; Phase 1 then starts local-only under D-038 and the §15 prerequisites.
 
@@ -75,3 +78,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 18 | 2026-11-03 | Claude | Published [Claude 11](claude/11-revenue-streams.md), the revenue discussion from a separate Claude session (20 owner answers, SA prices with sources, a testing order), and recorded the owner's choices as D-054 to D-056. Baton stays with Codex. |
 | 19 | 2026-11-03 | Codex | Reviewed `280373e`: Claude 09 R2/R3 accepted, R1 state selectors remain; Claude 10/11 AGREE WITH CHANGES for Google prerequisites, security/backup evidence, current PLAN records and fee-exposed revenue cohorts. Published [Codex 08](codex/08-phase1-and-revenue-review.md); baton to Claude. Full visual/merge sign-off pending. |
 | 19 | 2026-11-03 | Claude | Responded to Codex 08: Claude 09 R1 (31 state panels, count checks), Claude 10 B1–B3, ownership and CI bootstrap agreed (§10), Claude 11 V1/V2 (§10), PLAN S1 reconciled; recorded D-058 and D-059. C4 and C5 still to do; baton stays with Claude. |
+| 20 | 2026-11-04 | Claude | Built the C5 evidence package in `claude/audit-10/` from `git archive 5a805b3` (routes E, S1, S3, Q, C, M, P; 259 files with SHA-256). Counts matched (8 phones, 31 state panels), the blank check was clean and all 41 mirror blob ids resolved. Five observations and the BLOCKED rows are listed. Baton to Codex for review. |
