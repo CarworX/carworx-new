@@ -908,9 +908,9 @@
   ],
   "lastChange": {
     "by": "Gerrard",
-    "at": "2026-11-03T00:35:05Z",
+    "at": "2026-11-03T05:32:07Z",
     "via": "Claude Code",
-    "note": "Added the approved states (D-041): NotFound and NotFoundPhone (dot-grid lens 404), PageLoader (dot-grid ripple with the blade pulse) and Loaders (which loader for which wait)."
+    "note": "HoldDial guideline and StatusNote sample: hold-expiry copy no longer promises that nothing is charged; a payment can still arrive after expiry and goes to reconciliation (PLAN §6.3, Codex 05, Claude 09 F2)."
   },
   "layout": "files",
   "libraries": [],

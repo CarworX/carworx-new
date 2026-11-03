@@ -253,7 +253,7 @@
           <div class="bd">
             <div class="card hold">
               <div class="dial" role="img" aria-label="14 minutes 32 seconds left"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="12"/><circle cx="100" cy="100" r="80" fill="none" stroke="#ff3b0a" stroke-width="12" stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="15"/></svg><div class="read"><b>14:32</b><small>held</small></div></div>
-              <div style="margin:0"><b class="small">Your slot is held</b><p class="xs muted" style="margin:4px 0 0">If the time runs out, the slot is released and nothing is charged.</p></div>
+              <div style="margin:0"><b class="small">Your slot is held</b><p class="xs muted" style="margin:4px 0 0">If time runs out, the slot is released. If a payment arrives afterwards, we'll help you rebook or get a refund.</p></div>
             </div>
             <div class="card">
               <p class="h2">Bubbleworks Mobile Wash <span class="demo">DEMO</span></p>
@@ -283,7 +283,7 @@
         </div></div></div>
         <div class="state"><header>State <span class="n">· Hold expired</span></header><div class="scr"><div class="bd">
           {{ill:expired}}
-          <div class="note w">{{icon:clock}}<span><b>Your 15 minutes ran out.</b> The slot was released and nothing was charged.</span></div>
+          <div class="note w">{{icon:clock}}<span><b>Your 15 minutes ran out.</b> The slot was released. If you started paying, check your payment status before trying again.</span></div>
           <span class="btn btn-s">Check if Sat 09:00 is still free</span>
         </div></div></div>
         <div class="state"><header>State <span class="n">· Paid, needs sorting out</span></header><div class="scr"><div class="bd">
@@ -295,7 +295,7 @@
           <div class="tile" style="box-shadow:var(--sh-1)"><div class="row"><span class="tick">{{icon:check}}</span><div><b>Booked and paid</b><small>Bubbleworks, Sat 31 Oct, 09:00–10:30</small></div></div><div class="meta"><span>Ref CX-2048</span><span>Paid to the business</span></div></div>
           <p class="xs muted">Your full address goes only to the staff member assigned to the job, and only now that it's confirmed.</p>
         </div></div></div>
-        <div class="state"><header>State <span class="n">· Cancelled and refunded</span></header><div class="scr"><div class="bd">
+        <div class="state"><header>State <span class="n">· Cancelled, refund processing</span></header><div class="scr"><div class="bd">
           <div class="between"><span class="h2">Booking cancelled</span><span class="lbl n">Refund processing</span></div>
           <div class="stepper"><i class="on"></i><i class="on"></i><i></i><i></i></div>
           <p class="small">R330 back to your card: requested → <b>processing</b> → paid back. Banks can take a few working days.</p>

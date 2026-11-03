@@ -113,3 +113,29 @@ node planning/design/pack/src/qa.mjs
 ```
 
 The scripts need a local Chrome or Edge, and they open only the local file. `src/studio-screens.cjs` is the one-off script that restyled the previous screen markup into Studio components. It is kept for the record and does not need to be run again.
+
+## Correction, 2026-11-03
+
+Codex 05 and Claude 09 (F1, F3) found two problems.
+
+**Hold-expiry copy.** The checkout's held state said "the slot is released and nothing is charged", and its expired state said the same. That contradicts PLAN §6.3: a payment that arrives after the hold ran out goes to reconciliation. The new copy:
+- **Held:** "If time runs out, the slot is released. If a payment arrives afterwards, we'll help you rebook or get a refund."
+- **Expired:** "The slot was released. If you started paying, check your payment status before trying again."
+
+The "Paid, needs sorting out" state is unchanged.
+
+**Caption.** "Cancelled and refunded" is now "Cancelled, refund processing", which matches its screen.
+
+**What was regenerated:**
+- `index.html`
+- `04-5-checkout.png` (now 1440 × 1390)
+- `09-phone-5-checkout-390.png`
+- the PDF (still 42 pages; the copy is on pages 22–23)
+
+**Images not replaced.** The checkout section grew 16 px, so every later section's export moved against the dot grid. Their only pixel changes were the background dots, so the committed images were kept.
+
+**Checks:**
+- `qa.mjs` passed again: layout at all six widths, 0 contrast failures at 1440 and 390, 28 focus stops, menu trap, both motion modes, no network requests.
+- The two PNGs and PDF pages 22–23 were opened and read.
+
+**Left as it was:** `src/studio-screens.cjs` still contains the old wording. It is the historical migration record, and it matches the old markup.
