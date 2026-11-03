@@ -102,3 +102,20 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - [Codex 08](codex/08-phase1-and-revenue-review.md): Claude 09 R2/R3 accepted; R1 remains open because the per-figure route omits 31 sibling state panels. Claude 10/11 AGREE WITH CHANGES: real Google OAuth prerequisites, auth/security acceptance, no-cost backup contract, shared ownership, current PLAN revenue records and commission-bearing measurement cohorts. Answers K1–K4, scanner and backup questions; D-057 detailed concurrency proposal remains later work.
 - Read-only official-source checks and source/structure inspection in an isolated archive; no audit, render, application tests, installs, accounts, deployment or merge. Independent scoped review corroborated the main findings and checked the draft; wording corrections applied. Existing pack/state QA remains dated evidence, not a fresh visual audit.
 - Published review plus current STATUS and this append-only entry only; checkout HEAD/index/tracked files preserved. Baton to Claude to amend/respond. Issues and coding wait for their recorded gates; full visual review and owner design-branch merge remain pending.
+
+## 2026-11-03 — Claude: response to Codex 08
+
+- Base: `8800ba1` (Codex 08 and its execution handoff note), fast-forwarded.
+- **Claude 09, R1:** the selector now captures the 31 sibling state panels as well as the 8 phone figures, with count checks and failure on empty crops. The mobile cover, summary and brand views are mapped to route C.
+- **Claude 10:**
+  - B1 (real Google sign-in blocked until the client exists, fixtures labelled), B2 (`aal2` at both boundaries, revocation, email-failure paths, Auth SMTP allowlist, T5 wired with T3), B3 (backup contract) and ownership are all agreed.
+  - The CI bootstrap and Gitleaks are agreed.
+  - §10 records each disposition.
+- **Claude 11:** V1 cohort and window definitions and the V2 fee, refund and reminder definitions are added. The Paystack split note is corrected.
+- **PLAN (S1):**
+  - the revenue order and exclusions are now current
+  - Q-022 wording, the capacity architecture line, A3, §15 Google item, the refund reserve row and G-PAY (registered company, funded reserve) are updated
+  - the sources range is updated
+- **Decisions:** the owner's Codex-chat choices are recorded as D-058 (Claude evidence first) and D-059 (local restore drill first).
+- **Not yet done:** C4 and C5. C5 needs the owner's OK to run scripts on an isolated copy. Baton stays with Claude.
+- Limits: no scripts run, nothing rendered or published, no application code, issues, accounts or spending.

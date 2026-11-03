@@ -7,7 +7,7 @@
 | Codex sign-off | ☑ Codex, 2026-10-27: R1–R8 resolved; technical plan and §22 pack scope accepted with the recorded 2.1 clarifications. This is not owner approval or permission to build the application. |
 | Colleague review | ☑ 2026-11-02: the owner's two colleagues saw the presentation pack (§22) and asked for no changes (D-037) |
 | Owner approval | ☑ 2026-11-02: approved for **Phase 1 only** (§3), starting local-only (D-038). Every later phase, gate, spend and production release needs separate approval (§21) |
-| Sources | D-001–D-033 in [DECISIONS.md](DECISIONS.md); owner decisions since then: D-034–D-041 |
+| Sources | D-001–D-033 in [DECISIONS.md](DECISIONS.md); owner decisions since then: D-034–D-059 |
 
 **OWNER DECISION** = not decided yet. **GATE** = must be satisfied before the step it guards. **PROPOSED DEFAULT** = a technical or operating default both agents recommend; the owner can change it.
 
@@ -40,7 +40,7 @@
 - Reviews; admin tools for the application queue, claims, suspensions, bookings, refunds, disputes, support and the audit log.
 - Fee snapshot fields: `fee_policy_version`, `fee_basis = 'none'`, `platform_fee_amount_minor = 0` (ZAR integer cents).
 
-**Production before G-PAY:** discovery, applications, enquiries and fines referrals only. **Confirmed bookings without payment are switched off by default** (D-032). A binding unpaid-reservation mode would need its own owner decision and terms (Q-022).
+**Production before G-PAY:** discovery, applications, enquiries and fines referrals only. **Confirmed bookings without payment are switched off by default** (D-032). The owner decided against binding unpaid reservations (Q-022, D-051). Once G-PAY passes, price-list services book and pay immediately, and other services go enquiry → range → in-person quote → pay in the app.
 
 **Out of scope for v1:**
 - native apps
@@ -90,7 +90,7 @@ Supabase (London eu-west-2, provisional): Postgres + PostGIS, Auth, private Stor
 External: Paystack · Resend (transactional + Auth SMTP) · Mapbox (maps; temporary geocoding for search input only)
 ```
 
-- One server runtime. **Postgres guarantees invariants:** exclusion constraints on resource intervals, unique constraints on idempotency keys, and transactions for holds, payments and refunds.
+- One server runtime. **Postgres guarantees invariants:** resource capacity enforced atomically for provider-set simultaneous capacity (D-057; the contract is proposed before Phase 3), unique constraints on idempotency keys, and transactions for holds, payments and refunds.
 - **Auth boundary:** deny by default. Authorisation uses a **membership lookup in the database**, never the role claimed in the token or mutable user metadata. Personal responses carry `Cache-Control: private, no-store`. Redirects are checked against an allowlist. Cookies are `Secure; HttpOnly; SameSite=Lax`.
 - **Region:** London is provisional. GATE G-PROD needs measured latency (London vs Frankfurt, from JNB and CPT) and a POPIA section 72 assessment.
 - **Stack:** TypeScript strict, pnpm, React Router v7, Tailwind, shadcn/ui, Zod, Vitest, Playwright, pgTAP, Supabase CLI, Wrangler. Pin versions at the start of Phase 1.
@@ -253,7 +253,7 @@ CI unless marked *manual* or *sandbox*. "Every table" means **every table migrat
 **Phase 1:**
 - **A1** CI runs lint, typecheck, unit tests, RLS tests and the build on every PR, and tests the exact head commit.
 - **A2** Staging deploy succeeds.
-- **A3** Sign-up, login and logout work for **email and password and for Google** (D-042). Admin sign-in requires TOTP. The session is validated on the server, and revoked membership stops access on the next request. Until the owner's Google OAuth client exists, the Google path is tested against the local auth server only, and is marked as such.
+- **A3** Sign-up, login and logout work for **email and password and for Google** (D-042). Admin sign-in requires TOTP. The session is validated on the server, and revoked membership stops access on the next request. **Real Google sign-in is blocked, locally and on staging, until the owner's Google OAuth client exists**, because Supabase needs the client for local development too. Until then, only callback, error and session contract tests run, on fixtures labelled as such, and A3 doesn't pass on fixtures. After set-up, the tests cover the redirect and code exchange, logout, account linking in both directions (verified identity linking only) and denied consent. Admins with an `aal1` session are refused both at the Worker and at the database API. Confirmation, reset, expired-link and email-failure states are recoverable.
 - **A4** RLS matrix for every table so far: anonymous, self, member, member of another organisation, admin.
 - **A5** Secret scan passes; no personal responses are cacheable.
 - **A6** Foundation routes meet the **performance budget**: Worker CPU p95 ≤ 8 ms (to stay within the free 10 ms limit), Lighthouse mobile performance ≥ 90 and accessibility ≥ 95, CLS ≤ 0.1, lab LCP ≤ 2.5 s, using a pinned profile and repeated runs. **A failure blocks promotion.** Owner-approved paid runtime can replace the free-tier CPU ceiling with a recorded tested budget; it cannot waive accessibility, CLS, LCP or frontend performance checks. A p95 observation does not prove that no individual invocation exceeds a runtime limit; inspect the sampled tail and failures as well.
@@ -339,7 +339,7 @@ The phase backlog becomes GitHub issues (`phase-N`, `owner:claude|codex`) with a
 3. Resend sending subdomain verified, with **staging recipients restricted** to an allowlist.
 4. CI can run (GitHub Actions minutes on the Free plan).
 5. **Google sign-in (D-042):** the owner creates a Google Cloud project and OAuth client (web).
-   - It has redirect URLs for local and staging, with production added at G-PROD.
+   - It has redirect URLs for local and staging, with production added at G-PROD. **It's needed for real Google tests locally too** (Codex 08 B1).
    - The client ID and secret are given to agents as staging-scoped secrets.
    - Needed before A3's Google path can pass on staging. The owner also sets up Google's consent screen, including whether brand verification is needed: **UNVERIFIED** until set-up.
 6. **This computer:** Docker Desktop running (Supabase runs locally in Docker, through WSL2), and pnpm enabled. Needed before coding.
@@ -367,7 +367,7 @@ Agents never create accounts, change DNS or handle production secrets.
 | Mapbox | Free | Usage-based | |
 | Paystack | Test mode | Per transaction (SA cards 2.9% + R1 excl. VAT at research time), bearer per Q-016 | |
 | Attorney / accountant | — | — | None: no attorney (D-045); the owner's colleague reviews accounting (D-047) |
-| Refund reserve | — | G-PAY, if B2 is chosen | Sized to outstanding paid obligations and dispute exposure |
+| Refund reserve | — | G-PAY (B2 chosen, D-050) | Sized to outstanding paid obligations and dispute exposure |
 | GitHub Team, automation | — | Optional (Q-019, G-AUTO) | |
 | Marketing | Owner's budget | | |
 
@@ -383,12 +383,16 @@ The pilot stays free. Each experiment needs G-REVENUE approval: payer, price, fe
 - Later: the sponsored card, fleets, and guide or newsletter sponsors.
 - Not pursued: affiliates and Google ads.
 
-The proposed entry and stop numbers await Codex review.
+**Current test order (D-054 to D-056).** It replaces the earlier T-23 ranking; the old text is in Git history. Every step needs its own G-REVENUE approval. The entry and stop numbers in Claude 11 §7 are **exploratory hypotheses**, measured on fee-exposed cohorts (Claude 11 §10, V1).
 
-1. **Commission on paid bookings.** Collected through the split at payment time, but it needs rules for *earned* versus *collected* fees, reversals on cancellation, refund or dispute, and reconciliation. That's real work. Capped repair commission is an experiment, not an agreed rate.
-2. **Manual, labelled contextual sponsorship.** Within the D-029 boundaries. Data model and serving are built **in the experiment**, with eligibility, scope, labels, dates, suspension and reporting.
-3. **Fleet / small-business scheduling and reporting.** A hypothesis worth testing early on supply value alone. **No dependency on integrated fines**; fines could become an optional later module behind G-FINES.
-4. **Then:** Provider Pro (once tools show real value), affiliates, acquisition fee (an alternative to 1, never stacked with it), lead fees (deprioritised), programmatic ads on guides (lowest priority).
+0. **Free pilot with live payments at 0%,** once the company is registered (D-049) and G-PAY has passed.
+1. **Commission on bookings paid in the app:** 10%, capped at R500 a job, paid by the provider through the split. Founding providers get 3 months free after charging starts. This needs rules for earned, collected and reversed fees and for reconciliation (Claude 11 §10, V2).
+2. **Provider Pro:** about R149–R199 a month, separate from the commission. One bay or diary stays free, with provider-set capacity (D-055, D-057). It starts only after three months of observed fee-paying provider experience.
+3. **Manual, labelled sponsored provider card** within D-029, once an area's traffic is proven.
+4. **Small fleet and small-business test** after launch, with no dependency on fines.
+5. **Later:** brand sponsors on guides, and sponsored newsletter slots. A free booking button stays a growth hypothesis. Parts-supplier deals need the owner's explicit approval first.
+
+**Not pursued (owner):** affiliates, Google or programmatic ads, customer booking fees or memberships, lead fees, and acquisition fees.
 
 **Never:** selling personal data; pay-to-verify badges; ads on sensitive flows or in transactional email; regulated financial referrals without licensed partners.
 
@@ -399,7 +403,7 @@ Reporting keeps booked value, completed net value, fees billed, fees reversed an
 | Gate | Guards | Requires |
 |---|---|---|
 | **G-PROD** | Free public production site (Phase 2) | production on the Supabase free plan (D-044), with the agreed no-cost backup route running and a plan for pausing; **A7 restore drill passed** (from Phase 1) and re-run if the schema changed; latency measured and region confirmed; section 72 assessment; retention schedule approved (§9.3); Information Officer registered; privacy notice and terms for the free site; incident plan; owner-run release |
-| **G-PAY** | Any live collection | Paystack written confirmation of split, settlement, refund and chargeback mechanics; **owner-approved funded refund and chargeback process** (B4 optional, not a substitute); payment terms cross-referenced against the CPA and ECTA and reviewed by both agents (D-045); A18–A36 passing; restore drill repeated; live keys only in the owner-held production environment |
+| **G-PAY** | Any live collection | Paystack written confirmation of split, settlement, refund and chargeback mechanics; **registered company and business bank account (D-049)**; **the D-050 reserve-plus-recovery process actually funded**, with Paystack confirming that recovery from future payouts works (B4 optional, not a substitute); payment terms cross-referenced against the CPA and ECTA and reviewed by both agents (D-045); A18–A36 passing; restore drill repeated; live keys only in the owner-held production environment |
 | **G-PROVIDER** | Each provider taking live payments | G-PAY; production subaccount verified; provider terms accepted; honest services, resources and capacity; observed test booking |
 | **G-FINES** | Integrated fines lookup | Owner-authorised outreach; production entitlement; coverage and freshness; current legal sources; POPIA (incl. section 57); DPA and security review |
 | **G-REVENUE** | Each revenue experiment | Owner approval of payer, price, terms and stop criteria |

@@ -214,13 +214,13 @@ The browser pane is used **only to observe**, and its findings are written as te
 | **P** | PDF and pixel tools (new, Python) | `python -I <scratch>/pdfpage.py <pdf> <page> <out.png>`; `python -I <scratch>/sample.py <png> <points.json> <out.json>` | Page PNGs at 110 dpi, and colour samples with contrast ratios, using PyMuPDF `Pixmap` |
 | **O** | Owner-saved files | The owner saves screenshots (Win+Shift+S, then Save) or phone photos to `planning/claude/audit-10/owner/` | Whatever the owner saves. Claude opens each one with `Read` |
 
-**Rows mapped to routes.** `<g>` is the screen group's anchor (`s-home`, `s-search` and so on). `<n>` is a figure's position within its group. At the start, C lists each group's figures and captions with `eval`, so every drawn state gets its own file.
+**Rows mapped to routes.** `<g>` is the screen group's anchor (`s-home`, `s-search` and so on). Each group has **one** phone figure (`#<g> figure.phone`) and a row of **sibling state panels** (`#<g> .states > .state:nth-child(<n>)`), each named by its `header .n` label. *(Corrected for Codex 08 R1: the first version enumerated `figure` elements only, which missed every sibling panel.)* At the start, C runs `eval` to list both kinds of element and their labels, and checks the counts against the source at `d5b09ce`. The expected counts are **8 phone figures and 31 state panels**: home 3, search 4, listing 3, quote 5, checkout 7, dashboard 4, apply 3, fines 2. Any difference stops the run. Route C **fails** on a selector that matches nothing, on a crop with zero width or height, and on a crop that comes out a single colour. Every failure is logged, and no file is written for it.
 
 | Row | Route(s) | Viewport, state | Evidence files | Status |
 |---|---|---|---|---|
-| 1 | E | 1440 and 390, settled and the intro frame at 2.85 s | `01-cover-1440.png`, `02-summary-1440.png`, `03-brand-1440.png`, `03-intro-1440.png`, `03-intro-390.png` (from E's `01`–`03`, `00-intro-*`) | Ready |
+| 1 | E at 1440; C at 390 | Cover, summary and brand at 1440 (E `01`–`03`) and the intro frame at 2.85 s at 1440 and 390 (E `00-intro-*`). Cover, summary and brand at 390 × 2 come from C (`#cover`, `#summary`, `#brand`, settled). *(Corrected for Codex 08: E produces only the intro at 390.)* | `01-cover-1440.png`, `02-summary-1440.png`, `03-brand-1440.png`, `03-intro-1440.png`, `03-intro-390.png`, `01-cover-390.png`, `02-summary-390.png`, `03-brand-390.png` | Ready |
 | 2 | E; C at 360 and 768 | 1440, 390 (E); 360 × 2, 768 × 1 (C, `#s-home`) | `04-home-1440.png`, `04-home-390.png`, `04-home-360.png`, `04-home-768.png` | Ready |
-| 3–10 | E for the group; C per figure | Group at 1440 (E `04-2`…`04-8`) and 390 (E `09-phone-*`); each drawn state: C `#<g> figure:nth-of-type(<n>)` at 390 × 2 | `05`–`12-<group>-1440.png`, `-390.png`, and `-390-<n>-<caption>.png` for each state, including checkout's late-payment state and row 7's refund-processing state | Ready |
+| 3–10 | E for the group; C per figure | Group at 1440 (E `04-2`…`04-8`) and 390 (E `09-phone-*`); the phone figure, C `#<g> figure.phone`, and each of the 31 sibling panels, C `#<g> .states > .state:nth-child(<n>)`, both at 390 × 2. The whole-group captures stay as context | `05`–`12-<group>-1440.png` and `-390.png` (group); `-phone-390.png`; `-state-<n>-<label>-390.png` for each panel. This includes checkout's "Paid, needs sorting out" (`screens.html:289–293`) and the refund-processing panel (`:298–302`) | Ready |
 | 11 | E; C with scroll | E `06-journey-*` (settled); C `#j-thandi`/`#j-pieter` at 1440 and 390, `scroll=0,.5,1`, in both motion and reduced | `13-thandi-<w>-<f>-<media>.png`, `14-pieter-…` | Ready |
 | 12 | E | 1440 | `15-roadmap-1440.png` | Ready |
 | 13 | M | Each of the 15 components and Iconography, at its card width | `16`–`31-<Comp>-mirror.png` | Ready **for the mirror only**. **Live cards: BLOCKED.** There is no saved-image route from the signed-in claude.ai page. Prerequisite: route O, with the owner saving each live card's screenshot |
@@ -236,7 +236,7 @@ The browser pane is used **only to observe**, and its findings are written as te
 | 20 | O | iPhone and Android: Safari, Firefox and Chrome | `owner/20-*.png` | **BLOCKED** until the owner does it |
 | 21 | P; Q | PDF pages 1–42; offline resource list | `43-pdf-p01`…`p42.png`, `qa-out.txt` | Ready |
 
-**What "Ready" means.** It means only that another reviewer can produce the same file by following the route. It is not a pass. Rows marked **BLOCKED** stay unverified until their prerequisite is met. The C, M and P scripts don't exist yet: they are written in the C5 pass, in the scratchpad, under prerequisite 1. No new browser permission, install or live-account action is added.
+**What "Ready" means.** It means only that another reviewer can produce the same file by following the route. It is not a pass. Rows marked **BLOCKED** stay unverified until their prerequisite is met. The C, M and P scripts don't exist yet: they are written in the C5 pass, in the scratchpad, under prerequisite 1. They are **proposed, not verified software** (Codex 08). Before the matrix relies on a new route, C5 shows one complete cycle for it: save, open and log. No new browser permission, install or live-account action is added.
 
 ## 5. Assessment
 
@@ -284,3 +284,10 @@ There was one independent read-only reviewer: a Claude subagent under D-039, at 
   - **R2:** added row 17a for control and non-text contrast (3:1), and the large-text rule in row 17.
   - **R3:** added a current-state note under the status line.
   - The §3 findings are unchanged. Nothing was run, rendered, published or installed. Returned to Codex for a delta review.
+- **2026-11-03, Claude, Codex 08 R1 correction:** Codex 08 accepted R2 and R3. For R1, §4.4 now:
+  - captures the 31 sibling `.states > .state` panels as well as the 8 phone figures
+  - checks those counts, and fails on empty or missing crops
+  - maps the 390 views of cover, summary and brand to route C
+  - marks the new scripts as unverified until each shows one complete cycle in C5
+
+  The counts were checked in `screens.html` with a read-only `awk` count. Nothing was run, rendered or published.

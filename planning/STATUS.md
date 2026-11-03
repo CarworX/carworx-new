@@ -2,11 +2,14 @@
 
 ## 🟢 Baton: **CLAUDE**
 
-Claude: respond to [Codex 08](codex/08-phase1-and-revenue-review.md), reviewing head `280373e`.
+Claude's response to [Codex 08](codex/08-phase1-and-revenue-review.md) is published (turn 19):
+- **Claude 09 R1:** fixed in §4.4. It captures the 8 phone figures and the 31 sibling state panels, with count checks, and corrects the mobile cover mapping.
+- **Claude 10:** B1–B3, ownership and the CI bootstrap are agreed in §10, with the task rows amended.
+- **Claude 11:** V1 and V2 are answered in §10.
+- **PLAN S1:** reconciled.
+- **Decisions:** the owner's choices are recorded as D-058 (Claude evidence first) and D-059 (local drill first).
 
-- **Claude 09:** R2 contrast and R3 current state accepted. R1 remains open: capture the sibling state panels as well as phone figures; correct the mobile cover mapping. The C5 audit is still unstarted.
-- **Claude 10:** AGREE WITH CHANGES. Amend B1 real Google-test prerequisites, B2 auth/security acceptance coverage, B3 backup contract, and shared-file ownership. Codex accepts K1–K4 with those changes and proposes Gitleaks CLI plus daily encrypted exports to existing owner-controlled private storage; destination and recovery remain to be agreed and demonstrated.
-- **Claude 11 / PLAN:** reconcile the current revenue roadmap with D-054–D-056 (S1), define fee-exposed cohorts before declaring commission success or starting Pro (V1), and respond to the fee/refund/reminder points (V2). D-057 capacity remains a later technical contract to propose.
+**Still with Claude:** C4 (mirror and API gaps) and the **C5 evidence package** in `claude/audit-10/`, under the [handoff note](research/codex-phase1-execution-handoff.md). C5 needs the owner's OK to run the repo scripts on an isolated copy (Claude 09 §4.2). Codex then reviews the correction delta and the C5 package together.
 
 The owner directions D-042–D-057 stand. This documentation review does not give full visual design sign-off. The owner merges the design branch after that review; Phase 1 then starts local-only under D-038 and the §15 prerequisites.
 
@@ -71,3 +74,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 17 | 2026-11-03 | Claude | Recorded owner decisions D-042 to D-053 (round 07: sign-in, Information Officer, Supabase free plan, no attorney, supply focus, accounting research, fee bearer, company registration, refund funding, booking modes, fines plan, retention). Amended Claude 09 for Codex 07 R1–R3 and published [Claude 10](claude/10-phase-1-build-plan.md), the Phase 1 build plan. Revenue streams are being discussed in a separate session. Baton to Codex. |
 | 18 | 2026-11-03 | Claude | Published [Claude 11](claude/11-revenue-streams.md), the revenue discussion from a separate Claude session (20 owner answers, SA prices with sources, a testing order), and recorded the owner's choices as D-054 to D-056. Baton stays with Codex. |
 | 19 | 2026-11-03 | Codex | Reviewed `280373e`: Claude 09 R2/R3 accepted, R1 state selectors remain; Claude 10/11 AGREE WITH CHANGES for Google prerequisites, security/backup evidence, current PLAN records and fee-exposed revenue cohorts. Published [Codex 08](codex/08-phase1-and-revenue-review.md); baton to Claude. Full visual/merge sign-off pending. |
+| 19 | 2026-11-03 | Claude | Responded to Codex 08: Claude 09 R1 (31 state panels, count checks), Claude 10 B1–B3, ownership and CI bootstrap agreed (§10), Claude 11 V1/V2 (§10), PLAN S1 reconciled; recorded D-058 and D-059. C4 and C5 still to do; baton stays with Claude. |

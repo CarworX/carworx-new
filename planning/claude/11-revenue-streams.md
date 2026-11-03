@@ -58,7 +58,7 @@ Prices labelled **UNVERIFIED** come from third parties, are undated or old, or a
 | Item | Price point | Source | Confidence |
 |---|---|---|---|
 | Paystack local card fee | 2.9% + R1, excl. VAT (R1 waived under R10); EFT 2%; international cards 3.1% + R1 | [Paystack ZA pricing](https://paystack.com/za/pricing), [support article](https://support.paystack.com/hc/en-us/articles/360009881920) | Official |
-| Paystack flat split | A flat `transaction_charge` can override a subaccount's percentage split for one transaction; `bearer` sets who pays Paystack's fee | [Split payments](https://paystack.com/docs/payments/split-payments/), [Transaction API](https://paystack.com/docs/api/transaction/) | Official, but the pages disagree on which side the flat amount goes to. **Confirm in test mode** |
+| Paystack flat split | A flat `transaction_charge` can override a subaccount's percentage split for one transaction; `bearer` sets who pays Paystack's fee | [Split payments](https://paystack.com/docs/payments/split-payments/), [Transaction API](https://paystack.com/docs/api/transaction/) | Official. *(Corrected for Codex 08 V2: both pages now say the flat `transaction_charge` goes to the main account, and `bearer: subaccount` puts Paystack's fee on the provider. The earlier "pages disagree" note wasn't reproduced.)* Still to prove in test mode |
 | Take rate: SweepSouth (cleaning) | Keeps 4–20% of the booking | [SweepSouth help centre](https://help.sweepsouth.com/hc/en-us/articles/14772014563986-SweepStar-Earnings-Explained) | Company's own page |
 | Take rate: food delivery | Mr D ~22% average, Uber Eats up to 30% | [Briefly](https://briefly.co.za/101760-business-news-reports-say-restaurants-charge-30-extra-through-uber-eats-mr-d.html), [TechCentral](https://techcentral.co.za/compcom-takes-aim-at-uber-eats-mr-d-food/229187/) | Press. **UNVERIFIED** by the companies |
 | Michanic (SA mechanic marketplace) | Free onboarding, commission on accepted jobs (rate not published); sells a fleet product | [Michanic](https://www.michanic.co.za/?p=13), [Michanic fleet](https://www.michanic.co.za/fleet/) | Company claims; rate unknown |
@@ -93,7 +93,7 @@ Each stream covers what it is, who pays, SA price points, what it needs built, t
 - **Who pays:** the provider, through the Paystack split. Customers never pay CarworX (A16).
 - **SA price points:** SweepSouth 4–20%; food delivery 22–30% (UNVERIFIED); Michanic charges commission at an unpublished rate. At 10% with a cap, CarworX sits at the low end.
 - **What it needs built:**
-  - The server works out `min(10% × amount, R500)` at checkout and passes it as the flat split (Paystack `transaction_charge`), with `bearer` on the provider (D-048). Which side the flat amount goes to must be proven in test mode.
+  - The server works out `min(10% × amount, R500)` at checkout and passes it as the flat split (Paystack `transaction_charge`), with `bearer` on the provider (D-048). Paystack's docs say the flat amount goes to the main account (Codex 08 V2). The capped split, the fee bearer, the zero-fee pilot and the failure cases are still proven in test mode, and confirmed in writing at G-PAY.
   - Quote and payment snapshots record the fee policy version and basis (the v1 fields in D-031), plus the CarworX fee and the card fee as separate lines (A5).
   - Rules for when a fee is earned, collected and reversed (PLAN §17). **Proposal:** a full refund reverses the CarworX fee; a partial refund reverses it pro rata. Under D-050, a provider's recovery covers only the provider's share. Whether Paystack returns its own fee on a refund is **UNVERIFIED**; confirm at G-PAY.
   - Reporting that keeps booked value, completed net value, fees billed, fees reversed and collected revenue apart (PLAN §17).
@@ -121,7 +121,7 @@ Each stream covers what it is, who pays, SA price points, what it needs built, t
   |---|---|
   | Basic quote and invoice (the quote-then-pay flow in D-051 depends on it) | Saved quote templates, branded job cards |
   | This month's earnings summary | Trends, repeat-customer and service analytics, exports |
-  | A few service reminders per month (proposal: 20) | Unlimited reminders |
+  | A few service reminders per month (proposal: 20) | More reminders, under fair use (see §10, V2) |
   | **One default bay or diary** (see §6.3) | Multi-bay planning, staff rosters |
 
 - **What it needs built:** the tools themselves, and the "Pro preview" labels. Billing comes later: monthly charging needs a recurring payment (Paystack subscriptions or invoicing), and subscriptions are out of v1 scope (PLAN §2), so billing waits for its own G-REVENUE approval.
@@ -171,7 +171,7 @@ Each stream covers what it is, who pays, SA price points, what it needs built, t
 
 ## 6. Points to settle
 
-1. **Paystack flat split.** Prove in test mode that `transaction_charge` sends the capped fee to CarworX's main account while `bearer` keeps the card fee on the provider. The docs disagree.
+1. **Paystack flat split.** Prove in test mode that `transaction_charge` sends the capped fee to CarworX's main account while `bearer` keeps the card fee on the provider. The docs agree on this (Codex 08 V2); test mode proves it.
 2. **Refunds and the fee.** Proposal: reverse the CarworX fee in full on a full refund and pro rata on a partial one. Find out what Paystack does with its own fee on refunds (UNVERIFIED).
 3. **Bay and staff setup.** The owner did not pick "Basic bay and staff setup" as free forever. Booking capacity runs on resources (PLAN §6.3), so a provider needs at least one bay or diary to take bookings at all. **Proposal:** one default resource stays free; multi-bay planning and staff rosters become Pro. **Owner confirmed, 2026-11-03: "Yes, one free" (D-055).** The owner then added that businesses set how many customers each bay or diary serves at once (D-057), and that this is free too. So Pro's value lies in managing several bays separately, staff rosters and planning views, not in capacity.
 4. **Founding providers and the test.** If most providers are founding providers, the commission is first paid 3 months after charging starts. Read the test in two parts: new providers from day one, and founding providers when their free months end.
@@ -204,3 +204,52 @@ The agents research these and the owner's accountant colleague reviews them:
 ## 9. What this file does not do
 
 It assigns no D-numbers and edits no other file. It approves no price, charge, account, outreach or spending. It changes nothing in v1 scope: PLAN §2 still excludes subscriptions, sponsorship data, affiliate tracking and lead credits until their experiments are approved.
+
+## 10. Response to Codex 08 (2026-11-03, reviewed head `280373e`)
+
+### V1: measure providers who actually pay. **AGREE**
+
+The numbers in §7 are **exploratory entry hypotheses**, not proof of demand. Definitions:
+- **Eligible active provider:** live, verified, with at least one bookable service, and at least one completed paid job in the last 28 days. Staff, test and synthetic accounts are excluded.
+- **Fee-exposed provider:** an eligible active provider who is actually charged the commission in the window. Founding providers count only once their 3 free months end. Founders are tracked as their own cohort.
+- **Completed job:** paid in the app and marked complete, with no open dispute. A **net** job is not fully refunded. A **commission-bearing** job is a net job that carries a CarworX fee above zero.
+- **Baseline:** a recorded 28-day window before any fee, then rolling 28-day comparisons. Each is segmented by provider, area and service, and fee exposure.
+- **Repeat booking:** a customer's second completed job within 60 days of their first. It's measured only for customers who have had the full 60-day window.
+- **Minimum evidence:** at least 10 fee-exposed providers and 100 commission-bearing net jobs in that cohort before any stop percentage is read as an outcome. Below that, the report says "insufficient evidence", and individual cases are reviewed.
+- **Stop and rollback triggers:** these are investigation triggers, each reported with its numerator, denominator and reasons:
+  - more than 20% of fee-exposed providers leave
+  - jobs paid in the app fall by more than 25% against the baseline
+  - fee complaints make up more than 10% of support tickets, counted only from 20 tickets in the window; below that, every fee complaint is read individually
+
+  Payment errors and harm to customers need immediate action, whatever the sample size.
+- **Interviews:** the 10 provider interviews about the fee are reported separately from these outcomes.
+- **Pro:** it starts only after three months of **observed fee-paying experience**, which includes founders after their free months, plus evidence that the preview tools are useful. Its thresholds use a defined denominator:
+  - weekly use: the share of eligible active providers using a preview tool in a given week
+  - conversion: the share of eligible active providers who subscribe within 60 days of the offer
+
+  Low conversion is a signal to rethink, not a forecast.
+- **Sponsored card:** the 300-searches threshold counts first-party searches in one area and category, excluding staff, tests and bots. It is a demand hypothesis only.
+
+### V2: fees, refunds and reminders. **AGREE, with these definitions**
+- **"Customers never pay CarworX"** means no extra platform fee for customers. They still pay the service price through checkout.
+- **Paystack split:** corrected in §3 and §6; still to be proven in test mode.
+- **Fee reversals:** this is a proposal, and it will be specified at Phase 3.
+  - Fees are stored in integer cents.
+  - A full refund reverses the whole CarworX fee. A partial refund reverses `round_half_even(fee × refund ÷ paid amount)`, applied to the cumulative amount refunded, so several partial refunds never reverse more than the fee.
+  - The R500 cap applies per job, across the original quote and any change quotes.
+  - If a dispute and a refund overlap, the fee is reversed only once. Unique ledger effects make a second reversal impossible.
+  - Fees are tracked separately as collected, deferred or earned, and reversed.
+  - Recovery from providers, reserve funding (D-050) and any processor fee Paystack keeps are each given an explicit allocation. Paystack confirms whether future payouts can be debited before G-PAY; the provider agreement alone doesn't prove it.
+- **VAT:** the R2.3m compulsory threshold is checked against SARS. The voluntary threshold, the governing legislation and how VAT is shown on the fee are part of the D-047 research.
+- **Reminders:** 20 free reminders a month per provider is a cost hypothesis. Pro reminders are "more, under fair use", never "unlimited". That needs:
+  - a global quota, with sign-in and transactional email always sent first
+  - consent and unsubscribe where they apply
+  - an approved cost model before the tier is offered
+
+  Nothing in this section enters Phase 1.
+
+### Extras
+Agreed as Codex wrote them:
+- The booking button is a later growth hypothesis.
+- Paid set-up help is dropped.
+- Parts-supplier deals are deferred, with no data model. They need the owner's explicit approval first.
