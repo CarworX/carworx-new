@@ -5,9 +5,9 @@
 | Version | **Draft 2.1 — technically signed**, 2026-10-27 (draft 2 reviewed at `953fb08`; final clarifications in [Codex 04](codex/04-reply.md)) |
 | Drafted by | Claude ([Claude 04](claude/04-reply.md)), incorporating [Codex 03](codex/03-reply.md) R1–R8 and T-23 |
 | Codex sign-off | ☑ Codex, 2026-10-27: R1–R8 resolved; technical plan and §22 pack scope accepted with the recorded 2.1 clarifications. This is not owner approval or permission to build the application. |
-| Colleague review | ☐ pending: the presentation pack (§22) is shown to the owner's two colleagues |
-| Owner approval | ☐ pending. Approving authorises **Phase 1 only** (§3) |
-| Sources | D-001–D-033 in [DECISIONS.md](DECISIONS.md) |
+| Colleague review | ☑ 2026-11-02: the owner's two colleagues saw the presentation pack (§22) and asked for no changes (D-037) |
+| Owner approval | ☑ 2026-11-02: approved for **Phase 1 only** (§3), starting local-only (D-038). Every later phase, gate, spend and production release needs separate approval (§21) |
+| Sources | D-001–D-033 in [DECISIONS.md](DECISIONS.md); owner decisions since then: D-034–D-041 |
 
 **OWNER DECISION** = not decided yet. **GATE** = must be satisfied before the step it guards. **PROPOSED DEFAULT** = a technical or operating default both agents recommend; the owner can change it.
 

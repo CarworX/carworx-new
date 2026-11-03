@@ -15,7 +15,7 @@ Answer inline under each question (or in chat, and an agent will copy it here). 
 - **Q-006 Information Officer (POPIA).** By law, the head of the business is the Information Officer and must register with the Information Regulator (free, online). Is that you?
 - **Q-007 Commission model.** Do you have a view on how CarworX earns money: commission per booking (typical marketplaces take 10–20%), a provider subscription, a customer booking fee, or a mix? The agents will propose options if you have no view.
 - **Q-008 Fines data partner outreach.** No official public API exists for fine lookups (see `research/fines-data.md`). The realistic route is a commercial partner. Are you willing to contact one or two providers if the agents draft the email?
-- **Q-009 Your colleague's 5-feature request.** The agents will recommend a structure with reasons. Does your colleague need to approve it, or is your sign-off enough?
+- **Q-009 Your colleague's 5-feature request.** The agents will recommend a structure with reasons. Does your colleague need to approve it, or is your sign-off enough? *(Answered later: see round 04 and round 06 below.)*
 
 ## Owner answers and corrections — 2026-10-27, Codex chat
 
@@ -37,7 +37,7 @@ The original questions above are preserved as history. The entries below superse
 - Q-005: exact business/bank readiness and Paystack marketplace approval, before paid activation.
 - Q-006: Information Officer identity/registration and responsible-party assessment, before launch.
 - Q-008: permission for external fines-partner outreach, before sending anything; referral launch is already accepted.
-- Q-009: whether colleague sign-off is required for the final structure; not assumed.
+- Q-009: whether colleague sign-off is required for the final structure; not assumed. *(Since answered: round 04 below, and closed in round 06, D-037.)*
 - Q-016: processing-fee bearer, refund funding and chargeback responsibilities, before paid activation.
 - Q-017: approved production and automation budget/credentials, before any spending or setup.
 
@@ -86,3 +86,18 @@ The assistants should first propose concrete options for the unresolved operatin
 ## Owner answers — 2026-10-27, Claude chat (round 05)
 
 - **Q-018 UPDATED: Turbine logo locked.** The owner chose concept 01 *Turbine* (five impeller blades, Sora wordmark) as the CarworX logo and asked for the other eight concepts to be removed. Further brand work (UI palette, type, imagery, tone, app icon) continues in Claude Design. Files: [design/brand/](design/brand/README.md). This is a brand choice only; it is not Phase 1 approval.
+
+## Owner answers — 2026-11-02 and 2026-11-03, Claude chat (round 06)
+
+These answers are recorded as decisions in [DECISIONS.md](DECISIONS.md), round 06.
+
+- **Q-009 CLOSED (D-037):** the two colleagues saw the §22 pack (Studio rebuild, `6c607e5`) and asked for no changes. Phase 0b is closed.
+- **Plan approval (D-038):** the owner approves PLAN 2.1 for **Phase 1 only**: foundations on local and staging, with synthetic data, subject to the §15 prerequisites. It starts local-only. No later phase, gate, spend or production release is approved.
+- **Q-023 ANSWERED: YES (D-039).** Each agent may use its own sub-agents or parallel sessions within its assigned work, at no extra spend. The other agent still reviews.
+- **Design system (D-040):** the Studio design system is built in Claude and mirrored into `design/brand/` as the source for Phase 1 code. It stays a concept until Codex reviews it.
+- **System states (D-041):** the owner chose the 404 page and the loaders by scenario. They stay concepts until Codex reviews them.
+- **2026-11-03:** the owner asked for [Claude 09](claude/09-product-design-assessment.md) to be published, and for the hold-expiry copy correction that Codex 05 required. Both are done on `planning/design-motion-toolkit`.
+
+**Still open:**
+- Q-022 (optional), plus Q-005, Q-006, Q-008, Q-016, Q-017 and Q-019, at the stages listed in PLAN §20.
+- The §15 Phase 1 prerequisites.

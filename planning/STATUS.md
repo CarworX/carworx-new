@@ -2,7 +2,14 @@
 
 ## 🟢 Baton: **CODEX**
 
-Codex: review the rebuilt **§22 pack** ([Claude 07](claude/07-pack-studio.md)), the **Studio design system** ([Claude 08](claude/08-design-system.md); mirrored in [design/brand/](design/brand/README.md)) and decisions D-037–D-040, on branch `planning/design-motion-toolkit`. After approval the owner merges the branch to `main`; Phase 1 then starts local-only (D-038).
+Codex: please review the following on branch `planning/design-motion-toolkit`:
+- the rebuilt **§22 pack** ([Claude 07](claude/07-pack-studio.md)), with the hold-expiry correction that [Codex 05](codex/05-pack-review.md) required (`ac5fcce`)
+- the **Studio design system** ([Claude 08](claude/08-design-system.md); mirrored in [design/brand/](design/brand/README.md))
+- the approved **404 and loaders** (D-041; [design/states/](design/states/NOTES.md))
+- [Claude 09](claude/09-product-design-assessment.md), the assessment requested in [Codex 06](codex/06-product-design-review-handoff.md)
+- decisions D-037–D-041
+
+`codex/05` is the earlier review of the pack (`6c607e5`, 2026-10-28); this review comes after it. Once Codex approves, the owner merges the branch to `main` and Phase 1 starts local-only (D-038).
 
 **Phase: 1 approved (D-038), not started.** Phase 1 starts local-only with synthetic data once the design system is reviewed. No accounts, deployments, outreach or paid automation by agents.
 
@@ -11,8 +18,9 @@ Codex: review the rebuilt **§22 pack** ([Claude 07](claude/07-pack-studio.md)),
 | ID | Item | State |
 |---|---|---|
 | PLAN | Version 2.1 | Technically signed (D-033) and **owner-approved for Phase 1 only** (D-038) |
-| §22 | Presentation pack (Turbine + Studio) | Phase 0b closed: colleagues saw it, no changes (D-037). Codex review still to be recorded |
-| DS | Studio design system (D-040) | Built by Claude ([08](claude/08-design-system.md)) in the CarworX Design System project and mirrored into `design/brand/`; Codex reviews |
+| §22 | Presentation pack (Turbine + Studio) | Phase 0b closed: colleagues saw it, no changes (D-037). The hold-expiry copy that Codex 05 required is corrected (`ac5fcce`). Codex review of the current pack still to be recorded |
+| DS | Studio design system (D-040) and system states (D-041) | Built by Claude ([08](claude/08-design-system.md), [states](design/states/NOTES.md)) in the CarworX Design System project and mirrored into `design/brand/`. The same expiry-copy correction is live in version 32. Codex reviews |
+| C09 | [Claude 09](claude/09-product-design-assessment.md): design review plan | Delivered; an independent subagent review answered Yes. Corrections C1–C3 done; C4 (design-system API clean-up) and C5 (visual audit, needs owner permissions) are open |
 | T-20 | Q-016 funded refund process | Owner decision at G-PAY; agents aligned (D-026, D-031) |
 
 **AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee/funding choices still require the owner before G-PAY.
@@ -20,14 +28,20 @@ Codex: review the rebuilt **§22 pack** ([Claude 07](claude/07-pack-studio.md)),
 ## Waiting on the owner
 
 **Answered this round:** Q-009 (colleagues saw the pack, no changes), Q-018 (Turbine + Studio), Q-023 (yes, own sub-agents within assigned work).
-**Phase 1 prerequisites (§15), owner:** account inventory and who controls `carworx.app` DNS; staging Supabase project + Cloudflare route (Phase 1 starts local-only until then); Resend subdomain; CI minutes; GitHub: switch the active `gh`/git login back to the account with CarworX org access.
+**Phase 1 prerequisites (§15), owner:** account inventory and who controls `carworx.app` DNS; staging Supabase project + Cloudflare route (Phase 1 starts local-only until then); Resend subdomain; CI minutes. (The GitHub login is back on the account with CarworX org access.)
+**For the visual audit, when wanted (Claude 09 §4.2):**
+- OK to run the pack scripts on an isolated copy
+- zoom Chrome while Claude watches
+- be signed in to claude.ai in the browser pane
+- phones for the screen-reader and device checks
 **Later, only if wanted:** Q-022 (unpaid reservations; default off).
 **Later:** Q-005, Q-006, Q-008, Q-016, Q-017 (before the Phase 2 production launch), Q-019.
 
 ## Next steps
 
 1. ~~Claude: Studio design system~~ Done: [Claude 08](claude/08-design-system.md).
-2. **Codex 05:** review the rebuilt pack, the design system and D-037–D-040.
+2. **Codex (next review, after Codex 05 and 06):** the pack and its expiry correction, the design system, the states (D-041), Claude 09 and D-037–D-041.
+   - Claude, if the owner wants them: C4 (design-system API clean-up) and C5 (the visual audit).
 3. **Owner:** merge `planning/design-motion-toolkit` to `main` after Codex approves; complete the §15 Phase 1 prerequisites.
 4. **Phase 1 (approved, D-038):** monorepo scaffold, CI, local dev, Studio tokens in Tailwind with a living component page, auth, first tables with RLS, then staging; exit A1–A7 including the restore drill.
 
@@ -49,3 +63,6 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 10 | 2026-10-28 | Claude | Owner chose then approved the Studio web direction (D-035, D-036) after two refinement passes. Rebuilt the §22 pack in Studio: Studio intro, Turbine rules + Studio UI language, 8 screen groups with §10 states, desktop home/search, scroll-linked journeys, roadmap; fonts bundled offline; 27 PNG + 42-page PDF checked by eye; QA.md rewritten. Baton to Codex for review. |
 | 11 | 2026-11-02 | Claude | Recorded owner decisions: Phase 0b closed, no colleague changes (D-037); PLAN 2.1 approved for Phase 1 only, local-only start (D-038); Q-023 yes (D-039); Studio design system built in Claude Design first (D-040). Baton stays with Claude for the design system, then Codex reviews. |
 | 12 | 2026-11-02 | Claude | Built the Studio design system (D-040) in the CarworX Design System project in Claude: tokens v4, Geist/Geist Mono/Caveat, 15 components with bundle.css, objects, illustrations, glyphs, brand book and cover; mirrored into `design/brand/`. Baton to Codex to review pack, design system and D-037–D-040. |
+| 13 | 2026-11-03 | Claude | Built five 404 and five loading concepts (`cd6160d`). The owner chose the Dot-grid lens 404, plus the hold dial, skeleton and dot-grid ripple loaders by scenario, with the ripple's blade pulse (D-041). Built the approved states page and four design-system cards (`e189775`). Baton stays with Codex. |
+| 14 | 2026-11-03 | Codex | Published [Codex 06](codex/06-product-design-review-handoff.md), asking Claude for an assessment only, and the historical [Codex 05](codex/05-pack-review.md) pack review (`173f476`). STATUS was not updated in that commit; Claude recorded this row in turn 15. |
+| 15 | 2026-11-03 | Claude | Published [Claude 09](claude/09-product-design-assessment.md) (`c24ea44`), which an independent subagent review answered Yes. At the owner's request: corrected the hold-expiry copy in the pack and the design system (`ac5fcce`, live version 32), and brought AGENTS, README, the PLAN header, OWNER-QUESTIONS and STATUS up to date with D-037–D-041. Baton to Codex. |

@@ -2,7 +2,7 @@
 
 A South African marketplace for car care at **carworx.app**: find, book and pay for car wash & detailing, repairs & maintenance, glass, tyres & alignment, and look up traffic fines and other vehicle services.
 
-**Status: planning.** No application code exists yet, by design. Two AI agents (Claude Code and OpenAI Codex) are planning the project together in this repo, and the owner approves the final plan before any app code is written.
+**Status: Phase 1 approved, not started.** No application code exists yet. Two AI agents (Claude Code and OpenAI Codex) planned the project together in this repo. The owner approved [PLAN 2.1](planning/PLAN.md) for **Phase 1 only** (D-038): foundations, starting local-only with synthetic data.
 
 ## Where things are
 
@@ -29,6 +29,12 @@ A South African marketplace for car care at **carworx.app**: find, book and pay 
 
 ## Latest planning round
 
-**[PLAN.md 2.1](planning/PLAN.md) is technically signed by Codex.** [Codex 04](planning/codex/04-reply.md) closes R1–R8 and records final clarifications. The baton is **Claude** to create the local presentation pack: brand directions, layout images and plain-language summary for the owner's colleagues. Codex then reviews the pack; owner approval and brand choice remain pending. No application build or public deployment is authorised; the free pilot remains in force.
+**[PLAN.md 2.1](planning/PLAN.md) is technically signed by Codex (D-033) and approved by the owner for Phase 1 only (D-038).**
+- **Brand and design:** the owner locked the Turbine logo and chose the Studio design direction (D-034 to D-036). The colleagues saw the presentation pack and asked for no changes (D-037).
+- **Waiting for Codex review:** the Studio design system (D-040) and the approved 404 and loading screens (D-041). Both are on branch `planning/design-motion-toolkit`.
+- **After that review:** the owner merges the branch to `main`, and Phase 1 starts local-only.
+- **Not authorised:** any public deployment. The free pilot remains in force.
+
+See [STATUS](planning/STATUS.md) for the current baton.
 
 Owner clarifications: nationwide availability, fixed and mobile services, discovery/enquiries/bookings/payments, a free validation period, quote-then-pay repairs, and official fines referrals until integration is ready. Provider supply starts at zero; the owner and colleague handle pilot operations. See [the current answers](planning/OWNER-QUESTIONS.md) and [verification corrections](planning/research/codex-verification.md).
