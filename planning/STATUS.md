@@ -5,7 +5,7 @@
 Codex: please review on `planning/design-motion-toolkit`:
 1. **The Claude 09 delta for [Codex 07](codex/07-claude09-review.md) R1–R3.** The new §4.4 gives each screenshot row a saved-image route or marks it BLOCKED. Row 17a adds control and non-text contrast. A current-state note sits under the status line.
 2. **[Claude 10](claude/10-phase-1-build-plan.md), the Phase 1 build plan:** tasks T1–T5 (Claude) and K1–K4 (Codex), file ownership, order and the issue list. Questions for you are in §9.
-3. **Owner decisions D-042 to D-053** (round 07) and the PLAN, OWNER-QUESTIONS and STATUS edits that follow from them. These are owner decisions: please check that the records are consistent, and raise any technical consequences.
+3. **Owner decisions D-042 to D-056** (round 07), including the revenue choices in [Claude 11](claude/11-revenue-streams.md) and its proposed numbers, and the PLAN, OWNER-QUESTIONS and STATUS edits that follow from them. These are owner decisions: please check that the records are consistent, and raise any technical consequences.
 
 The design work's full visual sign-off is still pending. Once Codex approves, the owner merges the branch to `main`, and Phase 1 starts local-only (D-038). No audit, live publication or application work is started by this turn.
 
@@ -21,7 +21,7 @@ The design work's full visual sign-off is still pending. Once Codex approves, th
 | C09 | [Claude 09](claude/09-product-design-assessment.md): design review plan | Codex 07: AGREE WITH CHANGES. R1–R3 addressed (§4.4, row 17a, current-state note). Codex delta review next |
 | C10 | [Claude 10](claude/10-phase-1-build-plan.md): Phase 1 build plan | Proposal; Codex agrees or changes it. GitHub issues are created only after agreement |
 | R07 | Owner decisions D-042 to D-053 | Recorded in DECISIONS, PLAN and OWNER-QUESTIONS. Main changes: no attorney (D-045); production on the Supabase free plan, with a no-cost backup route (D-044); company registration after the build, test mode until then (D-049); book and pay now for price-list services (D-051) |
-| REV | Revenue streams | Being discussed with the owner in a separate Claude session (`claude/11-revenue-streams.md`, not yet published); the decisions will be recorded afterwards |
+| REV | Revenue streams | Owner's choices recorded as D-054 to D-056; [Claude 11](claude/11-revenue-streams.md) holds the options, prices and proposed test numbers. Codex reviews. Still open for the owner: whether one bay stays free |
 | T-20 | Q-016 | **Answered:** the provider pays the fee (D-048); reserve plus recovery (D-050). Paystack's written confirmation still needed at G-PAY (D-026) |
 
 **AGREED:** T-01–T-19, T-21–T-24 and R1–R8; technical sign-off D-033 records the final 2.1 clarifications. See [DECISIONS.md](DECISIONS.md). T-20 fee/funding choices still require the owner before G-PAY.
@@ -69,3 +69,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 15 | 2026-11-03 | Claude | Published [Claude 09](claude/09-product-design-assessment.md) (`c24ea44`), which an independent subagent review answered Yes. At the owner's request: corrected the hold-expiry copy in the pack and the design system (`ac5fcce`, live version 32), and brought AGENTS, README, the PLAN header, OWNER-QUESTIONS and STATUS up to date with D-037–D-041. Baton to Codex. |
 | 16 | 2026-11-03 | Codex | Published Codex 07: C1–C3 accepted within verified scope; pack QA/build/checkout PNGs/PDF checked; approved-states QA 16/16 clean. Claude 09 AGREE WITH CHANGES for R1 saved evidence, R2 contrast coverage, R3 summary. Baton to Claude; complete design/merge sign-off remains pending. |
 | 17 | 2026-11-03 | Claude | Recorded owner decisions D-042 to D-053 (round 07: sign-in, Information Officer, Supabase free plan, no attorney, supply focus, accounting research, fee bearer, company registration, refund funding, booking modes, fines plan, retention). Amended Claude 09 for Codex 07 R1–R3 and published [Claude 10](claude/10-phase-1-build-plan.md), the Phase 1 build plan. Revenue streams are being discussed in a separate session. Baton to Codex. |
+| 18 | 2026-11-03 | Claude | Published [Claude 11](claude/11-revenue-streams.md), the revenue discussion from a separate Claude session (20 owner answers, SA prices with sources, a testing order), and recorded the owner's choices as D-054 to D-056. Baton stays with Codex. |

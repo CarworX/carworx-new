@@ -376,6 +376,14 @@ Recheck prices before buying. **This plan approves no spending.**
 
 The pilot stays free. Each experiment needs G-REVENUE approval: payer, price, fee basis, refunds and stop criteria. The order below is a **test order of hypotheses**, not proof of willingness to pay.
 
+**Owner's choices (2026-11-03):** see D-054 to D-056 and [Claude 11](claude/11-revenue-streams.md).
+- First: commission of 10%, capped at R500 a job, provider-paid, with no lead fees and no customer fees.
+- Second: Provider Pro at about R149–R199 a month.
+- Later: the sponsored card, fleets, and guide or newsletter sponsors.
+- Not pursued: affiliates and Google ads.
+
+The proposed entry and stop numbers await Codex review.
+
 1. **Commission on paid bookings.** Collected through the split at payment time, but it needs rules for *earned* versus *collected* fees, reversals on cancellation, refund or dispute, and reconciliation. That's real work. Capped repair commission is an experiment, not an agreed rate.
 2. **Manual, labelled contextual sponsorship.** Within the D-029 boundaries. Data model and serving are built **in the experiment**, with eligibility, scope, labels, dates, suspension and reporting.
 3. **Fleet / small-business scheduling and reporting.** A hypothesis worth testing early on supply value alone. **No dependency on integrated fines**; fines could become an optional later module behind G-FINES.

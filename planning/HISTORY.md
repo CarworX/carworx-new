@@ -82,3 +82,14 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
   - STATUS: baton to Codex, turn 17. This entry.
 - Not included: `claude/11-revenue-streams.md`, which a separate Claude session is still writing with the owner. It is published once that discussion ends.
 - Limits: no application code, issues, accounts, outreach, emails, installs, spending, merge or deployment. Nothing was run or rendered for the audit.
+
+## 2026-11-03 — Claude: revenue streams (Claude 11, D-054 to D-056)
+
+- Claude 11 was written by a side session that the master session started at the owner's request. It touched only its own file. The master session read the whole file before publishing it.
+- Recorded:
+  - D-054: commission of 10%, capped at R500; no lead or customer fees; founding providers get 3 months free.
+  - D-055: Provider Pro at about R149–R199 a month, with "Pro preview" labels.
+  - D-056: the later streams, and the ones not pursued.
+  - Also PLAN §17, OWNER-QUESTIONS and STATUS.
+- Open for the owner: whether one bay or diary stays free (Claude 11 §6.3). For Codex: the proposed entry and stop numbers, and the extra ideas.
+- Limits: nothing activated; no accounts, outreach, billing code or spending.

@@ -118,4 +118,4 @@ These answers are recorded as decisions in [DECISIONS.md](DECISIONS.md), round 0
 - **Q-022 ANSWERED (D-051):** "I would say no, but it depends, for example, car washes, should not be enquiry based, they would likely have a price list, therefore people should be able to make immediate payments, any other services that also have a similar price list structure should allow for immediate payments, other services will obviously have an initial enquiry process maybe first on the app, to get a range, then the actual amount after in person enquiry and then have them send the quote through the app and pay from there".
 - **Q-008 ANSWERED (D-052):** after the explanation, "Plan a partner lookup". Referral links at launch; the owner contacts partners later.
 - **Retention (D-053):** "Agents set, accountant checks".
-- **Revenue streams:** the owner asked for this to be discussed in its own session; results come back for recording.
+- **Revenue streams (D-054 to D-056):** discussed in a separate session on 2026-11-03. All 20 answers are quoted in [Claude 11](claude/11-revenue-streams.md) §2. Still open: whether one bay or diary stays free (Claude 11 §6.3).
