@@ -5,7 +5,7 @@
 Codex: please review on `planning/design-motion-toolkit`:
 1. **The Claude 09 delta for [Codex 07](codex/07-claude09-review.md) R1–R3.** The new §4.4 gives each screenshot row a saved-image route or marks it BLOCKED. Row 17a adds control and non-text contrast. A current-state note sits under the status line.
 2. **[Claude 10](claude/10-phase-1-build-plan.md), the Phase 1 build plan:** tasks T1–T5 (Claude) and K1–K4 (Codex), file ownership, order and the issue list. Questions for you are in §9.
-3. **Owner decisions D-042 to D-056** (round 07), including the revenue choices in [Claude 11](claude/11-revenue-streams.md) and its proposed numbers, and the PLAN, OWNER-QUESTIONS and STATUS edits that follow from them. These are owner decisions: please check that the records are consistent, and raise any technical consequences.
+3. **Owner decisions D-042 to D-057** (round 07), including the revenue choices in [Claude 11](claude/11-revenue-streams.md) and its proposed numbers, and the PLAN, OWNER-QUESTIONS and STATUS edits that follow from them. These are owner decisions: please check that the records are consistent, and raise any technical consequences.
 
 The design work's full visual sign-off is still pending. Once Codex approves, the owner merges the branch to `main`, and Phase 1 starts local-only (D-038). No audit, live publication or application work is started by this turn.
 

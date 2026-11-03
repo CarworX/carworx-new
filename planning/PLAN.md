@@ -132,7 +132,8 @@ Application → admin review with the method recorded → labels granted → liv
 - **Empty supply** → private demand capture.
 
 ### 6.3 Fixed-price booking (D-024, R3, PROPOSED DEFAULTS)
-- Each slot belongs to a **resource** (bay, team or calendar). v1 allows **one job per resource**, using half-open UTC intervals `[start, end)` that include duration plus turnaround or travel buffer, enforced by an exclusion constraint. Times are shown in Africa/Johannesburg. Pooled capacity and overbooking are deferred.
+- Each slot belongs to a **resource** (bay, team or calendar), using half-open UTC intervals `[start, end)` that include duration plus turnaround or travel buffer. Times are shown in Africa/Johannesburg.
+- **Capacity is set by the business (D-057).** Each resource has a provider-set number of customers it can serve at the same time (default 1). Holds and bookings may overlap on a resource only up to that number, enforced atomically in Postgres. This **replaces** the earlier "one job per resource, exclusion constraint" rule: with capacity 1 the behaviour is unchanged. The design (count-based check under a lock, or per-seat rows that keep an exclusion constraint) is for Claude to propose and Codex to review. Overbooking beyond the set number stays out of scope.
 - A **request** doesn't promise capacity. The provider must acknowledge it within **2 business hours** (08:00–17:00 Mon–Sat, SA public holidays excluded; provisional). Slots that start before acceptance plus payment could finish aren't offered.
 - **Acceptance** atomically checks the service, price and resource and creates a **15-minute payment hold**.
 - A **payment attempt** is tied to the hold, booking, quote version (if any) and the cent amount calculated on the server. Initialising again reuses the same hold; it never creates a second payable job.
@@ -271,7 +272,7 @@ CI unless marked *manual* or *sandbox*. "Every table" means **every table migrat
 - **A17** No temporary geocoding result is stored (code check plus a test).
 
 **Phase 3:**
-- **A18** Two customers race for one resource interval; exactly one hold succeeds.
+- **A18** Two customers race for one resource interval; exactly one hold succeeds. With capacity N (D-057), N + 1 concurrent holds on the same interval give exactly N successes.
 - **A19** Adjacent intervals `[a,b)` and `[b,c)` both succeed; buffers prevent overlap.
 - **A20** Multiple resources at one branch allow parallel jobs.
 - **A21** A repeated request or payment initialisation creates no second hold or attempt.

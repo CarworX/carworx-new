@@ -119,3 +119,4 @@ These answers are recorded as decisions in [DECISIONS.md](DECISIONS.md), round 0
 - **Q-008 ANSWERED (D-052):** after the explanation, "Plan a partner lookup". Referral links at launch; the owner contacts partners later.
 - **Retention (D-053):** "Agents set, accountant checks".
 - **Revenue streams (D-054 to D-056):** discussed in a separate session on 2026-11-03. All 20 answers are quoted in [Claude 11](claude/11-revenue-streams.md) §2. Asked whether one bay or diary stays free for every provider, the owner answered "Yes, one free" (D-055).
+- **Capacity (D-057):** "some businesses might be able to handle multiple clients at the same time slot, so therefore the businesses need to set their numbers for themselves".
