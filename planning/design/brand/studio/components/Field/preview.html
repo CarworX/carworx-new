@@ -1,0 +1,17 @@
+<!-- @dsCard group="Forms" height=380 subtitle="Search bar, text input, segmented control and checkbox" -->
+<div class="cx-canvas pv ">
+<style>.pv{padding:24px;min-height:100%;box-sizing:border-box}.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:860px}</style>
+<div class="g">
+  <div style="display:grid;gap:16px">
+    <div class="cx-search"><span class="cx-ic search " aria-hidden="true"></span> Search a service or business</div>
+    <label class="cx-field"><span>Your base (kept private)</span><input class="cx-input" placeholder="Search an address…"></label>
+    <label class="cx-field"><span>Travel charges (straight-line bands)</span><input class="cx-input" value="0–10 km R30 · 10–20 km R50"></label>
+  </div>
+  <div style="display:grid;gap:16px;align-content:start">
+    <div class="cx-seg" role="radiogroup" aria-label="View"><button type="button" class="on" role="radio" aria-checked="true"><span class="cx-ic list sm" aria-hidden="true"></span> List</button><button type="button" role="radio" aria-checked="false"><span class="cx-ic map sm" aria-hidden="true"></span> Map</button></div>
+    <div class="cx-seg" role="radiogroup" aria-label="Where do you work"><button type="button" role="radio" aria-checked="false"><span class="cx-ic bay sm" aria-hidden="true"></span> At my premises</button><button type="button" class="on" role="radio" aria-checked="true"><span class="cx-ic car sm" aria-hidden="true"></span> I go to customers</button></div>
+    <label class="cx-check"><span class="cx-box on"><span class="cx-ic check " aria-hidden="true"></span></span><span>Email me when one joins. Used only for this.</span></label>
+    <label class="cx-check"><span class="cx-box"></span><span>I agree that CarworX can contact me to check my details.</span></label>
+  </div>
+</div>
+</div>

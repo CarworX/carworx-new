@@ -1,0 +1,149 @@
+[
+ {
+  "comp": "BookingTile",
+  "width": 720,
+  "height": 220,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Button",
+  "width": 720,
+  "height": 260,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Chip",
+  "width": 720,
+  "height": 300,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Cover",
+  "width": 720,
+  "height": 300,
+  "blobs": 1,
+  "unresolved": []
+ },
+ {
+  "comp": "EmptyState",
+  "width": 720,
+  "height": 330,
+  "blobs": 3,
+  "unresolved": []
+ },
+ {
+  "comp": "Field",
+  "width": 720,
+  "height": 380,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "HoldDial",
+  "width": 720,
+  "height": 260,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Iconography",
+  "width": 720,
+  "height": 900,
+  "blobs": 40,
+  "unresolved": []
+ },
+ {
+  "comp": "KpiCard",
+  "width": 720,
+  "height": 420,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Loaders",
+  "width": 1280,
+  "height": 1700,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "NavBar",
+  "width": 720,
+  "height": 380,
+  "blobs": 2,
+  "unresolved": []
+ },
+ {
+  "comp": "NotFound",
+  "width": 1280,
+  "height": 860,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "NotFoundPhone",
+  "width": 390,
+  "height": 844,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "PageLoader",
+  "width": 1280,
+  "height": 720,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "PhoneFrame",
+  "width": 720,
+  "height": 760,
+  "blobs": 6,
+  "unresolved": []
+ },
+ {
+  "comp": "ReceiptQuote",
+  "width": 720,
+  "height": 430,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "ResultCard",
+  "width": 720,
+  "height": 380,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "ServiceKey",
+  "width": 720,
+  "height": 560,
+  "blobs": 13,
+  "unresolved": []
+ },
+ {
+  "comp": "StatusNote",
+  "width": 720,
+  "height": 330,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "StepList",
+  "width": 720,
+  "height": 360,
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "StickyNote",
+  "width": 720,
+  "height": 300,
+  "blobs": 0,
+  "unresolved": []
+ }
+]

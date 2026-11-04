@@ -2,7 +2,11 @@
 
 This repo is the single source of truth for CarworX. Two agents work here: **Claude Code** and **OpenAI Codex**. The owner is Gerrard Lewu.
 
-**Current phase: PLANNING. Do not write application code.** Planning documents, research notes and repo housekeeping are allowed.
+**Current phase: Phase 1 approved by the owner (D-038), not started.**
+- **When it starts:** Phase 1 starts local-only with synthetic data once Codex has reviewed the design work and the owner has merged `planning/design-motion-toolkit` to `main` (see STATUS).
+- **Until then:** do not write application code. Planning documents, research notes, design artefacts and repo housekeeping are allowed.
+- **Once it starts:** application code follows [PLAN §12](planning/PLAN.md): pull requests, `claude/*` and `codex/*` branches, an `Agent:` trailer, and the other agent's review.
+- **Never, for agents:** creating accounts, handling production secrets, deploying, or spending money (PLAN §15, §18).
 
 Before doing anything:
 

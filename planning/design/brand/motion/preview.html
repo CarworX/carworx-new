@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarworX Turbine motion</title>
+<style>
+  :root { --ink:#0d0f12; --graphite:#1c2128; --steel:#8a97a6; --paper:#f4efe6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080a; color: var(--paper); font: 14px/1.4 system-ui, sans-serif; }
+  main { max-width: 1280px; margin: 0 auto; padding: 16px; }
+  .stage { display: grid; place-items: center; background: #000; border-radius: 10px; overflow: hidden; }
+  .stage svg { width: 100%; height: auto; max-height: 72vh; display: block; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+  button, select { font: inherit; color: var(--paper); background: var(--graphite); border: 1px solid #2c333c; border-radius: 8px; padding: 8px 12px; min-height: 40px; cursor: pointer; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--paper); outline-offset: 2px; }
+  input[type=range] { flex: 1 1 260px; accent-color: var(--steel); }
+  output { font-variant-numeric: tabular-nums; min-width: 6ch; color: var(--steel); }
+  p { color: var(--steel); }
+</style>
+</head>
+<body>
+<main>
+  <div class="stage" id="stage" aria-label="CarworX logo animation" role="img"></div>
+  <div class="bar">
+    <button id="play" aria-pressed="false">Play</button>
+    <input id="t" type="range" min="0" max="8" step="0.001" value="8" aria-label="Time">
+    <output id="tv">8.000 s</output>
+    <select id="cut" aria-label="Cut"><option value="hero">Hero 8 s</option><option value="loop">Loop 8.6 s</option><option value="splash">App splash 1.6 s</option></select>
+    <select id="fmt" aria-label="Format"><option>16x9</option><option>1x1</option><option>9x16</option></select>
+    <select id="spd" aria-label="Speed"><option value="1">1×</option><option value="0.25">¼×</option><option value="0.1">0.1×</option></select>
+  </div>
+  <p id="note">This preview runs the same timeline code as the rendered videos. Shown still because your system asks for reduced motion; press Play to watch anyway.</p>
+</main>
+<script>
+// CarworX Turbine: pure geometry for the mark (no Node or browser APIs, so the preview can inline it).
+// Mark space: centred on (0,0), tip radius 100, y down, 0° = straight up, clockwise positive.
+
+const COLOR = {
+  ink: '#0d0f12',
+  graphite: '#1c2128',
+  steel: '#8a97a6',
+  paper: '#f4efe6',
+  white: '#ffffff',
+  black: '#000000',
+  signal: '#ff3b0a',
+};
+
+const BLADES = 5;
+const PITCH = 360 / BLADES;
+
+// Two optical sizes. "full" for 48 px and up; "small" (heavier blades, bigger hub) below that.
+const MARK = {
+  full:  { rHub: 21, rTip: 100, sweep: 110, lead: 50, trail: -14, rootRound: 0.04, p: 0.42, q: 0.9 },
+  small: { rHub: 27, rTip: 100, sweep: 92, lead: 64, trail: -10, rootRound: 0.04, p: 0.45, q: 0.85 },
+};
+
+// The X's rising stroke angle (degrees from vertical). Sora's own X is ~35°; 38° gives it lean.
+const X_ANGLE = 38;
+
+const rad = (d) => (d * Math.PI) / 180;
+const f2 = (n) => (Math.abs(n) < 1e-9 ? 0 : +n.toFixed(2));
+const params = (v) => (typeof v === 'string' ? MARK[v] : v);
+
+// Centreline: a logarithmic spiral from hub to tip, the path air takes through an impeller.
+// theta grows with ln(r), so the blade meets every radius at the same angle.
+function centre(p, s) {
+  const r = p.rHub + (p.rTip - p.rHub) * s;
+  const th = (rad(p.sweep) * Math.log(r / p.rHub)) / Math.log(p.rTip / p.rHub);
+  return { r, th };
+}
+const toXY = (r, th) => [r * Math.sin(th), -r * Math.cos(th)];
+
+// Thickness either side of the centreline: a skewed beta curve, full near the root, needle at the tip.
+// A negative trail value pulls the trailing edge over to the lead side, so the blade is a scythe, not a leaf.
+function profile(s, amp, root, p, q) {
+  const peak = p / (p + q);
+  const norm = Math.pow(peak, p) * Math.pow(1 - peak, q);
+  const a = (Math.pow(s, p) * Math.pow(1 - s, q)) / norm;
+  const easeRoot = s < root ? Math.sin((Math.PI / 2) * (s / root)) : 1;
+  return amp * a * easeRoot;
+}
+
+// Blade outline, lead edge hub→tip then trail edge tip→hub. k scales the thickness (0 = bare airflow line).
+function bladeOutline(variant = 'full', n = 96, k = 1) {
+  const p = params(variant);
+  const lead = [], trail = [];
+  for (let i = 0; i <= n; i++) {
+    const s = i / n;
+    const { r, th } = centre(p, s);
+    lead.push(toXY(r, th + (k * profile(s, p.lead, p.rootRound, p.p, p.q)) / r));
+    trail.push(toXY(r, th - (k * profile(s, p.trail, p.rootRound, p.p, p.q)) / r));
+  }
+  return { lead, trail: trail.reverse() };
+}
+
+// Catmull-Rom to cubic Béziers for an open run of points.
+function smooth(pts, move = true) {
+  let d = move ? `M${f2(pts[0][0])},${f2(pts[0][1])}` : '';
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += `C${f2(c1[0])},${f2(c1[1])} ${f2(c2[0])},${f2(c2[1])} ${f2(p2[0])},${f2(p2[1])}`;
+  }
+  return d;
+}
+
+function thin(pts, keep) {
+  const out = [];
+  for (let i = 0; i <= keep; i++) out.push(pts[Math.round((i / keep) * (pts.length - 1))]);
+  return out;
+}
+
+function bladePath(variant = 'full', k = 1, keep = 40) {
+  const { lead, trail } = bladeOutline(variant, 96, k);
+  const t = thin(trail, keep);
+  return smooth(thin(lead, keep)) + `L${f2(t[0][0])},${f2(t[0][1])}` + smooth(t, false) + 'Z';
+}
+
+// The airflow line along the centreline, with its length for dash drawing.
+function streamline(variant = 'full', n = 32) {
+  const p = params(variant);
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const { r, th } = centre(p, i / n);
+    pts.push(toXY(r, th));
+  }
+  let len = 0;
+  for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+  return { d: smooth(pts), len };
+}
+
+// Blade-tip direction of the unrotated top blade, degrees from vertical, clockwise.
+function tipTangent(variant = 'full') {
+  const p = params(variant);
+  const a = centre(p, 0.97), b = centre(p, 1);
+  const [x1, y1] = toXY(a.r, a.th), [x2, y2] = toXY(b.r, b.th);
+  return (Math.atan2(x2 - x1, -(y2 - y1)) * 180) / Math.PI;
+}
+
+// Resting rotation: turns the rotor so one blade's tip runs exactly parallel to the X's rising stroke.
+function restAngle(variant = 'full') {
+  return (((X_ANGLE - tipTangent(variant)) % PITCH) + PITCH) % PITCH;
+}
+
+// A rotor group. d defaults to the finished blade.
+function rotorSVG({ cx = 0, cy = 0, radius = 100, fill = COLOR.ink, variant = 'full', rotate = restAngle(variant), d = bladePath(variant), attrs = '' } = {}) {
+  const k = radius / 100;
+  let s = `<g transform="translate(${f2(cx)},${f2(cy)}) scale(${+k.toFixed(4)}) rotate(${+rotate.toFixed(4)})" fill="${fill}"${attrs}>`;
+  for (let i = 0; i < BLADES; i++) s += `<path transform="rotate(${i * PITCH})" d="${d}"/>`;
+  return s + '</g>';
+}
+
+// CarworX Turbine motion: frame(t) is a pure function of time that returns one SVG.
+// No CSS timing, no randomness: the same t always gives the same picture, in the browser or in Node.
+
+
+
+// ---------- Time and easing ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const ease = {
+  outExpo: (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x)),
+  outCubic: (x) => 1 - Math.pow(1 - x, 3),
+  inCubic: (x) => x * x * x,
+  inOutCubic: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+  outBack: (x, s = 0.9) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2),
+};
+
+// Beat sheet for the hero (seconds). Every cut is derived from this.
+const BEATS = {
+  ignite: [0.0, 0.6], ring: [0.15, 0.95], intake: [0.4, 1.6], forge: [1.2, 2.4],
+  spool: [1.3, 5.0], boost: [3.75, 4.75], x: [4.45, 5.0], lock: [5.0, 5.7],
+  glint: [5.4, 6.25], hold: [6.0, 8.0], exit: [8.0, 8.55],
+};
+const CUTS = {
+  hero: { duration: 8.0 },
+  loop: { duration: 8.6 },
+  splash: { duration: 1.6 },
+};
+
+// ---------- Rotor physics ----------
+// Turbo spool: angular velocity follows a lag-then-surge-then-brake curve v(u) = u^2.2 (1-u)^1.3,
+// integrated once into a lookup table. The rotor brakes past its rest angle by OVERSHOOT, then a
+// damped spring settles it, so the final frame lands exactly on the resting logo.
+const TURNS = 4, OVERSHOOT = 1.8;
+const TABLE = (() => {
+  const n = 2048, c = new Float64Array(n + 1);
+  for (let i = 1; i <= n; i++) {
+    const u = (i - 0.5) / n;
+    c[i] = c[i - 1] + Math.pow(u, 2.2) * Math.pow(1 - u, 1.3);
+  }
+  for (let i = 0; i <= n; i++) c[i] /= c[n];
+  return c;
+})();
+const spoolE = (u) => {
+  const x = clamp(u) * 2048, i = Math.floor(x), f = x - i;
+  return i >= 2048 ? 1 : TABLE[i] + (TABLE[i + 1] - TABLE[i]) * f;
+};
+function rotorAngle(t, variant = 'full') {
+  const rest = restAngle(variant);
+  const [a, b] = BEATS.spool;
+  if (t < b) return rest - (TURNS * 360 + OVERSHOOT) * (1 - spoolE((t - a) / (b - a))) + OVERSHOOT;
+  const v = t - b;
+  return rest + OVERSHOOT * Math.exp(-6.5 * v) * Math.cos(2 * Math.PI * 1.7 * v);
+}
+
+// ---------- Scene ----------
+// G: { word: wordmark() data, L: layout(...) }. opts: { w, h, bg, cut }.
+function scene(G, { w = 1920, h = 1080, bg = true, cut = 'hero' } = {}) {
+  const L = G.L;
+  // Whole-pixel offsets keep the resting logo crisp and identical to the stills.
+  const ox = Math.round((w - L.w) / 2), oy = Math.round((h - L.h) / 2);
+  const S = {
+    w, h, bg, cut, G, L,
+    MX: ox + L.mx, MY: oy + L.my, R: L.R, H: L.H, WX: ox + L.wx, WY: oy + L.wy,
+    duration: CUTS[cut].duration,
+  };
+  const s = L.H / 100;
+  S.letters = G.word.letters.map((l) => ({ ...l, cx: S.WX + ((l.x0 + l.x1) / 2) * s, cy: S.WY - 50 * s }));
+  const X = S.letters[S.letters.length - 1];
+  const mid = (q, i, j) => [(q[i][0] + q[j][0]) / 2, (q[i][1] + q[j][1]) / 2];
+  S.xRise = { a: mid(X.rise, 0, 1), b: mid(X.rise, 2, 3) };
+  S.xFall = { a: mid(X.fall, 0, 1), b: mid(X.fall, 2, 3) };
+  S.stream = streamline('full');
+  S.blade = bladePath('full');
+  // Opening camera: the rotor is born large at the centre of frame, then glides into its lockup seat.
+  S.cam0 = { x: w / 2, y: h / 2, r: 0.27 * Math.min(w, h) };
+  return S;
+}
+
+// Map a cut's local time onto the hero beat sheet.
+function heroTime(S, t) {
+  if (S.cut === 'splash') return t < 1.25 ? 0.9 + (t / 1.25) * 4.7 : 6.0;
+  return t;
+}
+
+const CAMERA = [2.85, 4.05];
+function cam(S, t) {
+  const u = ease.inOutCubic(seg(t, ...CAMERA));
+  const a = S.cut === 'splash' ? { x: S.MX, y: S.MY, r: S.R } : S.cam0;
+  return { x: a.x + (S.MX - a.x) * u, y: a.y + (S.MY - a.y) * u, r: a.r + (S.R - a.r) * u };
+}
+
+const glow = (id, color, op) =>
+  `<radialGradient id="${id}"><stop offset="0" stop-color="${color}" stop-opacity="${op}"/><stop offset=".6" stop-color="${color}" stop-opacity="${f2(op * 0.35)}"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>`;
+
+// Normalised rotor speed (0–1) from the spool velocity curve; 0 outside the spool.
+const V_PEAK = Math.pow(2.2 / 3.5, 2.2) * Math.pow(1.3 / 3.5, 1.3);
+function spoolSpeed(t) {
+  const [a, b] = BEATS.spool, u = (t - a) / (b - a);
+  return u <= 0 || u >= 1 ? 0 : (Math.pow(u, 2.2) * Math.pow(1 - u, 1.3)) / V_PEAK;
+}
+
+// The light behind the logo moves for the whole cut and is driven by the rotor:
+// - Key light: a tight glow that laps the frame on a wide ellipse, once per cut (the loop has no seam).
+//   The lap is time-warped by the spool, so the turbo visibly drags it, and it keeps cruising in the hold.
+// - Counter light: a larger, dimmer glow on the opposite side, lapping the other way.
+// - Level: both come up with the ignition, surge with rotor speed and flash at the boost.
+// - Sweep: a soft beam crosses the background with the glint.
+const WARP = 0.6;
+function lightPhase(S, tLocal) {
+  const splash = S.cut === 'splash';
+  const t = heroTime(S, tLocal), D = splash ? 8 : S.duration, tp = splash ? t : tLocal;
+  const [a, b] = BEATS.spool;
+  return (1 - WARP) * (tp / D) + WARP * spoolE((t - a) / (b - a));
+}
+function keyLight(S, tLocal) {
+  const A = 2 * Math.PI * lightPhase(S, tLocal) - 2.2;
+  return { x: S.w / 2 + 0.35 * S.w * Math.cos(A), y: S.h / 2 + 0.2 * S.h * Math.sin(A), A };
+}
+function background(S, tLocal) {
+  const t = heroTime(S, tLocal);
+  const exit = S.cut === 'loop' ? ease.inOutCubic(seg(tLocal, ...BEATS.exit)) : 0;
+  const k = Math.max(S.w, S.h);
+  const ph = lightPhase(S, tLocal), K = keyLight(S, tLocal);
+  const ig = ease.inOutCubic(seg(t, 0.1, 1.4)) * (1 - exit);
+  const sp = spoolSpeed(t) * (1 - exit);
+  const flash = Math.exp(-Math.pow((t - (BEATS.boost[0] + 0.2)) / 0.28, 2)) * (1 - exit);
+  const level = 0.45 + 0.4 * ig + 0.35 * sp + 0.35 * flash;
+  const L = (x, y, rx, ry, rot, id, op) =>
+    `<ellipse cx="${f2(x)}" cy="${f2(y)}" rx="${f2(rx)}" ry="${f2(ry)}" fill="url(#${id})" opacity="${f2(Math.min(1, op))}" transform="rotate(${f2(rot)} ${f2(x)} ${f2(y)})"/>`;
+  const B = Math.PI - 2 * Math.PI * ph + 0.6;
+  const cx2 = S.w / 2 + 0.26 * S.w * Math.cos(B), cy2 = S.h / 2 + 0.16 * S.h * Math.sin(B);
+  let body = `<rect width="${S.w}" height="${S.h}" fill="${COLOR.ink}"/>` +
+    L(cx2, cy2, 0.34 * k, 0.2 * k, 12 * Math.sin(B), 'g2', level * 0.9) +
+    L(K.x, K.y, 0.2 * k, 0.13 * k, 14 * Math.sin(K.A) - 6, 'g1', level);
+  let defs = '';
+  const gl = seg(t, BEATS.glint[0] - 0.15, BEATS.glint[1] + 0.25);
+  if (gl > 0 && gl < 1) {
+    const span = S.w + 1.2 * k, bx = -0.6 * k + span * ease.inOutCubic(gl), bw = 0.22 * k;
+    defs += `<linearGradient id="beam" gradientUnits="userSpaceOnUse" x1="${f2(bx - bw)}" y1="${f2(S.h / 2 + bw * 0.78)}" x2="${f2(bx + bw)}" y2="${f2(S.h / 2 - bw * 0.78)}"><stop offset="0" stop-color="#b9c6d6" stop-opacity="0"/><stop offset=".5" stop-color="#b9c6d6" stop-opacity="${f2(0.16 * Math.sin(Math.PI * gl))}"/><stop offset="1" stop-color="#b9c6d6" stop-opacity="0"/></linearGradient>`;
+    body += `<rect width="${S.w}" height="${S.h}" fill="url(#beam)"/>`;
+  }
+  return { defs, body: body + `<rect width="${S.w}" height="${S.h}" fill="url(#vig)"/>` };
+}
+
+const DEFS_BG = `${glow('g1', '#a3b4c9', 0.4)}${glow('g2', '#7489a3', 0.22)}` +
+  `<radialGradient id="vig" cx=".5" cy=".5" r=".72"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></radialGradient>`;
+
+const BLOOM = `<radialGradient id="bloom"><stop offset="0" stop-color="#eef3f8" stop-opacity=".95"/><stop offset=".35" stop-color="#c9d4e0" stop-opacity=".35"/><stop offset="1" stop-color="#c9d4e0" stop-opacity="0"/></radialGradient>`;
+
+// The picture at cut-local time t. layer: 'all', 'bg' (background only) or 'fg' (everything else,
+// transparent), so the renderer can blur the moving foreground without re-rendering the background.
+function frame(S, tLocal, layer = 'all') {
+  const svgOpen = `<svg xmlns="http://www.w3.org/2000/svg" width="${S.w}" height="${S.h}" viewBox="0 0 ${S.w} ${S.h}">`;
+  const bgOn = S.bg && layer !== 'fg';
+  const BG = bgOn ? background(S, tLocal) : { defs: '', body: '' };
+  if (layer === 'bg') return `${svgOpen}<defs>${DEFS_BG}${BG.defs}</defs>${BG.body}</svg>`;
+
+  const t = heroTime(S, tLocal);
+  const H = S.H, s = H / 100;
+  const C = cam(S, t), MX = C.x, MY = C.y, R = C.r;
+  const exit = S.cut === 'loop' ? ease.inCubic(seg(tLocal, ...BEATS.exit)) : 0;
+  let out = '', under = '', defs = BLOOM;
+
+  // Housing ring: a hairline that draws round the rotor, then dissolves during the glide.
+  const ringR = 1.16 * R, circ = 2 * Math.PI * ringR;
+  const ringDraw = ease.inOutCubic(seg(t, ...BEATS.ring));
+  const ringOp = 0.36 * (1 - seg(t, 2.9, 3.7));
+  if (ringDraw > 0 && ringOp > 0.002)
+    out += `<circle cx="${f2(MX)}" cy="${f2(MY)}" r="${f2(ringR)}" fill="none" stroke="${COLOR.steel}" stroke-width="${f2(Math.max(1, 0.007 * R))}" opacity="${f2(ringOp)}" stroke-dasharray="${f2(circ * ringDraw)} ${f2(circ)}" transform="rotate(-90 ${f2(MX)} ${f2(MY)})"/>`;
+
+  // Ignition: a point of light at the hub that blooms, then hands the hub back to the dark.
+  const ig = ease.outExpo(seg(t, ...BEATS.ignite));
+  const igFade = 1 - seg(t, 1.5, 2.4);
+  if (ig > 0 && igFade > 0) {
+    out += `<circle cx="${f2(MX)}" cy="${f2(MY)}" r="${f2(0.6 * R * ig)}" fill="url(#bloom)" opacity="${f2(igFade)}"/>`;
+    out += `<circle cx="${f2(MX)}" cy="${f2(MY)}" r="${f2(0.045 * R * ig)}" fill="${COLOR.white}" opacity="${f2(igFade)}"/>`;
+  }
+
+  // Rotor: streamlines and blades live in its frame.
+  const theta = rotorAngle(t) + 200 * exit * exit;
+  const rot = `translate(${f2(MX)},${f2(MY)}) scale(${+(R / 100).toFixed(4)}) rotate(${+theta.toFixed(4)})`;
+  let rotor = '';
+  for (let i = 0; i < BLADES; i++) {
+    const st = BEATS.intake[0] + i * 0.08;
+    const draw = ease.inOutCubic(seg(t, st, st + 0.9));
+    const fs = BEATS.forge[0] + i * 0.1;
+    const k = ease.outBack(seg(t, fs, fs + 0.75), 0.6) * (1 - exit);
+    const lineOp = draw > 0 ? 1 - seg(t, fs + 0.1, fs + 0.6) : 0;
+    const g = `<g transform="rotate(${i * PITCH})">`;
+    // Intake: the airflow line draws from the tip inward to the hub, at a constant on-screen weight.
+    if (lineOp > 0.002)
+      rotor += `${g}<path d="${S.stream.d}" fill="none" stroke="${COLOR.white}" stroke-width="${f2((2.4 * 100) / R)}" stroke-linecap="round" opacity="${f2(0.9 * lineOp)}" stroke-dasharray="${f2(S.stream.len * draw)} ${f2(S.stream.len * 2)}" stroke-dashoffset="${f2(-S.stream.len * (1 - draw))}"/></g>`;
+    // Forge: the same curve thickens into the blade.
+    if (k > 0.002) rotor += `${g}<path d="${Math.abs(k - 1) < 1e-4 ? S.blade : bladePath('full', k)}" fill="${COLOR.white}"/></g>`;
+  }
+  out += `<g transform="${rot}">${rotor}</g>`;
+
+  // Boost: a pressure ring leaves the rotor; its disc uncovers the wordmark letter by letter.
+  const bst = ease.outCubic(seg(t, ...BEATS.boost));
+  const far = Math.max(...S.letters.map((l) => Math.hypot(l.cx - MX, l.cy - MY))) + 1.6 * H;
+  const pr = R * 1.05 + (far - R * 1.05) * bst;
+  const prOp = bst > 0 ? 0.5 * Math.sin(Math.PI * bst) : 0;
+  if (prOp > 0.002)
+    out += `<circle cx="${f2(MX)}" cy="${f2(MY)}" r="${f2(pr)}" fill="none" stroke="${COLOR.steel}" stroke-width="${f2(0.035 * R * (1 - bst) + 1)}" opacity="${f2(prOp)}"/>`;
+
+  // Wordmark.
+  let word = '';
+  S.letters.forEach((l) => {
+    if (l.ch === 'X' || bst <= 0) return;
+    const a = ease.outCubic(clamp((pr - Math.hypot(l.cx - MX, l.cy - MY) + 0.9 * H) / (1.1 * H)));
+    if (a <= 0) return;
+    word += a >= 1 ? `<path d="${l.d}"/>` : `<path d="${l.d}" transform="translate(0,${f2((1 - a) * 22)})" opacity="${f2(a)}"/>`;
+  });
+  // X: two strokes slide in along their own axes and cross; the rising stroke runs on the blade angle.
+  const xa = ease.outExpo(seg(t, ...BEATS.x));
+  const X = S.letters[S.letters.length - 1];
+  if (xa > 0) {
+    const P = (q) => 'M' + q.map(([x, y]) => `${x},${y}`).join('L') + 'Z';
+    if (xa >= 1) word += `<path d="${X.d}"/>`;
+    else {
+      const slide = (q, dir) => {
+        const dx = q.b[0] - q.a[0], dy = q.b[1] - q.a[1], n = Math.hypot(dx, dy), d = (1 - xa) * 140 * dir;
+        return `translate(${f2((dx / n) * d)},${f2((dy / n) * d)})`;
+      };
+      word += `<path d="${P(X.rise)}" transform="${slide(S.xRise, -1)}" opacity="${f2(xa)}"/>`;
+      word += `<path d="${P(X.fall)}" transform="${slide(S.xFall, 1)}" opacity="${f2(xa)}"/>`;
+    }
+  }
+  if (word) out += `<g transform="translate(${f2(S.WX)},${f2(S.WY)}) scale(${s})" fill="${COLOR.white}"${exit > 0 ? ` opacity="${f2(1 - exit)}"` : ''}>${word}</g>`;
+
+  // The click: a short flash where the X strokes cross as they seat.
+  const click = seg(t, BEATS.x[0] + 0.3, BEATS.x[0] + 0.75);
+  if (click > 0 && click < 1) {
+    const cx = S.WX + ((X.rise[0][0] + X.rise[2][0]) / 2) * s, cy = S.WY - 50 * s;
+    out += `<circle cx="${f2(cx)}" cy="${f2(cy)}" r="${f2(H * (0.3 + 1.1 * ease.outCubic(click)))}" fill="url(#bloom)" opacity="${f2(0.75 * (1 - click))}"/>`;
+  }
+
+  // Glint: a band of halation sweeps across the finished logo, under the shapes.
+  const gl = seg(t, ...BEATS.glint);
+  if (gl > 0 && gl < 1) {
+    const x0 = MX - R - 2 * H, x1 = S.WX + S.L.W + 2 * H;
+    const bx = x0 + (x1 - x0) * ease.inOutCubic(gl), bw = 1.4 * H;
+    defs += `<linearGradient id="band" gradientUnits="userSpaceOnUse" x1="${f2(bx - bw)}" y1="${f2(MY + bw * 0.78)}" x2="${f2(bx + bw)}" y2="${f2(MY - bw * 0.78)}"><stop offset="0" stop-color="#e4ebf3" stop-opacity="0"/><stop offset=".5" stop-color="#e4ebf3" stop-opacity="1"/><stop offset="1" stop-color="#e4ebf3" stop-opacity="0"/></linearGradient>` +
+      `<filter id="halo" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="${f2(0.08 * H)}"/></filter>`;
+    under = `<g fill="url(#band)" filter="url(#halo)" opacity=".6">` +
+      `<g transform="${rot}">${Array.from({ length: BLADES }, (_, i) => `<path transform="rotate(${i * PITCH})" d="${S.blade}"/>`).join('')}</g>` +
+      `<g transform="translate(${f2(S.WX)},${f2(S.WY)}) scale(${s})">${S.letters.map((l) => `<path d="${l.d}"/>`).join('')}</g></g>`;
+  }
+
+  return `${svgOpen}<defs>${bgOn ? DEFS_BG : ''}${BG.defs}${defs}</defs>${BG.body}${under}${out}</svg>`;
+}
+
+// Sub-frames this frame needs for honest motion blur (180° shutter): one per ~2.4 px of blade-tip travel.
+function subframes(S, tLocal, fps) {
+  const a = heroTime(S, tLocal - 0.25 / fps), b = heroTime(S, tLocal + 0.25 / fps);
+  const px = (Math.abs(rotorAngle(b) - rotorAngle(a)) * Math.PI / 180) * cam(S, (a + b) / 2).r;
+  return Math.max(1, Math.min(16, Math.ceil(px / 2.4)));
+}
+
+const WORD = {"letters":[{"ch":"C","d":"M50.96,2.6L50.96,2.6Q37.4,2.6 27.67,-2.19Q17.95,-6.99 11.85,-14.66Q5.75,-22.33 2.88,-31.37Q0,-40.41 0,-48.77L0,-48.77L0,-51.78Q0,-61.1 2.95,-70.14Q5.89,-79.18 12.05,-86.58Q18.22,-93.97 27.74,-98.42Q37.26,-102.88 50.27,-102.88L50.27,-102.88Q63.84,-102.88 73.9,-98.01Q83.97,-93.15 90,-84.32Q96.03,-75.48 97.26,-63.7L97.26,-63.7L77.67,-63.7Q76.58,-70.55 72.81,-75.27Q69.04,-80 63.29,-82.4Q57.53,-84.79 50.27,-84.79L50.27,-84.79Q42.88,-84.79 37.12,-82.26Q31.37,-79.73 27.53,-75.07Q23.7,-70.41 21.71,-64.11Q19.73,-57.81 19.73,-50.14L19.73,-50.14Q19.73,-42.74 21.71,-36.44Q23.7,-30.14 27.67,-25.41Q31.64,-20.68 37.47,-18.08Q43.29,-15.48 50.96,-15.48L50.96,-15.48Q62.19,-15.48 69.93,-21.03Q77.67,-26.58 79.32,-36.58L79.32,-36.58L98.9,-36.58Q97.53,-25.89 91.64,-16.99Q85.75,-8.08 75.48,-2.74Q65.21,2.6 50.96,2.6Z","x0":0,"x1":98.9},{"ch":"a","d":"M173.15,0L158.08,0L158.08,-22.05L154.93,-22.05L154.93,-46.58Q154.93,-53.01 151.78,-56.16Q148.63,-59.32 142.05,-59.32L142.05,-59.32Q138.63,-59.32 133.84,-59.18Q129.04,-59.04 124.18,-58.84Q119.32,-58.63 115.48,-58.36L115.48,-58.36L115.48,-74.52Q118.63,-74.79 122.6,-75.07Q126.58,-75.34 130.75,-75.41Q134.93,-75.48 138.63,-75.48L138.63,-75.48Q150.14,-75.48 157.74,-72.47Q165.34,-69.45 169.25,-63.01Q173.15,-56.58 173.15,-46.16L173.15,-46.16L173.15,0ZM134.11,1.92L134.11,1.92Q126.03,1.92 119.93,-0.96Q113.84,-3.84 110.48,-9.18Q107.12,-14.52 107.12,-22.05L107.12,-22.05Q107.12,-30.27 111.16,-35.48Q115.21,-40.68 122.53,-43.29Q129.86,-45.89 139.73,-45.89L139.73,-45.89L156.99,-45.89L156.99,-34.52L139.45,-34.52Q132.88,-34.52 129.38,-31.3Q125.89,-28.08 125.89,-23.01L125.89,-23.01Q125.89,-17.95 129.38,-14.79Q132.88,-11.64 139.45,-11.64L139.45,-11.64Q143.42,-11.64 146.78,-13.08Q150.14,-14.52 152.4,-18.01Q154.66,-21.51 154.93,-27.53L154.93,-27.53L159.59,-22.19Q158.9,-14.38 155.82,-9.04Q152.74,-3.7 147.33,-0.89Q141.92,1.92 134.11,1.92Z","x0":107.12,"x1":173.15},{"ch":"r","d":"M212.05,0L193.01,0L193.01,-74.38L208.08,-74.38L208.08,-42.88L207.67,-42.88Q207.67,-58.9 214.52,-67.12Q221.37,-75.34 234.66,-75.34L234.66,-75.34L237.4,-75.34L237.4,-58.77L232.19,-58.77Q222.6,-58.77 217.33,-53.63Q212.05,-48.49 212.05,-38.77L212.05,-38.77L212.05,0Z","x0":193.01,"x1":237.4},{"ch":"w","d":"M287.12,0L273.15,0L287.26,-71.92L309.18,-71.92L325.48,0L310.41,0L293.84,-71.51L301.78,-71.51L287.12,0ZM282.6,0L267.53,0L267.4,-15.62L282.6,-15.62L282.6,0ZM277.4,0L259.86,0L239.59,-74.38L258.08,-74.38L277.4,0ZM330.27,0L315.21,0L315.21,-15.62L330.41,-15.62L330.27,0ZM337.67,0L321.23,0L338.36,-74.38L355.62,-74.38L337.67,0Z","x0":239.59,"x1":355.62},{"ch":"o","d":"M404.93,2.6L404.93,2.6Q395.07,2.6 387.53,-0.55Q380,-3.7 374.79,-9.11Q369.59,-14.52 366.92,-21.37Q364.25,-28.22 364.25,-35.62L364.25,-35.62L364.25,-38.49Q364.25,-46.16 367.05,-53.08Q369.86,-60 375.14,-65.41Q380.41,-70.82 387.95,-73.9Q395.48,-76.99 404.93,-76.99L404.93,-76.99Q414.38,-76.99 421.92,-73.9Q429.45,-70.82 434.73,-65.41Q440,-60 442.74,-53.08Q445.48,-46.16 445.48,-38.49L445.48,-38.49L445.48,-35.62Q445.48,-28.22 442.81,-21.37Q440.14,-14.52 434.93,-9.11Q429.73,-3.7 422.19,-0.55Q414.66,2.6 404.93,2.6ZM404.93,-13.7L404.93,-13.7Q411.92,-13.7 416.71,-16.78Q421.51,-19.86 423.97,-25.14Q426.44,-30.41 426.44,-37.12L426.44,-37.12Q426.44,-43.97 423.9,-49.25Q421.37,-54.52 416.51,-57.6Q411.64,-60.68 404.93,-60.68L404.93,-60.68Q398.22,-60.68 393.36,-57.6Q388.49,-54.52 385.89,-49.25Q383.29,-43.97 383.29,-37.12L383.29,-37.12Q383.29,-30.41 385.82,-25.14Q388.36,-19.86 393.15,-16.78Q397.95,-13.7 404.93,-13.7Z","x0":364.25,"x1":445.48},{"ch":"r","d":"M480.14,0L461.1,0L461.1,-74.38L476.16,-74.38L476.16,-42.88L475.75,-42.88Q475.75,-58.9 482.6,-67.12Q489.45,-75.34 502.74,-75.34L502.74,-75.34L505.48,-75.34L505.48,-58.77L500.27,-58.77Q490.68,-58.77 485.41,-53.63Q480.14,-48.49 480.14,-38.77L480.14,-38.77L480.14,0Z","x0":461.1,"x1":505.48},{"ch":"X","d":"M507.4,0L528.22,0L606.35,-100L585.53,-100ZM508.49,-100L529.32,-100L605.25,0L584.43,0Z","rise":[[507.4,0],[528.22,0],[606.35,-100],[585.53,-100]],"fall":[[508.49,-100],[529.32,-100],[605.25,0],[584.43,0]],"x0":507.4,"x1":606.35}],"width":606.35,"cap":100};
+const FORMATS = {"16x9":{"w":1920,"h":1080,"L":{"kind":"horizontal","H":150,"R":138,"W":909.52,"mx":138,"my":138,"wx":369,"wy":213,"w":1278.53,"h":276}},"1x1":{"w":1080,"h":1080,"L":{"kind":"stacked","H":100,"R":160,"W":606.35,"mx":303.18,"my":160,"wx":0,"wy":480,"w":606.35,"h":480}},"9x16":{"w":1080,"h":1920,"L":{"kind":"stacked","H":110,"R":176,"W":666.99,"mx":333.49,"my":176,"wx":0,"wy":528,"w":666.99,"h":528}}};
+const $ = (id) => document.getElementById(id);
+let S, playing = false, last = 0;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+$('note').hidden = !reduce;
+function build() {
+  const F = FORMATS[$('fmt').value];
+  S = scene({ word: WORD, L: F.L }, { w: F.w, h: F.h, bg: true, cut: $('cut').value });
+  $('t').max = S.duration; if (+$('t').value > S.duration) $('t').value = S.duration;
+  draw();
+}
+function draw() {
+  const t = Math.min(+$('t').value, S.duration - 1e-4);
+  $('stage').innerHTML = frame(S, t);
+  $('tv').textContent = t.toFixed(3) + ' s';
+}
+function tick(now) {
+  if (!playing) return;
+  const dt = (now - last) / 1000 * +$('spd').value; last = now;
+  let t = +$('t').value + dt;
+  if (t >= S.duration) t = $('cut').value === 'loop' ? t % S.duration : 0;
+  $('t').value = t; draw(); requestAnimationFrame(tick);
+}
+$('play').onclick = () => {
+  playing = !playing; $('play').textContent = playing ? 'Pause' : 'Play'; $('play').setAttribute('aria-pressed', playing);
+  if (playing) { if (+$('t').value >= S.duration - 0.01) $('t').value = 0; last = performance.now(); requestAnimationFrame(tick); }
+};
+$('t').oninput = draw; $('cut').onchange = build; $('fmt').onchange = build;
+build();
+if (!reduce) $('play').click();
+</script>
+</body>
+</html>

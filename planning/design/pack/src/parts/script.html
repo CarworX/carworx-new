@@ -1,0 +1,161 @@
+<script>
+(function () {
+  var root = document.documentElement;
+  var RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
+  var clamp = function (x, a, b) { a = a === undefined ? 0 : a; b = b === undefined ? 1 : b; return Math.min(b, Math.max(a, x)); };
+  var easeOutCubic = function (x) { return 1 - Math.pow(1 - x, 3); };
+  var lerp = function (a, b, k) { return a + (b - a) * k; };
+  var svgEl = function (n, a) { var e = document.createElementNS('http://www.w3.org/2000/svg', n); for (var k in a) e.setAttribute(k, a[k]); return e; };
+  if (!RM) root.classList.add('motion');
+
+  /* ---------- intro: Turbine spool (brand timeline physics) inside a concentric housing, glyph resolve, FLIP into the nav ---------- */
+  var REST = 21.9494, TURNS = 3, OVER = 1.8, SP = [0.3, 2.0], T_END = 2.95;
+  var TABLE = (function () { var n = 1024, c = new Float64Array(n + 1), i, u;
+    for (i = 1; i <= n; i++) { u = (i - .5) / n; c[i] = c[i - 1] + Math.pow(u, 2.2) * Math.pow(1 - u, 1.3); }
+    for (i = 0; i <= n; i++) c[i] /= c[n]; return c; })();
+  function spool(u) { var x = clamp(u) * 1024, i = Math.floor(x), f = x - i; return i >= 1024 ? 1 : TABLE[i] + (TABLE[i + 1] - TABLE[i]) * f; }
+  function rotorAngle(t) {
+    return t < SP[1] ? REST - (TURNS * 360 + OVER) * (1 - spool((t - SP[0]) / (SP[1] - SP[0]))) + OVER
+      : REST + OVER * Math.exp(-6.5 * (t - SP[1])) * Math.cos(2 * Math.PI * 1.7 * (t - SP[1]));
+  }
+  var intro = $('#intro'), stage = $('#intro .stage'), asm = $('#i-asm'), rotS = $('#i-rotor-s'), rotRot = $('#i-rotor-rot'), word = $('#i-word');
+  var ghosts = $$('#i-rotor-rot .ghost'), slots = $$('.glyph-slot'), igs = $$('#intro .ig');
+  var housing = $('#intro .housing'), pressure = $('#intro .pressure'), sub = $('.intro-sub'), tickEls = [];
+  for (var i = 0; i < 72; i++) {
+    var a = i * 5 * Math.PI / 180, r1 = i % 6 ? 106 : 104, r2 = i % 6 ? 110 : 114;
+    tickEls.push($('#i-ticks').appendChild(svgEl('line', { x1: (r1 * Math.sin(a)).toFixed(2), y1: (-r1 * Math.cos(a)).toFixed(2), x2: (r2 * Math.sin(a)).toFixed(2), y2: (-r2 * Math.cos(a)).toFixed(2), opacity: 0 })));
+  }
+  var HC = 2 * Math.PI * 100; housing.setAttribute('stroke-dasharray', HC.toFixed(1));
+  var RES = [0.8, 0.9, 0.99, 1.09, 1.19, 1.28, 1.4], CH = '0123456789R#%&*+=<>/?$@ABCDEHKMNPRSTVWXZ'.split('');
+  // L = 1: the horizontal lockup's export transforms. L = 0: the stacked export, mapped into the same frame (phones).
+  var STACK = innerWidth < 600, K = 1.15, L = STACK ? 0 : 1;
+  if (STACK) stage.classList.add('stacked');
+  function drawIntro(t) {
+    var ax = lerp(426.18, 92, L), ay = lerp(92 - 80 * K, 92, L), as = lerp(1.6 * K / 0.92, 1, L);
+    var wx = lerp(426.18 - 303.18 * K, 246, L), wy = lerp(92 + 240 * K, 142, L), ws = lerp(K, 1, L);
+    asm.setAttribute('transform', 'translate(' + ax.toFixed(2) + ',' + ay.toFixed(2) + ') scale(' + as.toFixed(4) + ')');
+    word.setAttribute('transform', 'translate(' + wx.toFixed(2) + ',' + wy.toFixed(2) + ') scale(' + ws.toFixed(4) + ')');
+    slots.forEach(function (s, i) {
+      var on = clamp((t - 0.05 - i * 0.04) / 0.2), r = clamp((t - RES[i]) / 0.14);
+      s.setAttribute('opacity', (on * (1 - r)).toFixed(3));
+      if (t < RES[i]) s.textContent = CH[(Math.floor(t * 22) * 7 + i * 13 + Math.floor(t * 9) * i) % CH.length];
+      var e = easeOutCubic(clamp((t - RES[i] + 0.04) / 0.42));
+      igs[i].setAttribute('opacity', e.toFixed(3));
+      igs[i].setAttribute('transform', 'translate(0 ' + ((1 - e) * 26).toFixed(2) + ')');
+    });
+    var ringOut = 1 - clamp((t - 2.0) / 0.45);
+    housing.setAttribute('stroke-dashoffset', (HC * (1 - easeOutCubic(clamp(t / 0.6)))).toFixed(1));
+    housing.setAttribute('opacity', ringOut.toFixed(3));
+    tickEls.forEach(function (el, i) { el.setAttribute('opacity', (clamp((t - 0.08 - i * 0.008) / 0.12) * ringOut * (i % 6 ? .55 : 1)).toFixed(3)); });
+    var grow = easeOutCubic(clamp((t - 0.3) / 1.2));
+    rotS.setAttribute('transform', 'scale(' + (0.92 * (0.5 + 0.5 * grow)).toFixed(4) + ')');
+    rotS.setAttribute('opacity', clamp((t - 0.3) / 0.3).toFixed(3));
+    var ang = rotorAngle(t), v = Math.abs(ang - rotorAngle(t - 1 / 60)), spread = Math.min(16, v * 0.9);
+    rotRot.setAttribute('transform', 'rotate(' + ang.toFixed(3) + ')');
+    ghosts.forEach(function (g, k) { g.setAttribute('transform', 'rotate(' + (-(k + 1) * spread / 4).toFixed(2) + ')'); g.setAttribute('opacity', (spread > .4 ? 0.28 - k * 0.05 : 0).toFixed(3)); });
+    var p = clamp((t - 2.0) / 0.8);
+    pressure.setAttribute('transform', 'scale(' + (1 + 2 * easeOutCubic(p)).toFixed(4) + ')');
+    pressure.setAttribute('opacity', (p > 0 && p < 1 ? 0.5 * (1 - p) : 0).toFixed(3));
+    sub.style.opacity = clamp((t - 1.5) / 0.5).toFixed(3);
+    sub.style.transform = 'translateY(' + ((1 - easeOutCubic(clamp((t - 1.5) / 0.7))) * 16).toFixed(1) + 'px)';
+  }
+  function finish() {
+    root.classList.remove('intro-on', 'logo-wait'); root.classList.add('intro-done');
+    requestAnimationFrame(function () { root.classList.add('go'); });
+  }
+  function handoff() {
+    var lk = $('#intro .lk'), nav = $('.top .logo svg');
+    var A = lk.getBoundingClientRect(), B = nav.getBoundingClientRect(), s = B.width / A.width, t0 = performance.now(), L0 = L;
+    $('.intro-skip').style.opacity = 0; sub.style.transition = 'opacity .3s'; sub.style.opacity = 0;
+    lk.style.transition = 'transform .9s cubic-bezier(.87,0,.13,1)';
+    lk.style.transform = 'translate(' + (B.left - A.left) + 'px,' + (B.top - A.top) + 'px) scale(' + s + ')';
+    $('#intro .ibg').style.transition = 'opacity .5s ease .4s'; $('#intro .ibg').style.opacity = 0;
+    setTimeout(function () { root.classList.add('go'); }, 300);
+    (function morph(now) { var k = clamp((now - t0) / 550); L = lerp(L0, 1, k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2); drawIntro(T_END + 1); if (k < 1) requestAnimationFrame(morph); })(t0);
+    setTimeout(finish, 950);
+  }
+  var hashT = /intro=([\d.]+)/.exec(location.hash);
+  var target = location.hash && !hashT && /^#[a-z]/.test(location.hash);
+  if (/skip/.test(location.hash) || target) { L = 1; drawIntro(9); root.classList.add('intro-done', 'go'); }
+  else if (RM) {
+    root.classList.add('intro-on'); drawIntro(9);
+    var done = function () { intro.style.transition = 'opacity .4s'; intro.style.opacity = 0; setTimeout(finish, 400); };
+    var id = setTimeout(done, 1400); intro.addEventListener('click', function () { clearTimeout(id); done(); }, { once: true });
+  } else {
+    root.classList.add('intro-on', 'logo-wait');
+    drawIntro(0);
+    if (hashT) { drawIntro(+hashT[1]); }
+    else {
+      var speed = 1, last = performance.now(), t = 0;
+      var skip = function () { speed = 5; };
+      ['wheel', 'touchstart', 'keydown', 'click'].forEach(function (e) { addEventListener(e, skip, { once: true, passive: true }); });
+      (function tick(now) { t += (now - last) / 1000 * speed; last = now; drawIntro(Math.min(t, T_END)); if (t < T_END) requestAnimationFrame(tick); else handoff(); })(last);
+    }
+  }
+
+  /* ---------- compact menu: frosted sheet, focus trap, Esc to close ---------- */
+  var btn = $('.menu-btn'), sheet = $('#menu'), scrim = $('.scrim');
+  function setMenu(open, back) {
+    sheet.classList.toggle('open', open); scrim.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open)); btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    root.classList.toggle('menu-open', open);
+    if (open) $('a', sheet).focus(); else if (back) btn.focus();
+  }
+  btn.addEventListener('click', function () { setMenu(btn.getAttribute('aria-expanded') !== 'true', true); });
+  scrim.addEventListener('click', function () { setMenu(false, true); });
+  $$('a', sheet).forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
+  addEventListener('keydown', function (e) {
+    if (!sheet.classList.contains('open')) return;
+    if (e.key === 'Escape') { e.preventDefault(); setMenu(false, true); return; }
+    if (e.key !== 'Tab') return;
+    var items = [btn].concat($$('a', sheet)), first = items[0], lastI = items[items.length - 1];
+    if (items.indexOf(document.activeElement) < 0) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); lastI.focus(); }
+    else if (!e.shiftKey && document.activeElement === lastI) { e.preventDefault(); first.focus(); }
+  });
+  matchMedia('(min-width: 1061px)').addEventListener('change', function (m) { if (m.matches) setMenu(false); });
+
+  /* ---------- logo film: the brand's own embed starts when it scrolls into view ---------- */
+  var f = $('#hero'), rb = $('#replay');
+  if (f) {
+    var doc = f.getAttribute('data-srcdoc'), play = function () { f.srcdoc = doc; };
+    if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { play(); io.disconnect(); } }, { rootMargin: '200px' }); io.observe(f); } else play();
+    rb.addEventListener('click', play);
+  }
+
+  /* ---------- scroll reveals ---------- */
+  // Anything that has entered or been scrolled past is revealed, so fast jumps and anchor links never leave content hidden.
+  var pending = $$('[data-reveal]'), queued = false;
+  function reveal() {
+    queued = false;
+    pending = pending.filter(function (el) { if (el.getBoundingClientRect().top < innerHeight * .92) { el.classList.add('in'); return false; } return true; });
+  }
+  if (RM) pending.forEach(function (el) { el.classList.add('in'); });
+  else { reveal(); addEventListener('scroll', function () { if (!queued && pending.length) { queued = true; requestAnimationFrame(reveal); } }, { passive: true }); }
+  addEventListener('beforeprint', function () { root.classList.remove('motion'); });
+
+  /* ---------- journeys: the active step drives the booking object (scroll-linked, never scroll-jacked) ---------- */
+  $$('[data-journey]').forEach(function (j) {
+    var steps = $$('ol.steps > li', j), faces = $$('.stagebox .face', j), rail = $('.stagebox .rail', j);
+    function set(n) {
+      steps.forEach(function (s, k) { s.classList.toggle('on', k === n); });
+      var fi = steps[n].getAttribute('data-f');
+      faces.forEach(function (fc) { fc.classList.toggle('on', fc.getAttribute('data-f') === fi); });
+      rail.style.setProperty('--p', ((n + 1) / steps.length).toFixed(3));
+    }
+    set(0);
+    if ('IntersectionObserver' in window) {
+      var sio = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) set(steps.indexOf(e.target)); }); }, { rootMargin: '-45% 0px -45% 0px' });
+      steps.forEach(function (s) { sio.observe(s); });
+    }
+  });
+
+  /* ---------- desktop frames: a fixed 1280 px canvas, zoomed to fit ---------- */
+  var desks = $$('.desk');
+  function fit() { desks.forEach(function (d) { $('.desk-in', d).style.setProperty('--z', (d.clientWidth / 1280).toFixed(4)); }); }
+  fit();
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(document.body); else addEventListener('resize', fit);
+})();
+</script>

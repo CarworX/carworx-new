@@ -1,0 +1,118 @@
+[
+ {
+  "hash": "#skip",
+  "sel": "#cover",
+  "width": 390,
+  "scale": 2,
+  "media": "settled",
+  "file": "01-cover-390.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-thandi",
+  "width": 1440,
+  "scale": 1,
+  "media": "motion",
+  "scroll": "0",
+  "file": "13-thandi-1440-0-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-thandi",
+  "width": 1440,
+  "scale": 1,
+  "media": "motion",
+  "scroll": ".5",
+  "file": "13-thandi-1440-05-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-thandi",
+  "width": 1440,
+  "scale": 1,
+  "media": "motion",
+  "scroll": "1",
+  "file": "13-thandi-1440-1-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-thandi",
+  "width": 390,
+  "scale": 1,
+  "media": "motion",
+  "scroll": "0",
+  "file": "13-thandi-390-0-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-thandi",
+  "width": 390,
+  "scale": 1,
+  "media": "motion",
+  "scroll": ".5",
+  "file": "13-thandi-390-05-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-thandi",
+  "width": 390,
+  "scale": 1,
+  "media": "motion",
+  "scroll": "1",
+  "file": "13-thandi-390-1-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-pieter",
+  "width": 1440,
+  "scale": 1,
+  "media": "motion",
+  "scroll": "0",
+  "file": "14-pieter-1440-0-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-pieter",
+  "width": 1440,
+  "scale": 1,
+  "media": "motion",
+  "scroll": ".5",
+  "file": "14-pieter-1440-05-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-pieter",
+  "width": 1440,
+  "scale": 1,
+  "media": "motion",
+  "scroll": "1",
+  "file": "14-pieter-1440-1-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-pieter",
+  "width": 390,
+  "scale": 1,
+  "media": "motion",
+  "scroll": "0",
+  "file": "14-pieter-390-0-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-pieter",
+  "width": 390,
+  "scale": 1,
+  "media": "motion",
+  "scroll": ".5",
+  "file": "14-pieter-390-05-motion.png"
+ },
+ {
+  "hash": "#skip",
+  "sel": "#j-pieter",
+  "width": 390,
+  "scale": 1,
+  "media": "motion",
+  "scroll": "1",
+  "file": "14-pieter-390-1-motion.png"
+ }
+]

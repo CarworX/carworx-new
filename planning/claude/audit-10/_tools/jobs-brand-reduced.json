@@ -1,0 +1,1 @@
+[{"hash":"#skip","sel":"#brand","width":1440,"scale":1,"media":"reduced","pre":"(async function(){var f=document.getElementById('hero');f.scrollIntoView();if(f&&!f.srcdoc&&f.getAttribute('data-srcdoc'))f.srcdoc=f.getAttribute('data-srcdoc');await new Promise(function(r){setTimeout(r,3000)});scrollTo(0,0);return !!f.srcdoc})()","file":"42-brand-reduced.png"}]

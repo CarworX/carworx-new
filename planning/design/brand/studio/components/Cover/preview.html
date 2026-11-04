@@ -1,0 +1,28 @@
+<!-- @dsCard height=300 -->
+<div class="cv">
+<style>
+.cv{position:relative;width:960px;height:300px;overflow:hidden;background-color:var(--canvas);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 1.4px);background-size:24px 24px}
+.cv svg{position:absolute;inset:0;width:960px;height:300px}
+.cv .ink{fill:var(--ink)}.cv .sig{fill:none;stroke:var(--signal);stroke-width:12;stroke-linecap:round}.cv .trk{fill:none;stroke:var(--canvas-2);stroke-width:12}
+.cv .note{fill:var(--note)}.cv .sky{fill:var(--sky)}.cv .blue{fill:var(--blue)}.cv .surf{fill:var(--surface)}.cv .peach{fill:var(--peach)}
+.cv .key{rx:var(--radius-lg)}.cv .pill{rx:28px}.cv .tile{rx:var(--radius-md)}
+.cv .lk{position:absolute;left:var(--space-10);top:96px;width:400px;height:auto}
+.cv p{position:absolute;left:var(--space-10);top:200px;width:400px;margin:0;font:400 14px/20px var(--font-sans);color:var(--muted)}
+</style>
+<svg viewBox="0 0 960 300" aria-hidden="true">
+  <!--
+    blocks: ink key-cap 176x152 (radius-lg), note square 120 (radius-xs-ish 6, tilted like the sticky note), signal hold ring r=56 on a canvas-2 track, sky pill 216x56 (rx half the short side), blue tick disc r=20.
+    arrangement: a desk of floating objects right of x=480, staggered and slightly overlapping, one block bleeding off the right edge.
+    pattern: the Studio ground itself, the dot grid at space-6 (24px) pitch, chosen because the brand's one recurring texture is the dotted canvas the objects float on.
+    scales: space-6 pitch, radius-md/lg/pill, signal stroke 12 like the hold dial.
+  -->
+  <rect class="ink key" x="520" y="64" width="176" height="152"/>
+  <g transform="rotate(-6 790 110)"><rect class="note" x="730" y="40" width="120" height="120" rx="6"/></g>
+  <circle class="trk" cx="884" cy="214" r="56"/>
+  <path class="sig" d="M884 158 A56 56 0 1 1 830.7 196.7"/>
+  <rect class="sky pill" x="588" y="236" width="216" height="56"/>
+  <circle class="blue" cx="616" cy="264" r="20"/>
+</svg>
+<img class="lk" src="/_blob/3c19073785e492d397dd569ccd18c8a3" alt="CarworX">
+<p>Turbine, the locked logo, and Studio, the UI language: a calm, light desk where every screen says what happens next.</p>
+</div>

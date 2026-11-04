@@ -1,0 +1,13 @@
+layout 360x640 {"width":360,"pageOverflow":false,"elementsPastEdge":[],"screenWidth":306,"shortcutHeights":[63,63,63,63,63],"equal":true,"lastShortcutBottom":576}
+layout 390x844 {"width":390,"pageOverflow":false,"elementsPastEdge":[],"screenWidth":336,"shortcutHeights":[60,60,60,60,60],"equal":true,"lastShortcutBottom":561}
+layout 768x1024 {"width":768,"pageOverflow":false,"elementsPastEdge":[],"screenWidth":358,"shortcutHeights":[60,60,60,60,60],"equal":true,"lastShortcutBottom":561}
+layout 1280x800 {"width":1280,"pageOverflow":false,"elementsPastEdge":[],"screenWidth":358,"shortcutHeights":[60,60,60,60,60],"equal":true,"lastShortcutBottom":561}
+layout 1440x900 {"width":1440,"pageOverflow":false,"elementsPastEdge":[],"screenWidth":358,"shortcutHeights":[60,60,60,60,60],"equal":true,"lastShortcutBottom":561}
+layout 720x450 {"width":720,"pageOverflow":false,"elementsPastEdge":[],"screenWidth":358,"shortcutHeights":[60,60,60,60,60],"equal":true,"lastShortcutBottom":561}
+contrast 1440 {"checked":1055,"fails":[],"failCount":0}
+contrast 390 {"checked":1032,"fails":[],"failCount":0}
+focus {"stops":28,"inDomOrder":true,"allRings":true,"allVisible":true,"noRing":[],"first":["Skip to the summary","CarworX pack, back to the top","Summary","Brand","Phone screens","Desktop","Journeys","Roadmap and decisions","Start with the one-page summary","See the two walkthroughs"],"last":["Quote approval","Decisions the business still nee","PLAN 2.1","design/brand","exports/","QA.md"]}
+menu {"expanded":"true","first":"Summary","afterEightTabs":"in sheet","afterEsc":{"expanded":"false","focus":"menu-btn","sheet":"hidden"}}
+motion reduce {"introShown":true,"rotor":"rotate(21.949)","rotorStill":true,"introGone":true,"motionClass":false,"drift":"none","scroll":"auto","hidden":0,"filmStill":true}
+motion no-preference {"introShown":true,"rotor":"rotate(-1028.289)","rotorStill":false,"introGone":true,"motionClass":true,"drift":"drift","scroll":"smooth","hidden":16,"filmStill":false}
+resources []

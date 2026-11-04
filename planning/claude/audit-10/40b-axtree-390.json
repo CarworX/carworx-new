@@ -1,0 +1,10658 @@
+[
+ {
+  "role": "RootWebArea",
+  "name": "CarworX Presentation Pack"
+ },
+ {
+  "role": "link",
+  "name": "Skip to the summary"
+ },
+ {
+  "role": "StaticText",
+  "name": "Skip to the summary"
+ },
+ {
+  "role": "link",
+  "name": "CarworX pack, back to the top"
+ },
+ {
+  "role": "button",
+  "name": "Open menu"
+ },
+ {
+  "role": "region",
+  "name": "Car care you can find, book and pay for, in one place."
+ },
+ {
+  "role": "region",
+  "name": "CarworX in plain language."
+ },
+ {
+  "role": "region",
+  "name": "Turbine is locked. Studio is how the app feels."
+ },
+ {
+  "role": "region",
+  "name": "Eight phone screens, with the moments that matter."
+ },
+ {
+  "role": "region",
+  "name": "Desktop: home and search."
+ },
+ {
+  "role": "region",
+  "name": "Two people, two jobs."
+ },
+ {
+  "role": "region",
+  "name": "What happens when, and what's still to decide."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Skip to the summary"
+ },
+ {
+  "role": "StaticText",
+  "name": "PART 1 · ONE-PAGE SUMMARY"
+ },
+ {
+  "role": "heading",
+  "name": "CarworX in plain language."
+ },
+ {
+  "role": "heading",
+  "name": "THE HOME PAGE Five services, equal on the home page"
+ },
+ {
+  "role": "heading",
+  "name": "ONE BOOKING Nothing instant, everything in writing"
+ },
+ {
+  "role": "heading",
+  "name": "How booking and paying work"
+ },
+ {
+  "role": "heading",
+  "name": "What launches first"
+ },
+ {
+  "role": "heading",
+  "name": "What it costs estimates"
+ },
+ {
+  "role": "heading",
+  "name": "What the business needs to do"
+ },
+ {
+  "role": "StaticText",
+  "name": "PART 2 · BRAND"
+ },
+ {
+  "role": "heading",
+  "name": "Turbine is locked. Studio is how the app feels."
+ },
+ {
+  "role": "heading",
+  "name": "THE LOGO · FINAL Turbine in motion"
+ },
+ {
+  "role": "button",
+  "name": "Play the logo animation again"
+ },
+ {
+  "role": "StaticText",
+  "name": "8 seconds: ignition, intake, spool, boost, then it locks into the logo. With reduced motion switched on, only the still logo is shown."
+ },
+ {
+  "role": "heading",
+  "name": "NAME AND LOCKUPS Always CarworX"
+ },
+ {
+  "role": "heading",
+  "name": "Clear space"
+ },
+ {
+  "role": "heading",
+  "name": "Minimum sizes"
+ },
+ {
+  "role": "StaticText",
+  "name": "Mark: 24 px."
+ },
+ {
+  "role": "StaticText",
+  "name": " Below 48 px, use the small version, with heavier blades and a bigger hub."
+ },
+ {
+  "role": "StaticText",
+  "name": "Horizontal lockup: 96 px wide."
+ },
+ {
+  "role": "heading",
+  "name": "Two optical sizes"
+ },
+ {
+  "role": "StaticText",
+  "name": "Full mark from 48 px; small mark for 16–47 px, embroidery and stamps."
+ },
+ {
+  "role": "generic",
+  "name": "Don't"
+ },
+ {
+  "role": "heading",
+  "name": "App icon"
+ },
+ {
+  "role": "heading",
+  "name": "In use"
+ },
+ {
+  "role": "heading",
+  "name": "CHOSEN DIRECTION · CONCEPT, NOT FINAL Studio: the UI language"
+ },
+ {
+  "role": "heading",
+  "name": "Colour roles"
+ },
+ {
+  "role": "StaticText",
+  "name": "Canvas"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ink"
+ },
+ {
+  "role": "StaticText",
+  "name": "Muted"
+ },
+ {
+  "role": "StaticText",
+  "name": "Quiet"
+ },
+ {
+  "role": "StaticText",
+  "name": "Blue"
+ },
+ {
+  "role": "StaticText",
+  "name": "Signal"
+ },
+ {
+  "role": "heading",
+  "name": "Type"
+ },
+ {
+  "role": "StaticText",
+  "name": "Book a wash in minutes"
+ },
+ {
+  "role": "StaticText",
+  "name": "R330.00 · CX-2048 · 14:32"
+ },
+ {
+  "role": "StaticText",
+  "name": "ask about the travel charge"
+ },
+ {
+  "role": "heading",
+  "name": "One shadow scale"
+ },
+ {
+  "role": "StaticText",
+  "name": "sh-1 · cards"
+ },
+ {
+  "role": "StaticText",
+  "name": "sh-2 · objects"
+ },
+ {
+  "role": "StaticText",
+  "name": "sh-3 · lifted"
+ },
+ {
+  "role": "heading",
+  "name": "8 px spacing"
+ },
+ {
+  "role": "StaticText",
+  "name": "8"
+ },
+ {
+  "role": "StaticText",
+  "name": "16"
+ },
+ {
+  "role": "StaticText",
+  "name": "24"
+ },
+ {
+  "role": "StaticText",
+  "name": "32"
+ },
+ {
+  "role": "StaticText",
+  "name": "48"
+ },
+ {
+  "role": "StaticText",
+  "name": "64"
+ },
+ {
+  "role": "StaticText",
+  "name": "96"
+ },
+ {
+  "role": "heading",
+  "name": "Frosted surfaces"
+ },
+ {
+  "role": "heading",
+  "name": "Tactile objects"
+ },
+ {
+  "role": "heading",
+  "name": "Motion"
+ },
+ {
+  "role": "heading",
+  "name": "Tone of voice"
+ },
+ {
+  "role": "StaticText",
+  "name": "PART 3 · LAYOUTS, PHONE FIRST"
+ },
+ {
+  "role": "heading",
+  "name": "Eight phone screens, with the moments that matter."
+ },
+ {
+  "role": "StaticText",
+  "name": "PART 3 CONTINUED · LARGER SCREENS"
+ },
+ {
+  "role": "heading",
+  "name": "Desktop: home and search."
+ },
+ {
+  "role": "heading",
+  "name": "CARWORX.APP Home"
+ },
+ {
+  "role": "figure",
+  "name": "Desktop home page mockup"
+ },
+ {
+  "role": "heading",
+  "name": "CARWORX.APP/WASH-DETAILING Search"
+ },
+ {
+  "role": "figure",
+  "name": "Desktop search results mockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "PART 4 · WALKTHROUGHS"
+ },
+ {
+  "role": "heading",
+  "name": "Two people, two jobs."
+ },
+ {
+  "role": "StaticText",
+  "name": "PART 5 · ROADMAP AND DECISIONS"
+ },
+ {
+  "role": "heading",
+  "name": "What happens when, and what's still to decide."
+ },
+ {
+  "role": "heading",
+  "name": "PHASES One step at a time"
+ },
+ {
+  "role": "heading",
+  "name": "Key decisions already made"
+ },
+ {
+  "role": "heading",
+  "name": "Ways to earn later (optional, owner approves each)"
+ },
+ {
+  "role": "heading",
+  "name": "Decisions the business still needs to make"
+ },
+ {
+  "role": "region",
+  "name": "Decisions the business still needs to make"
+ },
+ {
+  "role": "StaticText",
+  "name": "Concept, not final. All businesses, people, prices and ratings are fictional."
+ },
+ {
+  "role": "StaticText",
+  "name": "Addresses and reference numbers are made up too. No real endorsements, no live services, no tracking. Payment and fines screens are illustrations only. Turbine logo: final (D-034). Studio UI language: chosen direction, concept, not final (D-036)."
+ },
+ {
+  "role": "StaticText",
+  "name": "Based on "
+ },
+ {
+  "role": "link",
+  "name": "PLAN 2.1"
+ },
+ {
+  "role": "StaticText",
+  "name": " (§10, §22) and decisions D-001–D-036. Brand files: "
+ },
+ {
+  "role": "link",
+  "name": "design/brand"
+ },
+ {
+  "role": "StaticText",
+  "name": ". Static exports: "
+ },
+ {
+  "role": "link",
+  "name": "exports/"
+ },
+ {
+  "role": "StaticText",
+  "name": ". Checks: "
+ },
+ {
+  "role": "link",
+  "name": "QA.md"
+ },
+ {
+  "role": "StaticText",
+  "name": ". Fonts: Geist, Geist Mono and Caveat, SIL Open Font Licence."
+ },
+ {
+  "role": "heading",
+  "name": "Car care you can find, book and pay for, in one place."
+ },
+ {
+  "role": "link",
+  "name": "Start with the one-page summary"
+ },
+ {
+  "role": "link",
+  "name": "See the two walkthroughs"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PART 1 · ONE-PAGE SUMMARY"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX"
+ },
+ {
+  "role": "StaticText",
+  "name": "in plain language."
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX (carworx.app) is a South African website where drivers find car services near them, ask questions, book a time and pay, and get straight guidance on traffic fines and vehicle admin. Businesses list themselves for free while we test the idea."
+ },
+ {
+  "role": "StaticText",
+  "name": "Five services, equal on the home page"
+ },
+ {
+  "role": "StaticText",
+  "name": "Behind them sit three groups: "
+ },
+ {
+  "role": "StaticText",
+  "name": "; "
+ },
+ {
+  "role": "StaticText",
+  "name": " (servicing, glass, tyres and alignment); and "
+ },
+ {
+  "role": "StaticText",
+  "name": " (links to the official fines channels, listed admin helpers, and towing as a referral only)."
+ },
+ {
+  "role": "StaticText",
+  "name": "Nothing instant, everything in writing"
+ },
+ {
+  "role": "StaticText",
+  "name": "How booking and paying work"
+ },
+ {
+  "role": "StaticText",
+  "name": "What launches first"
+ },
+ {
+  "role": "StaticText",
+  "name": "What it costs "
+ },
+ {
+  "role": "StaticText",
+  "name": "estimates"
+ },
+ {
+  "role": "StaticText",
+  "name": "Prices are rechecked before anything is bought. Nothing in this pack approves spending."
+ },
+ {
+  "role": "StaticText",
+  "name": "What the business needs to do"
+ },
+ {
+  "role": "StaticText",
+  "name": " who pays the card fee; how refunds and chargebacks are funded; the production budget; who the Information Officer is; whether to approach fines partners; and, after this review, whether to start building (Phase 1). See "
+ },
+ {
+  "role": "link",
+  "name": "Roadmap and decisions"
+ },
+ {
+  "role": "StaticText",
+  "name": "."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PART 2 · BRAND"
+ },
+ {
+  "role": "StaticText",
+  "name": "Turbine is locked."
+ },
+ {
+  "role": "StaticText",
+  "name": "Studio is how the app feels."
+ },
+ {
+  "role": "StaticText",
+  "name": "The owner has locked the "
+ },
+ {
+  "role": "StaticText",
+  "name": " logo: five impeller blades around an open hub, like a turbo spooling up. The X in the name leans at the same angle as one blade tip. The logo is final. The app's look, called "
+ },
+ {
+  "role": "StaticText",
+  "name": ", is the chosen direction and is still "
+ },
+ {
+  "role": "StaticText",
+  "name": "."
+ },
+ {
+  "role": "StaticText",
+  "name": "Turbine in motion"
+ },
+ {
+  "role": "Iframe",
+  "name": "CarworX logo animation, 8 seconds, ends on the static logo"
+ },
+ {
+  "role": "StaticText",
+  "name": "Play the logo animation again"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "8 seconds: ignition, intake, spool, boost, then it locks "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "into the logo. With reduced motion switched on, only the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "still logo is shown."
+ },
+ {
+  "role": "StaticText",
+  "name": "Always CarworX"
+ },
+ {
+  "role": "StaticText",
+  "name": "Always written "
+ },
+ {
+  "role": "StaticText",
+  "name": ": a capital C, a capital X, and "
+ },
+ {
+  "role": "StaticText",
+  "name": " in lowercase. Never \"Carworx\", \"CARWORX\" or \"CarWorx\". The logo artwork is never retyped; it is inlined here from the brand files."
+ },
+ {
+  "role": "StaticText",
+  "name": "White on ink · primary"
+ },
+ {
+  "role": "StaticText",
+  "name": "19.2:1"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ink on paper"
+ },
+ {
+  "role": "StaticText",
+  "name": "16.8:1"
+ },
+ {
+  "role": "StaticText",
+  "name": "Black, one colour"
+ },
+ {
+  "role": "StaticText",
+  "name": "21:1"
+ },
+ {
+  "role": "StaticText",
+  "name": "White on graphite"
+ },
+ {
+  "role": "StaticText",
+  "name": "16.2:1"
+ },
+ {
+  "role": "StaticText",
+  "name": "Signal orange "
+ },
+ {
+  "role": "StaticText",
+  "name": " is an app accent only. It is "
+ },
+ {
+  "role": "StaticText",
+  "name": " part of the mark."
+ },
+ {
+  "role": "StaticText",
+  "name": "Clear space"
+ },
+ {
+  "role": "StaticText",
+  "name": "On every side, leave at least the height of the X (the orange square)."
+ },
+ {
+  "role": "StaticText",
+  "name": "Minimum sizes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Mark: 24 px."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " Below 48 px, use the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "small version, with heavier blades and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "a bigger hub."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Horizontal lockup: 96 px "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "wide."
+ },
+ {
+  "role": "StaticText",
+  "name": "Two optical sizes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Full mark from 48 px; small "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "mark for 16–47 px, embroidery "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and stamps."
+ },
+ {
+  "role": "StaticText",
+  "name": "Don't stretch or squash it."
+ },
+ {
+  "role": "StaticText",
+  "name": "Don't recolour it in signal orange."
+ },
+ {
+  "role": "StaticText",
+  "name": "Don't rotate the lockup."
+ },
+ {
+  "role": "StaticText",
+  "name": "Don't add shadows or effects."
+ },
+ {
+  "role": "StaticText",
+  "name": "Don't rearrange the mark and the name."
+ },
+ {
+  "role": "StaticText",
+  "name": "Don't write it Carworx or CARWORX."
+ },
+ {
+  "role": "StaticText",
+  "name": "App icon"
+ },
+ {
+  "role": "image",
+  "name": "CarworX app icon: the white Turbine mark on an ink rounded square"
+ },
+ {
+  "role": "StaticText",
+  "name": "In use"
+ },
+ {
+  "role": "image",
+  "name": "Workshop sign: the CarworX lockup in white on an ink board"
+ },
+ {
+  "role": "image",
+  "name": "Business card front with the CarworX mark"
+ },
+ {
+  "role": "image",
+  "name": "Invoice and quote header with the CarworX lockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "Studio: the UI language"
+ },
+ {
+  "role": "StaticText",
+  "name": "A calm, light desk where the objects of a booking float in soft depth: a sticky note, a confirmed tile, a hold timer and a written quote. Every screen says what happens next. The owner chose Studio over two other directions (D-035) and approved it after two refinement passes (D-036). It is a concept; Phase 1 design-system work decides the final tokens."
+ },
+ {
+  "role": "StaticText",
+  "name": "Colour roles"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Canvas"
+ },
+ {
+  "role": "StaticText",
+  "name": " + 24 px dot grid"
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "The page ground. Ink on canvas 17.0:1."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ink"
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Headlines, text, the one primary button."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Muted"
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Body and captions. 5.3:1 on canvas."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Quiet"
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Grey second headline lines, 24 px and up only (3.8:1)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Blue"
+ },
+ {
+  "role": "StaticText",
+  "name": " · text "
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Confirmations and info. 5.3:1 on sky."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Signal"
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Only for things counting down. Never small text; never the logo."
+ },
+ {
+  "role": "StaticText",
+  "name": "Status colours for done, waiting and problems (green 5.7:1, amber 5.8:1, red 6.6:1, each on its own tint) are concept additions, not in "
+ },
+ {
+  "role": "StaticText",
+  "name": " yet."
+ },
+ {
+  "role": "StaticText",
+  "name": "Type"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Book a wash in minutes"
+ },
+ {
+  "role": "StaticText",
+  "name": "Geist: headlines and text. Neutral, so the outlined wordmark (drawn from Sora) stays the one distinctive letterform."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R330.00 · CX-2048 · 14:32"
+ },
+ {
+  "role": "StaticText",
+  "name": "Geist Mono: prices, references, timers and receipts."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "ask about the travel charge"
+ },
+ {
+  "role": "StaticText",
+  "name": "Caveat: handwriting, used sparingly on sticky notes."
+ },
+ {
+  "role": "StaticText",
+  "name": "One shadow scale"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "sh-1 · "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "cards"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "sh-2 · "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "objects"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "sh-3 · "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "lifted"
+ },
+ {
+  "role": "StaticText",
+  "name": "8 px spacing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "8"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "16"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "24"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "32"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "48"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "64"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "96"
+ },
+ {
+  "role": "StaticText",
+  "name": "Frosted surfaces"
+ },
+ {
+  "role": "StaticText",
+  "name": "Tactile objects"
+ },
+ {
+  "role": "StaticText",
+  "name": "Soft-3D service object"
+ },
+ {
+  "role": "StaticText",
+  "name": "Sticky note: the request"
+ },
+ {
+  "role": "StaticText",
+  "name": "Hold timer"
+ },
+ {
+  "role": "StaticText",
+  "name": "Motion"
+ },
+ {
+  "role": "StaticText",
+  "name": "Tone of voice"
+ },
+ {
+  "role": "StaticText",
+  "name": "Plain, honest and calm, in South African English. Say what happens next and what it costs. Never promise what we can't check."
+ },
+ {
+  "role": "StaticText",
+  "name": "Say:"
+ },
+ {
+  "role": "StaticText",
+  "name": " \"Request sent. Gleamline has until 11:40 to reply. You haven't paid anything.\""
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Not:"
+ },
+ {
+  "role": "StaticText",
+  "name": " \"Booked instantly!\""
+ },
+ {
+  "role": "StaticText",
+  "name": "Say:"
+ },
+ {
+  "role": "StaticText",
+  "name": " \"No wash businesses within 25 km yet. Tell us what you need and we'll let you know.\""
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Not:"
+ },
+ {
+  "role": "StaticText",
+  "name": " \"Hundreds of providers near you.\""
+ },
+ {
+  "role": "StaticText",
+  "name": "Say:"
+ },
+ {
+  "role": "StaticText",
+  "name": " \"No results here doesn't mean you have no fines. Check the official channels.\""
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Not:"
+ },
+ {
+  "role": "StaticText",
+  "name": " \"You're all clear!\""
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PART 3 · LAYOUTS, PHONE FIRST"
+ },
+ {
+  "role": "StaticText",
+  "name": "Eight phone screens,"
+ },
+ {
+  "role": "StaticText",
+  "name": "with the moments that matter."
+ },
+ {
+  "role": "StaticText",
+  "name": "Each group shows the main screen on a 360-pixel-wide phone, then the other states it must handle: waiting, expiring, failing, empty and paused. All businesses, people, prices and ratings are fictional."
+ },
+ {
+  "role": "StaticText",
+  "name": "Concept, not final"
+ },
+ {
+  "role": "heading",
+  "name": "01Home: five equal shortcuts"
+ },
+ {
+  "role": "figure",
+  "name": "Home screen mockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "Few businesses near Polokwane yet."
+ },
+ {
+  "role": "StaticText",
+  "name": " 1 wash business and 0 tyre businesses within 25 km."
+ },
+ {
+  "role": "StaticText",
+  "name": "Tell us what you need"
+ },
+ {
+  "role": "StaticText",
+  "name": "Suburb, town or postcode"
+ },
+ {
+  "role": "StaticText",
+  "name": "We couldn't load this page."
+ },
+ {
+  "role": "StaticText",
+  "name": " Check your signal and try again. Nothing you entered was lost."
+ },
+ {
+  "role": "StaticText",
+  "name": "Try again"
+ },
+ {
+  "role": "heading",
+  "name": "02Search results: list and map"
+ },
+ {
+  "role": "figure",
+  "name": "Search results list mockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "Look within 50 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "Email me when one joins. Used only for this."
+ },
+ {
+  "role": "StaticText",
+  "name": "Send"
+ },
+ {
+  "role": "StaticText",
+  "name": "Now showing businesses up to "
+ },
+ {
+  "role": "StaticText",
+  "name": "50 km"
+ },
+ {
+  "role": "StaticText",
+  "name": " away, because you widened the search. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Back to 25 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "Kgosi Tyre & Align"
+ },
+ {
+  "role": "StaticText",
+  "name": "DEMO"
+ },
+ {
+  "role": "StaticText",
+  "name": "Results didn't load."
+ },
+ {
+  "role": "StaticText",
+  "name": " Your filters are kept. Try again in a moment."
+ },
+ {
+  "role": "StaticText",
+  "name": "Try again"
+ },
+ {
+  "role": "heading",
+  "name": "03Business listing"
+ },
+ {
+  "role": "figure",
+  "name": "Business listing mockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "Not taking new bookings."
+ },
+ {
+  "role": "StaticText",
+  "name": " CarworX has paused this business while we look into a report. If you have a booking with them, we'll contact you."
+ },
+ {
+  "role": "StaticText",
+  "name": "See similar businesses"
+ },
+ {
+  "role": "StaticText",
+  "name": "Gleamline Wash Bay"
+ },
+ {
+  "role": "StaticText",
+  "name": "DEMO"
+ },
+ {
+  "role": "StaticText",
+  "name": "14 Example Rd, Ferndale (shown with permission)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Operator checked"
+ },
+ {
+  "role": "StaticText",
+  "name": "Business registration checked"
+ },
+ {
+  "role": "StaticText",
+  "name": "Visited by CarworX"
+ },
+ {
+  "role": "StaticText",
+  "name": "Spotless Valet Co. isn't taking online bookings yet. Send a question and they'll reply by email."
+ },
+ {
+  "role": "StaticText",
+  "name": "Ask a question"
+ },
+ {
+  "role": "heading",
+  "name": "04Booking and quote approval"
+ },
+ {
+  "role": "figure",
+  "name": "Quote approval mockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "Request sent to Bubbleworks"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks didn't reply by 11:40."
+ },
+ {
+  "role": "StaticText",
+  "name": " Your request has lapsed. Nothing was charged."
+ },
+ {
+  "role": "StaticText",
+  "name": "See other wash businesses"
+ },
+ {
+  "role": "StaticText",
+  "name": "Quote version 2 expired on Wed 4 Nov."
+ },
+ {
+  "role": "StaticText",
+  "name": " It can't be approved any more. Prices may have changed."
+ },
+ {
+  "role": "StaticText",
+  "name": "Ask Ridgeview for a new quote"
+ },
+ {
+  "role": "StaticText",
+  "name": "Change quote C1"
+ },
+ {
+  "role": "StaticText",
+  "name": "Needs your OK"
+ },
+ {
+  "role": "StaticText",
+  "name": "Approve and pay"
+ },
+ {
+  "role": "StaticText",
+  "name": "Not now"
+ },
+ {
+  "role": "StaticText",
+  "name": "Full wash, in and out"
+ },
+ {
+  "role": "StaticText",
+  "name": "R280"
+ },
+ {
+  "role": "StaticText",
+  "name": "Travel, 10–20 km band"
+ },
+ {
+  "role": "StaticText",
+  "name": "R50"
+ },
+ {
+  "role": "heading",
+  "name": "05Checkout and what happens after"
+ },
+ {
+  "role": "figure",
+  "name": "Checkout mockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "Checking your payment…"
+ },
+ {
+  "role": "StaticText",
+  "name": "The payment didn't go through."
+ },
+ {
+  "role": "StaticText",
+  "name": " Nothing was taken. Your slot is still held for "
+ },
+ {
+  "role": "StaticText",
+  "name": "09:12"
+ },
+ {
+  "role": "StaticText",
+  "name": "."
+ },
+ {
+  "role": "StaticText",
+  "name": "Try again"
+ },
+ {
+  "role": "StaticText",
+  "name": "Your 15 minutes ran out."
+ },
+ {
+  "role": "StaticText",
+  "name": " The slot was released. If you started paying, check your payment status before trying again."
+ },
+ {
+  "role": "StaticText",
+  "name": "Check if Sat 09:00 is still free"
+ },
+ {
+  "role": "StaticText",
+  "name": "Your payment of R330 arrived after the hold ran out."
+ },
+ {
+  "role": "StaticText",
+  "name": " Your booking isn't confirmed yet. Choose what you'd like:"
+ },
+ {
+  "role": "StaticText",
+  "name": "Rebook Sat 09:00 (still free)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Get a full refund"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ref CX-2048"
+ },
+ {
+  "role": "StaticText",
+  "name": "Paid to the business"
+ },
+ {
+  "role": "StaticText",
+  "name": "Booking cancelled"
+ },
+ {
+  "role": "StaticText",
+  "name": "Refund processing"
+ },
+ {
+  "role": "StaticText",
+  "name": "Case CX-2048-1"
+ },
+ {
+  "role": "StaticText",
+  "name": "Open"
+ },
+ {
+  "role": "heading",
+  "name": "06Business dashboard"
+ },
+ {
+  "role": "figure",
+  "name": "Business dashboard mockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "Valid for"
+ },
+ {
+  "role": "StaticText",
+  "name": "Send quote version 2"
+ },
+ {
+  "role": "StaticText",
+  "name": "Confirmed and paid."
+ },
+ {
+  "role": "StaticText",
+  "name": " Address now visible to the assigned team only: 8 Demo St, Ferndale. Hidden 7 days after the job."
+ },
+ {
+  "role": "StaticText",
+  "name": "Your listing is paused"
+ },
+ {
+  "role": "StaticText",
+  "name": " while we look into a customer report (case CX-2048-1). You can't take new bookings. Existing bookings: please contact support."
+ },
+ {
+  "role": "StaticText",
+  "name": "Contact support"
+ },
+ {
+  "role": "StaticText",
+  "name": "Card dispute · R280"
+ },
+ {
+  "role": "StaticText",
+  "name": "Evidence due"
+ },
+ {
+  "role": "StaticText",
+  "name": "Add evidence"
+ },
+ {
+  "role": "heading",
+  "name": "07Business application"
+ },
+ {
+  "role": "figure",
+  "name": "Business application mockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "Application received"
+ },
+ {
+  "role": "StaticText",
+  "name": "Please add a photo of your signage or vehicle."
+ },
+ {
+  "role": "StaticText",
+  "name": " We use it only to check your listing, then delete it within 30 days."
+ },
+ {
+  "role": "StaticText",
+  "name": "Add photo"
+ },
+ {
+  "role": "StaticText",
+  "name": "Operator/contact checked"
+ },
+ {
+  "role": "StaticText",
+  "name": ": video call"
+ },
+ {
+  "role": "StaticText",
+  "name": "Business registration checked"
+ },
+ {
+  "role": "StaticText",
+  "name": ": where relevant"
+ },
+ {
+  "role": "StaticText",
+  "name": "Visited by CarworX"
+ },
+ {
+  "role": "StaticText",
+  "name": ": not yet"
+ },
+ {
+  "role": "StaticText",
+  "name": "Payments enabled"
+ },
+ {
+  "role": "StaticText",
+  "name": ": later, after legal and payment checks"
+ },
+ {
+  "role": "heading",
+  "name": "08Fines guidance"
+ },
+ {
+  "role": "figure",
+  "name": "Fines guidance mockup"
+ },
+ {
+  "role": "StaticText",
+  "name": "Continue"
+ },
+ {
+  "role": "StaticText",
+  "name": "Stay"
+ },
+ {
+  "role": "StaticText",
+  "name": "A built-in fines lookup needs a partner, legal checks and the owner's go-ahead. It's not part of the first versions."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PART 3 CONTINUED · LARGER SCREENS"
+ },
+ {
+  "role": "StaticText",
+  "name": "Desktop:"
+ },
+ {
+  "role": "StaticText",
+  "name": "home and search."
+ },
+ {
+  "role": "StaticText",
+  "name": "The same five shortcuts in one equal row, and search with filters, list and an optional map side by side. These frames scale down to fit your screen; the static exports show them full size."
+ },
+ {
+  "role": "StaticText",
+  "name": "Concept, not final"
+ },
+ {
+  "role": "StaticText",
+  "name": "Home"
+ },
+ {
+  "role": "StaticText",
+  "name": "carworx.app · concept, not final"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search"
+ },
+ {
+  "role": "StaticText",
+  "name": "carworx.app/wash-detailing · concept, not final"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PART 4 · WALKTHROUGHS"
+ },
+ {
+  "role": "StaticText",
+  "name": "Two people,"
+ },
+ {
+  "role": "StaticText",
+  "name": "two jobs."
+ },
+ {
+  "role": "StaticText",
+  "name": "These show how bookings and quotes would work once payments are switched on (Phase 4). The first public site launches with search, listings and enquiries only. Thandi and Pieter are fictional. As you scroll, one booking travels along the steps and changes form."
+ },
+ {
+  "role": "heading",
+  "name": "JOURNEY 1 Thandi books a wash"
+ },
+ {
+  "role": "heading",
+  "name": "What if…"
+ },
+ {
+  "role": "heading",
+  "name": "JOURNEY 2 Pieter gets a repair quote"
+ },
+ {
+  "role": "heading",
+  "name": "What if…"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PART 5 · ROADMAP AND DECISIONS"
+ },
+ {
+  "role": "StaticText",
+  "name": "What happens when,"
+ },
+ {
+  "role": "StaticText",
+  "name": "and what's still to decide."
+ },
+ {
+  "role": "StaticText",
+  "name": "Each phase needs the owner's go-ahead. Agreeing on the plan approves Phase 1 only, and only after this pack has been shown to the colleagues."
+ },
+ {
+  "role": "StaticText",
+  "name": "One step at a time"
+ },
+ {
+  "role": "StaticText",
+  "name": "Key decisions already made"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ways to earn later (optional, owner approves each)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Never:"
+ },
+ {
+  "role": "StaticText",
+  "name": " selling personal data, paid trust badges, or ads in transactional emails."
+ },
+ {
+  "role": "StaticText",
+  "name": "Decisions the business still needs to make"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Concept, not final. All businesses, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "people, prices and ratings are fictional."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Addresses and reference numbers are made up too. No "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "real endorsements, no live services, no tracking. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Payment and fines screens are illustrations only. Turbine "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "logo: final (D-034). Studio UI language: chosen "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "direction, concept, not final (D-036)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Based on "
+ },
+ {
+  "role": "StaticText",
+  "name": "PLAN 2.1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " (§10, §22) and decisions D-001–D-"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "036. Brand files: "
+ },
+ {
+  "role": "StaticText",
+  "name": "design/brand"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ". Static exports: "
+ },
+ {
+  "role": "StaticText",
+  "name": "exports/"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ". "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Checks: "
+ },
+ {
+  "role": "StaticText",
+  "name": "QA.md"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ". Fonts: Geist, Geist Mono and Caveat, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "SIL Open Font Licence."
+ },
+ {
+  "role": "StaticText",
+  "name": "Concept, not final · planning pack"
+ },
+ {
+  "role": "StaticText",
+  "name": "Car care you can find, book and pay for,"
+ },
+ {
+  "role": "StaticText",
+  "name": "in one place."
+ },
+ {
+  "role": "StaticText",
+  "name": "This pack shows the owner's two colleagues what CarworX is, how it would look and how it would work, before anything is built. Everything here is a "
+ },
+ {
+  "role": "StaticText",
+  "name": ": the screens are pictures, the businesses, people, prices and ratings are made up, and nothing connects to a real service."
+ },
+ {
+  "role": "StaticText",
+  "name": "Start with the one-page summary"
+ },
+ {
+  "role": "StaticText",
+  "name": "See the two walkthroughs"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "in plain language."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX (carworx.app) is a South African "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "website where drivers find car services near "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "them, ask questions, book a time and pay, and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "get straight guidance on traffic fines and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "vehicle admin. Businesses list themselves for "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "free while we test the idea."
+ },
+ {
+  "role": "StaticText",
+  "name": "THE HOME PAGE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Five services, equal "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "on the home page"
+ },
+ {
+  "role": "StaticText",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash & Detailing"
+ },
+ {
+  "role": "StaticText",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "Repairs & Maintenance"
+ },
+ {
+  "role": "StaticText",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "Glass Repair & Replacement"
+ },
+ {
+  "role": "StaticText",
+  "name": "04"
+ },
+ {
+  "role": "StaticText",
+  "name": "Tyres & Wheel Alignment"
+ },
+ {
+  "role": "StaticText",
+  "name": "05"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fines & Vehicle Admin"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Behind them sit three groups: "
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash & Detailing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "; "
+ },
+ {
+  "role": "StaticText",
+  "name": "Repairs & Maintenance"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " (servicing, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "glass, tyres and alignment); and "
+ },
+ {
+  "role": "StaticText",
+  "name": "Fines & Vehicle Admin"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " (links to the official fines channels, listed "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "admin helpers, and towing as a referral only)."
+ },
+ {
+  "role": "StaticText",
+  "name": "ONE BOOKING"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Nothing instant, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "everything in writing"
+ },
+ {
+  "role": "StaticText",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "R0 CarworX fee"
+ },
+ {
+  "role": "StaticText",
+  "name": "04"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "How booking and paying work"
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": " You send a request; the business has 2 business hours to accept it."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "When they accept, the slot is "
+ },
+ {
+  "role": "StaticText",
+  "name": " while you pay."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "You pay on a secure payment partner's page. The money is split straight to the business; CarworX never holds a wallet."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": " The workshop sends a written quote that expires after 7 days. You approve that exact quote, then pay. Extra work needs a new quote you approve."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Mobile businesses (for example a wash at your home) show a "
+ },
+ {
+  "role": "StaticText",
+  "name": " based on straight-line distance bands."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "During the free pilot the CarworX fee is "
+ },
+ {
+  "role": "StaticText",
+  "name": "."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What launches first"
+ },
+ {
+  "role": "ListMarker",
+  "name": "1. "
+ },
+ {
+  "role": "StaticText",
+  "name": " on a private test site with made-up data."
+ },
+ {
+  "role": "ListMarker",
+  "name": "2. "
+ },
+ {
+  "role": "StaticText",
+  "name": " search, business listings, enquiries, business sign-ups and fines guidance. No bookings or payments yet."
+ },
+ {
+  "role": "ListMarker",
+  "name": "3. "
+ },
+ {
+  "role": "StaticText",
+  "name": " on the private test site, with test money only."
+ },
+ {
+  "role": "ListMarker",
+  "name": "4. "
+ },
+ {
+  "role": "StaticText",
+  "name": ", one business at a time, only after legal, payment-partner and refund checks."
+ },
+ {
+  "role": "ListMarker",
+  "name": "5. "
+ },
+ {
+  "role": "StaticText",
+  "name": ", and test ways to earn money only with the owner's approval."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What it costs "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "estimates"
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Planning and the private test site: free tiers."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Public launch: database hosting from about "
+ },
+ {
+  "role": "StaticText",
+  "name": " (needs owner approval first)."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Email: free up to 3,000 a month, then about US$20 a month."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Card payments: the payment partner's fee per transaction, about "
+ },
+ {
+  "role": "StaticText",
+  "name": " (excl. VAT) when researched. Who pays it is an owner decision."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "An attorney and an accountant before payments go live: quotes needed."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Marketing: the owner's budget."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Prices are rechecked before anything is bought. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Nothing in this pack approves spending."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What the business needs to do"
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": " CarworX starts with zero listings anywhere in South Africa. The owner and a colleague recruit, check and support them."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Run customer and business support."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Appoint an Information Officer (privacy law) and agree a production budget before the public launch."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Set up the business details and bank account for the payment partner, and decide how refunds are funded, before real payments."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Look at this pack and tell the owner what works and what doesn't."
+ },
+ {
+  "role": "StaticText",
+  "name": "Still open:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " who pays the card fee; "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "how refunds and chargebacks are "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "funded; the production budget; who "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the Information Officer is; whether to "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "approach fines partners; and, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "after this review, whether to start "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "building (Phase 1). See "
+ },
+ {
+  "role": "StaticText",
+  "name": "Roadmap and decisions"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Turbine is locked."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Studio is how "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the app feels."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The owner has locked the "
+ },
+ {
+  "role": "StaticText",
+  "name": "Turbine"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " logo: five "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "impeller blades around an open hub, like a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "turbo spooling up. The X in the name leans at "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the same angle as one blade tip. The logo "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "is final. The app's look, called "
+ },
+ {
+  "role": "StaticText",
+  "name": "Studio"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ", is "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the chosen direction and is still "
+ },
+ {
+  "role": "StaticText",
+  "name": "concept, not final"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "."
+ },
+ {
+  "role": "StaticText",
+  "name": "THE LOGO · FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Turbine in motion"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Play the logo animation again"
+ },
+ {
+  "role": "StaticText",
+  "name": "NAME AND LOCKUPS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Always CarworX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Always written "
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ": a capital C, a capital X, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and "
+ },
+ {
+  "role": "StaticText",
+  "name": "arwor"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " in lowercase. Never \"Carworx\", "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\"CARWORX\" or \"CarWorx\". The logo artwork "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "is never retyped; it is inlined here from the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "brand files."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "White on ink · primary"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "19.2:1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ink on paper"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "16.8:1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Black, one colour"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "21:1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "White on graphite"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "16.2:1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Signal orange "
+ },
+ {
+  "role": "StaticText",
+  "name": "#ff3b0a"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " is an app accent only. It is "
+ },
+ {
+  "role": "StaticText",
+  "name": "never"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " part of the mark."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Clear space"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "On every side, leave at least the height of the X "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "(the orange square)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Minimum sizes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Two optical sizes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Don't stretch or "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "squash it."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Don't recolour it "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "in signal orange."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Don't rotate the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "lockup."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Don't add "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "shadows or "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "effects."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Don't rearrange "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the mark and the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "name."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Don't write it "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Carworx or "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CARWORX."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "App icon"
+ },
+ {
+  "role": "StaticText",
+  "name": "Home screen"
+ },
+ {
+  "role": "StaticText",
+  "name": "60 px"
+ },
+ {
+  "role": "StaticText",
+  "name": "Small mark, 32 px"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "In use"
+ },
+ {
+  "role": "StaticText",
+  "name": "Workshop sign, 3:1"
+ },
+ {
+  "role": "StaticText",
+  "name": "Business card"
+ },
+ {
+  "role": "StaticText",
+  "name": "Quote and invoice header"
+ },
+ {
+  "role": "StaticText",
+  "name": "CHOSEN DIRECTION · CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Studio: the UI language"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A calm, light desk where the objects of a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "booking float in soft depth: a sticky note, a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "confirmed tile, a hold timer and a written quote. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Every screen says what happens next. The owner "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "chose Studio over two other directions (D-035) "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and approved it after two refinement passes (D-"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "036). It is a concept; Phase 1 design-system "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "work decides the final tokens."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Colour roles"
+ },
+ {
+  "role": "StaticText",
+  "name": "#f2f1ee"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " + 24 px dot "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "grid"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The page ground. Ink on "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "canvas 17.0:1."
+ },
+ {
+  "role": "StaticText",
+  "name": "#0d0f12"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Headlines, text, the one "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "primary button."
+ },
+ {
+  "role": "StaticText",
+  "name": "#5b6470"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Body and captions. 5.3:1 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "on canvas."
+ },
+ {
+  "role": "StaticText",
+  "name": "#727a85"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Grey second headline "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "lines, 24 px and up only "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "(3.8:1)."
+ },
+ {
+  "role": "StaticText",
+  "name": "#3d6dff"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " · text "
+ },
+ {
+  "role": "StaticText",
+  "name": "#2a54d4"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Confirmations and info. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "5.3:1 on sky."
+ },
+ {
+  "role": "StaticText",
+  "name": "#ff3b0a"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Only for things counting "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "down. Never small text; "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "never the logo."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Status colours for done, waiting and problems (green "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "5.7:1, amber 5.8:1, red 6.6:1, each on its own tint) are "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "concept additions, not in "
+ },
+ {
+  "role": "StaticText",
+  "name": "tokens.json"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " yet."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Type"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Geist: headlines and text. Neutral, so the outlined wordmark "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "(drawn from Sora) stays the one distinctive letterform."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Geist Mono: prices, references, timers and receipts."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Caveat: handwriting, used sparingly on sticky notes."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "One shadow scale"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "8 px spacing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Frosted surfaces"
+ },
+ {
+  "role": "StaticText",
+  "name": "Shine through, softly"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Tactile objects"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Soft-3D service object"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Sticky note: the request"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Hold timer"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Motion"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Tone of voice"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Plain, honest and calm, in South African English. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Say what happens next and what it costs. Never "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "promise what we can't check."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Say:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " \"Request sent. Gleamline has until "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "11:40 to reply. You haven't paid anything.\""
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Not:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " \"Booked instantly!\""
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Say:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " \"No wash businesses within 25 km "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "yet. Tell us what you need and we'll let you "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "know.\""
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Not:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " \"Hundreds of providers near you.\""
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Say:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " \"No results here doesn't mean you "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "have no fines. Check the official "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "channels.\""
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Not:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " \"You're all clear!\""
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Eight phone screens,"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "with the moments "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "that matter."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Each group shows the main screen on a 360-"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "pixel-wide phone, then the other states it "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "must handle: waiting, expiring, failing, empty "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and paused. All businesses, people, prices "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and ratings are fictional."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Concept, not final"
+ },
+ {
+  "role": "StaticText",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "Home: five equal shortcuts"
+ },
+ {
+  "role": "StaticText",
+  "name": "The five services get equal space and all five are visible on a small phone without scrolling (the orange dashed line marks the bottom of a 360 × 640 screen). Below them, we say honestly how many businesses there are."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· LIMITED SUPPLY"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Few businesses near Polokwane yet."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " 1 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "wash business and 0 tyre businesses within "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "25 km."
+ },
+ {
+  "role": "StaticText",
+  "name": "Ask for a business here"
+ },
+ {
+  "role": "StaticText",
+  "name": "Tell us the service and rough area. We use it only to recruit businesses and to let you know."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Tell us what you need"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· NO LOCATION YET"
+ },
+ {
+  "role": "StaticText",
+  "name": "Where's the car?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Suburb, town or postcode"
+ },
+ {
+  "role": "StaticText",
+  "name": "You can browse with a suburb. We don't need your exact address until you book a business that comes to you."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· ERROR"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "We couldn't load this page."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " Check your "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "signal and try again. Nothing you entered "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "was lost."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Try again"
+ },
+ {
+  "role": "StaticText",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search results: list and map"
+ },
+ {
+  "role": "StaticText",
+  "name": "The list always works; the map is optional. Distances are straight-line and say so. A business that comes to you shows no distance, because that would reveal where it is based. If nothing is near, we say so and offer to widen the search or record the need. Searches never widen silently."
+ },
+ {
+  "role": "StaticText",
+  "name": "VIEW"
+ },
+ {
+  "role": "StaticText",
+  "name": "· MAP (OPTIONAL)"
+ },
+ {
+  "role": "image",
+  "name": "Concept map: two wash bays as numbered pins, a shaded approximate service area for the mobile business, and your location"
+ },
+ {
+  "role": "StaticText",
+  "name": "Pins show businesses with a public address. Mobile businesses show only a rough shaded area, never their base."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· NOTHING NEARBY"
+ },
+ {
+  "role": "StaticText",
+  "name": "No tyre businesses within 25 km yet"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX is new near Mahikeng. You can look further, or tell us what you need."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Look within 50 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ask for a business here"
+ },
+ {
+  "role": "StaticText",
+  "name": "Tyres & Wheel Alignment"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Email me when one joins. Used only for this."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Send"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· SEARCH WIDENED BY YOU"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Now showing businesses up to "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "50 km"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "away, because you widened the search. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Back to 25 km"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Kgosi Tyre & Align"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DEMO"
+ },
+ {
+  "role": "StaticText",
+  "name": "38.4 km straight-line · Enquiries only for now"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· COULD NOT LOAD"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Results didn't load."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " Your filters are kept. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Try again in a moment."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Try again"
+ },
+ {
+  "role": "StaticText",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "Business listing"
+ },
+ {
+  "role": "StaticText",
+  "name": "Prices, times and what CarworX checked, with how and when. A request is not an instant booking: the business must accept it first. A paused business can't take new bookings."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· BUSINESS PAUSED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Not taking new bookings."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " CarworX has "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "paused this business while we look into a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "report. If you have a booking with them, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "we'll contact you."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "See similar businesses"
+ },
+ {
+  "role": "StaticText",
+  "name": "VARIANT"
+ },
+ {
+  "role": "StaticText",
+  "name": "· WASH BAY WITH AN ADDRESS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Gleamline Wash Bay"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DEMO"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "14 Example Rd, Ferndale (shown with "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "permission)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Operator checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business registration checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Visited by CarworX"
+ },
+ {
+  "role": "StaticText",
+  "name": "Open Mon–Sat 08:00–17:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "VARIANT"
+ },
+ {
+  "role": "StaticText",
+  "name": "· ENQUIRIES ONLY"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Spotless Valet Co. isn't taking online "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "bookings yet. Send a question and they'll "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "reply by email."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ask a question"
+ },
+ {
+  "role": "StaticText",
+  "name": "04"
+ },
+ {
+  "role": "StaticText",
+  "name": "Booking and quote approval"
+ },
+ {
+  "role": "StaticText",
+  "name": "For repairs the workshop sends a written quote with an expiry date. The customer approves that exact version. A revised quote replaces the old one, which can no longer be paid. Extra work found later needs its own change quote."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· WAITING FOR THE BUSINESS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Request sent to Bubbleworks"
+ },
+ {
+  "role": "StaticText",
+  "name": "They have until "
+ },
+ {
+  "role": "StaticText",
+  "name": "11:40 today"
+ },
+ {
+  "role": "StaticText",
+  "name": " to accept (2 business hours). You haven't paid anything."
+ },
+ {
+  "role": "StaticText",
+  "name": "Business hours: Mon–Sat 08:00–17:00, excluding public holidays."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· NO REPLY IN TIME"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks didn't reply by 11:40."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " Your "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "request has lapsed. Nothing was charged."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "See other wash businesses"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· QUOTE EXPIRED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Quote version 2 expired on Wed 4 Nov."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " It "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "can't be approved any more. Prices may "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "have changed."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ask Ridgeview for a new quote"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· CHANGE QUOTE DURING WORK"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Change quote C1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Needs your OK"
+ },
+ {
+  "role": "StaticText",
+  "name": "The rear pads are also worn: "
+ },
+ {
+  "role": "StaticText",
+  "name": "R1 150"
+ },
+ {
+  "role": "StaticText",
+  "name": " extra. Your paid quote (version 2, R2 430) stays exactly as it is."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Approve and pay"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Not now"
+ },
+ {
+  "role": "StaticText",
+  "name": "VARIANT"
+ },
+ {
+  "role": "StaticText",
+  "name": "· TRAVEL CHARGE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Full wash, in and out"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R280"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Travel, 10–20 km band"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R50"
+ },
+ {
+  "role": "StaticText",
+  "name": "The band is measured in a straight line, not by road. Bubbleworks confirmed 30 minutes of travel time for this slot."
+ },
+ {
+  "role": "StaticText",
+  "name": "05"
+ },
+ {
+  "role": "StaticText",
+  "name": "Checkout and what happens after"
+ },
+ {
+  "role": "StaticText",
+  "name": "Once the business accepts, the slot is held for 15 minutes. Payment happens on the payment partner's secure page. We confirm only when the payment partner tells us the money arrived, never just because the browser came back. In this pack nothing is charged: payments would run in test mode."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· CHECKING PAYMENT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Checking your payment…"
+ },
+ {
+  "role": "StaticText",
+  "name": "We're waiting for the payment partner to confirm. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Please don't pay again."
+ },
+ {
+  "role": "StaticText",
+  "name": " This page updates by itself."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· PAYMENT FAILED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The payment didn't go through."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " Nothing "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "was taken. Your slot is still held for "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "09:12"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Try again"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· HOLD EXPIRED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Your 15 minutes ran out."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " The slot was "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "released. If you started paying, check your "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payment status before trying again."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Check if Sat 09:00 is still free"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· PAID, NEEDS SORTING OUT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Your payment of R330 arrived after the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "hold ran out."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " Your booking isn't confirmed "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "yet. Choose what you'd like:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Rebook Sat 09:00 (still free)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Get a full refund"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· CONFIRMED"
+ },
+ {
+  "role": "StaticText",
+  "name": "Booked and paid"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks, Sat 31 Oct, 09:00–10:30"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ref CX-2048"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Paid to the business"
+ },
+ {
+  "role": "StaticText",
+  "name": "Your full address goes only to the staff member assigned to the job, and only now that it's confirmed."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· CANCELLED, REFUND PROCESSING"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Booking cancelled"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Refund processing"
+ },
+ {
+  "role": "StaticText",
+  "name": "R330 back to your card: requested → "
+ },
+ {
+  "role": "StaticText",
+  "name": "processing"
+ },
+ {
+  "role": "StaticText",
+  "name": " → paid back. Banks can take a few working days."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· PROBLEM REPORTED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Case CX-2048-1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Open"
+ },
+ {
+  "role": "StaticText",
+  "name": "\"Interior not cleaned.\" We've asked Bubbleworks for their side and will reply within 1 business day."
+ },
+ {
+  "role": "StaticText",
+  "name": "06"
+ },
+ {
+  "role": "StaticText",
+  "name": "Business dashboard"
+ },
+ {
+  "role": "StaticText",
+  "name": "What a business sees: requests with a reply deadline, today's jobs per bay or team, and payment status. A mobile business sees only the suburb until a booking is confirmed."
+ },
+ {
+  "role": "StaticText",
+  "name": "SCREEN"
+ },
+ {
+  "role": "StaticText",
+  "name": "· WRITE A QUOTE (WORKSHOP)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Quote for Pieter · VW Polo 2017"
+ },
+ {
+  "role": "StaticText",
+  "name": "Line items"
+ },
+ {
+  "role": "StaticText",
+  "name": "Front brake pads (parts) · R1 240"
+ },
+ {
+  "role": "StaticText",
+  "name": "Skim front discs · R320"
+ },
+ {
+  "role": "StaticText",
+  "name": "Labour 1.5 h · R870"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Valid for"
+ },
+ {
+  "role": "StaticText",
+  "name": "7 days"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Send quote version 2"
+ },
+ {
+  "role": "StaticText",
+  "name": "Once sent, a quote can't be edited. A revision becomes version 3 and replaces this one."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· CONFIRMED MOBILE JOB"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Confirmed and paid."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " Address now visible "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "to the assigned team only: 8 Demo St, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ferndale. Hidden 7 days after the job."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· YOUR LISTING IS PAUSED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Your listing is paused"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " while we look into a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "customer report (case CX-2048-1). You can't "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "take new bookings. Existing bookings: "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "please contact support."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Contact support"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· DISPUTE ON A PAYMENT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Card dispute · R280"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Evidence due"
+ },
+ {
+  "role": "StaticText",
+  "name": "The customer's bank has queried this payment. Upload photos or messages that show the job was done."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Add evidence"
+ },
+ {
+  "role": "image",
+  "name": "Business dashboard on a computer for Bubbleworks (demo): 12 requests this week, R3 960 paid directly, average reply 1 hour 7 minutes against 2 hours, CarworX fee R0"
+ },
+ {
+  "role": "StaticText",
+  "name": "07"
+ },
+ {
+  "role": "StaticText",
+  "name": "Business application"
+ },
+ {
+  "role": "StaticText",
+  "name": "Businesses apply and a person at CarworX reviews them. Each label says what was checked and how. A mobile business's home base stays private: customers see only a rough area."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· UNDER REVIEW"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Application received"
+ },
+ {
+  "role": "StaticText",
+  "name": "A person at CarworX will check it and call or video-call you. You'll get an email when your listing goes live."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· WE NEED ONE MORE THING"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Please add a photo of your signage or "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "vehicle."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " We use it only to check your listing, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "then delete it within 30 days."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Add photo"
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· LIVE, WITH LABELS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Operator/contact checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ": video call"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business registration checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ": where "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "relevant"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Visited by CarworX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ": not yet"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Payments enabled"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ": later, after legal and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payment checks"
+ },
+ {
+  "role": "StaticText",
+  "name": "Labels can't be bought."
+ },
+ {
+  "role": "StaticText",
+  "name": "08"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fines guidance"
+ },
+ {
+  "role": "StaticText",
+  "name": "At launch CarworX doesn't look up fines. It explains the options and links to official channels, clearly marked as leaving CarworX. It never asks for an ID number, and never says \"no fines\" because a search found nothing."
+ },
+ {
+  "role": "StaticText",
+  "name": "STATE"
+ },
+ {
+  "role": "StaticText",
+  "name": "· LEAVING CARWORX"
+ },
+ {
+  "role": "StaticText",
+  "name": "You're going to an official site"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX doesn't run this site and can't see what you enter there."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Continue"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Stay"
+ },
+ {
+  "role": "StaticText",
+  "name": "LATER"
+ },
+ {
+  "role": "StaticText",
+  "name": "· BUILT-IN LOOKUP (NOT PLANNED YET)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A built-in fines lookup needs a partner, legal "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "checks and the owner's go-ahead. It's not "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "part of the first versions."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Desktop:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "home and search."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The same five shortcuts in one equal row, and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "search with filters, list and an optional map "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "side by side. These frames scale down to fit "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "your screen; the static exports show them "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "full size."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Concept, not final"
+ },
+ {
+  "role": "StaticText",
+  "name": "CARWORX.APP"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Home"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "carworx.app · concept, not final"
+ },
+ {
+  "role": "StaticText",
+  "name": "Services"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fines & admin"
+ },
+ {
+  "role": "StaticText",
+  "name": "For businesses"
+ },
+ {
+  "role": "StaticText",
+  "name": "How it works"
+ },
+ {
+  "role": "StaticText",
+  "name": "Sign in"
+ },
+ {
+  "role": "StaticText",
+  "name": "List your business"
+ },
+ {
+  "role": "heading",
+  "name": "How it works"
+ },
+ {
+  "role": "StaticText",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ask for a business here"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX · concept, not final · fictional content"
+ },
+ {
+  "role": "StaticText",
+  "name": "Privacy · Terms · Contact"
+ },
+ {
+  "role": "StaticText",
+  "name": "CARWORX.APP/WASH-DETAILING"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "carworx.app/wash-detailing · concept, not final"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "carworx.app/wash-detailing · conc"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "…"
+ },
+ {
+  "role": "StaticText",
+  "name": "Services"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fines & admin"
+ },
+ {
+  "role": "StaticText",
+  "name": "For businesses"
+ },
+ {
+  "role": "StaticText",
+  "name": "How it works"
+ },
+ {
+  "role": "StaticText",
+  "name": "Sign in"
+ },
+ {
+  "role": "heading",
+  "name": "Wash & Detailing near Ferndale, Randburg"
+ },
+ {
+  "role": "StaticText",
+  "name": "5 businesses · nearest first · straight-line distance"
+ },
+ {
+  "role": "StaticText",
+  "name": "5 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "10 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "25 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "50 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "At my place"
+ },
+ {
+  "role": "StaticText",
+  "name": "At a wash bay"
+ },
+ {
+  "role": "StaticText",
+  "name": "Can pay online"
+ },
+ {
+  "role": "StaticText",
+  "name": "Enquiries only"
+ },
+ {
+  "role": "heading",
+  "name": "Gleamline Wash Bay"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash bay · 3.2 km straight-line · ★ 4.6 (38, demo)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Operator checked"
+ },
+ {
+  "role": "StaticText",
+  "name": "Visited by CarworX"
+ },
+ {
+  "role": "StaticText",
+  "name": "Next free: today 14:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "R120"
+ },
+ {
+  "role": "heading",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "StaticText",
+  "name": "Comes to you · your suburb is in their area (approx.) · + travel R30–R60"
+ },
+ {
+  "role": "StaticText",
+  "name": "Operator checked"
+ },
+ {
+  "role": "StaticText",
+  "name": "Payments enabled"
+ },
+ {
+  "role": "StaticText",
+  "name": "R180"
+ },
+ {
+  "role": "heading",
+  "name": "Spotless Valet Co."
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash bay · 7.9 km straight-line · new, no reviews yet"
+ },
+ {
+  "role": "StaticText",
+  "name": "Enquiries only for now"
+ },
+ {
+  "role": "StaticText",
+  "name": "R150"
+ },
+ {
+  "role": "heading",
+  "name": "Shine Point Detailing"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash bay · 11.4 km straight-line · ★ 4.3 (12, demo)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Operator checked"
+ },
+ {
+  "role": "StaticText",
+  "name": "R250"
+ },
+ {
+  "role": "image",
+  "name": "Concept map with numbered pins for wash bays and a shaded approximate area for the mobile business"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX · concept, not final · fictional content"
+ },
+ {
+  "role": "StaticText",
+  "name": "Privacy · Terms · Contact"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Two people,"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "two jobs."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "These show how bookings and quotes would "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "work once payments are switched on (Phase "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4). The first public site launches with search, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "listings and enquiries only. Thandi and Pieter "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "are fictional. As you scroll, one booking travels "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "along the steps and changes form."
+ },
+ {
+  "role": "StaticText",
+  "name": "Thandi books a wash"
+ },
+ {
+  "role": "StaticText",
+  "name": "Thandi"
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ferndale, Randburg"
+ },
+ {
+  "role": "StaticText",
+  "name": "Works from home on Fridays. Wants the car washed at home on Saturday morning without driving anywhere."
+ },
+ {
+  "role": "StaticText",
+  "name": "Pays:"
+ },
+ {
+  "role": "StaticText",
+  "name": " "
+ },
+ {
+  "role": "StaticText",
+  "name": "R330"
+ },
+ {
+  "role": "StaticText",
+  "name": " (R280 wash + R50 travel + R0 CarworX fee)"
+ },
+ {
+  "role": "StaticText",
+  "name": "What if…"
+ },
+ {
+  "role": "StaticText",
+  "name": "Pieter gets a repair quote"
+ },
+ {
+  "role": "StaticText",
+  "name": "Pieter"
+ },
+ {
+  "role": "LineBreak",
+  "name": "\n"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bellville, Cape Town"
+ },
+ {
+  "role": "StaticText",
+  "name": "His 2017 VW Polo's front brakes are squealing. He wants a clear price before any work starts."
+ },
+ {
+  "role": "StaticText",
+  "name": "Pays:"
+ },
+ {
+  "role": "StaticText",
+  "name": " "
+ },
+ {
+  "role": "StaticText",
+  "name": "R350"
+ },
+ {
+  "role": "StaticText",
+  "name": " inspection, then "
+ },
+ {
+  "role": "StaticText",
+  "name": "R2 430"
+ },
+ {
+  "role": "StaticText",
+  "name": " for quote version 2"
+ },
+ {
+  "role": "StaticText",
+  "name": "What if…"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What happens when,"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and what's "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "still to decide."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Each phase needs the owner's go-ahead. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Agreeing on the plan approves Phase 1 only, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and only after this pack has been shown to "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the colleagues."
+ },
+ {
+  "role": "StaticText",
+  "name": "PHASES"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "One step at a time"
+ },
+ {
+  "role": "StaticText",
+  "name": "0a"
+ },
+ {
+  "role": "StaticText",
+  "name": "0b"
+ },
+ {
+  "role": "StaticText",
+  "name": "1"
+ },
+ {
+  "role": "StaticText",
+  "name": "2"
+ },
+ {
+  "role": "StaticText",
+  "name": "3"
+ },
+ {
+  "role": "StaticText",
+  "name": "4"
+ },
+ {
+  "role": "StaticText",
+  "name": "5"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Key decisions already made"
+ },
+ {
+  "role": "StaticText",
+  "name": "Drivers anywhere in South Africa; businesses with premises and mobile ones."
+ },
+ {
+  "role": "StaticText",
+  "name": "Five equal shortcuts across three service groups."
+ },
+ {
+  "role": "StaticText",
+  "name": "A free pilot: the CarworX fee is R0."
+ },
+ {
+  "role": "StaticText",
+  "name": "Businesses accept first; then a 15-minute hold and payment. Repairs go through a quote that is approved, then paid."
+ },
+ {
+  "role": "StaticText",
+  "name": "Fines: guidance and official links only, no ID numbers, until a partner and legal checks are in place."
+ },
+ {
+  "role": "StaticText",
+  "name": "Every business is checked by a person; labels can't be bought."
+ },
+ {
+  "role": "StaticText",
+  "name": "The Turbine logo is locked."
+ },
+ {
+  "role": "StaticText",
+  "name": "D-034"
+ },
+ {
+  "role": "StaticText",
+  "name": "Studio is the chosen UI language for this pack, after two refinement passes. Still a concept, not final; it approves no Phase 1 work."
+ },
+ {
+  "role": "StaticText",
+  "name": "D-035 · D-036"
+ },
+ {
+  "role": "StaticText",
+  "name": "This pack stays as local files; putting it online needs separate permission."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ways to earn later (optional, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "owner approves each)"
+ },
+ {
+  "role": "ListMarker",
+  "name": "1. "
+ },
+ {
+  "role": "StaticText",
+  "name": "A commission on paid bookings."
+ },
+ {
+  "role": "ListMarker",
+  "name": "2. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Clearly labelled sponsorship, never on payment screens."
+ },
+ {
+  "role": "ListMarker",
+  "name": "3. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Scheduling and reports for fleets and small businesses."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Never:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " selling personal data, paid trust "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "badges, or ads in transactional emails."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Decisions the business "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "still needs to make"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PLAN 2.1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "design/brand"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "exports/"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "QA.md"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Concept, not final · planning pack"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Car care you can find, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "book and pay for,"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "in one place."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "This pack shows the owner's two colleagues "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "what CarworX is, how it would look and how it "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "would work, before anything is built. Everything "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "here is a "
+ },
+ {
+  "role": "StaticText",
+  "name": "concept"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ": the screens are pictures, the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "businesses, people, prices and ratings are made "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "up, and nothing connects to a real service."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Start with the one-page summary"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "See the two walkthroughs"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "THE HOME PAGE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "01"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash & Detailing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "02"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Repairs & "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Maintenance"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "03"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Glass Repair & "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Replacement"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "04"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Tyres & Wheel "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Alignment"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "05"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fines & Vehicle "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Admin"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash & "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Detailing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Repairs & Maintenance"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fines & Vehicle "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Admin"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "ONE BOOKING"
+ },
+ {
+  "role": "StaticText",
+  "name": "Sat 9:00 wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "Send a request"
+ },
+ {
+  "role": "StaticText",
+  "name": "Pick a business and a time. You haven't paid anything."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "Accepted within 2 business hours"
+ },
+ {
+  "role": "StaticText",
+  "name": "The business must accept first. If it can't, ask another."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "Held for 15 minutes"
+ },
+ {
+  "role": "StaticText",
+  "name": "The slot is yours while you pay. Nobody else can take it."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R0 CarworX fee"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "04"
+ },
+ {
+  "role": "StaticText",
+  "name": "Paid to the business directly"
+ },
+ {
+  "role": "StaticText",
+  "name": "On a secure payment partner's page. CarworX never holds it."
+ },
+ {
+  "role": "StaticText",
+  "name": "Nothing is instant."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " You send a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "request; the business has 2 business "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "hours to accept it."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "When they accept, the slot is "
+ },
+ {
+  "role": "StaticText",
+  "name": "held for you for 15 minutes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " while you pay."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "You pay on a secure payment partner's "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "page. The money is split straight to "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the business; CarworX never holds "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "a wallet."
+ },
+ {
+  "role": "StaticText",
+  "name": "Repairs use a quote."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " The workshop "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "sends a written quote that expires after "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "7 days. You approve that exact quote, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "then pay. Extra work needs a new "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "quote you approve."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Mobile businesses (for example a wash "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "at your home) show a "
+ },
+ {
+  "role": "StaticText",
+  "name": "travel charge"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "based on straight-line distance bands."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "During the free pilot the CarworX fee "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "is "
+ },
+ {
+  "role": "StaticText",
+  "name": "R0"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "."
+ },
+ {
+  "role": "StaticText",
+  "name": "Build the foundations"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " on a private "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "test site with made-up data."
+ },
+ {
+  "role": "StaticText",
+  "name": "Launch the free public site:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " search, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "business listings, enquiries, business "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "sign-ups and fines guidance. No "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "bookings or payments yet."
+ },
+ {
+  "role": "StaticText",
+  "name": "Add bookings, quotes and payments"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "on the private test site, with test "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "money only."
+ },
+ {
+  "role": "StaticText",
+  "name": "Switch on real payments"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ", one "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "business at a time, only after legal, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payment-partner and refund checks."
+ },
+ {
+  "role": "StaticText",
+  "name": "Grow"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ", and test ways to earn money "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "only with the owner's approval."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Planning and the private test site: "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "free tiers."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Public launch: database hosting from "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "about "
+ },
+ {
+  "role": "StaticText",
+  "name": "US$25 a month"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " (needs owner "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "approval first)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Email: free up to 3,000 a month, then "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "about US$20 a month."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Card payments: the payment partner's "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "fee per transaction, about "
+ },
+ {
+  "role": "StaticText",
+  "name": "2.9% + R1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "(excl. VAT) when researched. Who pays "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "it is an owner decision."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "An attorney and an accountant before "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payments go live: quotes needed."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Marketing: the owner's budget."
+ },
+ {
+  "role": "StaticText",
+  "name": "Find and check businesses."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " CarworX "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "starts with zero listings anywhere "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "in South Africa. The owner and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "a colleague recruit, check and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "support them."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Run customer and business support."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Appoint an Information Officer (privacy "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "law) and agree a production budget "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "before the public launch."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Set up the business details and bank "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "account for the payment partner, and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "decide how refunds are funded, before "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "real payments."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Look at this pack and tell the owner "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "what works and what doesn't."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Still open:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Roadmap "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and decisions"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Turbine"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Studio"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "concept, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "not final"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "THE LOGO · FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "NAME AND LOCKUPS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "arwor"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "#ff3b0a"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "never"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Home screen"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "60 px"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Small mark, 32 px"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Workshop sign, 3:1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business card"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Quote and invoice header"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CHOSEN DIRECTION · CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "#f2f1ee"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "#0d0f12"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "#5b6470"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "#727a85"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "#3d6dff"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "#2a54d4"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "#ff3b0a"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "tokens.json"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Shine through, softly"
+ },
+ {
+  "role": "StaticText",
+  "name": "White at 55–85% with a blur. Used for the nav, sheets and phones. Text always sits on a surface that keeps AA contrast."
+ },
+ {
+  "role": "StaticText",
+  "name": "Sat 9:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "Mechanical, not bouncy"
+ },
+ {
+  "role": "StaticText",
+  "name": "The logo spools with turbo lag, surge and a damped spring, from the brand timeline."
+ },
+ {
+  "role": "StaticText",
+  "name": "Springs for objects"
+ },
+ {
+  "role": "StaticText",
+  "name": "Objects spring in from the edges and lift on hover. Keys press down when tapped."
+ },
+ {
+  "role": "StaticText",
+  "name": "Scroll-linked, never scroll-jacked"
+ },
+ {
+  "role": "StaticText",
+  "name": "Scrolling moves things along a timeline; the browser's own scroll is never taken over."
+ },
+ {
+  "role": "StaticText",
+  "name": "Reduced motion respected"
+ },
+ {
+  "role": "StaticText",
+  "name": "With reduced motion on, the intro is a still logo, nothing drifts, and the logo film shows its last frame."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "01"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Home: five equal shortcuts"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The five services get equal space and all five are "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "visible on a small phone without scrolling (the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "orange dashed line marks the bottom of a 360 × "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "640 screen). Below them, we say honestly how "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "many businesses there are."
+ },
+ {
+  "role": "StaticText",
+  "name": "Home, first open. Fictional location."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· LIMITED SUPPLY"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ask for a business here"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Tell us the service and rough area. We use it "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "only to recruit businesses and to let you know."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· NO LOCATION YET"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Where's the car?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "You can browse with a suburb. We don't need your exact "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "address until you book a business that comes to you."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· ERROR"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "02"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search results: list and map"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The list always works; the map is optional. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Distances are straight-line and say so. A "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "business that comes to you shows no distance, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "because that would reveal where it is based. If "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "nothing is near, we say so and offer to widen "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the search or record the need. Searches never "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "widen silently."
+ },
+ {
+  "role": "StaticText",
+  "name": "List first. Labels say exactly what was checked."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "VIEW"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· MAP (OPTIONAL)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pins show businesses with a public address. Mobile "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "businesses show only a rough shaded area, never "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "their base."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· NOTHING NEARBY"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "No tyre businesses within 25 km yet"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX is new near Mahikeng. You can look further, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "or tell us what you need."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ask for a business here"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Tyres & Wheel Alignment"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· SEARCH WIDENED BY YOU"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "38.4 km straight-line · Enquiries only for now"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· COULD NOT LOAD"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "03"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business listing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Prices, times and what CarworX checked, with "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "how and when. A request is not an instant "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "booking: the business must accept it first. A "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "paused business can't take new bookings."
+ },
+ {
+  "role": "StaticText",
+  "name": "A mobile business: its base is never shown."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· BUSINESS PAUSED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "VARIANT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· WASH BAY WITH AN ADDRESS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Open Mon–Sat 08:00–17:00"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "VARIANT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· ENQUIRIES ONLY"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "04"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Booking and quote approval"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "For repairs the workshop sends a written quote "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "with an expiry date. The customer approves that "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "exact version. A revised quote replaces the old "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "one, which can no longer be paid. Extra work "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "found later needs its own change quote."
+ },
+ {
+  "role": "StaticText",
+  "name": "Pieter's repair quote (see Journeys)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· WAITING FOR THE BUSINESS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "They have until "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "11:40 today"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " to accept (2 business "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "hours). You haven't paid anything."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business hours: Mon–Sat 08:00–17:00, excluding "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "public holidays."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· NO REPLY IN TIME"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· QUOTE EXPIRED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· CHANGE QUOTE DURING WORK"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The rear pads are also worn: "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R1 150"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " extra. Your "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "paid quote (version 2, R2 430) stays exactly as it is."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "VARIANT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· TRAVEL CHARGE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The band is measured in a straight line, not by road. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks confirmed 30 minutes of travel time for "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "this slot."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "05"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Checkout and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "what happens after"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Once the business accepts, the slot is held for 15 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "minutes. Payment happens on the payment "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "partner's secure page. We confirm only when the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payment partner tells us the money arrived, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "never just because the browser came back. In "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "this pack nothing is charged: payments would "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "run in test mode."
+ },
+ {
+  "role": "StaticText",
+  "name": "Thandi's wash (see Journeys)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· CHECKING PAYMENT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "We're waiting for the payment partner to confirm. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Please don't pay again."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " This page updates by itself."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· PAYMENT FAILED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· HOLD EXPIRED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· PAID, NEEDS SORTING OUT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· CONFIRMED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Booked and paid"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks, Sat 31 Oct, 09:00–10:30"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Your full address goes only to the staff member "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "assigned to the job, and only now that it's confirmed."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· CANCELLED, REFUND PROCESSING"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R330 back to your card: requested → "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "processing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " → "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "paid back. Banks can take a few working days."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· PROBLEM REPORTED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\"Interior not cleaned.\" We've asked Bubbleworks for "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "their side and will reply within 1 business day."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "06"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business dashboard"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What a business sees: requests with a reply "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "deadline, today's jobs per bay or team, and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payment status. A mobile business sees only the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "suburb until a booking is confirmed."
+ },
+ {
+  "role": "StaticText",
+  "name": "Requests show a reply-by time."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "SCREEN"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· WRITE A QUOTE (WORKSHOP)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Quote for Pieter · VW Polo 2017"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Line items"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Front brake pads (parts) · R1 240"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Skim front discs · R320"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Labour 1.5 h · R870"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "7 days"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Once sent, a quote can't be edited. A revision becomes "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "version 3 and replaces this one."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· CONFIRMED MOBILE JOB"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· YOUR LISTING IS PAUSED"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· DISPUTE ON A PAYMENT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The customer's bank has queried this payment. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Upload photos or messages that show the job "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "was done."
+ },
+ {
+  "role": "StaticText",
+  "name": "ON A COMPUTER · THE SAME DASHBOARD · DEMO NUMBERS"
+ },
+ {
+  "role": "StaticText",
+  "name": "BW"
+ },
+ {
+  "role": "StaticText",
+  "name": "Requests"
+ },
+ {
+  "role": "StaticText",
+  "name": "Quotes"
+ },
+ {
+  "role": "StaticText",
+  "name": "Payments"
+ },
+ {
+  "role": "StaticText",
+  "name": "12"
+ },
+ {
+  "role": "StaticText",
+  "name": "+3"
+ },
+ {
+  "role": "StaticText",
+  "name": "3 960"
+ },
+ {
+  "role": "StaticText",
+  "name": "This week · 14 bookings"
+ },
+ {
+  "role": "StaticText",
+  "name": "1h07"
+ },
+ {
+  "role": "StaticText",
+  "name": "of 2 h"
+ },
+ {
+  "role": "StaticText",
+  "name": "0"
+ },
+ {
+  "role": "StaticText",
+  "name": "Free during the pilot"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "07"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business application"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Businesses apply and a person at CarworX "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "reviews them. Each label says what was "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "checked and how. A mobile business's home "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "base stays private: customers see only a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "rough area."
+ },
+ {
+  "role": "StaticText",
+  "name": "Step 2 of 4: area and travel."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· UNDER REVIEW"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A person at CarworX will check it and call or video-"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "call you. You'll get an email when your listing "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "goes live."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· WE NEED ONE MORE THING"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· LIVE, WITH LABELS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Labels can't be bought."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "08"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fines guidance"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "At launch CarworX doesn't look up fines. It "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "explains the options and links to official "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "channels, clearly marked as leaving CarworX. It "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "never asks for an ID number, and never says \"no "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "fines\" because a search found nothing."
+ },
+ {
+  "role": "StaticText",
+  "name": "Guidance and official referrals only."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "STATE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· LEAVING CARWORX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "You're going to an official site"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX doesn't run this site and can't see what you "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "enter there."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "LATER"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "· BUILT-IN LOOKUP (NOT PLANNED YET)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CARWORX.APP"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Services"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fines & admin"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "For businesses"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "How it works"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Sign in"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "List your business"
+ },
+ {
+  "role": "StaticText",
+  "name": "Held for 15 min"
+ },
+ {
+  "role": "StaticText",
+  "name": "Pay to confirm"
+ },
+ {
+  "role": "heading",
+  "name": "Car care you can find, book and pay for."
+ },
+ {
+  "role": "StaticText",
+  "name": "What does your car need?"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ferndale, Randburg"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search"
+ },
+ {
+  "role": "StaticText",
+  "name": "How it works"
+ },
+ {
+  "role": "StaticText",
+  "name": "No instant promises: the business confirms first, then you pay."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "Request a time"
+ },
+ {
+  "role": "StaticText",
+  "name": "Or ask for a quote for repairs."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "The business accepts"
+ },
+ {
+  "role": "StaticText",
+  "name": "Within 2 business hours."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "Pay within 15 minutes"
+ },
+ {
+  "role": "StaticText",
+  "name": "On a secure payment page. CarworX fee: R0 in the pilot."
+ },
+ {
+  "role": "StaticText",
+  "name": "We're new, and we'd rather be honest."
+ },
+ {
+  "role": "StaticText",
+  "name": " We show only businesses that applied and were checked. If there's nobody near you yet, tell us what you need and we'll go and find someone."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ask for a business here"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX · concept, not final · fictional content"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Privacy · Terms · Contact"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CARWORX.APP/WASH-DETAILING"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Services"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fines & admin"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "For businesses"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "How it works"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Sign in"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash & Detailing near Ferndale, Randburg"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "5 businesses · nearest first · straight-line distance"
+ },
+ {
+  "role": "StaticText",
+  "name": "DISTANCE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "5 km"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "10 km"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "25 km"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "50 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "WHERE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "At my place"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "At a wash bay"
+ },
+ {
+  "role": "StaticText",
+  "name": "BOOKING"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Can pay online"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Enquiries only"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search never widens by itself. If you change the distance, we show it."
+ },
+ {
+  "role": "StaticText",
+  "name": "Gleamline Wash Bay"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash bay · 3.2 km straight-line · ★ 4.6 (38, demo)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Operator checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Visited by CarworX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Next free: today 14:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "from"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R120"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Comes to you · your suburb is in their area (approx.) · + "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "travel R30–R60"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Operator checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Payments enabled"
+ },
+ {
+  "role": "StaticText",
+  "name": "from"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R180"
+ },
+ {
+  "role": "StaticText",
+  "name": "Spotless Valet Co."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash bay · 7.9 km straight-line · new, no reviews yet"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Enquiries only for now"
+ },
+ {
+  "role": "StaticText",
+  "name": "from"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R150"
+ },
+ {
+  "role": "StaticText",
+  "name": "Shine Point Detailing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash bay · 11.4 km straight-line · ★ 4.3 (12, demo)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Operator checked"
+ },
+ {
+  "role": "StaticText",
+  "name": "from"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R250"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX · concept, not final · fictional content"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Privacy · Terms · Contact"
+ },
+ {
+  "role": "StaticText",
+  "name": "JOURNEY 1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Thandi books a wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Thandi"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ferndale, Randburg"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Works from home on Fridays. Wants the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "car washed at home on Saturday morning "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "without driving anywhere."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pays:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R330"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " (R280 wash + R50 travel + R0 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX fee)"
+ },
+ {
+  "role": "StaticText",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "04"
+ },
+ {
+  "role": "StaticText",
+  "name": "05"
+ },
+ {
+  "role": "StaticText",
+  "name": "06"
+ },
+ {
+  "role": "StaticText",
+  "name": "07"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What if…"
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks doesn't reply by 11:40?"
+ },
+ {
+  "role": "StaticText",
+  "name": " The request lapses, nothing is charged, and she's shown other businesses."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Her card fails?"
+ },
+ {
+  "role": "StaticText",
+  "name": " Nothing is taken and the slot stays held until the 15 minutes run out."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "The 15 minutes run out?"
+ },
+ {
+  "role": "StaticText",
+  "name": " The slot is released. If her money arrives late anyway, she chooses rebook or a full refund. It's never confirmed silently."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "She cancels, or the wash goes wrong?"
+ },
+ {
+  "role": "StaticText",
+  "name": " Refund under the business's terms, or a reported problem with a case number."
+ },
+ {
+  "role": "StaticText",
+  "name": "JOURNEY 2"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pieter gets a repair quote"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pieter"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\n"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bellville, Cape Town"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "His 2017 VW Polo's front brakes are "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "squealing. He wants a clear price before "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "any work starts."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pays:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R350"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " inspection, then "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R2 430"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " for "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "quote version 2"
+ },
+ {
+  "role": "StaticText",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "04"
+ },
+ {
+  "role": "StaticText",
+  "name": "05"
+ },
+ {
+  "role": "StaticText",
+  "name": "06"
+ },
+ {
+  "role": "StaticText",
+  "name": "07"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What if…"
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "He waits more than 7 days?"
+ },
+ {
+  "role": "StaticText",
+  "name": " The quote expires and can't be approved; he asks for a new one."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "He declines the quote?"
+ },
+ {
+  "role": "StaticText",
+  "name": " He has paid only for the inspection. No other charge."
+ },
+ {
+  "role": "ListMarker",
+  "name": "• "
+ },
+ {
+  "role": "StaticText",
+  "name": "Ridgeview gets paused by CarworX?"
+ },
+ {
+  "role": "StaticText",
+  "name": " It can't take new bookings, and CarworX contacts people with existing ones."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PHASES"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "0a"
+ },
+ {
+  "role": "StaticText",
+  "name": "Technical plan"
+ },
+ {
+  "role": "StaticText",
+  "name": "Written by Claude and checked and signed by Codex. Done."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "0b"
+ },
+ {
+  "role": "StaticText",
+  "name": "This pack (now)"
+ },
+ {
+  "role": "StaticText",
+  "name": "The owner shows the colleagues and collects feedback."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "1"
+ },
+ {
+  "role": "StaticText",
+  "name": "Foundations"
+ },
+ {
+  "role": "StaticText",
+  "name": "A private test site with made-up data, sign-in and the design system. Needs the owner's approval of the plan."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "2"
+ },
+ {
+  "role": "StaticText",
+  "name": "Free public site"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search, listings, business sign-ups, enquiries and fines guidance. Needs a budget, privacy and legal checks first."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "3"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bookings and quotes, test money only"
+ },
+ {
+  "role": "StaticText",
+  "name": "Holds, quotes, travel charges, notifications, refunds and disputes tested on the private site."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4"
+ },
+ {
+  "role": "StaticText",
+  "name": "Real payments"
+ },
+ {
+  "role": "StaticText",
+  "name": "Switched on one business at a time, after the payment partner, attorney and refund funding are confirmed."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "5"
+ },
+ {
+  "role": "StaticText",
+  "name": "Grow"
+ },
+ {
+  "role": "StaticText",
+  "name": "More businesses, and earning money only through experiments the owner approves."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Drivers anywhere in South Africa; "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "businesses with premises and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "mobile ones."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Five equal shortcuts across three "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "service groups."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A free pilot: the CarworX fee is R0."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Businesses accept first; then a 15-minute "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "hold and payment. Repairs go through a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "quote that is approved, then paid."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fines: guidance and official links only, no "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "ID numbers, until a partner and legal "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "checks are in place."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Every business is checked by a person; "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "labels can't be bought."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The Turbine logo is locked."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "D-034"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Studio is the chosen UI "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "language for this pack, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "after two refinement "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "passes. Still a concept, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "not final; it approves no "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Phase 1 work."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "D-035 · D-036"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "This pack stays as local files; putting it "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "online needs separate permission."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A commission on paid bookings."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Clearly labelled sponsorship, never on "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payment screens."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Scheduling and reports for fleets and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "small businesses."
+ },
+ {
+  "role": "cell",
+  "name": "Feedback on this pack"
+ },
+ {
+  "role": "cell",
+  "name": "Does the idea make sense? Do the brand and screens work? Anything missing?"
+ },
+ {
+  "role": "cell",
+  "name": "Now"
+ },
+ {
+  "role": "cell",
+  "name": "Start building (Phase 1)?"
+ },
+ {
+  "role": "cell",
+  "name": "Approving the plan starts the private test site only. It isn't approval for anything after that."
+ },
+ {
+  "role": "cell",
+  "name": "After colleague feedback"
+ },
+ {
+  "role": "cell",
+  "name": "Production budget"
+ },
+ {
+  "role": "cell",
+  "name": "Hosting with backups for the public site, from about US$25 a month (estimate)."
+ },
+ {
+  "role": "cell",
+  "name": "Before the public launch"
+ },
+ {
+  "role": "cell",
+  "name": "Information Officer"
+ },
+ {
+  "role": "cell",
+  "name": "Required under South African privacy law (POPIA)."
+ },
+ {
+  "role": "cell",
+  "name": "Before the public launch"
+ },
+ {
+  "role": "cell",
+  "name": "Business type and bank account"
+ },
+ {
+  "role": "cell",
+  "name": "The payment partner needs them, first for test payments."
+ },
+ {
+  "role": "cell",
+  "name": "Phase 3"
+ },
+ {
+  "role": "cell",
+  "name": "Who pays the card fee; how refunds are funded"
+ },
+ {
+  "role": "cell",
+  "name": "Recommended: the business pays the card fee, shown openly. Refunds and chargebacks need a funded process before real money."
+ },
+ {
+  "role": "cell",
+  "name": "Before real payments"
+ },
+ {
+  "role": "cell",
+  "name": "Approaching fines partners"
+ },
+ {
+  "role": "cell",
+  "name": "A built-in fines lookup needs a partner and the owner's permission to approach one."
+ },
+ {
+  "role": "cell",
+  "name": "Only if wanted"
+ },
+ {
+  "role": "cell",
+  "name": "Unpaid reservations"
+ },
+ {
+  "role": "cell",
+  "name": "Default is no: nothing is confirmed until it's paid."
+ },
+ {
+  "role": "cell",
+  "name": "Only if wanted"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "concept"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Sat 9:00 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Send a request"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pick a business and a time. You haven't "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "paid anything."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Accepted within 2 business hours"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The business must accept first. If it can't, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "ask another."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Held for 15 minutes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The slot is yours while you pay. Nobody else can "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "take it."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Paid to the business directly"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "On a secure payment partner's page. CarworX "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "never holds it."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Nothing is instant."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "held for "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "you for 15 minutes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Repairs use a quote."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "travel charge"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R0"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Build the foundations"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Launch the free public site:"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Add bookings, quotes and payments"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Switch on real payments"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Grow"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "US$25 a month"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "2.9% + R1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Find and check businesses."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "White at 55–85% with a blur. Used for "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the nav, sheets and phones. Text always "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "sits on a surface that keeps AA contrast."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Sat 9:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "13:16"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Mechanical, not bouncy"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The logo spools with turbo lag, surge and a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "damped spring, from the brand timeline."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Springs for objects"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Objects spring in from the edges and lift on "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "hover. Keys press down when tapped."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Scroll-linked, never scroll-jacked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Scrolling moves things along a timeline; the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "browser's own scroll is never taken over."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Reduced motion respected"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "With reduced motion on, the intro is a still "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "logo, nothing drifts, and the logo film shows its "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "last frame."
+ },
+ {
+  "role": "StaticText",
+  "name": "09:41"
+ },
+ {
+  "role": "StaticText",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "StaticText",
+  "name": "4G"
+ },
+ {
+  "role": "StaticText",
+  "name": "Near Ferndale, Randburg"
+ },
+ {
+  "role": "StaticText",
+  "name": "Change"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search a service or business"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX is new."
+ },
+ {
+  "role": "StaticText",
+  "name": " We only show businesses that have applied and been checked, so there may be few near you. Don't see what you need? "
+ },
+ {
+  "role": "StaticText",
+  "name": "Tell us"
+ },
+ {
+  "role": "StaticText",
+  "name": " and we'll look for one."
+ },
+ {
+  "role": "StaticText",
+  "name": "Home"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bookings"
+ },
+ {
+  "role": "StaticText",
+  "name": "Account"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Home, first open. Fictional location."
+ },
+ {
+  "role": "StaticText",
+  "name": "09:42"
+ },
+ {
+  "role": "StaticText",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "StaticText",
+  "name": "4G"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash & Detailing"
+ },
+ {
+  "role": "StaticText",
+  "name": "List"
+ },
+ {
+  "role": "StaticText",
+  "name": "Map"
+ },
+ {
+  "role": "StaticText",
+  "name": "Within 25 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "At my place"
+ },
+ {
+  "role": "StaticText",
+  "name": "At a wash bay"
+ },
+ {
+  "role": "StaticText",
+  "name": "Can pay online"
+ },
+ {
+  "role": "StaticText",
+  "name": "Gleamline Wash Bay"
+ },
+ {
+  "role": "StaticText",
+  "name": "DEMO"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash bay · 3.2 km straight-line · "
+ },
+ {
+  "role": "StaticText",
+  "name": "4.6"
+ },
+ {
+  "role": "StaticText",
+  "name": " (38, demo)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Operator checked"
+ },
+ {
+  "role": "StaticText",
+  "name": "Visited by CarworX"
+ },
+ {
+  "role": "StaticText",
+  "name": "From "
+ },
+ {
+  "role": "StaticText",
+  "name": "R120"
+ },
+ {
+  "role": "StaticText",
+  "name": "Next free: today 14:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "StaticText",
+  "name": "DEMO"
+ },
+ {
+  "role": "StaticText",
+  "name": "Comes to you · your suburb is in their area (approx.)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Operator checked"
+ },
+ {
+  "role": "StaticText",
+  "name": "Payments enabled"
+ },
+ {
+  "role": "StaticText",
+  "name": "From "
+ },
+ {
+  "role": "StaticText",
+  "name": "R180"
+ },
+ {
+  "role": "StaticText",
+  "name": " + travel "
+ },
+ {
+  "role": "StaticText",
+  "name": "R30–R60"
+ },
+ {
+  "role": "StaticText",
+  "name": "Spotless Valet Co."
+ },
+ {
+  "role": "StaticText",
+  "name": "DEMO"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash bay · 7.9 km straight-line · New, no reviews yet"
+ },
+ {
+  "role": "StaticText",
+  "name": "Enquiries only for now"
+ },
+ {
+  "role": "StaticText",
+  "name": "Home"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bookings"
+ },
+ {
+  "role": "StaticText",
+  "name": "Account"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "List first. Labels say exactly what was checked."
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks: area, approx."
+ },
+ {
+  "role": "StaticText",
+  "name": "1"
+ },
+ {
+  "role": "StaticText",
+  "name": "3"
+ },
+ {
+  "role": "StaticText",
+  "name": "You"
+ },
+ {
+  "role": "StaticText",
+  "name": "09:44"
+ },
+ {
+  "role": "StaticText",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "StaticText",
+  "name": "4G"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "StaticText",
+  "name": "DEMO"
+ },
+ {
+  "role": "StaticText",
+  "name": "Comes to you · Randburg and surrounds (approx.) · "
+ },
+ {
+  "role": "StaticText",
+  "name": "4.8"
+ },
+ {
+  "role": "StaticText",
+  "name": " (52, demo)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Operator/contact checked"
+ },
+ {
+  "role": "StaticText",
+  "name": ": video call, 12 Oct 2026"
+ },
+ {
+  "role": "StaticText",
+  "name": "Payments enabled"
+ },
+ {
+  "role": "StaticText",
+  "name": ": can take online payment"
+ },
+ {
+  "role": "StaticText",
+  "name": "Exterior wash · 45 min"
+ },
+ {
+  "role": "StaticText",
+  "name": "R180"
+ },
+ {
+  "role": "StaticText",
+  "name": "Full wash, in and out · 1 h 30"
+ },
+ {
+  "role": "StaticText",
+  "name": "R280"
+ },
+ {
+  "role": "StaticText",
+  "name": "Engine bay clean · 40 min"
+ },
+ {
+  "role": "StaticText",
+  "name": "R150"
+ },
+ {
+  "role": "StaticText",
+  "name": "Request a time"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ask a question"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A mobile business: its base is never shown."
+ },
+ {
+  "role": "StaticText",
+  "name": "10:20"
+ },
+ {
+  "role": "StaticText",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "StaticText",
+  "name": "4G"
+ },
+ {
+  "role": "StaticText",
+  "name": "Your quote"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ridgeview Auto Care"
+ },
+ {
+  "role": "StaticText",
+  "name": "DEMO"
+ },
+ {
+  "role": "StaticText",
+  "name": "Quote version 2"
+ },
+ {
+  "role": "StaticText",
+  "name": "Expires Wed 4 Nov, 10:15"
+ },
+ {
+  "role": "StaticText",
+  "name": "WRITTEN QUOTE · VERSION 2"
+ },
+ {
+  "role": "StaticText",
+  "name": "Front brake pads (parts)"
+ },
+ {
+  "role": "StaticText",
+  "name": "R1 240"
+ },
+ {
+  "role": "StaticText",
+  "name": "Skim front discs"
+ },
+ {
+  "role": "StaticText",
+  "name": "R320"
+ },
+ {
+  "role": "StaticText",
+  "name": "Labour, 1.5 hours"
+ },
+ {
+  "role": "StaticText",
+  "name": "R870"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX fee (free pilot)"
+ },
+ {
+  "role": "StaticText",
+  "name": "R0"
+ },
+ {
+  "role": "StaticText",
+  "name": "Total, incl. VAT"
+ },
+ {
+  "role": "StaticText",
+  "name": "R2 430"
+ },
+ {
+  "role": "StaticText",
+  "name": "This replaces version 1 ("
+ },
+ {
+  "role": "StaticText",
+  "name": "R2 650"
+ },
+ {
+  "role": "StaticText",
+  "name": "), which can no longer be paid."
+ },
+ {
+  "role": "StaticText",
+  "name": "Thu 08:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fri 08:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fri 13:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "Approve version 2 and pay"
+ },
+ {
+  "role": "StaticText",
+  "name": "Ask a question"
+ },
+ {
+  "role": "StaticText",
+  "name": "Decline"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pieter's repair quote (see Journeys)."
+ },
+ {
+  "role": "StaticText",
+  "name": "10:05"
+ },
+ {
+  "role": "StaticText",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "StaticText",
+  "name": "4G"
+ },
+ {
+  "role": "StaticText",
+  "name": "Pay to confirm"
+ },
+ {
+  "role": "image",
+  "name": "14 minutes 32 seconds left"
+ },
+ {
+  "role": "StaticText",
+  "name": "Your slot is held"
+ },
+ {
+  "role": "StaticText",
+  "name": "Full wash, in and out"
+ },
+ {
+  "role": "StaticText",
+  "name": "R280"
+ },
+ {
+  "role": "StaticText",
+  "name": "Travel, 10–20 km band"
+ },
+ {
+  "role": "StaticText",
+  "name": "R50"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX fee (free pilot)"
+ },
+ {
+  "role": "StaticText",
+  "name": "R0"
+ },
+ {
+  "role": "StaticText",
+  "name": "Total"
+ },
+ {
+  "role": "StaticText",
+  "name": "R330"
+ },
+ {
+  "role": "StaticText",
+  "name": "Pay R330 securely"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Thandi's wash (see Journeys)."
+ },
+ {
+  "role": "StaticText",
+  "name": "09:58"
+ },
+ {
+  "role": "StaticText",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "StaticText",
+  "name": "4G"
+ },
+ {
+  "role": "StaticText",
+  "name": "Business"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks"
+ },
+ {
+  "role": "StaticText",
+  "name": "Test payments"
+ },
+ {
+  "role": "StaticText",
+  "name": "Reply by 11:40"
+ },
+ {
+  "role": "StaticText",
+  "name": "Accept"
+ },
+ {
+  "role": "StaticText",
+  "name": "Decline"
+ },
+ {
+  "role": "StaticText",
+  "name": "Reply by 13:05"
+ },
+ {
+  "role": "StaticText",
+  "name": "Team A · 08:00–09:30"
+ },
+ {
+  "role": "StaticText",
+  "name": "Paid"
+ },
+ {
+  "role": "StaticText",
+  "name": "Team A · 11:00–12:00"
+ },
+ {
+  "role": "StaticText",
+  "name": "Waiting for payment, 12 min"
+ },
+ {
+  "role": "StaticText",
+  "name": "Team B · 13:00–14:30"
+ },
+ {
+  "role": "StaticText",
+  "name": "Paid"
+ },
+ {
+  "role": "StaticText",
+  "name": "1 refund processing (R180). Payouts go straight to your bank account through the payment partner."
+ },
+ {
+  "role": "StaticText",
+  "name": "Today"
+ },
+ {
+  "role": "StaticText",
+  "name": "Calendar"
+ },
+ {
+  "role": "StaticText",
+  "name": "Quotes"
+ },
+ {
+  "role": "StaticText",
+  "name": "Business"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Requests show a reply-by time."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "ON A COMPUTER · THE SAME DASHBOARD · "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DEMO NUMBERS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "BW"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "StaticText",
+  "name": "Randburg and surrounds · demo"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Requests"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Quotes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Payments"
+ },
+ {
+  "role": "StaticText",
+  "name": "Requests this week"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "12"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "+3"
+ },
+ {
+  "role": "StaticText",
+  "name": "Paid to you directly"
+ },
+ {
+  "role": "StaticText",
+  "name": "R"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "3 960"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "This week · 14 bookings"
+ },
+ {
+  "role": "StaticText",
+  "name": "Average reply"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "1h07"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "of 2 h"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX fee"
+ },
+ {
+  "role": "StaticText",
+  "name": "R"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "0"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Free during the pilot"
+ },
+ {
+  "role": "StaticText",
+  "name": "16:10"
+ },
+ {
+  "role": "StaticText",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "StaticText",
+  "name": "4G"
+ },
+ {
+  "role": "StaticText",
+  "name": "List your business"
+ },
+ {
+  "role": "StaticText",
+  "name": "2 of 4"
+ },
+ {
+  "role": "StaticText",
+  "name": "At my premises"
+ },
+ {
+  "role": "StaticText",
+  "name": "I go to customers"
+ },
+ {
+  "role": "StaticText",
+  "name": "Customers never see your base. They see a rough area. Repeated searches could still hint at it, so we limit them and will explain more before launch."
+ },
+ {
+  "role": "StaticText",
+  "name": "10 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "20 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "30 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "I agree that CarworX can contact me to check my details."
+ },
+ {
+  "role": "StaticText",
+  "name": "Continue"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Step 2 of 4: area and travel."
+ },
+ {
+  "role": "StaticText",
+  "name": "12:30"
+ },
+ {
+  "role": "StaticText",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "StaticText",
+  "name": "4G"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fines & Vehicle Admin"
+ },
+ {
+  "role": "StaticText",
+  "name": "CarworX doesn't look up fines yet. These official channels can. "
+ },
+ {
+  "role": "StaticText",
+  "name": "We never ask for your ID number."
+ },
+ {
+  "role": "StaticText",
+  "name": "National fines channel"
+ },
+ {
+  "role": "StaticText",
+  "name": "Official"
+ },
+ {
+  "role": "StaticText",
+  "name": "Your municipality's traffic department"
+ },
+ {
+  "role": "StaticText",
+  "name": "Official"
+ },
+ {
+  "role": "StaticText",
+  "name": "\"No results\" doesn't mean \"no fines\"."
+ },
+ {
+  "role": "StaticText",
+  "name": " Not every fine shows up everywhere."
+ },
+ {
+  "role": "StaticText",
+  "name": "Paying, disputing or asking for more time"
+ },
+ {
+  "role": "StaticText",
+  "name": "Renewing your licence disc"
+ },
+ {
+  "role": "StaticText",
+  "name": "Home"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bookings"
+ },
+ {
+  "role": "StaticText",
+  "name": "Account"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Guidance and official referrals only."
+ },
+ {
+  "role": "StaticText",
+  "name": "Request accepted"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks · demo"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Held for 15 min"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pay to confirm"
+ },
+ {
+  "role": "heading",
+  "name": "QUOTE · V2"
+ },
+ {
+  "role": "StaticText",
+  "name": "Brake pads"
+ },
+ {
+  "role": "StaticText",
+  "name": "1 240"
+ },
+ {
+  "role": "StaticText",
+  "name": "Skim discs"
+ },
+ {
+  "role": "StaticText",
+  "name": "320"
+ },
+ {
+  "role": "StaticText",
+  "name": "Labour"
+ },
+ {
+  "role": "StaticText",
+  "name": "870"
+ },
+ {
+  "role": "StaticText",
+  "name": "TOTAL"
+ },
+ {
+  "role": "StaticText",
+  "name": "R2 430"
+ },
+ {
+  "role": "StaticText",
+  "name": "Free pilot · CarworX fee R0"
+ },
+ {
+  "role": "StaticText",
+  "name": "Car care you can find, book and pay for."
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash bays, mobile washers, workshops, glass and tyre fitters across South Africa. Every business is checked by a person, and every label says how."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What does your car need?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ferndale, Randburg"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search"
+ },
+ {
+  "role": "StaticText",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash & Detailing"
+ },
+ {
+  "role": "StaticText",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "Repairs & Maintenance"
+ },
+ {
+  "role": "StaticText",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "Glass Repair & Replacement"
+ },
+ {
+  "role": "StaticText",
+  "name": "04"
+ },
+ {
+  "role": "StaticText",
+  "name": "Tyres & Wheel Alignment"
+ },
+ {
+  "role": "StaticText",
+  "name": "05"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fines & Vehicle Admin"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "How it works"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "No instant promises: the business confirms first, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "then you pay."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Request a time"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Or ask for a quote for repairs."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The business accepts"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Within 2 business hours."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pay within 15 minutes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "On a secure payment page. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX fee: R0 in the pilot."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "We're new, and we'd rather be honest."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " We show only businesses that applied and were checked. If there's "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "nobody near you yet, tell us what you need and we'll go and find someone."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash & Detailing near Ferndale, Randburg"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DISTANCE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "WHERE"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "BOOKING"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search never widens by itself. If "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "you change the distance, we "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "show it."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Gleamline Wash Bay"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "from"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "from"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Spotless Valet Co."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "from"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Shine Point Detailing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "from"
+ },
+ {
+  "role": "StaticText",
+  "name": "1"
+ },
+ {
+  "role": "StaticText",
+  "name": "3"
+ },
+ {
+  "role": "StaticText",
+  "name": "4"
+ },
+ {
+  "role": "StaticText",
+  "name": "Map optional · shaded = approximate area"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "JOURNEY 1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "THANDI"
+ },
+ {
+  "role": "StaticText",
+  "name": "Taps Wash & Detailing on the home page."
+ },
+ {
+  "role": "StaticText",
+  "name": "All five services are equal and visible straight away. "
+ },
+ {
+  "role": "link",
+  "name": "Home screen"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "THANDI"
+ },
+ {
+  "role": "StaticText",
+  "name": "Filters to \"At my place\"."
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks Mobile Wash covers her suburb (approximately). No distance is shown, so their base stays private. Travel is R30–R60 by straight-line band. "
+ },
+ {
+  "role": "link",
+  "name": "Search results"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "THANDI"
+ },
+ {
+  "role": "StaticText",
+  "name": "Reads the listing and requests Sat 09:00."
+ },
+ {
+  "role": "StaticText",
+  "name": "She sees what CarworX checked and the prices. Bubbleworks has until 11:40 to reply; she hasn't paid anything. "
+ },
+ {
+  "role": "link",
+  "name": "Listing"
+ },
+ {
+  "role": "StaticText",
+  "name": " · "
+ },
+ {
+  "role": "link",
+  "name": "Waiting state"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "04"
+ },
+ {
+  "role": "StaticText",
+  "name": "BUBBLEWORKS"
+ },
+ {
+  "role": "StaticText",
+  "name": "Accepts and confirms 30 minutes of travel time."
+ },
+ {
+  "role": "StaticText",
+  "name": "They see \"Ferndale\", not her address. Accepting puts a 15-minute hold on the slot. "
+ },
+ {
+  "role": "link",
+  "name": "Dashboard"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "05"
+ },
+ {
+  "role": "StaticText",
+  "name": "THANDI"
+ },
+ {
+  "role": "StaticText",
+  "name": "Pays R330 on the payment partner's page."
+ },
+ {
+  "role": "StaticText",
+  "name": "The CarworX fee is R0 in the pilot. The money goes to Bubbleworks. "
+ },
+ {
+  "role": "link",
+  "name": "Checkout"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "06"
+ },
+ {
+  "role": "StaticText",
+  "name": "CARWORX"
+ },
+ {
+  "role": "StaticText",
+  "name": "Confirms only when the payment partner confirms."
+ },
+ {
+  "role": "StaticText",
+  "name": "\"Checking your payment… please don't pay again.\" Then: booked, ref CX-2048. Only now does the assigned team see her full address."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "07"
+ },
+ {
+  "role": "StaticText",
+  "name": "THANDI"
+ },
+ {
+  "role": "StaticText",
+  "name": "Gets her wash, then leaves a review."
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks' view of her address is hidden 7 days after the job."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks doesn't reply by "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "11:40?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " The request lapses, nothing "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "is charged, and she's shown "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "other businesses."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Her card fails?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " Nothing is taken "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and the slot stays held until the 15 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "minutes run out."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The 15 minutes run out?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " The slot "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "is released. If her money arrives "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "late anyway, she chooses "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "rebook or a full refund. It's never "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "confirmed silently."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "She cancels, or the wash goes "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "wrong?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " Refund under the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "business's terms, or a reported "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "problem with a case number."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "JOURNEY 2"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "01"
+ },
+ {
+  "role": "StaticText",
+  "name": "PIETER"
+ },
+ {
+  "role": "StaticText",
+  "name": "Taps Repairs & Maintenance and finds Ridgeview Auto Care."
+ },
+ {
+  "role": "StaticText",
+  "name": "A workshop with an address, checked and visited by CarworX. "
+ },
+ {
+  "role": "link",
+  "name": "Search"
+ },
+ {
+  "role": "StaticText",
+  "name": " · "
+ },
+ {
+  "role": "link",
+  "name": "Listing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "02"
+ },
+ {
+  "role": "StaticText",
+  "name": "PIETER"
+ },
+ {
+  "role": "StaticText",
+  "name": "Books a fixed-price inspection for R350."
+ },
+ {
+  "role": "StaticText",
+  "name": "Same steps as Thandi: request, the workshop accepts, a 15-minute hold, then he pays. "
+ },
+ {
+  "role": "link",
+  "name": "Checkout"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "03"
+ },
+ {
+  "role": "StaticText",
+  "name": "RIDGEVIEW"
+ },
+ {
+  "role": "StaticText",
+  "name": "Inspects the car and sends quote version 1: R2 650."
+ },
+ {
+  "role": "StaticText",
+  "name": "A written quote with a visible expiry, 7 days by default. Once sent, it can't be edited. "
+ },
+ {
+  "role": "link",
+  "name": "Write a quote"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "04"
+ },
+ {
+  "role": "StaticText",
+  "name": "RIDGEVIEW"
+ },
+ {
+  "role": "StaticText",
+  "name": "Revises it to version 2: R2 430."
+ },
+ {
+  "role": "StaticText",
+  "name": "Version 1 is replaced and can no longer be paid, so there's never any doubt which price applies."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "05"
+ },
+ {
+  "role": "StaticText",
+  "name": "PIETER"
+ },
+ {
+  "role": "StaticText",
+  "name": "Approves version 2 before it expires and picks Fri 08:00."
+ },
+ {
+  "role": "StaticText",
+  "name": "Approving holds the slot for 15 minutes while he pays R2 430. "
+ },
+ {
+  "role": "link",
+  "name": "Quote approval"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "06"
+ },
+ {
+  "role": "StaticText",
+  "name": "RIDGEVIEW"
+ },
+ {
+  "role": "StaticText",
+  "name": "Finds the rear pads worn too and sends change quote C1: R1 150."
+ },
+ {
+  "role": "StaticText",
+  "name": "He approves or declines it separately. His paid quote stays exactly as it was."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "07"
+ },
+ {
+  "role": "StaticText",
+  "name": "CARWORX"
+ },
+ {
+  "role": "StaticText",
+  "name": "Job done; Pieter reviews it."
+ },
+ {
+  "role": "StaticText",
+  "name": "If something's wrong he reports it, and a case number tracks it."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "He waits more than 7 days?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " The "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "quote expires and can't be "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "approved; he asks for a new one."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "He declines the quote?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " He has "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "paid only for the inspection. No "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "other charge."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ridgeview gets paused by "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " It can't take new "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "bookings, and CarworX contacts "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "people with existing ones."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Technical plan"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Written by Claude and checked and signed "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "by Codex. Done."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "This pack (now)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The owner shows the colleagues and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "collects feedback."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Foundations"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A private test site with made-up data, sign-"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "in and the design system. Needs the owner's "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "approval of the plan."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Free public site"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search, listings, business sign-ups, enquiries "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and fines guidance. Needs a budget, privacy "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and legal checks first."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bookings and quotes, test money only"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Holds, quotes, travel charges, notifications, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "refunds and disputes tested on the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "private site."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Real payments"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Switched on one business at a time, after "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the payment partner, attorney and refund "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "funding are confirmed."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Grow"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "More businesses, and earning money only "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "through experiments the owner approves."
+ },
+ {
+  "role": "columnheader",
+  "name": "DECISION"
+ },
+ {
+  "role": "columnheader",
+  "name": "WHY IT MATTERS"
+ },
+ {
+  "role": "columnheader",
+  "name": "NEEDED BY"
+ },
+ {
+  "role": "StaticText",
+  "name": "Feedback on this pack"
+ },
+ {
+  "role": "StaticText",
+  "name": "Does the idea make sense? Do the brand and screens work? Anything missing?"
+ },
+ {
+  "role": "StaticText",
+  "name": "Now"
+ },
+ {
+  "role": "StaticText",
+  "name": "Start building (Phase 1)?"
+ },
+ {
+  "role": "StaticText",
+  "name": "Approving the plan starts the private test site only. It isn't approval for anything after that."
+ },
+ {
+  "role": "StaticText",
+  "name": "After colleague feedback"
+ },
+ {
+  "role": "StaticText",
+  "name": "Production budget"
+ },
+ {
+  "role": "StaticText",
+  "name": "Hosting with backups for the public site, from about US$25 a month (estimate)."
+ },
+ {
+  "role": "StaticText",
+  "name": "Before the public launch"
+ },
+ {
+  "role": "StaticText",
+  "name": "Information Officer"
+ },
+ {
+  "role": "StaticText",
+  "name": "Required under South African privacy law (POPIA)."
+ },
+ {
+  "role": "StaticText",
+  "name": "Before the public launch"
+ },
+ {
+  "role": "StaticText",
+  "name": "Business type and bank account"
+ },
+ {
+  "role": "StaticText",
+  "name": "The payment partner needs them, first for test payments."
+ },
+ {
+  "role": "StaticText",
+  "name": "Phase 3"
+ },
+ {
+  "role": "StaticText",
+  "name": "Who pays the card fee; how refunds are funded"
+ },
+ {
+  "role": "StaticText",
+  "name": "Recommended: the business pays the card fee, shown openly. Refunds and chargebacks need a funded process before real money."
+ },
+ {
+  "role": "StaticText",
+  "name": "Before real payments"
+ },
+ {
+  "role": "StaticText",
+  "name": "Approaching fines partners"
+ },
+ {
+  "role": "StaticText",
+  "name": "A built-in fines lookup needs a partner and the owner's permission to approach one."
+ },
+ {
+  "role": "StaticText",
+  "name": "Only if wanted"
+ },
+ {
+  "role": "StaticText",
+  "name": "Unpaid reservations"
+ },
+ {
+  "role": "StaticText",
+  "name": "Default is no: nothing is confirmed until it's paid."
+ },
+ {
+  "role": "StaticText",
+  "name": "Only if wanted"
+ },
+ {
+  "role": "StaticText",
+  "name": "15:00"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "13:16"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "09:41"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4G"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Near Ferndale, Randburg"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Change"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search a service or business"
+ },
+ {
+  "role": "StaticText",
+  "name": "What does your car need?"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wash & Detailing"
+ },
+ {
+  "role": "StaticText",
+  "name": "At a wash bay or at your door"
+ },
+ {
+  "role": "StaticText",
+  "name": "Repairs & Maintenance"
+ },
+ {
+  "role": "StaticText",
+  "name": "Services, brakes, diagnostics"
+ },
+ {
+  "role": "StaticText",
+  "name": "Glass Repair & Replacement"
+ },
+ {
+  "role": "StaticText",
+  "name": "Chips, cracks, windscreens"
+ },
+ {
+  "role": "StaticText",
+  "name": "Tyres & Wheel Alignment"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fitting, balancing, alignment"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fines & Vehicle Admin"
+ },
+ {
+  "role": "StaticText",
+  "name": "Official links and admin help"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX is new."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " We only show "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "businesses that have applied and been "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "checked, so there may be few near you. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Don't see what you need? "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Tell us"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "we'll look for one."
+ },
+ {
+  "role": "StaticText",
+  "name": "How it works"
+ },
+ {
+  "role": "StaticText",
+  "name": "1. Request a time · 2. The business accepts · 3. Pay within 15 minutes · 4. Done. Repairs start with a quote you approve."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Home"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bookings"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Account"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "09:42"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4G"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash & Detailing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "List"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Map"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Within 25 km"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "At my place"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "At a wash bay"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Can pay online"
+ },
+ {
+  "role": "StaticText",
+  "name": "5 businesses near Ferndale, Randburg · nearest first · straight-line distance"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Gleamline Wash Bay"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DEMO"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash bay · 3.2 km straight-line · "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4.6"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " (38, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "demo)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Operator checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Visited by CarworX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "From "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R120"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Next free: today 14:00"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DEMO"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Comes to you · your suburb is in their area "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "(approx.)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Operator checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Payments enabled"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "From "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R180"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " + travel "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R30–R60"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Spotless Valet Co."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DEMO"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash bay · 7.9 km straight-line · New, no "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "reviews yet"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Enquiries only for now"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Home"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bookings"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Account"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks: area, approx."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "3"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "You"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "09:44"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4G"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "StaticText",
+  "name": "Photo placeholder · business's own photos go here"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DEMO"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Comes to you · Randburg and surrounds "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "(approx.) · "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4.8"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " (52, demo)"
+ },
+ {
+  "role": "StaticText",
+  "name": "What CarworX checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Operator/contact checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ": video call, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "12 Oct 2026"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Payments enabled"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": ": can take online "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payment"
+ },
+ {
+  "role": "StaticText",
+  "name": "Not visited: mobile businesses have no premises to visit."
+ },
+ {
+  "role": "StaticText",
+  "name": "Services"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Exterior wash · 45 min"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R180"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Full wash, in and out · 1 h 30"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R280"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Engine bay clean · 40 min"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R150"
+ },
+ {
+  "role": "StaticText",
+  "name": "Travel: R30 up to 10 km, R50 for 10–20 km, R60 for 20–30 km, measured in a straight line from their area, not driving distance."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Request a time"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ask a question"
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks has 2 business hours to accept a request. You pay only after they accept."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "10:20"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4G"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Your quote"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ridgeview Auto Care"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DEMO"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Quote version 2"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Expires Wed 4 Nov, 10:15"
+ },
+ {
+  "role": "StaticText",
+  "name": "VW Polo 2017 · front brakes squealing · after the R350 inspection on Wed 28 Oct"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "WRITTEN QUOTE · VERSION 2"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Front brake pads (parts)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R1 240"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Skim front discs"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R320"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Labour, 1.5 hours"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R870"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX fee (free pilot)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R0"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Total, incl. VAT"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R2 430"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "This replaces version 1 ("
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R2 650"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "), which "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "can no longer be paid."
+ },
+ {
+  "role": "StaticText",
+  "name": "Choose a time"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Thu 08:00"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fri 08:00"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fri 13:00"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Approve version 2 and pay"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ask a question"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Decline"
+ },
+ {
+  "role": "StaticText",
+  "name": "Approving holds Friday 08:00 for 15 minutes while you pay. Work that isn't in this quote needs a new quote that you approve."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "10:05"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4G"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pay to confirm"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Your slot is held"
+ },
+ {
+  "role": "StaticText",
+  "name": "If time runs out, the slot is released. If a payment arrives afterwards, we'll help you rebook or get a refund."
+ },
+ {
+  "role": "StaticText",
+  "name": "Bubbleworks Mobile Wash "
+ },
+ {
+  "role": "StaticText",
+  "name": "DEMO"
+ },
+ {
+  "role": "StaticText",
+  "name": "Sat 31 Oct · 09:00–10:30 · at your address in Ferndale"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Full wash, in and out"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R280"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Travel, 10–20 km band"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R50"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX fee (free pilot)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R0"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Total"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R330"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pay R330 securely"
+ },
+ {
+  "role": "StaticText",
+  "name": "You'll go to our payment partner's page to pay. The money goes to Bubbleworks. Cancellation: free up to 24 hours before (business's terms, demo)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "09:58"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4G"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Test payments"
+ },
+ {
+  "role": "StaticText",
+  "name": "Wed 28 Oct"
+ },
+ {
+  "role": "StaticText",
+  "name": "New requests (2)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Full wash, in and out"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Reply by 11:40"
+ },
+ {
+  "role": "StaticText",
+  "name": "Sat 31 Oct 09:00 · Ferndale (suburb only until confirmed) · R280 + R50 travel"
+ },
+ {
+  "role": "StaticText",
+  "name": "Travel time you need for this slot: "
+ },
+ {
+  "role": "StaticText",
+  "name": "30 min"
+ },
+ {
+  "role": "StaticText",
+  "name": " "
+ },
+ {
+  "role": "StaticText",
+  "name": "change"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Accept"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Decline"
+ },
+ {
+  "role": "StaticText",
+  "name": "Exterior wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Reply by 13:05"
+ },
+ {
+  "role": "StaticText",
+  "name": "Thu 29 Oct 15:00 · Blairgowrie · R180 + R30 travel"
+ },
+ {
+  "role": "StaticText",
+  "name": "Today"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Team A · 08:00–09:30"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Paid"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Team A · 11:00–"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "12:00"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Waiting for payment, 12 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "min"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Team B · 13:00–14:30"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Paid"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "1 refund processing (R180). Payouts go "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "straight to your bank account through "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the payment partner."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Today"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Calendar"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Quotes"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks Mobile Wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Randburg and surrounds · demo"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Requests this week"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Paid to you directly"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Average reply"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX fee"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "16:10"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4G"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "List your business"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "2 of 4"
+ },
+ {
+  "role": "StaticText",
+  "name": "Where do you work?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "At my premises"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "I go to customers"
+ },
+ {
+  "role": "StaticText",
+  "name": "Your base (kept private)"
+ },
+ {
+  "role": "StaticText",
+  "name": "Search an address…"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Customers never see your base. They "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "see a rough area. Repeated searches "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "could still hint at it, so we limit them and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "will explain more before launch."
+ },
+ {
+  "role": "StaticText",
+  "name": "How far will you travel?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "10 km"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "20 km"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "30 km"
+ },
+ {
+  "role": "StaticText",
+  "name": "Travel charges (straight-line bands)"
+ },
+ {
+  "role": "StaticText",
+  "name": "0–10 km R30 · 10–20 km R50"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "I agree that CarworX can contact me to check "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "my details."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Continue"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "12:30"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CONCEPT, NOT FINAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4G"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fines & Vehicle Admin"
+ },
+ {
+  "role": "StaticText",
+  "name": "Got a traffic fine? Here's what to do."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CarworX doesn't look up fines yet. These "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "official channels can. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "We never ask for "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "your ID number."
+ },
+ {
+  "role": "StaticText",
+  "name": "Check and pay"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "National fines channel"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Official"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Your municipality's traffic "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "department"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Official"
+ },
+ {
+  "role": "StaticText",
+  "name": "Links open outside CarworX. Official sources are confirmed before launch."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\"No results\" doesn't mean \"no fines\"."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Not every fine shows up everywhere."
+ },
+ {
+  "role": "StaticText",
+  "name": "Guides"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Paying, disputing or asking for more "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "time"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Renewing your licence disc"
+ },
+ {
+  "role": "StaticText",
+  "name": "Admin help near you"
+ },
+ {
+  "role": "StaticText",
+  "name": "Listed businesses that help with licence renewals and roadworthy bookings."
+ },
+ {
+  "role": "StaticText",
+  "name": "Towing: shown as a referral only. CarworX doesn't dispatch tow trucks."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Home"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bookings"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Account"
+ },
+ {
+  "role": "StaticText",
+  "name": "Sat 9:00 wash, Ferndale"
+ },
+ {
+  "role": "StaticText",
+  "name": "ask about travel"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Request accepted"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks · demo"
+ },
+ {
+  "role": "StaticText",
+  "name": "QUOTE · V2"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Brake pads"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "1 240"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Skim discs"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "320"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Labour"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "870"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "TOTAL"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R2 430"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Free pilot · CarworX fee R0"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Car care you can find, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "book and pay for."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash bays, mobile washers, workshops, glass and tyre fitters across South "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Africa. Every business is checked by a person, and every label says how."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "01"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash & Detailing"
+ },
+ {
+  "role": "StaticText",
+  "name": "At a wash bay or at your door"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "02"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Repairs & Maintenance"
+ },
+ {
+  "role": "StaticText",
+  "name": "Services, brakes, diagnostics"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "03"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Glass Repair & "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Replacement"
+ },
+ {
+  "role": "StaticText",
+  "name": "Chips, cracks, windscreens"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "04"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Tyres & Wheel "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Alignment"
+ },
+ {
+  "role": "StaticText",
+  "name": "Fitting, balancing, alignment"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "05"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fines & Vehicle Admin"
+ },
+ {
+  "role": "StaticText",
+  "name": "Official links and admin help"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "1"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "3"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "4"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Map optional · shaded = approximate area"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "THANDI"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Taps Wash & Detailing on the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "home page."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "All five services are equal and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "visible straight away. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Home screen"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "THANDI"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Filters to \"At my place\"."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks Mobile Wash covers "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "her suburb (approximately). No "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "distance is shown, so their base "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "stays private. Travel is R30–"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R60 by straight-line band. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Search results"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "THANDI"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Reads the listing and requests "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Sat 09:00."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "She sees what CarworX checked "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and the prices. Bubbleworks has "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "until 11:40 to reply; she hasn't paid "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "anything. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Listing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " · "
+ },
+ {
+  "role": "StaticText",
+  "name": "Waiting state"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "BUBBLEWORKS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Accepts and confirms 30 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "minutes of travel time."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "They see \"Ferndale\", not her "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "address. Accepting puts "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "a 15-minute hold on the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "slot. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Dashboard"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "THANDI"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Pays R330 on the payment "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "partner's page."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The CarworX fee is R0 in "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the pilot. The money goes to "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Checkout"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CARWORX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Confirms only when the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payment partner confirms."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "\"Checking your payment… please "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "don't pay again.\" Then: booked, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "ref CX-2048. Only now does "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the assigned team see her "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "full address."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "THANDI"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Gets her wash, then leaves "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "a review."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks' view of her address "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "is hidden 7 days after the job."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PIETER"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Taps Repairs & Maintenance "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and finds Ridgeview "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Auto Care."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A workshop with an address, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "checked and visited by CarworX. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Search"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " · "
+ },
+ {
+  "role": "StaticText",
+  "name": "Listing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PIETER"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Books a fixed-price inspection "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "for R350."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Same steps as Thandi: request, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the workshop accepts, a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "15-minute hold, then he "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "pays. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Checkout"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "RIDGEVIEW"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Inspects the car and sends "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "quote version 1: R2 650."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A written quote with a visible "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "expiry, 7 days by default. Once "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "sent, it can't be edited. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Write a quote"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "RIDGEVIEW"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Revises it to version 2: "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R2 430."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Version 1 is replaced and can no "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "longer be paid, so there's never "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "any doubt which price applies."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "PIETER"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Approves version 2 before it "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "expires and picks Fri 08:00."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Approving holds the slot for 15 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "minutes while he pays R2 430. "
+ },
+ {
+  "role": "StaticText",
+  "name": "Quote approval"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "RIDGEVIEW"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Finds the rear pads worn too "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and sends change quote C1: "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R1 150."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "He approves or declines it "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "separately. His paid quote stays "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "exactly as it was."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "CARWORX"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Job done; Pieter reviews it."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "If something's wrong he reports it, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "and a case number tracks it."
+ },
+ {
+  "role": "StaticText",
+  "name": "DECISION"
+ },
+ {
+  "role": "StaticText",
+  "name": "WHY IT MATTERS"
+ },
+ {
+  "role": "StaticText",
+  "name": "NEEDED BY"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Feedback on this "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "pack"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Does the idea make sense? Do the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "brand and screens work? Anything "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "missing?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Now"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Start building "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "(Phase 1)?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Approving the plan starts the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "private test site only. It isn't "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "approval for anything after that."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "After "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "colleague "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "feedback"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Production budget"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Hosting with backups for the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "public site, from about US$25 a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "month (estimate)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Before the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "public "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "launch"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Information "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Officer"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Required under South African "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "privacy law (POPIA)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Before the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "public "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "launch"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Business type and "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "bank account"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "The payment partner needs them, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "first for test payments."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Phase 3"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Who pays the card "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "fee; how refunds "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "are funded"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Recommended: the business pays "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "the card fee, shown openly. "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Refunds and chargebacks need a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "funded process before real money."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Before real "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "payments"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Approaching fines "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "partners"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "A built-in fines lookup needs a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "partner and the owner's permission "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "to approach one."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Only if "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "wanted"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Unpaid "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "reservations"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Default is no: nothing is confirmed "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "until it's paid."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Only if "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "wanted"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "15:00"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What does your car need?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wash & Detailing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "At a wash bay or at your door"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Repairs & Maintenance"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Services, brakes, diagnostics"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Glass Repair & Replacement"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Chips, cracks, windscreens"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Tyres & Wheel Alignment"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fitting, balancing, alignment"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fines & Vehicle Admin"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Official links and admin help"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "How it works"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "1. Request a time · 2. The business accepts · "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "3. Pay within 15 minutes · 4. Done. Repairs "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "start with a quote you approve."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "5 businesses near Ferndale, Randburg · nearest first · "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "straight-line distance"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Photo placeholder · business's own photos go "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "here"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "What CarworX checked"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Not visited: mobile businesses have no "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "premises to visit."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Services"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Travel: R30 up to 10 km, R50 for 10–20 km, R60 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "for 20–30 km, measured in a straight line from "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "their area, not driving distance."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks has 2 business hours to accept a "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "request. You pay only after they accept."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "VW Polo 2017 · front brakes squealing · after the "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R350 inspection on Wed 28 Oct"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Choose a time"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Approving holds Friday 08:00 for 15 minutes while "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "you pay. Work that isn't in this quote needs a new "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "quote that you approve."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "If time runs out, the slot is "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "released. If a payment "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "arrives afterwards, we'll help "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "you rebook or get a refund."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Bubbleworks Mobile Wash "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DEMO"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Sat 31 Oct · 09:00–10:30 · at your address "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "in Ferndale"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "You'll go to our payment partner's page to pay. The "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "money goes to Bubbleworks. Cancellation: free up to "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "24 hours before (business's terms, demo)."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Wed 28 Oct"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "New requests (2)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Full wash, in and out"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Sat 31 Oct 09:00 · Ferndale (suburb only until "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "confirmed) · R280 + R50 travel"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Travel time you need for this slot: "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "30 "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "min"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": " "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "change"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Exterior wash"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Thu 29 Oct 15:00 · Blairgowrie · R180 + "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "R30 travel"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Today"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Where do you work?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Your base (kept private)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search an address…"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "How far will you travel?"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Travel charges (straight-line bands)"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "0–10 km R30 · 10–20 km R50"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Got a traffic fine? Here's what "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "to do."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Check and pay"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Links open outside CarworX. Official sources are "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "confirmed before launch."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Guides"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Admin help near you"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Listed businesses that help with licence "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "renewals and roadworthy bookings."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Towing: shown as a referral only. CarworX doesn't "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "dispatch tow trucks."
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Sat 9:00 wash, "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Ferndale"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "ask about travel"
+ },
+ {
+  "role": "StaticText",
+  "name": "14:32"
+ },
+ {
+  "role": "StaticText",
+  "name": "HELD"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "QUOTE · V2"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "At a wash bay or at your door"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Services, brakes, diagnostics"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Chips, cracks, windscreens"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Fitting, balancing, alignment"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Official links and admin help"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Home screen"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search results"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Listing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Waiting state"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Dashboard"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Checkout"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Search"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Listing"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Checkout"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Write "
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "a quote"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "Quote approval"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "DECISION"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "WHY IT MATTERS"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "NEEDED BY"
+ },
+ {
+  "role": "StaticText",
+  "name": "14:32"
+ },
+ {
+  "role": "StaticText",
+  "name": "HELD"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "14:32"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "HELD"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "14:32"
+ },
+ {
+  "role": "InlineTextBox",
+  "name": "HELD"
+ }
+]

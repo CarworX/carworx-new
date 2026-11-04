@@ -1,0 +1,1217 @@
+[
+{
+"hash": "#skip",
+"sel": "#cover",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "01-cover-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#summary",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "02-summary-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#brand",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "03-brand-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-home",
+"width": 360,
+"scale": 2,
+"media": "settled",
+"file": "04-home-360.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-home",
+"width": 768,
+"scale": 1,
+"media": "settled",
+"file": "04-home-768.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-home figure.phone",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "05-home-phone-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-home .states > .state:nth-child(1)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "05-home-state-1-limited-supply-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-home .states > .state:nth-child(2)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "05-home-state-2-no-location-yet-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-home .states > .state:nth-child(3)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "05-home-state-3-error-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-search figure.phone",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "06-search-phone-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-search .states > .state:nth-child(1)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "06-search-state-1-map-optional-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-search .states > .state:nth-child(2)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "06-search-state-2-nothing-nearby-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-search .states > .state:nth-child(3)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "06-search-state-3-search-widened-by-you-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-search .states > .state:nth-child(4)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "06-search-state-4-could-not-load-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-listing figure.phone",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "07-listing-phone-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-listing .states > .state:nth-child(1)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "07-listing-state-1-business-paused-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-listing .states > .state:nth-child(2)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "07-listing-state-2-wash-bay-with-an-address-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-listing .states > .state:nth-child(3)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "07-listing-state-3-enquiries-only-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-quote figure.phone",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "08-quote-phone-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-quote .states > .state:nth-child(1)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "08-quote-state-1-waiting-for-the-business-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-quote .states > .state:nth-child(2)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "08-quote-state-2-no-reply-in-time-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-quote .states > .state:nth-child(3)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "08-quote-state-3-quote-expired-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-quote .states > .state:nth-child(4)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "08-quote-state-4-change-quote-during-work-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-quote .states > .state:nth-child(5)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "08-quote-state-5-travel-charge-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-checkout figure.phone",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "09-checkout-phone-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-checkout .states > .state:nth-child(1)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "09-checkout-state-1-checking-payment-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-checkout .states > .state:nth-child(2)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "09-checkout-state-2-payment-failed-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-checkout .states > .state:nth-child(3)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "09-checkout-state-3-hold-expired-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-checkout .states > .state:nth-child(4)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "09-checkout-state-4-paid-needs-sorting-out-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-checkout .states > .state:nth-child(5)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "09-checkout-state-5-confirmed-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-checkout .states > .state:nth-child(6)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "09-checkout-state-6-cancelled-refund-processing-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-checkout .states > .state:nth-child(7)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "09-checkout-state-7-problem-reported-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-dashboard figure.phone",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "10-dashboard-phone-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-dashboard .states > .state:nth-child(1)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "10-dashboard-state-1-write-a-quote-workshop-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-dashboard .states > .state:nth-child(2)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "10-dashboard-state-2-confirmed-mobile-job-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-dashboard .states > .state:nth-child(3)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "10-dashboard-state-3-your-listing-is-paused-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-dashboard .states > .state:nth-child(4)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "10-dashboard-state-4-dispute-on-a-payment-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-apply figure.phone",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "11-apply-phone-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-apply .states > .state:nth-child(1)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "11-apply-state-1-under-review-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-apply .states > .state:nth-child(2)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "11-apply-state-2-we-need-one-more-thing-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-apply .states > .state:nth-child(3)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "11-apply-state-3-live-with-labels-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-fines figure.phone",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "12-fines-phone-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-fines .states > .state:nth-child(1)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "12-fines-state-1-leaving-carworx-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-fines .states > .state:nth-child(2)",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"file": "12-fines-state-2-built-in-lookup-not-planned-yet-390.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 1440,
+"scale": 1,
+"media": "motion",
+"scroll": "0",
+"file": "13-thandi-1440-0-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"scroll": "0",
+"file": "13-thandi-1440-0-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 1440,
+"scale": 1,
+"media": "motion",
+"scroll": ".5",
+"file": "13-thandi-1440-05-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"scroll": ".5",
+"file": "13-thandi-1440-05-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 1440,
+"scale": 1,
+"media": "motion",
+"scroll": "1",
+"file": "13-thandi-1440-1-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"scroll": "1",
+"file": "13-thandi-1440-1-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 390,
+"scale": 1,
+"media": "motion",
+"scroll": "0",
+"file": "13-thandi-390-0-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 390,
+"scale": 1,
+"media": "reduced",
+"scroll": "0",
+"file": "13-thandi-390-0-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 390,
+"scale": 1,
+"media": "motion",
+"scroll": ".5",
+"file": "13-thandi-390-05-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 390,
+"scale": 1,
+"media": "reduced",
+"scroll": ".5",
+"file": "13-thandi-390-05-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 390,
+"scale": 1,
+"media": "motion",
+"scroll": "1",
+"file": "13-thandi-390-1-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 390,
+"scale": 1,
+"media": "reduced",
+"scroll": "1",
+"file": "13-thandi-390-1-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 1440,
+"scale": 1,
+"media": "motion",
+"scroll": "0",
+"file": "14-pieter-1440-0-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"scroll": "0",
+"file": "14-pieter-1440-0-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 1440,
+"scale": 1,
+"media": "motion",
+"scroll": ".5",
+"file": "14-pieter-1440-05-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"scroll": ".5",
+"file": "14-pieter-1440-05-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 1440,
+"scale": 1,
+"media": "motion",
+"scroll": "1",
+"file": "14-pieter-1440-1-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"scroll": "1",
+"file": "14-pieter-1440-1-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 390,
+"scale": 1,
+"media": "motion",
+"scroll": "0",
+"file": "14-pieter-390-0-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 390,
+"scale": 1,
+"media": "reduced",
+"scroll": "0",
+"file": "14-pieter-390-0-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 390,
+"scale": 1,
+"media": "motion",
+"scroll": ".5",
+"file": "14-pieter-390-05-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 390,
+"scale": 1,
+"media": "reduced",
+"scroll": ".5",
+"file": "14-pieter-390-05-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 390,
+"scale": 1,
+"media": "motion",
+"scroll": "1",
+"file": "14-pieter-390-1-motion.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 390,
+"scale": 1,
+"media": "reduced",
+"scroll": "1",
+"file": "14-pieter-390-1-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "1",
+"file": "40-focus-1440-01.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "2",
+"file": "40-focus-1440-02.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "3",
+"file": "40-focus-1440-03.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "4",
+"file": "40-focus-1440-04.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "5",
+"file": "40-focus-1440-05.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "6",
+"file": "40-focus-1440-06.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "7",
+"file": "40-focus-1440-07.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "8",
+"file": "40-focus-1440-08.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "9",
+"file": "40-focus-1440-09.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "10",
+"file": "40-focus-1440-10.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "11",
+"file": "40-focus-1440-11.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "12",
+"file": "40-focus-1440-12.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "13",
+"file": "40-focus-1440-13.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "14",
+"file": "40-focus-1440-14.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "15",
+"file": "40-focus-1440-15.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "16",
+"file": "40-focus-1440-16.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "17",
+"file": "40-focus-1440-17.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "18",
+"file": "40-focus-1440-18.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "19",
+"file": "40-focus-1440-19.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "20",
+"file": "40-focus-1440-20.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "21",
+"file": "40-focus-1440-21.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "22",
+"file": "40-focus-1440-22.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "23",
+"file": "40-focus-1440-23.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "24",
+"file": "40-focus-1440-24.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "25",
+"file": "40-focus-1440-25.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "26",
+"file": "40-focus-1440-26.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "27",
+"file": "40-focus-1440-27.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"tabs": "28",
+"file": "40-focus-1440-28.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "1",
+"file": "40-focus-390-01.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "2",
+"file": "40-focus-390-02.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "3",
+"file": "40-focus-390-03.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "4",
+"file": "40-focus-390-04.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "5",
+"file": "40-focus-390-05.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "6",
+"file": "40-focus-390-06.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "7",
+"file": "40-focus-390-07.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "8",
+"file": "40-focus-390-08.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "9",
+"file": "40-focus-390-09.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "10",
+"file": "40-focus-390-10.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "11",
+"file": "40-focus-390-11.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "12",
+"file": "40-focus-390-12.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "13",
+"file": "40-focus-390-13.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "14",
+"file": "40-focus-390-14.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "15",
+"file": "40-focus-390-15.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "16",
+"file": "40-focus-390-16.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "17",
+"file": "40-focus-390-17.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "18",
+"file": "40-focus-390-18.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "19",
+"file": "40-focus-390-19.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "20",
+"file": "40-focus-390-20.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "21",
+"file": "40-focus-390-21.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "22",
+"file": "40-focus-390-22.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "23",
+"file": "40-focus-390-23.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "24",
+"file": "40-focus-390-24.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "25",
+"file": "40-focus-390-25.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "26",
+"file": "40-focus-390-26.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "27",
+"file": "40-focus-390-27.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"tabs": "28",
+"file": "40-focus-390-28.png"
+},
+{
+"hash": "#skip",
+"sel": ".sheet",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"pre": "(async function(){var b=document.querySelector('.menu-btn');b.focus();b.click();await new Promise(function(r){setTimeout(r,450)});return true})()",
+"file": "40-menu-390-open.png"
+},
+{
+"hash": "#skip",
+"sel": ":focus",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"pre": "(async function(){var b=document.querySelector('.menu-btn');b.focus();b.click();await new Promise(function(r){setTimeout(r,450)});return true})()",
+"tabs": "8",
+"file": "40-menu-390-trap.png"
+},
+{
+"hash": "#skip",
+"sel": ".menu-btn",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"pre": "(async function(){var b=document.querySelector('.menu-btn');b.focus();b.click();await new Promise(function(r){setTimeout(r,450)});return true})()",
+"file": "40-menu-390-esc.png",
+"keys": "Escape"
+},
+{
+"hash": "#skip",
+"sel": "body",
+"width": 360,
+"scale": 1,
+"media": "settled",
+"eval": "targets",
+"file": "40a-targets-360.json"
+},
+{
+"hash": "#skip",
+"sel": "body",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"eval": "targets",
+"file": "40a-targets-390.json"
+},
+{
+"hash": "#skip",
+"sel": "body",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"eval": "ax",
+"file": "40b-axtree-390.json"
+},
+{
+"hash": "#skip",
+"sel": "body",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"eval": "ax",
+"file": "40b-axtree-1440.json"
+},
+{
+"hash": "#skip",
+"sel": "[data-cx]",
+"nth": "0",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"pre": "[].slice.call(document.querySelectorAll('svg')).filter(function(v){return v.querySelector('text')&&v.getClientRects().length&&!v.closest('#intro')}).forEach(function(v){v.setAttribute('data-cx','1')})",
+"file": "41-svg-0.png"
+},
+{
+"hash": "#skip",
+"sel": "[data-cx]",
+"nth": "1",
+"width": 390,
+"scale": 2,
+"media": "settled",
+"pre": "[].slice.call(document.querySelectorAll('svg')).filter(function(v){return v.querySelector('text')&&v.getClientRects().length&&!v.closest('#intro')}).forEach(function(v){v.setAttribute('data-cx','1')})",
+"file": "41-svg-1.png"
+},
+{
+"hash": "#skip",
+"sel": "body",
+"width": 390,
+"scale": 1,
+"media": "settled",
+"eval": "nontext",
+"file": "41a-nontext-390.json"
+},
+{
+"hash": "#skip",
+"sel": "body",
+"width": 1440,
+"scale": 1,
+"media": "settled",
+"eval": "nontext",
+"file": "41a-nontext-1440.json"
+},
+{
+"hash": "#skip",
+"sel": "#cover",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"file": "42-cover-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#brand",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"file": "42-brand-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-thandi",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"file": "42-j-thandi-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#j-pieter",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"file": "42-j-pieter-reduced.png"
+},
+{
+"hash": "#skip",
+"sel": "#s-home",
+"width": 1440,
+"scale": 1,
+"media": "reduced",
+"file": "42-s-home-reduced.png"
+}
+]

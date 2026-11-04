@@ -1,0 +1,1612 @@
+[
+ {
+  "ok": true,
+  "file": "01-cover-390.png",
+  "clip": {
+   "x": 0,
+   "y": 0,
+   "width": 390,
+   "height": 817.03125,
+   "scale": 1
+  },
+  "label": "Sat 9:00 wash, Ferndaleask about the tra"
+ },
+ {
+  "ok": true,
+  "file": "02-summary-390.png",
+  "clip": {
+   "x": 0,
+   "y": 769.03125,
+   "width": 390,
+   "height": 4837.3125,
+   "scale": 1
+  },
+  "label": "Part 1 \u00c2\u00b7 One-page summary\n    CarworXin "
+ },
+ {
+  "ok": true,
+  "file": "03-brand-390.png",
+  "clip": {
+   "x": 0,
+   "y": 5574.34375,
+   "width": 390,
+   "height": 7638,
+   "scale": 1
+  },
+  "label": "Part 2 \u00c2\u00b7 Brand\n    Turbine is locked.Stu"
+ },
+ {
+  "ok": true,
+  "file": "04-home-360.png",
+  "clip": {
+   "x": 0,
+   "y": 14814.640625,
+   "width": 360,
+   "height": 2316.75,
+   "scale": 1
+  },
+  "label": "01Home: five equal shortcutsThe five ser"
+ },
+ {
+  "ok": true,
+  "file": "04-home-768.png",
+  "clip": {
+   "x": 14.71875,
+   "y": 10618.296875,
+   "width": 738.5625,
+   "height": 1944.484375,
+   "scale": 1
+  },
+  "label": "01Home: five equal shortcutsThe five ser"
+ },
+ {
+  "ok": true,
+  "file": "05-home-phone-390.png",
+  "clip": {
+   "x": 0,
+   "y": 13897.453125,
+   "width": 390,
+   "height": 1006.703125,
+   "scale": 1
+  },
+  "label": "Home screen mockup"
+ },
+ {
+  "ok": true,
+  "file": "05-home-state-1-limited-supply-390.png",
+  "clip": {
+   "x": 0,
+   "y": 14904.15625,
+   "width": 390,
+   "height": 414.109375,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Limited supply\n          \n      "
+ },
+ {
+  "ok": true,
+  "file": "05-home-state-2-no-location-yet-390.png",
+  "clip": {
+   "x": 0,
+   "y": 15310.265625,
+   "width": 390,
+   "height": 230.296875,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 No location yet\n          Where'"
+ },
+ {
+  "ok": true,
+  "file": "05-home-state-3-error-390.png",
+  "clip": {
+   "x": 0,
+   "y": 15532.5625,
+   "width": 390,
+   "height": 308.6875,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Error\n          \n          We co"
+ },
+ {
+  "ok": true,
+  "file": "06-search-phone-390.png",
+  "clip": {
+   "x": 0,
+   "y": 16131.421875,
+   "width": 390,
+   "height": 922.234375,
+   "scale": 1
+  },
+  "label": "Search results list mockup"
+ },
+ {
+  "ok": true,
+  "file": "06-search-state-1-map-optional-390.png",
+  "clip": {
+   "x": 0,
+   "y": 17053.65625,
+   "width": 390,
+   "height": 399.875,
+   "scale": 1
+  },
+  "label": "View \u00c2\u00b7 Map (optional)\n          \n       "
+ },
+ {
+  "ok": true,
+  "file": "06-search-state-2-nothing-nearby-390.png",
+  "clip": {
+   "x": 0,
+   "y": 17445.53125,
+   "width": 390,
+   "height": 497.484375,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Nothing nearby\n          \n      "
+ },
+ {
+  "ok": true,
+  "file": "06-search-state-3-search-widened-by-you-390.png",
+  "clip": {
+   "x": 0,
+   "y": 17935.015625,
+   "width": 390,
+   "height": 267.484375,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Search widened by you\n          "
+ },
+ {
+  "ok": true,
+  "file": "06-search-state-4-could-not-load-390.png",
+  "clip": {
+   "x": 0,
+   "y": 18194.5,
+   "width": 390,
+   "height": 289.125,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Could not load\n          \n      "
+ },
+ {
+  "ok": true,
+  "file": "07-listing-phone-390.png",
+  "clip": {
+   "x": 0,
+   "y": 18699.40625,
+   "width": 390,
+   "height": 1045.953125,
+   "scale": 1
+  },
+  "label": "Business listing mockup"
+ },
+ {
+  "ok": true,
+  "file": "07-listing-state-1-business-paused-390.png",
+  "clip": {
+   "x": 0,
+   "y": 19745.359375,
+   "width": 390,
+   "height": 328.25,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Business paused\n          \n     "
+ },
+ {
+  "ok": true,
+  "file": "07-listing-state-2-wash-bay-with-an-address-390.png",
+  "clip": {
+   "x": 0,
+   "y": 20065.609375,
+   "width": 390,
+   "height": 298.09375,
+   "scale": 1
+  },
+  "label": "Variant \u00c2\u00b7 Wash bay with an address\n     "
+ },
+ {
+  "ok": true,
+  "file": "07-listing-state-3-enquiries-only-390.png",
+  "clip": {
+   "x": 0,
+   "y": 20355.703125,
+   "width": 390,
+   "height": 232.6875,
+   "scale": 1
+  },
+  "label": "Variant \u00c2\u00b7 Enquiries only\n          Spotl"
+ },
+ {
+  "ok": true,
+  "file": "08-quote-phone-390.png",
+  "clip": {
+   "x": 0,
+   "y": 20828.96875,
+   "width": 390,
+   "height": 887.875,
+   "scale": 1
+  },
+  "label": "Quote approval mockup"
+ },
+ {
+  "ok": true,
+  "file": "08-quote-state-1-waiting-for-the-business-390.png",
+  "clip": {
+   "x": 0,
+   "y": 21716.84375,
+   "width": 390,
+   "height": 318.921875,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Waiting for the business\n       "
+ },
+ {
+  "ok": true,
+  "file": "08-quote-state-2-no-reply-in-time-390.png",
+  "clip": {
+   "x": 0,
+   "y": 22027.765625,
+   "width": 390,
+   "height": 289.125,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 No reply in time\n          \n    "
+ },
+ {
+  "ok": true,
+  "file": "08-quote-state-3-quote-expired-390.png",
+  "clip": {
+   "x": 0,
+   "y": 22308.890625,
+   "width": 390,
+   "height": 308.6875,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Quote expired\n          \n       "
+ },
+ {
+  "ok": true,
+  "file": "08-quote-state-4-change-quote-during-work-390.png",
+  "clip": {
+   "x": 0,
+   "y": 22609.578125,
+   "width": 390,
+   "height": 227.015625,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Change quote during work\n       "
+ },
+ {
+  "ok": true,
+  "file": "08-quote-state-5-travel-charge-390.png",
+  "clip": {
+   "x": 0,
+   "y": 22828.59375,
+   "width": 390,
+   "height": 232.59375,
+   "scale": 1
+  },
+  "label": "Variant \u00c2\u00b7 Travel charge\n          \n     "
+ },
+ {
+  "ok": true,
+  "file": "09-checkout-phone-390.png",
+  "clip": {
+   "x": 0,
+   "y": 23379.953125,
+   "width": 390,
+   "height": 710.09375,
+   "scale": 1
+  },
+  "label": "Checkout mockup"
+ },
+ {
+  "ok": true,
+  "file": "09-checkout-state-1-checking-payment-390.png",
+  "clip": {
+   "x": 0,
+   "y": 24090.046875,
+   "width": 390,
+   "height": 194.625,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Checking payment\n          Check"
+ },
+ {
+  "ok": true,
+  "file": "09-checkout-state-2-payment-failed-390.png",
+  "clip": {
+   "x": 0,
+   "y": 24276.671875,
+   "width": 390,
+   "height": 290.125,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Payment failed\n          \n      "
+ },
+ {
+  "ok": true,
+  "file": "09-checkout-state-3-hold-expired-390.png",
+  "clip": {
+   "x": 0,
+   "y": 24558.796875,
+   "width": 390,
+   "height": 308.6875,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Hold expired\n          \n        "
+ },
+ {
+  "ok": true,
+  "file": "09-checkout-state-4-paid-needs-sorting-out-390.png",
+  "clip": {
+   "x": 0,
+   "y": 24859.484375,
+   "width": 390,
+   "height": 292.6875,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Paid, needs sorting out\n        "
+ },
+ {
+  "ok": true,
+  "file": "09-checkout-state-5-confirmed-390.png",
+  "clip": {
+   "x": 0,
+   "y": 25144.171875,
+   "width": 390,
+   "height": 270.484375,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Confirmed\n          Booked and p"
+ },
+ {
+  "ok": true,
+  "file": "09-checkout-state-6-cancelled-refund-processing-390.png",
+  "clip": {
+   "x": 0,
+   "y": 25406.65625,
+   "width": 390,
+   "height": 196.015625,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Cancelled, refund processing\n   "
+ },
+ {
+  "ok": true,
+  "file": "09-checkout-state-7-problem-reported-390.png",
+  "clip": {
+   "x": 0,
+   "y": 25594.671875,
+   "width": 390,
+   "height": 254.015625,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Problem reported\n          \n    "
+ },
+ {
+  "ok": true,
+  "file": "10-dashboard-phone-390.png",
+  "clip": {
+   "x": 0,
+   "y": 26064.46875,
+   "width": 390,
+   "height": 994.171875,
+   "scale": 1
+  },
+  "label": "Business dashboard mockup"
+ },
+ {
+  "ok": true,
+  "file": "10-dashboard-state-1-write-a-quote-workshop-390.png",
+  "clip": {
+   "x": 0,
+   "y": 27058.640625,
+   "width": 390,
+   "height": 442.703125,
+   "scale": 1
+  },
+  "label": "Screen \u00c2\u00b7 Write a quote (workshop)\n      "
+ },
+ {
+  "ok": true,
+  "file": "10-dashboard-state-2-confirmed-mobile-job-390.png",
+  "clip": {
+   "x": 0,
+   "y": 27493.34375,
+   "width": 390,
+   "height": 172.6875,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Confirmed mobile job\n          C"
+ },
+ {
+  "ok": true,
+  "file": "10-dashboard-state-3-your-listing-is-paused-390.png",
+  "clip": {
+   "x": 0,
+   "y": 27658.03125,
+   "width": 390,
+   "height": 252.25,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Your listing is paused\n         "
+ },
+ {
+  "ok": true,
+  "file": "10-dashboard-state-4-dispute-on-a-payment-390.png",
+  "clip": {
+   "x": 0,
+   "y": 27902.28125,
+   "width": 390,
+   "height": 245.578125,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Dispute on a payment\n          C"
+ },
+ {
+  "ok": true,
+  "file": "11-apply-phone-390.png",
+  "clip": {
+   "x": 0,
+   "y": 29018.71875,
+   "width": 390,
+   "height": 754.984375,
+   "scale": 1
+  },
+  "label": "Business application mockup"
+ },
+ {
+  "ok": true,
+  "file": "11-apply-state-1-under-review-390.png",
+  "clip": {
+   "x": 0,
+   "y": 29773.703125,
+   "width": 390,
+   "height": 270.984375,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Under review\n          \n        "
+ },
+ {
+  "ok": true,
+  "file": "11-apply-state-2-we-need-one-more-thing-390.png",
+  "clip": {
+   "x": 0,
+   "y": 30036.6875,
+   "width": 390,
+   "height": 232.6875,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 We need one more thing\n         "
+ },
+ {
+  "ok": true,
+  "file": "11-apply-state-3-live-with-labels-390.png",
+  "clip": {
+   "x": 0,
+   "y": 30261.375,
+   "width": 390,
+   "height": 286.25,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Live, with labels\n          Oper"
+ },
+ {
+  "ok": true,
+  "file": "12-fines-phone-390.png",
+  "clip": {
+   "x": 0,
+   "y": 30788.203125,
+   "width": 390,
+   "height": 996.140625,
+   "scale": 1
+  },
+  "label": "Fines guidance mockup"
+ },
+ {
+  "ok": true,
+  "file": "12-fines-state-1-leaving-carworx-390.png",
+  "clip": {
+   "x": 0,
+   "y": 31784.34375,
+   "width": 390,
+   "height": 299.421875,
+   "scale": 1
+  },
+  "label": "State \u00c2\u00b7 Leaving CarworX\n          \n     "
+ },
+ {
+  "ok": true,
+  "file": "12-fines-state-2-built-in-lookup-not-planned-yet-390.png",
+  "clip": {
+   "x": 0,
+   "y": 32075.765625,
+   "width": 390,
+   "height": 172.6875,
+   "scale": 1
+  },
+  "label": "Later \u00c2\u00b7 Built-in lookup (not planned yet"
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-1440-0-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 20600,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-1440-0-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 20928,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-1440-05-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 20822,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-1440-05-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 21153,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-1440-1-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 21043,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-1440-1-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 21377,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-390-0-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 33367,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-390-0-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 33964,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-390-05-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 34354,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-390-05-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 34898,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-390-1-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 35270,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "13-thandi-390-1-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 35831,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-1440-0-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 21963,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-1440-0-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 22357,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-1440-05-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 22097,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-1440-05-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 22541,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-1440-1-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 22326,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-1440-1-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 22726,
+   "width": 1440,
+   "height": 900,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-390-0-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 36065,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-390-0-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 36711,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-390-05-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 36887,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-390-05-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 37547,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-390-1-motion.png",
+  "clip": {
+   "x": 0,
+   "y": 37784,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "14-pieter-390-1-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 38383,
+   "width": 390,
+   "height": 800,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-01.png",
+  "clip": {
+   "x": 0,
+   "y": 72,
+   "width": 235.125,
+   "height": 96.796875,
+   "scale": 1
+  },
+  "label": "Skip to the summary"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-02.png",
+  "clip": {
+   "x": 121,
+   "y": 10.609375,
+   "width": 172,
+   "height": 74.765625,
+   "scale": 1
+  },
+  "label": "CarworX pack, back to the top"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-03.png",
+  "clip": {
+   "x": 377.40625,
+   "y": 5.15625,
+   "width": 134.53125,
+   "height": 85.6875,
+   "scale": 1
+  },
+  "label": "Summary"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-04.png",
+  "clip": {
+   "x": 465.9375,
+   "y": 5.15625,
+   "width": 110.96875,
+   "height": 85.6875,
+   "scale": 1
+  },
+  "label": "Brand"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-05.png",
+  "clip": {
+   "x": 530.90625,
+   "y": 5.15625,
+   "width": 168.234375,
+   "height": 85.6875,
+   "scale": 1
+  },
+  "label": "Phone screens"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-06.png",
+  "clip": {
+   "x": 653.140625,
+   "y": 5.15625,
+   "width": 127.21875,
+   "height": 85.6875,
+   "scale": 1
+  },
+  "label": "Desktop"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-07.png",
+  "clip": {
+   "x": 734.359375,
+   "y": 5.15625,
+   "width": 132.40625,
+   "height": 85.6875,
+   "scale": 1
+  },
+  "label": "Journeys"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-08.png",
+  "clip": {
+   "x": 820.765625,
+   "y": 5.15625,
+   "width": 227.90625,
+   "height": 85.6875,
+   "scale": 1
+  },
+  "label": "Roadmap and decisions"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-09.png",
+  "clip": {
+   "x": 388.109375,
+   "y": 666.171875,
+   "width": 375.703125,
+   "height": 100,
+   "scale": 1
+  },
+  "label": "Start with the one-page summary"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-10.png",
+  "clip": {
+   "x": 731.8125,
+   "y": 666.171875,
+   "width": 320.078125,
+   "height": 100,
+   "scale": 1
+  },
+  "label": "See the two walkthroughs"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-11.png",
+  "clip": {
+   "x": 814.625,
+   "y": 3154.9375,
+   "width": 222.484375,
+   "height": 69,
+   "scale": 1
+  },
+  "label": "Roadmap and decisions"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-12.png",
+  "clip": {
+   "x": 124,
+   "y": 4446.859375,
+   "width": 318.625,
+   "height": 92,
+   "scale": 1
+  },
+  "label": "Play the logo animation again"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-13.png",
+  "clip": {
+   "x": 993.515625,
+   "y": 21080.578125,
+   "width": 138.15625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Home screen"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-14.png",
+  "clip": {
+   "x": 1086.125,
+   "y": 21230.21875,
+   "width": 146.40625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Search results"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-15.png",
+  "clip": {
+   "x": 814.40625,
+   "y": 21379.859375,
+   "width": 93.65625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Listing"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-16.png",
+  "clip": {
+   "x": 870.578125,
+   "y": 21379.859375,
+   "width": 137.96875,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Waiting state"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-17.png",
+  "clip": {
+   "x": 673.8125,
+   "y": 21529.5,
+   "width": 122.65625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Dashboard"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-18.png",
+  "clip": {
+   "x": 1106.421875,
+   "y": 21655.890625,
+   "width": 114.046875,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Checkout"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-19.png",
+  "clip": {
+   "x": 1067.515625,
+   "y": 22508.765625,
+   "width": 96.34375,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Search"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-20.png",
+  "clip": {
+   "x": 1126.375,
+   "y": 22508.765625,
+   "width": 93.65625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Listing"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-21.png",
+  "clip": {
+   "x": 680.125,
+   "y": 22658.40625,
+   "width": 114.046875,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Checkout"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-22.png",
+  "clip": {
+   "x": 641,
+   "y": 22784.796875,
+   "width": 653.140625,
+   "height": 90.25,
+   "scale": 1
+  },
+  "label": "Write a quote"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-23.png",
+  "clip": {
+   "x": 1067.578125,
+   "y": 23084.078125,
+   "width": 152.3125,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Quote approval"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-24.png",
+  "clip": {
+   "x": 124,
+   "y": 25254.53125,
+   "width": 1192,
+   "height": 569,
+   "scale": 1
+  },
+  "label": "Decisions the business still needs to ma"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-25.png",
+  "clip": {
+   "x": 187.25,
+   "y": 26193.203125,
+   "width": 103.65625,
+   "height": 66,
+   "scale": 1
+  },
+  "label": "PLAN 2.1"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-26.png",
+  "clip": {
+   "x": 574.296875,
+   "y": 26193.203125,
+   "width": 134.078125,
+   "height": 66,
+   "scale": 1
+  },
+  "label": "design/brand"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-27.png",
+  "clip": {
+   "x": 763,
+   "y": 26193.203125,
+   "width": 101.453125,
+   "height": 66,
+   "scale": 1
+  },
+  "label": "exports/"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-1440-28.png",
+  "clip": {
+   "x": 878.328125,
+   "y": 26193.203125,
+   "width": 90.453125,
+   "height": 66,
+   "scale": 1
+  },
+  "label": "QA.md"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-01.png",
+  "clip": {
+   "x": 0,
+   "y": 72,
+   "width": 235.125,
+   "height": 96.796875,
+   "scale": 1
+  },
+  "label": "Skip to the summary"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-02.png",
+  "clip": {
+   "x": 9,
+   "y": 7.609375,
+   "width": 172,
+   "height": 74.765625,
+   "scale": 1
+  },
+  "label": "CarworX pack, back to the top"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-03.png",
+  "clip": {
+   "x": 301,
+   "y": 1,
+   "width": 88,
+   "height": 88,
+   "scale": 1
+  },
+  "label": "Open menu"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-04.png",
+  "clip": {
+   "x": 7.140625,
+   "y": 561.075439453125,
+   "width": 375.703125,
+   "height": 100,
+   "scale": 1
+  },
+  "label": "Start with the one-page summary"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-05.png",
+  "clip": {
+   "x": 34.953125,
+   "y": 629.0328369140625,
+   "width": 320.078125,
+   "height": 100,
+   "scale": 1
+  },
+  "label": "See the two walkthroughs"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-06.png",
+  "clip": {
+   "x": 53,
+   "y": 5492.75,
+   "width": 283.796875,
+   "height": 93.796875,
+   "scale": 1
+  },
+  "label": "Roadmap and decisions"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-07.png",
+  "clip": {
+   "x": 0,
+   "y": 6364.125,
+   "width": 318.625,
+   "height": 92,
+   "scale": 1
+  },
+  "label": "Play the logo animation again"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-08.png",
+  "clip": {
+   "x": 242.5,
+   "y": 34754.5625,
+   "width": 138.15625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Home screen"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-09.png",
+  "clip": {
+   "x": 97,
+   "y": 34997.203125,
+   "width": 146.40625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Search results"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-10.png",
+  "clip": {
+   "x": 163.34375,
+   "y": 35219.6875,
+   "width": 93.65625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Listing"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-11.png",
+  "clip": {
+   "x": 219.515625,
+   "y": 35219.6875,
+   "width": 137.96875,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Waiting state"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-12.png",
+  "clip": {
+   "x": 129.8125,
+   "y": 35442.171875,
+   "width": 122.65625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Dashboard"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-13.png",
+  "clip": {
+   "x": 193.25,
+   "y": 35641.40625,
+   "width": 114.046875,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Checkout"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-14.png",
+  "clip": {
+   "x": 97,
+   "y": 37551.109375,
+   "width": 96.34375,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Search"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-15.png",
+  "clip": {
+   "x": 155.859375,
+   "y": 37551.109375,
+   "width": 93.65625,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Listing"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-16.png",
+  "clip": {
+   "x": 136.125,
+   "y": 37773.59375,
+   "width": 114.046875,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Checkout"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-17.png",
+  "clip": {
+   "x": 97,
+   "y": 37972.828125,
+   "width": 241.78125,
+   "height": 90.25,
+   "scale": 1
+  },
+  "label": "Write a quote"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-18.png",
+  "clip": {
+   "x": 97,
+   "y": 38394.546875,
+   "width": 152.3125,
+   "height": 67,
+   "scale": 1
+  },
+  "label": "Quote approval"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-19.png",
+  "clip": {
+   "x": 0,
+   "y": 41761.390625,
+   "width": 390,
+   "height": 824.75,
+   "scale": 1
+  },
+  "label": "Decisions the business still needs to ma"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-20.png",
+  "clip": {
+   "x": 55.25,
+   "y": 42983.5,
+   "width": 103.65625,
+   "height": 66,
+   "scale": 1
+  },
+  "label": "PLAN 2.1"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-21.png",
+  "clip": {
+   "x": 100.625,
+   "y": 43005.1875,
+   "width": 134.078125,
+   "height": 66,
+   "scale": 1
+  },
+  "label": "design/brand"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-22.png",
+  "clip": {
+   "x": 289.328125,
+   "y": 43005.1875,
+   "width": 100.671875,
+   "height": 66,
+   "scale": 1
+  },
+  "label": "exports/"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-23.png",
+  "clip": {
+   "x": 47.5625,
+   "y": 43026.875,
+   "width": 90.453125,
+   "height": 66,
+   "scale": 1
+  },
+  "label": "QA.md"
+ },
+ {
+  "ok": false,
+  "file": "40-focus-390-24.png",
+  "error": "selector matched nothing"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-25.png",
+  "clip": {
+   "x": 0,
+   "y": 72,
+   "width": 235.125,
+   "height": 96.796875,
+   "scale": 1
+  },
+  "label": "Skip to the summary"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-26.png",
+  "clip": {
+   "x": 9,
+   "y": 29998.609375,
+   "width": 172,
+   "height": 74.765625,
+   "scale": 1
+  },
+  "label": "CarworX pack, back to the top"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-27.png",
+  "clip": {
+   "x": 301,
+   "y": 20574,
+   "width": 88,
+   "height": 88,
+   "scale": 1
+  },
+  "label": "Open menu"
+ },
+ {
+  "ok": true,
+  "file": "40-focus-390-28.png",
+  "clip": {
+   "x": 34.953125,
+   "y": 629.03125,
+   "width": 320.078125,
+   "height": 100,
+   "scale": 1
+  },
+  "label": "See the two walkthroughs"
+ },
+ {
+  "ok": true,
+  "file": "40a-targets-360.json",
+  "items": 30
+ },
+ {
+  "ok": true,
+  "file": "40a-targets-390.json",
+  "items": 30
+ },
+ {
+  "ok": true,
+  "file": "40b-axtree-390.json",
+  "nodes": 2664
+ },
+ {
+  "ok": true,
+  "file": "40b-axtree-1440.json",
+  "nodes": 2502
+ },
+ {
+  "ok": true,
+  "file": "41-svg-0.png",
+  "clip": {
+   "x": 17,
+   "y": 17094.65625,
+   "width": 356,
+   "height": 264.875,
+   "scale": 1
+  },
+  "label": "Concept map: two wash bays as numbered p"
+ },
+ {
+  "ok": true,
+  "file": "41-svg-1.png",
+  "clip": {
+   "x": 233.484375,
+   "y": 33343.75,
+   "width": 137.671875,
+   "height": 170.6875,
+   "scale": 1
+  },
+  "label": "Concept map with numbered pins for wash "
+ },
+ {
+  "ok": true,
+  "file": "41a-nontext-390.json",
+  "items": 28
+ },
+ {
+  "ok": true,
+  "file": "41a-nontext-1440.json",
+  "items": 33
+ },
+ {
+  "ok": true,
+  "file": "42-cover-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 0,
+   "width": 1440,
+   "height": 932,
+   "scale": 1
+  },
+  "label": "Sat 9:00 wash, Ferndaleask about the tra"
+ },
+ {
+  "ok": true,
+  "file": "42-brand-reduced.png",
+  "clip": {
+   "x": 0,
+   "y": 3211.734375,
+   "width": 1440,
+   "height": 4648.109375,
+   "scale": 1
+  },
+  "label": "Part 2 \u00c2\u00b7 Brand\n    Turbine is locked.Stu"
+ },
+ {
+  "ok": true,
+  "file": "42-j-thandi-reduced.png",
+  "clip": {
+   "x": 132,
+   "y": 20912.453125,
+   "width": 1176,
+   "height": 1380.1875,
+   "scale": 1
+  },
+  "label": "Journey 1Thandi books a wash\n      \n    "
+ },
+ {
+  "ok": true,
+  "file": "42-j-pieter-reduced.png",
+  "clip": {
+   "x": 132,
+   "y": 22340.640625,
+   "width": 1176,
+   "height": 1301.34375,
+   "scale": 1
+  },
+  "label": "Journey 2Pieter gets a repair quote\n    "
+ },
+ {
+  "ok": true,
+  "file": "42-s-home-reduced.png",
+  "clip": {
+   "x": 132,
+   "y": 8319.484375,
+   "width": 1176,
+   "height": 1198.53125,
+   "scale": 1
+  },
+  "label": "01Home: five equal shortcutsThe five ser"
+ },
+ {
+  "ok": true,
+  "file": "40-menu-390-open.png",
+  "note": "re-run: pre uses click(); CDP Enter without text did not activate the button (tool issue, first attempt logged in index)"
+ },
+ {
+  "ok": true,
+  "file": "40-menu-390-trap.png",
+  "label": "Brand (in sheet after 8 tabs)"
+ },
+ {
+  "ok": true,
+  "file": "40-menu-390-esc.png",
+  "label": "Open menu (focus returned after Esc)"
+ }
+]

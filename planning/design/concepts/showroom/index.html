@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarworX Showroom</title>
+<meta name="description" content="Showroom: a product-launch concept for the CarworX marketing site. Concept, not final.">
+<script>document.documentElement.classList.add(matchMedia('(prefers-reduced-motion: reduce)').matches ? 'rm' : 'motion');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
+<style>
+/* ───────────── Showroom tokens ───────────── */
+:root{
+  color-scheme: light;
+  /* from the logo */
+  --ink:#0d0f12; --graphite:#1c2128; --steel:#8a97a6; --white:#ffffff;
+  /* showroom floor */
+  --floor:#f5f5f7; --floor-2:#ebebef; --line:rgba(13,15,18,.10); --muted:#5b6470; --on-ink-muted:#a3adba;
+  /* the lineup: five service colours tuned to sit beside signal */
+  --rinse:#2a5cff;  --rinse-d:#0b4fd6;  --rinse-t:#e7edff;  --rinse-on:#ffffff;
+  --signal:#ff3b0a; --signal-d:#c42600; --signal-t:#ffe8e0; --signal-on:#0d0f12; --signal-soft:#ff6a33;
+  --lens:#7b4dff;   --lens-d:#5b2fe0;   --lens-t:#efe9ff;   --lens-on:#ffffff;
+  --tread:#00b37a;  --tread-d:#007a52;  --tread-t:#d9f6ea;  --tread-on:#0d0f12;
+  --permit:#ffc21a; --permit-d:#8a6100; --permit-t:#fff3c9; --permit-on:#0d0f12;
+
+  --display:"Bricolage Grotesque", "Sora", system-ui, sans-serif;
+  --text:"Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"Geist Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --gutter:clamp(16px, 4vw, 56px);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --out:cubic-bezier(.16,1,.3,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:auto}
+body{margin:0;background:var(--white);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+svg{display:block}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:-1px}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.display{font-family:var(--display);font-variation-settings:"opsz" 96,"wdth" 100;font-weight:700;letter-spacing:-.045em;line-height:.9}
+.ico{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:3px solid var(--rinse);outline-offset:3px;border-radius:8px}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:.5em;height:52px;padding:0 26px;border-radius:999px;font-weight:600;font-size:16px;letter-spacing:-.01em;border:0;cursor:pointer;transition:transform .5s var(--spring), background .3s, box-shadow .3s;white-space:nowrap}
+.pill:hover{transform:translateY(-2px) scale(1.03)}
+.pill:active{transform:scale(.97)}
+.pill-ink{background:var(--ink);color:var(--white)}
+.pill-white{background:var(--white);color:var(--ink)}
+.pill-ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}
+.pill .arr{transition:transform .4s var(--spring)}
+.pill:hover .arr{transform:translateX(4px)}
+
+/* ───────────── Nav ───────────── */
+.nav{position:fixed;z-index:50;top:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:6px 6px 6px 18px;border-radius:999px;background:rgba(255,255,255,.72);backdrop-filter:blur(18px) saturate(1.6);-webkit-backdrop-filter:blur(18px) saturate(1.6);box-shadow:0 0 0 1px rgba(13,15,18,.06), 0 12px 32px -14px rgba(13,15,18,.35);transition:opacity .6s var(--out), transform .8s var(--out);width:max-content;max-width:calc(100% - 24px)}
+.motion .nav{opacity:0;transform:translate(-50%,-30px)}
+.motion .nav.on{opacity:1;transform:translate(-50%,0)}
+.nav-logo{display:flex;align-items:center;height:40px;padding-right:12px;color:var(--ink)}
+.nav-logo svg{height:22px;width:auto}
+.nav-links{display:flex;gap:2px}
+.nav-links a{padding:9px 14px;border-radius:999px;font-size:14px;font-weight:500;color:#2b3038;transition:background .25s}
+.nav-links a:hover{background:rgba(13,15,18,.06)}
+.nav .pill{height:40px;padding:0 18px;font-size:14px}
+@media (max-width:820px){.nav-links{display:none}.nav{gap:2px;padding-left:14px}}
+
+/* ───────────── 1 · Intro ───────────── */
+.intro{position:relative;min-height:100svh;background:var(--ink);color:var(--white);display:grid;place-items:center;overflow:hidden;isolation:isolate}
+.keylight{position:absolute;z-index:-1;border-radius:50%;pointer-events:none;filter:blur(10px)}
+.k1{width:70vmax;height:70vmax;left:calc(50% - 35vmax);top:calc(50% - 35vmax);background:radial-gradient(closest-side, rgba(138,151,166,.34), rgba(138,151,166,.08) 55%, transparent 72%);animation:lap 17s linear infinite}
+.k2{width:110vmax;height:110vmax;left:calc(50% - 55vmax);top:calc(50% - 55vmax);background:radial-gradient(closest-side, rgba(42,92,255,.10), transparent 70%);animation:lap 23s linear infinite reverse}
+@keyframes lap{0%{transform:translate(-18vw,-12vh)}25%{transform:translate(16vw,-16vh)}50%{transform:translate(22vw,10vh)}75%{transform:translate(-14vw,16vh)}100%{transform:translate(-18vw,-12vh)}}
+.intro-inner{display:flex;flex-direction:column;align-items:center;text-align:center;padding:96px var(--gutter) 72px;width:100%}
+.wm-stage{position:relative;width:min(84vw, 880px);aspect-ratio:606.35/100}
+.wm-static{position:absolute;inset:0;width:100%;height:100%;color:var(--white)}
+.wm-anim{position:absolute;inset:0;display:none}
+.motion .wm-static{visibility:hidden}
+.motion .wm-anim{display:block}
+.wm-l{position:absolute}
+.wm-l svg{width:100%;height:100%;fill:var(--white);overflow:visible}
+.wm-g{position:absolute;top:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-weight:400;color:var(--steel);line-height:1;white-space:pre}
+.glint{position:absolute;inset:-30% -10%;background:linear-gradient(100deg, transparent 42%, rgba(138,151,166,.28) 50%, transparent 58%);transform:translateX(-120%);opacity:0;pointer-events:none}
+.intro-rotor{width:clamp(76px, 10vw, 136px);height:auto;aspect-ratio:1;color:var(--white);margin-top:clamp(28px,5vh,56px)}
+.intro-sub{margin:clamp(28px,4.5vh,48px) 0 0;font-family:var(--display);font-variation-settings:"opsz" 40;font-weight:500;font-size:clamp(20px,2.3vw,30px);letter-spacing:-.02em;line-height:1.15;max-width:22ch}
+.intro-ctas{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:24px}
+.intro-ctas .pill-ghost{color:var(--white)}
+.intro-details{margin-top:22px;color:var(--on-ink-muted);font-size:13px}
+.intro-details span+span::before{content:"·";margin:0 .7em;color:#5d6773}
+.ticker{margin-top:30px;display:flex;align-items:center;gap:14px;font-size:13px;color:var(--on-ink-muted)}
+.ticker-win{position:relative;height:36px;overflow:hidden;min-width:19ch;text-align:left}
+.ticker-list{list-style:none;margin:0;padding:0}
+.ticker-list li{height:36px;display:flex;align-items:center;gap:10px;font-family:var(--display);font-variation-settings:"opsz" 30;font-weight:600;font-size:clamp(20px,2vw,26px);letter-spacing:-.02em;white-space:nowrap}
+.ticker-list li i{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.scroll-cue{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--on-ink-muted);font-size:11px}
+.scroll-cue b{width:1px;height:36px;background:linear-gradient(var(--steel),transparent);animation:cue 2.2s var(--out) infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media (max-height:700px){.scroll-cue{display:none}}
+
+/* ───────────── 2 · Hero: one object → the lineup ───────────── */
+.hero{position:relative;height:100svh;min-height:640px;background:var(--white);overflow:hidden}
+.hero-stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:88px var(--gutter) 40px}
+.hero-label{position:absolute;left:0;right:0;top:15%;text-align:center;font-family:var(--display);font-variation-settings:"opsz" 60;font-weight:600;font-size:clamp(22px,2.6vw,34px);letter-spacing:-.025em;display:none}
+.hero-label small{display:block;margin-top:6px;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.motion .hero-label{display:block}
+.obj-anchor{position:absolute;left:50%;top:54%;width:var(--os);height:var(--os);margin:calc(var(--os) / -2) 0 0 calc(var(--os) / -2);perspective:1600px;pointer-events:none;display:none;--os:min(46vh, 62vw, 420px)}
+.motion .obj-anchor{display:block}
+.obj-scrub,.obj-sway{position:absolute;inset:0;transform-style:preserve-3d}
+.slab,.face{position:absolute;inset:0;border-radius:22.37%}
+.slab{background:#252b34}
+.face{display:grid;place-items:center;background:radial-gradient(120% 90% at 30% 15%, #2a313b 0%, #12161b 45%, #0b0d10 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08), inset 0 2px 1px rgba(255,255,255,.12)}
+.face.back{transform:translateZ(-30px) rotateY(180deg)}
+.face svg{width:62%;height:62%;color:var(--white)}
+.face .spin{animation:spin 7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.obj-shadow{position:absolute;left:8%;right:8%;bottom:-16%;height:12%;border-radius:50%;background:radial-gradient(closest-side, rgba(13,15,18,.28), transparent);filter:blur(6px);transform:translateZ(-60px)}
+
+.hero-copy{text-align:center;max-width:1100px;position:relative;z-index:2}
+.hero h1{margin:0;font-size:clamp(52px, 9.6vw, 156px)}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg, var(--rinse), var(--lens) 30%, var(--signal) 55%, var(--permit) 78%, var(--tread));-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.04em}
+.hero-sub{margin:18px auto 0;max-width:46ch;color:var(--muted);font-size:clamp(16px,1.35vw,19px);line-height:1.45}
+.hero-cta{margin-top:22px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+
+.lineup{list-style:none;margin:clamp(28px,5vh,56px) 0 0;padding:0;display:grid;grid-template-columns:repeat(5, minmax(0,1fr));gap:clamp(12px,2vw,28px);width:min(100%, 1180px);position:relative;z-index:3}
+.tile{position:relative;perspective:900px}
+.tile a{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;border-radius:24px;padding:4px}
+.tile-in{transform-style:preserve-3d;width:100%;display:flex;justify-content:center}
+.chip{--c:var(--rinse);--on:#fff;position:relative;width:min(100%, 168px);aspect-ratio:1;border-radius:22.37%;display:grid;place-items:center;color:var(--on);font-size:clamp(40px,4.4vw,64px);background:linear-gradient(155deg, color-mix(in srgb, var(--c) 72%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 82%, #000) 100%);box-shadow:inset 0 -14px 26px color-mix(in srgb, var(--c) 60%, #000 40%), inset 0 2px 0 rgba(255,255,255,.45), 0 28px 44px -22px color-mix(in srgb, var(--c) 85%, #000);transition:transform .6s var(--spring)}
+.chip::after{content:"";position:absolute;inset:6% 10% auto;height:38%;border-radius:40% 40% 50% 50%/60% 60% 40% 40%;background:linear-gradient(rgba(255,255,255,.38), rgba(255,255,255,0));pointer-events:none}
+.tile a:hover .chip{transform:translateY(-8px) rotate(-4deg) scale(1.04)}
+.tile-num{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.tile-name{font-family:var(--display);font-variation-settings:"opsz" 30;font-weight:650;font-size:clamp(15px,1.35vw,19px);letter-spacing:-.02em;line-height:1.12;max-width:13ch}
+.tile-desc{font-size:13px;color:var(--muted);line-height:1.35;max-width:20ch;margin-top:-8px}
+.s1{--c:var(--rinse);--on:var(--rinse-on);--d:var(--rinse-d);--t:var(--rinse-t)}
+.s2{--c:var(--signal);--on:var(--signal-on);--d:var(--signal-d);--t:var(--signal-t)}
+.s3{--c:var(--lens);--on:var(--lens-on);--d:var(--lens-d);--t:var(--lens-t)}
+.s4{--c:var(--tread);--on:var(--tread-on);--d:var(--tread-d);--t:var(--tread-t)}
+.s5{--c:var(--permit);--on:var(--permit-on);--d:var(--permit-d);--t:var(--permit-t)}
+@media (max-width:820px){
+  .hero{min-height:760px}
+  .hero-stage{justify-content:flex-start;padding-top:92px}
+  .hero-sub{font-size:15px}
+  .lineup{grid-template-columns:1fr;gap:8px;margin-top:22px}
+  .tile a{position:relative;flex-direction:row;text-align:left;gap:14px;padding:6px;border-radius:18px}
+  .tile a::before{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--floor);opacity:var(--bgo,1);z-index:-1}
+  .tile{isolation:isolate}
+  .tile-in{width:auto}
+  .chip{width:52px;font-size:24px;flex:none;box-shadow:inset 0 -6px 12px color-mix(in srgb, var(--c) 60%, #000 40%), inset 0 1px 0 rgba(255,255,255,.45)}
+  .tile-num{order:3;margin-left:auto;padding-right:10px}
+  .tile-name{max-width:none;font-size:16px}
+  .tile-desc{display:none}
+  .obj-anchor{top:46%}
+  .hero-label{top:13%}
+}
+
+/* ───────────── 3 · Ring → burst ───────────── */
+.ring{position:relative;height:100svh;min-height:620px;background:var(--ink);color:var(--white);overflow:hidden;isolation:isolate}
+.ring-glow{position:absolute;inset:0;z-index:-1;background:radial-gradient(60% 50% at 50% 55%, rgba(123,77,255,.20), transparent 70%), radial-gradient(40% 40% at 70% 30%, rgba(255,59,10,.12), transparent 70%)}
+.ring-world{position:absolute;inset:0;perspective:1100px;perspective-origin:50% 45%}
+.ring-tilt{position:absolute;inset:0;transform-style:preserve-3d}
+.rc{--w:224px;--h:140px;position:absolute;left:50%;top:50%;width:var(--w);height:var(--h);margin:calc(var(--h) / -2) 0 0 calc(var(--w) / -2);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;background:#fff;color:var(--ink);box-shadow:0 30px 60px -30px rgba(0,0,0,.7);will-change:transform,opacity;font-size:12px;line-height:1.3;overflow:hidden}
+.rc .k{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rc .k i{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:var(--c);color:var(--on);font-size:13px;font-style:normal}
+.rc b{display:block;font-family:var(--display);font-variation-settings:"opsz" 30;font-size:18px;font-weight:650;letter-spacing:-.02em;line-height:1.1}
+.rc .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;color:var(--muted);white-space:nowrap}
+.rc .row em{font-style:normal;font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:500}
+.rc.solid{background:var(--c);color:var(--on)}
+.rc.solid .k,.rc.solid .row{color:inherit;opacity:.85}
+.rc.solid .row em{color:inherit}
+.rc.solid .k i{background:rgba(255,255,255,.25);color:inherit}
+.rc.dark{background:var(--graphite);color:#fff}
+.rc.dark .k,.rc.dark .row{color:var(--on-ink-muted)}
+.rc.dark .row em{color:#fff}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 var(--gutter);z-index:5;pointer-events:none}
+.ring-center>*{pointer-events:auto}
+.ring h2{margin:14px 0 0;font-size:clamp(46px,7.4vw,120px);max-width:11ch}
+.ring .eyebrow{color:var(--on-ink-muted)}
+.prompt{margin-top:30px;display:flex;align-items:center;gap:8px;width:min(100%, 620px);height:64px;padding:6px 6px 6px 22px;border-radius:999px;background:rgba(255,255,255,.96);color:var(--ink);box-shadow:0 0 0 6px rgba(255,255,255,.08), 0 30px 60px -20px rgba(123,77,255,.6)}
+.prompt .ico{font-size:20px;color:var(--muted);flex:none}
+.prompt input{flex:1;min-width:0;border:0;background:transparent;outline:none;font-size:16px;height:100%}
+.prompt input::placeholder{color:#6b7380}
+.prompt button{height:52px;padding:0 22px;border-radius:999px;border:0;background:var(--ink);color:#fff;font-weight:600;cursor:pointer;flex:none}
+.svc-chips{margin-top:18px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:640px}
+.svc-chips a{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px 0 10px;border-radius:999px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:13px;font-weight:500;transition:background .25s, transform .4s var(--spring)}
+.svc-chips a:hover{background:rgba(255,255,255,.16);transform:translateY(-2px)}
+.svc-chips i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+@media (max-width:820px){
+  .rc{--w:150px;--h:104px;padding:10px 12px;border-radius:16px;font-size:11px}
+  .rc b{font-size:14px}
+  .rc .k{font-size:9px}
+  .rc .k i{width:18px;height:18px;font-size:11px}
+  .rc .row em{font-size:11px}
+  .ring-world{perspective:760px}
+  .prompt{height:56px;padding-left:16px}
+  .prompt button{height:44px;padding:0 16px}
+  .prompt input{font-size:15px}
+  .svc-chips{display:none}
+}
+
+/* ───────────── 4 · Glimpse: keyword morph + phone ───────────── */
+.glimpse{position:relative;background:var(--floor);padding:clamp(96px,14vh,150px) var(--gutter) clamp(80px,12vh,130px);overflow:hidden}
+.glimpse-head{text-align:center}
+.glimpse-head .eyebrow{color:var(--muted)}
+.glimpse h2{margin:16px 0 0;font-size:clamp(50px,8.6vw,140px);white-space:nowrap}
+.kw{display:inline-block;position:relative;vertical-align:top;height:1.04em;overflow:hidden;color:var(--kc,var(--rinse));transition:color .5s;text-align:left}
+.kw-w{position:absolute;left:0;top:0;white-space:nowrap;visibility:hidden}
+.kw-w.on{visibility:visible}
+.kw-w span{display:inline-block}
+.kw-sizer{visibility:hidden;white-space:nowrap}
+.glimpse-sub{margin:20px auto 0;max-width:52ch;color:var(--muted);font-size:clamp(16px,1.3vw,19px)}
+.tabs{margin:30px auto 0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:820px}
+.tab{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 12px;border-radius:999px;border:0;background:#fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;font-size:14px;font-weight:550;transition:background .3s, color .3s, box-shadow .3s, transform .4s var(--spring)}
+.tab i{width:10px;height:10px;border-radius:50%;background:var(--c);transition:transform .4s var(--spring)}
+.tab:hover{transform:translateY(-2px)}
+.tab[aria-selected="true"]{background:var(--c);color:var(--on);box-shadow:0 12px 26px -12px var(--c)}
+.tab[aria-selected="true"] i{background:currentColor;transform:scale(.6)}
+.stage{position:relative;height:700px;margin-top:40px;display:grid;place-items:center}
+.phone{position:relative;width:310px;height:640px;border-radius:52px;background:#0b0d10;padding:11px;box-shadow:0 0 0 1.5px #2a2f37, 0 60px 100px -40px rgba(13,15,18,.55), 0 30px 40px -30px rgba(13,15,18,.35);z-index:3}
+.phone::before{content:"";position:absolute;top:22px;left:50%;width:96px;height:28px;margin-left:-48px;border-radius:20px;background:#0b0d10;z-index:5}
+.screen{position:relative;height:100%;border-radius:42px;background:#fff;overflow:hidden}
+.scr{position:absolute;inset:0;padding:60px 16px 16px;display:flex;flex-direction:column;gap:10px;font-size:12px;line-height:1.35;opacity:0;transform:translateY(26px) scale(.98);filter:blur(6px);transition:opacity .45s, transform .7s var(--out), filter .5s;pointer-events:none}
+.scr.on{opacity:1;transform:none;filter:none;pointer-events:auto}
+.scr-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}
+.scr-top .ava{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--t);color:var(--d);font-weight:700}
+.scr-h{font-family:var(--display);font-variation-settings:"opsz" 40;font-weight:700;font-size:23px;letter-spacing:-.03em;line-height:1.05}
+.scr-small{color:var(--muted);font-size:11.5px}
+.scr-search{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:12px;background:var(--floor);color:#3a414b}
+.scr-filters{display:flex;gap:6px}
+.scr-filters span{padding:5px 10px;border-radius:999px;background:var(--floor);font-size:11px}
+.scr-filters span.on{background:var(--ink);color:#fff}
+.res{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.res li{display:flex;gap:10px;align-items:center;padding:8px;border-radius:14px;box-shadow:0 0 0 1px var(--line)}
+.res .th{width:46px;height:46px;border-radius:12px;flex:none;background:linear-gradient(150deg, var(--t), color-mix(in srgb, var(--c) 55%, #fff));display:grid;place-items:center;color:var(--d);font-size:20px}
+.res b{display:block;font-size:12.5px}
+.res small{display:block;color:var(--muted);font-size:10.5px}
+.res em{margin-left:auto;font-style:normal;font-family:var(--mono);font-weight:600;font-size:12px}
+.scr-cta{margin-top:auto;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--ink);color:#fff;font-weight:600;font-size:13px}
+.scr-cta.c{background:var(--c);color:var(--on)}
+.qcard{border-radius:16px;padding:12px;box-shadow:0 0 0 1px var(--line);display:flex;flex-direction:column;gap:6px}
+.qline{display:flex;justify-content:space-between;color:#3a414b}
+.qline em{font-style:normal;font-family:var(--mono)}
+.qline.tot{border-top:1px dashed var(--line);padding-top:8px;font-weight:700;color:var(--ink)}
+.valid{display:flex;gap:3px;margin-top:4px}
+.valid i{flex:1;height:6px;border-radius:3px;background:var(--c)}
+.valid i.off{background:var(--floor-2)}
+.note{font-size:10.5px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}
+.note .ico{flex:none;margin-top:1px}
+.lst-hero{height:118px;border-radius:18px;background:radial-gradient(80% 120% at 80% 0%, color-mix(in srgb, var(--c) 40%, #fff), var(--c));display:grid;place-items:center;color:#fff;font-size:54px}
+.svc-list{display:flex;flex-direction:column}
+.svc-list div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}
+.svc-list em{font-style:normal;font-family:var(--mono);color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+.two span{height:42px;border-radius:13px;display:grid;place-items:center;font-weight:600;box-shadow:0 0 0 1px var(--line)}
+.two span+span{background:var(--c);color:var(--on);box-shadow:none}
+.acc{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-top:6px}
+.hold{position:relative;width:150px;height:150px;margin:6px auto 2px}
+.hold svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hold div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.hold b{font-family:var(--mono);font-size:30px;font-weight:600;letter-spacing:-.03em}
+.steps{display:flex;flex-direction:column;gap:8px}
+.steps div{display:flex;gap:10px;padding:10px;border-radius:14px;background:var(--floor)}
+.steps i{flex:none;width:22px;height:22px;border-radius:50%;background:var(--c);color:var(--on);display:grid;place-items:center;font-style:normal;font-weight:700;font-size:11px}
+.topics{display:flex;flex-wrap:wrap;gap:6px}
+.topics span{padding:6px 10px;border-radius:999px;box-shadow:0 0 0 1px var(--line);font-size:11px}
+
+/* stickers */
+.stk-set{position:absolute;inset:0;pointer-events:none}
+.stk{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translate(var(--x),var(--y)) rotate(var(--r)) scale(var(--sc,1))}
+.stk-in{transform:scale(0) rotate(-40deg);opacity:0;transition:transform .7s var(--spring) var(--dl,0s), opacity .3s var(--dl,0s)}
+.stk-set.on .stk-in{transform:none;opacity:1}
+.stk-bob{animation:bob var(--bt,5s) ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(-8px) rotate(-2deg)}to{transform:translateY(8px) rotate(2deg)}}
+.sticker{display:grid;place-items:center;color:var(--on);border:5px solid #fff;background:radial-gradient(70% 60% at 32% 25%, color-mix(in srgb, var(--c) 45%, #fff) 0%, var(--c) 55%, color-mix(in srgb, var(--c) 78%, #000) 100%);box-shadow:inset 0 -10px 18px color-mix(in srgb, var(--c) 55%, #000 45%), inset 0 6px 10px rgba(255,255,255,.35), 0 22px 34px -14px color-mix(in srgb, var(--c) 70%, #000), 0 2px 6px rgba(13,15,18,.12)}
+.sticker.circle{width:112px;height:112px;border-radius:50%;font-size:52px}
+.sticker.square{width:104px;height:104px;border-radius:30px;font-size:48px}
+.sticker.tag{height:58px;padding:0 22px;border-radius:999px;font-family:var(--display);font-variation-settings:"opsz" 30;font-weight:700;font-size:20px;letter-spacing:-.02em;white-space:nowrap}
+@media (max-width:820px){
+  .glimpse h2{font-size:clamp(40px,11.5vw,80px)}
+  .stage{height:600px;margin-top:28px}
+  .phone{zoom:.84}
+  .sticker.circle{width:76px;height:76px;font-size:34px;border-width:4px}
+  .sticker.square{width:70px;height:70px;font-size:32px;border-radius:22px;border-width:4px}
+  .sticker.tag{height:42px;font-size:14px;padding:0 14px;border-width:4px}
+}
+
+/* ───────────── 5 · How it works: keynote slides ───────────── */
+.how{position:relative;height:100svh;min-height:640px;overflow:hidden;background:var(--white)}
+.how-track{display:flex;height:100%;width:500%}
+.panel{flex:0 0 20%;height:100%;position:relative;display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:clamp(24px,4vw,72px);padding:96px clamp(24px,7vw,120px) 80px;background:var(--bg);color:var(--fg);overflow:hidden}
+.p1{--bg:var(--white);--fg:var(--ink)}
+.p2{--bg:var(--rinse);--fg:#fff}
+.p3{--bg:var(--permit);--fg:var(--ink)}
+.p4{--bg:var(--tread);--fg:var(--ink)}
+.p5{--bg:var(--signal);--fg:var(--ink)}
+.panel .num{position:absolute;right:-.06em;bottom:-.2em;font-family:var(--display);font-weight:800;font-variation-settings:"opsz" 96,"wdth" 75;font-size:clamp(220px,34vw,520px);line-height:.8;letter-spacing:-.06em;opacity:.09;pointer-events:none}
+.panel p.eyebrow{margin:0;font-size:12px;opacity:.8;max-width:none}
+.panel h3{margin:14px 0 0;font-size:clamp(44px,6.2vw,104px)}
+.panel p{margin:20px 0 0;max-width:34ch;font-size:clamp(16px,1.35vw,20px);line-height:1.45;opacity:.86}
+.panel .fine{margin-top:16px;font-size:13px;opacity:.78;display:flex;gap:8px;align-items:flex-start;max-width:40ch}
+.vis{position:relative;display:grid;place-items:center;min-height:0}
+.card{background:#fff;color:var(--ink);border-radius:26px;padding:22px;width:min(100%,400px);box-shadow:0 40px 80px -40px rgba(13,15,18,.45);display:flex;flex-direction:column;gap:12px;font-size:14px}
+.card .top{display:flex;justify-content:space-between;align-items:center}
+.card .who{display:flex;gap:10px;align-items:center}
+.card .who i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--t);color:var(--d);font-size:20px}
+.card .who b{display:block}
+.card .who small{color:var(--muted)}
+.status{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:600;background:var(--floor);color:var(--muted);transition:background .4s,color .4s}
+.status.ok{background:var(--tread-t);color:var(--tread-d)}
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);color:#3a414b}
+.kv em{font-style:normal;font-family:var(--mono);color:var(--ink)}
+.send{height:50px;border-radius:15px;display:grid;place-items:center;font-weight:600;background:var(--ink);color:#fff;position:relative;overflow:hidden}
+.send span{transition:transform .5s var(--out), opacity .3s}
+.dial{position:relative;width:min(80vw, 380px);aspect-ratio:1}
+.dial svg{width:100%;height:100%;transform:rotate(-90deg)}
+.dial .read{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.dial .big{font-family:var(--mono);font-weight:500;font-size:clamp(46px,6vw,84px);letter-spacing:-.05em;line-height:1}
+.dial .lbl{margin-top:8px;font-size:14px;opacity:.85}
+.stamp{position:absolute;right:2%;top:8%;padding:10px 16px;border-radius:999px;background:#fff;color:var(--rinse-d);font-weight:700;box-shadow:0 20px 40px -20px rgba(0,0,0,.5);transform:scale(0) rotate(-20deg);transition:transform .6s var(--spring)}
+.stamp.on{transform:scale(1) rotate(-6deg)}
+.flow{display:flex;flex-direction:column;gap:14px;width:min(100%,420px)}
+.node{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:22px;background:rgba(255,255,255,.92);box-shadow:0 20px 40px -26px rgba(13,15,18,.5)}
+.node i{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--ink);color:#fff;font-size:22px;flex:none}
+.node b{display:block}
+.node small{color:var(--muted)}
+.node em{margin-left:auto;font-style:normal;font-family:var(--mono);font-weight:600}
+.pipe{position:relative;height:34px;margin-left:38px;width:2px;background:rgba(13,15,18,.25)}
+.pipe b{position:absolute;left:-5px;top:0;width:12px;height:12px;border-radius:50%;background:var(--ink)}
+.r0{display:inline-flex;align-items:baseline;gap:10px;margin-top:6px;padding:10px 18px;border-radius:999px;background:var(--ink);color:#fff;align-self:flex-start}
+.r0 b{font-family:var(--display);font-size:28px;letter-spacing:-.03em}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.days span{height:46px;border-radius:12px;display:grid;place-items:center;font-family:var(--mono);font-size:12px;background:var(--floor);color:var(--muted);transition:background .3s,color .3s}
+.days span.on{background:var(--signal);color:var(--ink)}
+.how-bar{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;gap:6px;z-index:3;padding:8px;border-radius:999px;background:rgba(13,15,18,.12);backdrop-filter:blur(8px)}
+.how-bar i{width:34px;height:4px;border-radius:2px;background:rgba(13,15,18,.25);overflow:hidden;position:relative}
+.how-bar i b{position:absolute;inset:0;background:var(--ink);transform-origin:left;transform:scaleX(0)}
+@media (max-width:820px){
+  .how{min-height:720px}
+  .panel{grid-template-columns:1fr;grid-template-rows:auto 1fr;align-content:start;padding:84px 20px 70px;gap:18px}
+  .panel h3{font-size:clamp(38px,10.5vw,60px)}
+  .panel p{margin-top:12px;font-size:15px}
+  .panel .fine{display:none}
+  .card{padding:16px;gap:8px;font-size:13px;border-radius:20px}
+  .dial{width:min(62vw,250px)}
+  .node{padding:12px 14px;border-radius:18px}
+  .node i{width:36px;height:36px;font-size:18px}
+  .pipe{height:18px;margin-left:31px}
+  .days span{height:34px}
+}
+.rm .how,.no-gsap .how{height:auto}
+.rm .how-track,.no-gsap .how-track{flex-direction:column;width:100%}
+.rm .panel,.no-gsap .panel{min-height:100svh}
+.rm .how-bar,.no-gsap .how-bar{display:none}
+
+/* ───────────── 6 · For businesses: badge burst + dashboard ───────────── */
+.biz{position:relative;background:var(--white);overflow:hidden;padding-bottom:clamp(80px,12vh,140px)}
+.burst{position:relative;height:max(100svh, 760px)}
+.burst-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 var(--gutter);z-index:2;pointer-events:none}
+.burst-center>*{pointer-events:auto}
+.burst-center .eyebrow{color:var(--muted)}
+.biz h2{margin:16px 0 0;font-size:clamp(50px,8vw,132px);max-width:10ch}
+.biz h2 span{color:var(--signal-d)}
+.biz .lead{margin:20px auto 0;max-width:42ch;color:var(--muted);font-size:clamp(16px,1.35vw,19px)}
+.biz .ctas{margin-top:26px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.badge{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;display:grid;place-content:center;text-align:center;will-change:transform;z-index:1;user-select:none;-webkit-user-select:none;cursor:grab;touch-action:none}
+.badge.svc{background:radial-gradient(70% 60% at 32% 25%, color-mix(in srgb, var(--c) 45%, #fff), var(--c) 58%, color-mix(in srgb, var(--c) 80%, #000));color:var(--on);box-shadow:inset 0 -10px 20px color-mix(in srgb, var(--c) 55%, #000 45%), 0 26px 40px -22px color-mix(in srgb, var(--c) 80%, #000)}
+.badge.svc .ico{font-size:calc(var(--s) * .3);margin:0 auto 4px}
+.badge.svc span{font-family:var(--display);font-variation-settings:"opsz" 20;font-weight:700;font-size:calc(var(--s) * .12);letter-spacing:-.01em;line-height:1}
+.badge.fact{background:var(--floor);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.badge.fact b{font-family:var(--display);font-variation-settings:"opsz" 60;font-weight:700;font-size:calc(var(--s) * .26);letter-spacing:-.04em;line-height:.95}
+.badge.fact small{display:block;margin-top:4px;font-size:calc(var(--s) * .085);color:var(--muted);line-height:1.15;padding:0 14%}
+.badge.big{background:var(--ink);color:#fff}
+.badge.big b{color:var(--signal-soft);font-size:calc(var(--s) * .36)}
+.badge.big small{color:var(--on-ink-muted)}
+.badge.ring-txt{background:var(--permit);color:var(--ink)}
+.badge.ring-txt svg.rt{position:absolute;inset:6%;width:88%;height:88%;animation:spin 14s linear infinite}
+.badge.ring-txt text{font-family:var(--mono);font-size:8.4px;letter-spacing:.05em;font-weight:600;fill:var(--ink)}
+.badge.ring-txt .core{font-family:var(--display);font-weight:800;font-size:calc(var(--s) * .2);letter-spacing:-.03em}
+.badge.mark{background:var(--ink)}
+.badge.mark svg{width:calc(var(--s) * .62);height:calc(var(--s) * .62);color:#fff}
+.dash-wrap{padding:0 var(--gutter)}
+.dash-head{text-align:center;max-width:820px;margin:0 auto}
+.dash-head h3{margin:12px 0 0;font-size:clamp(36px,5vw,72px)}
+.dash-head p{margin:14px auto 0;color:var(--muted);max-width:50ch}
+.dash{margin:44px auto 0;max-width:1180px;border-radius:32px;padding:clamp(14px,2vw,26px);background:linear-gradient(135deg, #e9efff 0%, #f6f3ff 40%, #fff1ea 100%);box-shadow:0 0 0 1px var(--line), 0 50px 100px -60px rgba(42,92,255,.45)}
+.dash-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:6px 6px 18px}
+.dash-bar .who{display:flex;align-items:center;gap:12px}
+.dash-bar .who i{width:42px;height:42px;border-radius:13px;background:var(--rinse);color:#fff;display:grid;place-items:center;font-size:20px}
+.dash-bar .who b{display:block;font-size:16px}
+.dash-bar .who small{color:var(--muted)}
+.ptabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.7);box-shadow:0 0 0 1px var(--line)}
+.ptabs button{height:34px;padding:0 16px;border-radius:999px;border:0;background:transparent;cursor:pointer;font-size:13px;font-weight:550;color:var(--muted)}
+.ptabs button.on{background:var(--ink);color:#fff}
+.dash-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.dc{grid-column:span 3;border-radius:22px;padding:18px;background:rgba(255,255,255,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 0 0 1px rgba(255,255,255,.9) inset, 0 20px 40px -30px rgba(13,15,18,.35);display:flex;flex-direction:column;gap:6px;min-width:0}
+.dc .lbl{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.dc .n{font-family:var(--display);font-variation-settings:"opsz" 96,"wdth" 85;font-weight:250;font-size:clamp(48px,5.4vw,78px);letter-spacing:-.05em;line-height:1}
+.dc .n small{font-size:.42em;font-weight:400;letter-spacing:-.02em;margin-right:.08em}
+.dc .meta{font-size:12.5px;color:var(--muted)}
+.meter{height:8px;border-radius:4px;background:rgba(13,15,18,.08);overflow:hidden;margin-top:6px}
+.meter b{display:block;height:100%;width:var(--w,60%);border-radius:4px;background:linear-gradient(90deg, var(--rinse), var(--lens) 50%, var(--signal))}
+.dc.wide{grid-column:span 7}
+.dc.side{grid-column:span 5}
+.bars{display:flex;align-items:flex-end;gap:10px;height:150px;margin-top:10px}
+.bars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bars span{width:100%;max-width:56px;border-radius:12px 12px 6px 6px;background:var(--c);height:var(--h);transform-origin:bottom}
+.bars small{font-size:11px;color:var(--muted);text-align:center;line-height:1.1}
+.req{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.req div{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:rgba(255,255,255,.85);box-shadow:0 0 0 1px var(--line);font-size:13px}
+.req i{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:12px;background:var(--t);color:var(--d)}
+.req .txt{min-width:0;flex:1}
+.req .txt b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.req .txt small{color:var(--muted);white-space:nowrap}
+.req .acc-b{height:30px;padding:0 12px;border-radius:999px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:600;flex:none}
+@media (max-width:820px){.burst{height:940px}}
+@media (max-width:980px){.dc{grid-column:span 6}.dc.wide,.dc.side{grid-column:span 12}}
+@media (max-width:560px){.dc{grid-column:span 12}.dash{border-radius:24px}.req small{display:none}}
+
+/* ───────────── Footer ───────────── */
+.foot{background:var(--ink);color:#fff;padding:clamp(80px,12vh,140px) var(--gutter) 40px;overflow:hidden}
+.foot-lock{width:min(100%, 1040px);margin:0 auto;color:#fff}
+.foot-lock svg{width:100%;height:auto}
+.foot-row{max-width:1180px;margin:clamp(56px,9vh,96px) auto 0;display:flex;flex-wrap:wrap;gap:20px 40px;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.12);padding-top:26px;font-size:14px;color:var(--on-ink-muted)}
+.foot-row nav{display:flex;gap:22px;flex-wrap:wrap}
+.foot-row nav a:hover{color:#fff}
+.tag{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 14px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);font-family:var(--mono);font-size:12px;color:#fff;letter-spacing:.06em;text-transform:uppercase}
+.tag i{width:8px;height:8px;border-radius:50%;background:var(--signal-soft)}
+.foot small{display:block;max-width:1180px;margin:20px auto 0;color:#7d8794;font-size:12px}
+.foot small,.foot-row{color:var(--on-ink-muted)}
+</style>
+</head>
+<body>
+
+<!-- Brand geometry, inlined from planning/design/brand/exports/core (unaltered paths) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="rotor" viewBox="-100 -100 200 200">
+      <g fill="currentColor" transform="rotate(21.9494)">
+        <path id="blade" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/>
+        <use href="#blade" transform="rotate(72)"/><use href="#blade" transform="rotate(144)"/><use href="#blade" transform="rotate(216)"/><use href="#blade" transform="rotate(288)"/>
+      </g>
+    </symbol>
+    <symbol id="wordmark" viewBox="0 0 606.35 100">
+      <g transform="translate(0,100)" fill="currentColor"><path d="M50.96,2.6L50.96,2.6Q37.4,2.6 27.67,-2.19Q17.95,-6.99 11.85,-14.66Q5.75,-22.33 2.88,-31.37Q0,-40.41 0,-48.77L0,-48.77L0,-51.78Q0,-61.1 2.95,-70.14Q5.89,-79.18 12.05,-86.58Q18.22,-93.97 27.74,-98.42Q37.26,-102.88 50.27,-102.88L50.27,-102.88Q63.84,-102.88 73.9,-98.01Q83.97,-93.15 90,-84.32Q96.03,-75.48 97.26,-63.7L97.26,-63.7L77.67,-63.7Q76.58,-70.55 72.81,-75.27Q69.04,-80 63.29,-82.4Q57.53,-84.79 50.27,-84.79L50.27,-84.79Q42.88,-84.79 37.12,-82.26Q31.37,-79.73 27.53,-75.07Q23.7,-70.41 21.71,-64.11Q19.73,-57.81 19.73,-50.14L19.73,-50.14Q19.73,-42.74 21.71,-36.44Q23.7,-30.14 27.67,-25.41Q31.64,-20.68 37.47,-18.08Q43.29,-15.48 50.96,-15.48L50.96,-15.48Q62.19,-15.48 69.93,-21.03Q77.67,-26.58 79.32,-36.58L79.32,-36.58L98.9,-36.58Q97.53,-25.89 91.64,-16.99Q85.75,-8.08 75.48,-2.74Q65.21,2.6 50.96,2.6Z"/><path d="M173.15,0L158.08,0L158.08,-22.05L154.93,-22.05L154.93,-46.58Q154.93,-53.01 151.78,-56.16Q148.63,-59.32 142.05,-59.32L142.05,-59.32Q138.63,-59.32 133.84,-59.18Q129.04,-59.04 124.18,-58.84Q119.32,-58.63 115.48,-58.36L115.48,-58.36L115.48,-74.52Q118.63,-74.79 122.6,-75.07Q126.58,-75.34 130.75,-75.41Q134.93,-75.48 138.63,-75.48L138.63,-75.48Q150.14,-75.48 157.74,-72.47Q165.34,-69.45 169.25,-63.01Q173.15,-56.58 173.15,-46.16L173.15,-46.16L173.15,0ZM134.11,1.92L134.11,1.92Q126.03,1.92 119.93,-0.96Q113.84,-3.84 110.48,-9.18Q107.12,-14.52 107.12,-22.05L107.12,-22.05Q107.12,-30.27 111.16,-35.48Q115.21,-40.68 122.53,-43.29Q129.86,-45.89 139.73,-45.89L139.73,-45.89L156.99,-45.89L156.99,-34.52L139.45,-34.52Q132.88,-34.52 129.38,-31.3Q125.89,-28.08 125.89,-23.01L125.89,-23.01Q125.89,-17.95 129.38,-14.79Q132.88,-11.64 139.45,-11.64L139.45,-11.64Q143.42,-11.64 146.78,-13.08Q150.14,-14.52 152.4,-18.01Q154.66,-21.51 154.93,-27.53L154.93,-27.53L159.59,-22.19Q158.9,-14.38 155.82,-9.04Q152.74,-3.7 147.33,-0.89Q141.92,1.92 134.11,1.92Z"/><path d="M212.05,0L193.01,0L193.01,-74.38L208.08,-74.38L208.08,-42.88L207.67,-42.88Q207.67,-58.9 214.52,-67.12Q221.37,-75.34 234.66,-75.34L234.66,-75.34L237.4,-75.34L237.4,-58.77L232.19,-58.77Q222.6,-58.77 217.33,-53.63Q212.05,-48.49 212.05,-38.77L212.05,-38.77L212.05,0Z"/><path d="M287.12,0L273.15,0L287.26,-71.92L309.18,-71.92L325.48,0L310.41,0L293.84,-71.51L301.78,-71.51L287.12,0ZM282.6,0L267.53,0L267.4,-15.62L282.6,-15.62L282.6,0ZM277.4,0L259.86,0L239.59,-74.38L258.08,-74.38L277.4,0ZM330.27,0L315.21,0L315.21,-15.62L330.41,-15.62L330.27,0ZM337.67,0L321.23,0L338.36,-74.38L355.62,-74.38L337.67,0Z"/><path d="M404.93,2.6L404.93,2.6Q395.07,2.6 387.53,-0.55Q380,-3.7 374.79,-9.11Q369.59,-14.52 366.92,-21.37Q364.25,-28.22 364.25,-35.62L364.25,-35.62L364.25,-38.49Q364.25,-46.16 367.05,-53.08Q369.86,-60 375.14,-65.41Q380.41,-70.82 387.95,-73.9Q395.48,-76.99 404.93,-76.99L404.93,-76.99Q414.38,-76.99 421.92,-73.9Q429.45,-70.82 434.73,-65.41Q440,-60 442.74,-53.08Q445.48,-46.16 445.48,-38.49L445.48,-38.49L445.48,-35.62Q445.48,-28.22 442.81,-21.37Q440.14,-14.52 434.93,-9.11Q429.73,-3.7 422.19,-0.55Q414.66,2.6 404.93,2.6ZM404.93,-13.7L404.93,-13.7Q411.92,-13.7 416.71,-16.78Q421.51,-19.86 423.97,-25.14Q426.44,-30.41 426.44,-37.12L426.44,-37.12Q426.44,-43.97 423.9,-49.25Q421.37,-54.52 416.51,-57.6Q411.64,-60.68 404.93,-60.68L404.93,-60.68Q398.22,-60.68 393.36,-57.6Q388.49,-54.52 385.89,-49.25Q383.29,-43.97 383.29,-37.12L383.29,-37.12Q383.29,-30.41 385.82,-25.14Q388.36,-19.86 393.15,-16.78Q397.95,-13.7 404.93,-13.7Z"/><path d="M480.14,0L461.1,0L461.1,-74.38L476.16,-74.38L476.16,-42.88L475.75,-42.88Q475.75,-58.9 482.6,-67.12Q489.45,-75.34 502.74,-75.34L502.74,-75.34L505.48,-75.34L505.48,-58.77L500.27,-58.77Q490.68,-58.77 485.41,-53.63Q480.14,-48.49 480.14,-38.77L480.14,-38.77L480.14,0Z"/><path d="M507.4,0L528.22,0L606.35,-100L585.53,-100ZM508.49,-100L529.32,-100L605.25,0L584.43,0Z"/></g>
+    </symbol>
+    <symbol id="lockup" viewBox="0 0 852.35 184">
+      <use href="#rotor" x="0" y="0" width="184" height="184"/>
+      <use href="#wordmark" x="246" y="42" width="606.35" height="100"/>
+    </symbol>
+    <!-- service icons -->
+    <symbol id="i-wash" viewBox="0 0 24 24"><path d="M12 3.2c3.3 4.1 5.6 7.3 5.6 10.2a5.6 5.6 0 0 1-11.2 0c0-2.9 2.3-6.1 5.6-10.2z"/><path d="M9.3 14a2.8 2.8 0 0 0 2.6 2.7"/></symbol>
+    <symbol id="i-repair" viewBox="0 0 24 24"><path d="M14.8 5.2a4.3 4.3 0 0 0-5.6 5.5L3.8 16.1a1.9 1.9 0 0 0 2.7 2.7l5.4-5.4a4.3 4.3 0 0 0 5.5-5.6l-2.7 2.7-2.4-.4-.4-2.4z"/></symbol>
+    <symbol id="i-glass" viewBox="0 0 24 24"><path d="M3.2 9.4C5.9 6.9 8.9 5.8 12 5.8s6.1 1.1 8.8 3.6L18.6 18H5.4z"/><path d="M13.2 9.2l-1.6 2.6 2.2 1.1-1.3 2.7"/></symbol>
+    <symbol id="i-tyre" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.4"/><path d="M12 3.4v3.2M12 17.4v3.2M3.4 12h3.2M17.4 12h3.2M5.9 5.9l2.3 2.3M15.8 15.8l2.3 2.3M5.9 18.1l2.3-2.3M15.8 8.2l2.3-2.3"/></symbol>
+    <symbol id="i-fines" viewBox="0 0 24 24"><path d="M6.5 3.4h7.4l3.6 3.6v13.6H6.5z"/><path d="M13.6 3.4v3.9h3.9M9.2 11.6h5.6M9.2 15.2h5.6M9.2 8h2.4"/></symbol>
+    <symbol id="i-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9"/><circle cx="12" cy="12" r="6.4"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.2l1.9 5.1 5.1 1.9-5.1 1.9-1.9 5.1-1.9-5.1-5.1-1.9 5.1-1.9z"/><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.6"/><path d="M12 1.8v4M12 18.2v4M1.8 12h4M18.2 12h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M8 12.4l2.8 2.8L16.2 9.6"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3.5 7h17v3a2 2 0 0 0 0 4v3h-17v-3a2 2 0 0 0 0-4z"/><path d="M14 7v10" stroke-dasharray="1.6 2"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.2V12l3.2 2"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.2l7 2.9v5.1c0 4.3-2.9 7.8-7 9.6-4.1-1.8-7-5.3-7-9.6V6.1z"/><path d="M9 12l2.2 2.2L15.4 10"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.4-5.6-6.4-11a6.4 6.4 0 0 1 12.8 0C18.4 15.4 12 21 12 21z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.6"/><path d="M15.6 15.6l4.6 4.6"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.4" r="3.8"/><path d="M4.6 20.2c1.2-3.6 4-5.4 7.4-5.4s6.2 1.8 7.4 5.4"/></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9.5l1.4-5h13.2l1.4 5M4 9.5h16M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0M5.5 11.8v8h13v-8M10 19.8v-4.6h4v4.6"/></symbol>
+    <symbol id="i-van" viewBox="0 0 24 24"><path d="M2.8 7h11v9H2.8zM13.8 10h4l2.8 3v3h-6.8"/><circle cx="7" cy="17.4" r="1.8"/><circle cx="17" cy="17.4" r="1.8"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24"><path d="M6.5 3.4h11v17.2h-11z"/><path d="M9.2 8h5.6M9.2 11.4h5.6M9.2 14.8h3"/><path d="M13.6 17.4l1.4 1.4 2.6-2.6"/></symbol>
+  </defs>
+</svg>
+
+<a class="sr" href="#hero">Skip the intro</a>
+
+<header class="nav" id="nav">
+  <a class="nav-logo" href="#top" aria-label="CarworX, back to top"><svg viewBox="0 0 852.35 184" aria-hidden="true"><use href="#lockup"/></svg></a>
+  <nav class="nav-links" aria-label="Sections">
+    <a href="#hero">Services</a><a href="#how">How it works</a><a href="#business">For businesses</a>
+  </nav>
+  <a class="pill pill-ink" href="#find">Find a service</a>
+</header>
+
+<main>
+
+<!-- ═════════ 1 · INTRO ═════════ -->
+<section class="intro" id="top" aria-label="CarworX">
+  <div class="keylight k1"></div><div class="keylight k2"></div>
+  <div class="intro-inner">
+    <div class="wm-stage" role="img" aria-label="CarworX">
+      <svg class="wm-static" viewBox="0 0 606.35 100" aria-hidden="true"><use href="#wordmark"/></svg>
+      <div class="wm-anim" aria-hidden="true"></div>
+      <div class="glint" aria-hidden="true"></div>
+    </div>
+    <svg class="intro-rotor" viewBox="0 0 200 200" aria-hidden="true"><use href="#rotor"/></svg>
+    <p class="intro-sub st">Car care near you. Asked, booked and paid properly.</p>
+    <div class="intro-ctas st">
+      <a class="pill pill-white" href="#find">Find a service <span class="arr">→</span></a>
+      <a class="pill pill-ghost" href="#business">List your business</a>
+    </div>
+    <p class="intro-details mono st"><span>South Africa</span><span>Pilot</span><span>CarworX fee R0</span></p>
+    <div class="ticker st" aria-hidden="true">
+      <span class="eyebrow">Five ways in</span>
+      <div class="ticker-win">
+        <ul class="ticker-list">
+          <li class="s1"><i></i>Wash &amp; Detailing</li>
+          <li class="s2"><i></i>Repairs &amp; Maintenance</li>
+          <li class="s3"><i></i>Glass Repair &amp; Replacement</li>
+          <li class="s4"><i></i>Tyres &amp; Wheel Alignment</li>
+          <li class="s5"><i></i>Fines &amp; Vehicle Admin</li>
+          <li class="s1"><i></i>Wash &amp; Detailing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue mono" aria-hidden="true"><b></b>SCROLL</div>
+</section>
+
+<!-- ═════════ 2 · HERO ═════════ -->
+<section class="hero" id="hero" aria-labelledby="hero-h">
+  <div class="hero-stage">
+    <p class="hero-label" aria-hidden="true">One app. Every car job.<small>Scroll to unpack</small></p>
+    <div class="obj-anchor" aria-hidden="true">
+      <div class="obj-scrub"><div class="obj-sway" id="obj"></div></div>
+    </div>
+    <div class="hero-copy">
+      <h1 class="display" id="hero-h">Find it. Book it. <em>Sorted.</em></h1>
+      <p class="hero-sub">Find car services near you, ask a question, book a time and pay the business directly. Plus straight guidance on traffic fines and vehicle admin.</p>
+      <div class="hero-cta"><a class="pill pill-ink" href="#find">Find a service <span class="arr">→</span></a></div>
+    </div>
+    <ol class="lineup" aria-label="Services">
+      <li class="tile"><a href="#glimpse" data-svc="0"><div class="tile-in"><div class="chip s1"><svg class="ico"><use href="#i-wash"/></svg></div></div><span class="tile-num">01</span><span class="tile-name">Wash &amp; Detailing</span><span class="tile-desc">Hand washes, valets and mobile detailers</span></a></li>
+      <li class="tile"><a href="#glimpse" data-svc="1"><div class="tile-in"><div class="chip s2"><svg class="ico"><use href="#i-repair"/></svg></div></div><span class="tile-num">02</span><span class="tile-name">Repairs &amp; Maintenance</span><span class="tile-desc">Services and repairs, with a written quote first</span></a></li>
+      <li class="tile"><a href="#glimpse" data-svc="2"><div class="tile-in"><div class="chip s3"><svg class="ico"><use href="#i-glass"/></svg></div></div><span class="tile-num">03</span><span class="tile-name">Glass Repair &amp; Replacement</span><span class="tile-desc">Chips, cracks and new windscreens</span></a></li>
+      <li class="tile"><a href="#glimpse" data-svc="3"><div class="tile-in"><div class="chip s4"><svg class="ico"><use href="#i-tyre"/></svg></div></div><span class="tile-num">04</span><span class="tile-name">Tyres &amp; Wheel Alignment</span><span class="tile-desc">Fitment, balancing and alignment</span></a></li>
+      <li class="tile"><a href="#glimpse" data-svc="4"><div class="tile-in"><div class="chip s5"><svg class="ico"><use href="#i-fines"/></svg></div></div><span class="tile-num">05</span><span class="tile-name">Fines &amp; Vehicle Admin</span><span class="tile-desc">Straight guidance on fines and paperwork</span></a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═════════ 3 · RING → BURST ═════════ -->
+<section class="ring" id="find" aria-labelledby="ring-h">
+  <div class="ring-glow"></div>
+  <div class="ring-world" aria-hidden="true"><div class="ring-tilt" id="ringTilt">
+    <div class="rc s1"><div class="k"><i><svg class="ico"><use href="#i-wash"/></svg></i>Wash · Rosebank</div><b>Hand wash &amp; vacuum</b><div class="row">Suds &amp; Shine<em>R180</em></div></div>
+    <div class="rc dark"><div class="k"><i style="--c:var(--rinse)"><svg class="ico"><use href="#i-clock"/></svg></i>Request sent</div><b>Waiting for Suds &amp; Shine</b><div class="row">Time to accept<em>1:48 left</em></div></div>
+    <div class="rc s2 solid"><div class="k"><i><svg class="ico"><use href="#i-repair"/></svg></i>Repairs · Pretoria East</div><b>Front brake pads &amp; discs</b><div class="row">Brakeline Motors<em>Quote R2 820</em></div></div>
+    <div class="rc"><div class="k"><i style="--c:var(--tread);--on:var(--ink)"><svg class="ico"><use href="#i-check"/></svg></i>Accepted</div><b>Slot held for you</b><div class="row">Pay within<em>15:00</em></div></div>
+    <div class="rc s3"><div class="k"><i><svg class="ico"><use href="#i-glass"/></svg></i>Glass · Centurion</div><b>Windscreen chip repair</b><div class="row">Klaarsig Glass<em>R450</em></div></div>
+    <div class="rc s4 solid"><div class="k"><i><svg class="ico"><use href="#i-shield"/></svg></i>Paid</div><b>Paid straight to the business</b><div class="row">CarworX fee<em>R0</em></div></div>
+    <div class="rc s4"><div class="k"><i><svg class="ico"><use href="#i-tyre"/></svg></i>Tyres · Midrand</div><b>Wheel alignment</b><div class="row">Tread &amp; Track<em>R550</em></div></div>
+    <div class="rc dark"><div class="k"><i style="--c:var(--signal);--on:var(--ink)"><svg class="ico"><use href="#i-quote"/></svg></i>Written quote</div><b>Valid for 7 days</b><div class="row">Approve, then pay<em>4 Nov</em></div></div>
+    <div class="rc s5"><div class="k"><i><svg class="ico"><use href="#i-fines"/></svg></i>Fines &amp; admin</div><b>Got a traffic fine?</b><div class="row">Straight guidance<em>Step by step</em></div></div>
+    <div class="rc s1 solid"><div class="k"><i><svg class="ico"><use href="#i-van"/></svg></i>Mobile</div><b>Rosebank Mobile Valet</b><div class="row">Travel band B<em>+R40</em></div></div>
+    <div class="rc s3 solid"><div class="k"><i><svg class="ico"><use href="#i-spark"/></svg></i>Wash · Parkhurst</div><b>Full valet</b><div class="row">Parkhurst Detail Bay<em>R380</em></div></div>
+    <div class="rc s5 solid"><div class="k"><i><svg class="ico"><use href="#i-fines"/></svg></i>Vehicle admin</div><b>Licence disc renewal</b><div class="row">What you need<em>Checklist</em></div></div>
+  </div></div>
+  <div class="ring-center">
+    <p class="eyebrow">Search the whole lineup</p>
+    <h2 class="display" id="ring-h">What does your car need?</h2>
+    <form class="prompt" role="search" id="prompt">
+      <svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>
+      <label class="sr" for="q">Describe what your car needs</label>
+      <input id="q" type="text" autocomplete="off" placeholder="Hand wash in Rosebank this Saturday">
+      <button type="submit">Search</button>
+    </form>
+    <div class="svc-chips">
+      <a href="#glimpse" data-svc="0" class="s1"><i></i>Wash &amp; Detailing</a>
+      <a href="#glimpse" data-svc="1" class="s2"><i></i>Repairs &amp; Maintenance</a>
+      <a href="#glimpse" data-svc="2" class="s3"><i></i>Glass Repair &amp; Replacement</a>
+      <a href="#glimpse" data-svc="3" class="s4"><i></i>Tyres &amp; Wheel Alignment</a>
+      <a href="#glimpse" data-svc="4" class="s5"><i></i>Fines &amp; Vehicle Admin</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ 4 · GLIMPSE ═════════ -->
+<section class="glimpse" id="glimpse" aria-labelledby="gl-h">
+  <div class="glimpse-head">
+    <p class="eyebrow">Product glimpse</p>
+    <h2 class="display" id="gl-h"><span class="kw" id="kw"><span class="kw-sizer" aria-hidden="true">Repairs</span></span>, made simple.</h2>
+    <p class="glimpse-sub">Search, ask, book and pay in one calm flow, with the same rules for every service: nothing is instant, and you always see the price before you pay.</p>
+    <div class="tabs" role="tablist" aria-label="Choose a service">
+      <button class="tab s1" role="tab" id="tab0" aria-controls="phone-screen" aria-selected="true"><i></i>Wash &amp; Detailing</button>
+      <button class="tab s2" role="tab" id="tab1" aria-controls="phone-screen" aria-selected="false" tabindex="-1"><i></i>Repairs &amp; Maintenance</button>
+      <button class="tab s3" role="tab" id="tab2" aria-controls="phone-screen" aria-selected="false" tabindex="-1"><i></i>Glass Repair &amp; Replacement</button>
+      <button class="tab s4" role="tab" id="tab3" aria-controls="phone-screen" aria-selected="false" tabindex="-1"><i></i>Tyres &amp; Wheel Alignment</button>
+      <button class="tab s5" role="tab" id="tab4" aria-controls="phone-screen" aria-selected="false" tabindex="-1"><i></i>Fines &amp; Vehicle Admin</button>
+    </div>
+  </div>
+
+  <div class="stage" id="stage">
+    <!-- stickers: three per service -->
+    <div class="stk-set s1 on" data-s="0" aria-hidden="true">
+      <div class="stk" style="--x:-250px;--y:-190px;--r:-10deg"><div class="stk-in" style="--dl:.05s"><div class="stk-bob" style="--bt:4.6s"><div class="sticker circle"><svg class="ico"><use href="#i-wash"/></svg></div></div></div></div>
+      <div class="stk" style="--x:255px;--y:-60px;--r:9deg"><div class="stk-in" style="--dl:.12s"><div class="stk-bob" style="--bt:5.4s"><div class="sticker square"><svg class="ico"><use href="#i-spark"/></svg></div></div></div></div>
+      <div class="stk" style="--x:-235px;--y:170px;--r:-6deg"><div class="stk-in" style="--dl:.2s"><div class="stk-bob" style="--bt:5s"><div class="sticker tag">Full valet R380</div></div></div></div>
+    </div>
+    <div class="stk-set s2" data-s="1" aria-hidden="true">
+      <div class="stk" style="--x:-255px;--y:-170px;--r:12deg"><div class="stk-in" style="--dl:.05s"><div class="stk-bob" style="--bt:5.2s"><div class="sticker square"><svg class="ico"><use href="#i-repair"/></svg></div></div></div></div>
+      <div class="stk" style="--x:250px;--y:-150px;--r:-8deg"><div class="stk-in" style="--dl:.12s"><div class="stk-bob" style="--bt:4.4s"><div class="sticker circle"><svg class="ico"><use href="#i-cog"/></svg></div></div></div></div>
+      <div class="stk" style="--x:245px;--y:170px;--r:6deg"><div class="stk-in" style="--dl:.2s"><div class="stk-bob" style="--bt:5.6s"><div class="sticker tag">Quote valid 7 days</div></div></div></div>
+    </div>
+    <div class="stk-set s3" data-s="2" aria-hidden="true">
+      <div class="stk" style="--x:-250px;--y:-120px;--r:-12deg"><div class="stk-in" style="--dl:.05s"><div class="stk-bob" style="--bt:4.8s"><div class="sticker square"><svg class="ico"><use href="#i-glass"/></svg></div></div></div></div>
+      <div class="stk" style="--x:250px;--y:-190px;--r:10deg"><div class="stk-in" style="--dl:.12s"><div class="stk-bob" style="--bt:5.3s"><div class="sticker circle"><svg class="ico"><use href="#i-spark"/></svg></div></div></div></div>
+      <div class="stk" style="--x:-240px;--y:180px;--r:5deg"><div class="stk-in" style="--dl:.2s"><div class="stk-bob" style="--bt:4.5s"><div class="sticker tag">Chip fixed R450</div></div></div></div>
+    </div>
+    <div class="stk-set s4" data-s="3" aria-hidden="true">
+      <div class="stk" style="--x:255px;--y:-170px;--r:14deg"><div class="stk-in" style="--dl:.05s"><div class="stk-bob" style="--bt:5s"><div class="sticker circle"><svg class="ico"><use href="#i-tyre"/></svg></div></div></div></div>
+      <div class="stk" style="--x:-255px;--y:-150px;--r:-10deg"><div class="stk-in" style="--dl:.12s"><div class="stk-bob" style="--bt:4.6s"><div class="sticker square"><svg class="ico"><use href="#i-target"/></svg></div></div></div></div>
+      <div class="stk" style="--x:240px;--y:175px;--r:-5deg"><div class="stk-in" style="--dl:.2s"><div class="stk-bob" style="--bt:5.5s"><div class="sticker tag">Held 15:00</div></div></div></div>
+    </div>
+    <div class="stk-set s5" data-s="4" aria-hidden="true">
+      <div class="stk" style="--x:-250px;--y:-175px;--r:-8deg"><div class="stk-in" style="--dl:.05s"><div class="stk-bob" style="--bt:4.9s"><div class="sticker square"><svg class="ico"><use href="#i-ticket"/></svg></div></div></div></div>
+      <div class="stk" style="--x:255px;--y:-110px;--r:12deg"><div class="stk-in" style="--dl:.12s"><div class="stk-bob" style="--bt:5.4s"><div class="sticker circle"><svg class="ico"><use href="#i-check"/></svg></div></div></div></div>
+      <div class="stk" style="--x:-235px;--y:175px;--r:-4deg"><div class="stk-in" style="--dl:.2s"><div class="stk-bob" style="--bt:4.7s"><div class="sticker tag">Straight answers</div></div></div></div>
+    </div>
+
+    <div class="phone">
+      <div class="screen" id="phone-screen" role="tabpanel" aria-live="polite" aria-labelledby="tab0">
+        <!-- 0 · search results -->
+        <div class="scr s1 on" data-s="0">
+          <div class="scr-top"><span><svg class="ico" style="display:inline;vertical-align:-2px"><use href="#i-pin"/></svg> Rosebank</span><span class="ava">T</span></div>
+          <div class="scr-h">Wash &amp; Detailing</div>
+          <div class="scr-search"><svg class="ico"><use href="#i-search"/></svg>Hand wash · this Saturday</div>
+          <div class="scr-filters"><span class="on">Near me</span><span>Comes to you</span><span>Valet</span></div>
+          <ul class="res">
+            <li><span class="th"><svg class="ico"><use href="#i-wash"/></svg></span><div><b>Suds &amp; Shine</b><small>Rosebank · 1.2 km · ★ 4.8</small><small>Hand wash &amp; vacuum</small></div><em>R180</em></li>
+            <li><span class="th"><svg class="ico"><use href="#i-van"/></svg></span><div><b>Rosebank Mobile Valet</b><small>Comes to you · ★ 4.7</small><small>Travel band B +R40</small></div><em>R250</em></li>
+            <li><span class="th"><svg class="ico"><use href="#i-spark"/></svg></span><div><b>Parkhurst Detail Bay</b><small>2.9 km · ★ 4.9</small><small>Full valet</small></div><em>R380</em></li>
+          </ul>
+          <div class="note"><svg class="ico"><use href="#i-clock"/></svg>Send a request. The business has 2 business hours to accept.</div>
+          <div class="scr-cta c">Request a time</div>
+        </div>
+        <!-- 1 · quote approval -->
+        <div class="scr s2" data-s="1">
+          <div class="scr-top"><span>Quote · Q-2471</span><span class="ava">P</span></div>
+          <div class="scr-h">Your written quote</div>
+          <div class="scr-small">Brakeline Motors · Pretoria East<br>2017 VW Polo · front brakes</div>
+          <div class="qcard">
+            <div class="qline"><span>Brake pads (front)</span><em>R890</em></div>
+            <div class="qline"><span>Brake discs × 2</span><em>R1 240</em></div>
+            <div class="qline"><span>Labour 1.5 h</span><em>R690</em></div>
+            <div class="qline tot"><span>Total</span><em>R2 820</em></div>
+          </div>
+          <div class="scr-small">Valid until Wed 4 Nov · 7 days</div>
+          <div class="valid"><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
+          <div class="note"><svg class="ico"><use href="#i-quote"/></svg>You approve this exact quote, then pay. Extra work needs a new quote you approve.</div>
+          <div class="two"><span>Ask a question</span><span>Approve quote</span></div>
+        </div>
+        <!-- 2 · listing -->
+        <div class="scr s3" data-s="2">
+          <div class="lst-hero"><svg class="ico"><use href="#i-glass"/></svg></div>
+          <div class="scr-h">Klaarsig Glass</div>
+          <div class="scr-small">Centurion · in-store and mobile · ★ 4.8 (126)</div>
+          <div class="svc-list">
+            <div><span>Windscreen chip repair</span><em>R450</em></div>
+            <div><span>Windscreen replacement</span><em>Quote</em></div>
+            <div><span>Side &amp; rear glass</span><em>Quote</em></div>
+            <div><span>Mobile call-out</span><em>by distance</em></div>
+          </div>
+          <div class="note"><svg class="ico"><use href="#i-van"/></svg>Mobile visits add a travel charge by distance band, shown before you send.</div>
+          <div class="two"><span>Ask a question</span><span>Request a time</span></div>
+        </div>
+        <!-- 3 · accepted + hold -->
+        <div class="scr s4" data-s="3">
+          <div class="scr-top"><span>Booking · B-0918</span><span class="ava">T</span></div>
+          <div class="acc">
+            <div class="scr-h">Accepted.</div>
+            <div class="scr-small">Tread &amp; Track, Midrand · Wheel alignment<br>Sat 31 Oct · 09:30</div>
+          </div>
+          <div class="hold">
+            <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="var(--floor-2)" stroke-width="7"/><circle cx="50" cy="50" r="44" fill="none" stroke="var(--tread)" stroke-width="7" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="6"/></svg>
+            <div><b>14:52</b><span class="scr-small">slot held</span></div>
+          </div>
+          <div class="qcard"><div class="qline"><span>Wheel alignment</span><em>R550</em></div><div class="qline"><span>CarworX fee</span><em>R0</em></div></div>
+          <div class="note"><svg class="ico"><use href="#i-shield"/></svg>You pay on a secure payment partner's page. The money goes straight to Tread &amp; Track.</div>
+          <div class="scr-cta c">Pay R550</div>
+        </div>
+        <!-- 4 · fines guidance -->
+        <div class="scr s5" data-s="4">
+          <div class="scr-top"><span>Fines &amp; Vehicle Admin</span><span class="ava">T</span></div>
+          <div class="scr-h">Got a traffic fine?</div>
+          <div class="scr-small">Straight guidance, no jargon.</div>
+          <div class="steps">
+            <div><i>1</i><span><b>Read the notice</b><br><span class="scr-small">What it is for, the amount and the dates on it.</span></span></div>
+            <div><i>2</i><span><b>See your options</b><br><span class="scr-small">What you can do next, in plain words.</span></span></div>
+            <div><i>3</i><span><b>Get it sorted</b><br><span class="scr-small">Follow the steps, or ask a question.</span></span></div>
+          </div>
+          <div class="scr-small" style="margin-top:4px">Vehicle admin</div>
+          <div class="topics"><span>Licence disc renewal</span><span>Change of ownership</span><span>Roadworthy</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ 5 · HOW IT WORKS ═════════ -->
+<section class="how" id="how" aria-labelledby="how-h">
+  <h2 class="sr" id="how-h">How it works</h2>
+  <div class="how-track" id="howTrack">
+    <article class="panel p1 s1">
+      <div><p class="eyebrow">Step 1 of 5 · Thandi, Rosebank</p><h3 class="display">Send a request.</h3><p>Pick a time that suits you and send it. Nothing is instant: a real person at the business checks it first.</p><p class="fine"><svg class="ico"><use href="#i-van"/></svg>Mobile businesses add a travel charge by distance band. You see it before you send.</p></div>
+      <div class="vis"><div class="card" id="reqCard">
+        <div class="top"><div class="who"><i><svg class="ico"><use href="#i-wash"/></svg></i><div><b>Suds &amp; Shine</b><small>Rosebank · 1.2 km</small></div></div><span class="status" id="reqStatus">Draft</span></div>
+        <div class="kv"><span>Hand wash &amp; vacuum</span><em>R180</em></div>
+        <div class="kv"><span>Saturday 31 Oct</span><em>09:30</em></div>
+        <div class="kv"><span>CarworX fee</span><em>R0</em></div>
+        <div class="send" id="reqSend"><span>Send request</span></div>
+      </div></div>
+      <span class="num" aria-hidden="true">1</span>
+    </article>
+    <article class="panel p2">
+      <div><p class="eyebrow">Step 2 of 5</p><h3 class="display">Accepted within 2 business hours.</h3><p>The business has two business hours to accept your request. You get a clear yes, or you look elsewhere.</p></div>
+      <div class="vis"><div class="dial">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="3"/><circle id="dialArc" cx="50" cy="50" r="45" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-dasharray="282.7" stroke-dashoffset="282.7"/></svg>
+        <div class="read"><div class="big mono" id="dialTime">2:00</div><div class="lbl" id="dialLbl">left to accept</div></div>
+        <div class="stamp" id="dialStamp">Accepted ✓</div>
+      </div></div>
+      <span class="num" aria-hidden="true">2</span>
+    </article>
+    <article class="panel p3">
+      <div><p class="eyebrow">Step 3 of 5</p><h3 class="display">Your slot is held for 15 minutes.</h3><p>Once the business accepts, the time is yours for 15 minutes while you pay. No double-booking, no rush at the counter.</p></div>
+      <div class="vis"><div class="dial">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="rgba(13,15,18,.14)" stroke-width="5"/><circle id="holdArc" cx="50" cy="50" r="45" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-dasharray="282.7" stroke-dashoffset="0"/></svg>
+        <div class="read"><div class="big mono" id="holdTime">15:00</div><div class="lbl">held for Thandi</div></div>
+      </div></div>
+      <span class="num" aria-hidden="true">3</span>
+    </article>
+    <article class="panel p4">
+      <div><p class="eyebrow">Step 4 of 5</p><h3 class="display">Pay the business directly.</h3><p>You pay on a secure payment partner's page and the money goes straight to the business. CarworX never holds it.</p></div>
+      <div class="vis"><div class="flow">
+        <div class="node"><i><svg class="ico"><use href="#i-user"/></svg></i><div><b>Thandi</b><small>Pays R180</small></div></div>
+        <div class="pipe"><b id="dot1"></b></div>
+        <div class="node"><i><svg class="ico"><use href="#i-shield"/></svg></i><div><b>Secure payment partner</b><small>Card or instant EFT page</small></div></div>
+        <div class="pipe"><b id="dot2"></b></div>
+        <div class="node"><i style="background:var(--rinse)"><svg class="ico"><use href="#i-store"/></svg></i><div><b>Suds &amp; Shine</b><small>Receives the payment</small></div><em>R180</em></div>
+        <div class="r0"><span>CarworX fee</span><b>R0</b></div>
+      </div></div>
+      <span class="num" aria-hidden="true">4</span>
+    </article>
+    <article class="panel p5 s2">
+      <div><p class="eyebrow">Step 5 of 5 · Pieter, Pretoria East</p><h3 class="display">Repairs start with a written quote.</h3><p>The workshop sends a written quote, valid for 7 days. You approve that exact quote, then pay. Extra work needs a new quote you approve.</p></div>
+      <div class="vis"><div class="card">
+        <div class="top"><div class="who"><i><svg class="ico"><use href="#i-repair"/></svg></i><div><b>Brakeline Motors</b><small>2017 VW Polo · front brakes</small></div></div><span class="status ok">Quote</span></div>
+        <div class="kv"><span>Pads, discs and labour</span><em>R2 820</em></div>
+        <div class="kv" style="border-bottom:0"><span>Valid for</span><em id="daysLeft">7 days</em></div>
+        <div class="days" id="days"><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span><span>Mon</span><span>Tue</span></div>
+        <div class="send" style="background:var(--signal);color:var(--ink)"><span>Approve this quote</span></div>
+      </div></div>
+      <span class="num" aria-hidden="true">5</span>
+    </article>
+  </div>
+  <div class="how-bar" aria-hidden="true"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+</section>
+
+<!-- ═════════ 6 · FOR BUSINESSES ═════════ -->
+<section class="biz" id="business" aria-labelledby="biz-h">
+  <div class="burst" id="burst">
+    <div class="burst-center">
+      <p class="eyebrow">For businesses</p>
+      <h2 class="display" id="biz-h">List free. Pay <span>R0.</span></h2>
+      <p class="lead">Listing is free during the pilot and the CarworX fee is R0. Customers pay you directly through a secure payment partner.</p>
+      <div class="ctas"><a class="pill pill-ink" href="#dash">List your business <span class="arr">→</span></a><a class="pill pill-ghost" href="#how">How bookings work</a></div>
+    </div>
+    <div id="badges" aria-hidden="true">
+      <div class="badge svc s1" style="--s:132px"><svg class="ico"><use href="#i-wash"/></svg><span>Wash &amp;<br>Detailing</span></div>
+      <div class="badge svc s2" style="--s:140px"><svg class="ico"><use href="#i-repair"/></svg><span>Repairs &amp;<br>Maintenance</span></div>
+      <div class="badge svc s3" style="--s:128px"><svg class="ico"><use href="#i-glass"/></svg><span>Glass</span></div>
+      <div class="badge svc s4" style="--s:130px"><svg class="ico"><use href="#i-tyre"/></svg><span>Tyres &amp;<br>Alignment</span></div>
+      <div class="badge svc s5" style="--s:126px"><svg class="ico"><use href="#i-fines"/></svg><span>Fines &amp;<br>Admin</span></div>
+      <div class="badge fact big" style="--s:176px"><b>R0</b><small>CarworX fee in the pilot</small></div>
+      <div class="badge ring-txt" style="--s:124px"><svg class="rt" viewBox="0 0 100 100"><defs><path id="rtp" d="M50,50 m-39,0 a39,39 0 1,1 78,0 a39,39 0 1,1 -78,0"/></defs><text><textPath href="#rtp" textLength="243" lengthAdjust="spacing">FREE LISTING · PILOT · FREE LISTING · PILOT · </textPath></text></svg><span class="core">Free</span></div>
+      <div class="badge fact" style="--s:120px"><b>2h</b><small>business hours to accept</small></div>
+      <div class="badge fact" style="--s:118px"><b>15m</b><small>slot hold while they pay</small></div>
+      <div class="badge fact" style="--s:122px"><b>7d</b><small>written quotes stay valid</small></div>
+      <div class="badge fact" style="--s:112px"><svg class="ico" style="font-size:34px;margin:0 auto 4px"><use href="#i-shield"/></svg><small>Paid to you directly</small></div>
+      <div class="badge fact" style="--s:110px"><svg class="ico" style="font-size:32px;margin:0 auto 4px"><use href="#i-van"/></svg><small>Travel bands for mobile</small></div>
+      <div class="badge mark" style="--s:96px"><svg viewBox="0 0 200 200"><use href="#rotor"/></svg></div>
+    </div>
+  </div>
+
+  <div class="dash-wrap" id="dash">
+    <div class="dash-head">
+      <p class="eyebrow" style="color:var(--muted)">Your business dashboard</p>
+      <h3 class="display">Every request, one glance.</h3>
+      <p>Accept requests, send written quotes and see what has been paid, all from one screen.</p>
+    </div>
+    <div class="dash" role="img" aria-label="Illustration of the CarworX business dashboard for Suds and Shine in Rosebank: 3 new requests, 18 bookings this week, 2 quotes waiting, R14 260 paid directly, CarworX fee R0.">
+      <div class="dash-bar">
+        <div class="who"><i><svg class="ico"><use href="#i-wash"/></svg></i><div><b>Suds &amp; Shine</b><small>Rosebank · Wash &amp; Detailing</small></div></div>
+        <div class="ptabs"><button class="on" tabindex="-1">Today</button><button tabindex="-1">Week</button><button tabindex="-1">Month</button></div>
+      </div>
+      <div class="dash-grid">
+        <div class="dc"><span class="lbl"><svg class="ico"><use href="#i-clock"/></svg>New requests</span><span class="n" data-count="3">3</span><span class="meta">Oldest: 1 h 12 min left to accept</span><div class="meter"><b style="--w:40%"></b></div></div>
+        <div class="dc"><span class="lbl"><svg class="ico"><use href="#i-check"/></svg>Bookings this week</span><span class="n" data-count="18">18</span><span class="meta">6 on Saturday</span></div>
+        <div class="dc"><span class="lbl"><svg class="ico"><use href="#i-quote"/></svg>Quotes waiting</span><span class="n" data-count="2">2</span><span class="meta">Valid for 7 days each</span></div>
+        <div class="dc"><span class="lbl"><svg class="ico"><use href="#i-shield"/></svg>Paid to you · week</span><span class="n"><small>R</small><span data-count="14260" data-fmt="r">14 260</span></span><span class="meta">Direct from the payment partner · fee R0</span></div>
+        <div class="dc wide"><span class="lbl">Bookings by service · this month</span>
+          <div class="bars">
+            <div class="s1"><span style="--h:92%"></span><small>Wash</small></div>
+            <div class="s2"><span style="--h:18%"></span><small>Repairs</small></div>
+            <div class="s3"><span style="--h:10%"></span><small>Glass</small></div>
+            <div class="s4"><span style="--h:6%"></span><small>Tyres</small></div>
+            <div class="s5"><span style="--h:4%"></span><small>Admin</small></div>
+          </div>
+        </div>
+        <div class="dc side"><span class="lbl">Waiting for you</span>
+          <div class="req">
+            <div class="s1"><i>T</i><span class="txt"><b>Thandi M. · Hand wash &amp; vacuum</b><small>Sat 31 Oct · 09:30 · 1 h 12 min left</small></span><span class="acc-b">Accept</span></div>
+            <div class="s3"><i>L</i><span class="txt"><b>Lerato K. · Full valet</b><small>Sat 31 Oct · 11:00 · 1 h 40 min left</small></span><span class="acc-b">Accept</span></div>
+            <div class="s4"><i>S</i><span class="txt"><b>Sipho D. · Mobile wash, band B</b><small>Sun 1 Nov · 08:00 · 1 h 55 min left</small></span><span class="acc-b">Accept</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="foot-lock" role="img" aria-label="CarworX"><svg viewBox="0 0 852.35 184" aria-hidden="true"><use href="#lockup"/></svg></div>
+  <div class="foot-row">
+    <span class="tag"><i></i>Concept, not final</span>
+    <nav aria-label="Footer"><a href="#hero">Services</a><a href="#how">How it works</a><a href="#business">For businesses</a><a href="#top">Back to top</a></nav>
+    <span>carworx.app · Showroom direction</span>
+  </div>
+  <small>All businesses, people, prices and ratings on this page are made up for the concept.</small>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const root = document.documentElement;
+const RM = root.classList.contains('rm');
+const HAS_G = !!(window.gsap && window.ScrollTrigger);
+if (!HAS_G) { root.classList.remove('motion'); root.classList.add('no-gsap'); }
+const MOTION = !RM && HAS_G;
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => 1 - Math.pow(1 - t, 3);
+const isMobile = () => root.clientWidth < 821;
+const NS = 'http://www.w3.org/2000/svg';
+if (HAS_G) gsap.registerPlugin(ScrollTrigger);
+const S = window.__showroom = {};
+const nav = $('#nav');
+
+/* ── 1 · Intro: glyphs resolve into the wordmark, rotor rolls into place ── */
+function intro() {
+  const anim = $('.wm-anim');
+  const paths = $$('#wordmark path');
+  const meas = document.createElementNS(NS, 'svg');
+  meas.setAttribute('viewBox', '0 -100 606.35 100');
+  meas.style.cssText = 'position:absolute;left:-9999px;top:0;width:606px;height:100px;visibility:hidden';
+  document.body.append(meas);
+  const POOL = '{}[]<>/\\#$%&*+=~^!?01';
+  const letters = paths.map(p => {
+    const q = p.cloneNode(); meas.append(q);
+    const b = q.getBBox();
+    const el = document.createElement('div');
+    el.className = 'wm-l';
+    Object.assign(el.style, { left: b.x / 6.0635 + '%', top: (b.y + 100) + '%', width: b.width / 6.0635 + '%', height: b.height + '%' });
+    el.innerHTML = `<svg viewBox="${b.x} ${b.y} ${b.width} ${b.height}" preserveAspectRatio="none"><path d="${p.getAttribute('d')}"/></svg>`;
+    const g = document.createElement('span');
+    g.className = 'wm-g';
+    g.style.left = (b.x + b.width / 2) / 6.0635 + '%';
+    anim.append(el, g);
+    return { el, g, live: true };
+  });
+  meas.remove();
+  const size = () => { const h = anim.clientHeight; letters.forEach(l => l.g.style.fontSize = h * 0.9 + 'px'); };
+  size(); addEventListener('resize', size);
+
+  if (!MOTION) { letters.forEach(l => l.g.remove()); nav.classList.add('on'); return; }
+
+  const cycler = setInterval(() => letters.forEach(l => { if (l.live) l.g.textContent = POOL[(Math.random() * POOL.length) | 0]; }), 55);
+  const rotor = $('.intro-rotor');
+  const tl = gsap.timeline({ paused: true, onComplete: done });
+  tl.set(letters.map(l => l.el), { opacity: 0, scale: .55, filter: 'blur(14px)', yPercent: 18 })
+    .set(rotor, { x: () => root.clientWidth * .6, rotation: 1080, opacity: 1 })
+    .set('.intro .st', { opacity: 0, y: 34 })
+    .fromTo(letters.map(l => l.g), { opacity: 0 }, { opacity: 1, duration: .25, stagger: .04 }, 0);
+  letters.forEach((l, i) => {
+    const t = .55 + i * .11;
+    tl.to(l.g, { opacity: 0, scale: 1.5, filter: 'blur(8px)', duration: .28, onStart: () => { l.live = false; } }, t)
+      .to(l.el, { opacity: 1, scale: 1, yPercent: 0, filter: 'blur(0px)', duration: .7, ease: 'expo.out' }, t + .04);
+  });
+  // rotor rolls in from the right, spools down, overshoots 1.8° and settles (brand: mechanical, not bouncy)
+  tl.to(rotor, { x: 0, duration: 1.35, ease: 'expo.out' }, 1.05)
+    .to(rotor, { rotation: -1.8, duration: 1.35, ease: 'power3.out' }, 1.05)
+    .to(rotor, { rotation: 0, duration: .5, ease: 'power2.out' }, 2.4)
+    .fromTo('.glint', { xPercent: -120, opacity: 1 }, { xPercent: 120, duration: 1.1, ease: 'power2.inOut' }, 2.15)
+    .set('.glint', { opacity: 0 })
+    .set(letters.map(l => l.el), { clearProps: 'filter' })
+    .to('.intro .st', { opacity: 1, y: 0, duration: .9, ease: 'expo.out', stagger: .09 }, 2.45)
+    .add(() => nav.classList.add('on'), 2.7)
+    .add(startTicker, 3.0);
+  S.intro = tl;
+  S.introCycler = cycler;
+  function done() { clearInterval(cycler); letters.forEach(l => { l.live = false; l.g.style.opacity = 0; }); }
+  const skip = () => { if (tl.progress() < 1) tl.progress(1); off(); };
+  const evs = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+  const off = () => evs.forEach(e => removeEventListener(e, skip));
+  evs.forEach(e => addEventListener(e, skip, { passive: true }));
+  if (scrollY > 40 || location.hash) skip();
+  document.fonts.ready.then(() => { size(); if (tl.progress() === 0 && !S.holdIntro) tl.play(); });
+}
+let tickerOn = false;
+function startTicker() {
+  if (tickerOn || !MOTION) return; tickerOn = true;
+  const list = $('.ticker-list'); const n = 5; let i = 0;
+  setInterval(() => {
+    i++;
+    gsap.to(list, { yPercent: -100 / 6 * i, duration: .8, ease: 'expo.inOut', onComplete: () => { if (i === n) { i = 0; gsap.set(list, { yPercent: 0 }); } } });
+  }, 1900);
+}
+
+/* ── 2 · Hero: the app-icon object rotates, then unpacks into the lineup ── */
+function hero() {
+  const obj = $('#obj');
+  let html = '';
+  for (let i = 12; i >= 1; i--) html += `<div class="slab" style="transform:translateZ(${-i * 2.5}px);background:hsl(215 14% ${10 + (12 - i) * 0.9}%)"></div>`;
+  html += `<div class="face back"><svg viewBox="0 0 200 200"><use href="#rotor"/></svg></div>`;
+  html += `<div class="face front" style="transform:translateZ(1px)"><svg class="spin" viewBox="0 0 200 200"><use href="#rotor"/></svg></div>`;
+  html += `<div class="obj-shadow"></div>`;
+  obj.innerHTML = html;
+  if (!MOTION) return;
+
+  gsap.fromTo(obj, { rotationY: -24, rotationX: 8 }, { rotationY: 24, rotationX: -4, duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+  const anchor = $('.obj-anchor'), scrub = $('.obj-scrub');
+  const tiles = $$('.tile'), ins = $$('.tile-in');
+  let M = [], O = {};
+  const measure = () => {
+    gsap.set(ins, { clearProps: 'transform' });
+    const a = anchor.getBoundingClientRect();
+    const ac = { x: a.left + a.width / 2, y: a.top + a.height / 2 };
+    M = tiles.map(li => {
+      const r = li.getBoundingClientRect(), chip = $('.chip', li);
+      const cx = r.left + chip.offsetLeft + chip.offsetWidth / 2, cy = r.top + chip.offsetTop + chip.offsetHeight / 2;
+      return { dx: cx - ac.x, dy: cy - ac.y, w: chip.offsetWidth };
+    });
+    O = { x: M[2].dx, y: M[2].dy, s: M[2].w / a.width };
+  };
+  measure();
+  ScrollTrigger.addEventListener('refreshInit', measure);
+  const tl = gsap.timeline({
+    defaults: { ease: 'none' },
+    scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=170%', pin: true, scrub: .9, invalidateOnRefresh: true }
+  });
+  tl.fromTo(scrub, { rotationY: 0, x: 0, y: 0, scale: 1, opacity: 1 }, { rotationY: 360, duration: .42, ease: 'power1.inOut' }, 0)
+    .fromTo('.hero-label', { opacity: 1, y: 0 }, { opacity: 0, y: -30, duration: .14 }, .26)
+    .to(scrub, { x: () => O.x, y: () => O.y, scale: () => O.s, duration: .3, ease: 'power2.inOut' }, .4)
+    .fromTo(ins, { x: i => -M[i].dx, y: i => -M[i].dy, scale: .35, opacity: 0, rotationY: -50 },
+      { x: 0, y: 0, scale: 1, opacity: 1, rotationY: 0, duration: .32, ease: 'power3.out', stagger: { each: .035, from: 'center' } }, .5)
+    .to(scrub, { opacity: 0, duration: .06 }, .68)
+    .fromTo('.hero-copy > *', { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: .2, stagger: .05, ease: 'power2.out' }, .6)
+    .fromTo('.tile-name, .tile-num, .tile-desc', { opacity: 0 }, { opacity: 1, duration: .14 }, .78)
+    .fromTo('.lineup', { '--bgo': 0 }, { '--bgo': 1, duration: .14 }, .78)
+    .to({}, { duration: .12 });
+  S.hero = tl;
+}
+
+/* ── 3 · Ring of cards bursts to the edges ── */
+function ring() {
+  const sec = $('#find'), tilt = $('#ringTilt'), cards = $$('.rc', tilt), n = cards.length;
+  let p = MOTION ? 0 : 1, ps = p, spin = 0, last = performance.now(), visible = false, T = [], R = 0, cw = 0, ch = 0;
+  const layout = () => {
+    const W = sec.clientWidth, H = sec.clientHeight; cw = cards[0].offsetWidth; ch = cards[0].offsetHeight;
+    const m = isMobile();
+    R = cw * n / (2 * Math.PI) * 1.06;
+    const rz = i => ((i * 37) % 13) - 6;
+    if (!m) {
+      // walk the screen perimeter so the cards land evenly along the edges, bleeding slightly past them
+      const a = W / 2 - cw / 2 + 36, b = H / 2 - ch / 2 + 6, P = 4 * (a + b);
+      T = cards.map((c, i) => {
+        let d = ((i + .5) / n * P + a * 1.5) % P, x, y;
+        if (d < 2 * a) { x = -a + d; y = -b; }
+        else if ((d -= 2 * a) < 2 * b) { x = a; y = -b + d; }
+        else if ((d -= 2 * b) < 2 * a) { x = a - d; y = b; }
+        else { d -= 2 * a; x = -a; y = b - d; }
+        return { x, y, rz: rz(i) };
+      });
+    } else {
+      // phones: a row of three above and below the copy; the rest fly out past the edges
+      T = cards.map((c, i) => {
+        if (i < 6) return { x: ((i % 3) - 1) * (cw + 10), y: i < 3 ? -H / 2 + ch / 2 + 74 : H / 2 - ch / 2 - 22, rz: rz(i) };
+        const th = (i / n) * 2 * Math.PI;
+        return { x: Math.cos(th) * W * 1.2, y: Math.sin(th) * H * .9, rz: rz(i) };
+      });
+    }
+  };
+  layout(); addEventListener('resize', layout);
+  const center = $$('.ring-center > *');
+  const draw = () => {
+    const e0 = ease(ps);
+    tilt.style.transform = `rotateX(${lerp(-10, 0, e0)}deg)`;
+    cards.forEach((c, i) => {
+      const lp = ease(clamp((ps - i * .018) / .78));
+      const a = (i / n) * Math.PI * 2 + spin;
+      let ry = ((a * 180 / Math.PI) % 360 + 540) % 360 - 180;
+      const x = lerp(Math.sin(a) * R, T[i].x, lp), y = lerp(0, T[i].y, lp), z = lerp(Math.cos(a) * R - R, 0, lp);
+      const rot = lerp(ry, 0, lp), rz = lerp(0, T[i].rz, lp);
+      const front = (Math.cos(a) + 1) / 2;
+      c.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateY(${rot.toFixed(2)}deg) rotateZ(${rz.toFixed(2)}deg)`;
+      c.style.opacity = lerp(.28 + .72 * Math.pow(front, 1.4), 1, lp).toFixed(3);
+      c.style.zIndex = Math.round(lerp(front * 100, 1, lp));
+    });
+    const cp = clamp((ps - .38) / .34);
+    center.forEach((el, i) => { const q = ease(clamp(cp * 1.25 - i * .08)); el.style.opacity = q; el.style.transform = `translateY(${(1 - q) * 40}px) scale(${lerp(.94, 1, q)})`; });
+  };
+  const loop = now => {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    ps += (p - ps) * Math.min(1, dt * 7);
+    spin += dt * .32 * (1 - ease(clamp(ps * 1.3)));
+    draw();
+    if (visible) requestAnimationFrame(loop);
+  };
+  if (!MOTION) { draw(); return; }
+  ScrollTrigger.create({ trigger: sec, start: 'top top', end: '+=150%', pin: true, onUpdate: s => p = s.progress, onRefresh: layout });
+  new IntersectionObserver(([en]) => { const v = en.isIntersecting; if (v && !visible) { visible = true; last = performance.now(); requestAnimationFrame(loop); } visible = v; }).observe(sec);
+  draw();
+  S.ring = { set: v => { p = ps = v; draw(); } };
+
+  // typed placeholder suggestions
+  const q = $('#q'), ideas = ['Hand wash in Rosebank this Saturday', 'Brake quote for a 2017 Polo, Pretoria East', 'Windscreen chip near Centurion', 'Wheel alignment in Midrand', 'How do I renew my licence disc?'];
+  let k = 0;
+  const type = () => {
+    if (document.activeElement === q || q.value) return setTimeout(type, 2000);
+    const s = ideas[k++ % ideas.length]; let j = 0;
+    const step = () => { q.placeholder = s.slice(0, ++j); if (j < s.length) setTimeout(step, 34); else setTimeout(type, 2400); };
+    step();
+  };
+  setTimeout(type, 1500);
+}
+
+/* ── 4 · Keyword morph, stickers and phone screens in step ── */
+function glimpse() {
+  const words = ['Wash', 'Repairs', 'Glass', 'Tyres', 'Fines'];
+  const kcol = ['var(--rinse)', 'var(--signal-d)', 'var(--lens)', 'var(--tread-d)', 'var(--permit-d)'];
+  const kw = $('#kw');
+  kw.innerHTML = '';
+  const els = words.map((w, i) => {
+    const s = document.createElement('span'); s.className = 'kw-w' + (i ? '' : ' on');
+    s.innerHTML = [...w].map(ch => `<span>${ch}</span>`).join('');
+    kw.append(s); return s;
+  });
+  kw.setAttribute('aria-live', 'polite');
+  const sizeKw = () => { kw.style.width = els[cur].offsetWidth + 'px'; };
+  const tabs = $$('.tab'), sets = $$('.stk-set'), scrs = $$('.scr'), panel = $('#phone-screen');
+  let cur = 0, auto = true, timer;
+  const go = (i, user) => {
+    if (user) { auto = false; clearInterval(timer); }
+    if (i === cur) return;
+    const prev = cur; cur = i;
+    tabs.forEach((t, j) => { t.setAttribute('aria-selected', j === i); t.tabIndex = j === i ? 0 : -1; });
+    panel.setAttribute('aria-labelledby', 'tab' + i);
+    sets.forEach((s, j) => s.classList.toggle('on', j === i));
+    scrs.forEach((s, j) => s.classList.toggle('on', j === i));
+    kw.style.setProperty('--kc', kcol[i]);
+    els.forEach((e, j) => e.classList.toggle('on', j === i || j === prev));
+    if (MOTION) {
+      gsap.to(els[prev].children, { yPercent: -110, duration: .45, ease: 'power3.in', stagger: .025, onComplete: () => els[prev].classList.toggle('on', prev === cur) });
+      gsap.fromTo(els[i].children, { yPercent: 115 }, { yPercent: 0, duration: .8, ease: 'expo.out', stagger: .035, delay: .18 });
+      gsap.to(kw, { width: els[i].offsetWidth, duration: .7, ease: 'expo.inOut' });
+    } else { els[prev].classList.remove('on'); sizeKw(); }
+  };
+  S.glimpse = go;
+  kw.style.setProperty('--kc', kcol[0]);
+  document.fonts.ready.then(sizeKw); addEventListener('resize', sizeKw); sizeKw();
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => go(i, true));
+    t.addEventListener('keydown', e => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { e.preventDefault(); const j = (cur + d + 5) % 5; go(j, true); tabs[j].focus(); }
+    });
+  });
+  $$('[data-svc]').forEach(a => a.addEventListener('click', () => go(+a.dataset.svc, true)));
+  // stickers sit closer to the phone on small screens
+  const fit = () => {
+    const m = isMobile(), f = m ? Math.min(.62, (root.clientWidth - 40) / 2 / 250 * .9) : 1;
+    $$('.stk').forEach(s => {
+      if (!s.dataset.x) { s.dataset.x = parseFloat(s.style.getPropertyValue('--x')); s.dataset.y = parseFloat(s.style.getPropertyValue('--y')); }
+      s.style.setProperty('--x', s.dataset.x * f + 'px'); s.style.setProperty('--y', s.dataset.y * (m ? 1.05 : 1) + 'px');
+    });
+  };
+  fit(); addEventListener('resize', fit);
+  if (!MOTION) return;
+  new IntersectionObserver(([en]) => {
+    clearInterval(timer);
+    if (en.isIntersecting && auto) timer = setInterval(() => go((cur + 1) % 5), 3000);
+  }, { threshold: .35 }).observe($('#glimpse'));
+  gsap.fromTo('.phone', { y: 120, rotationX: 18, opacity: 0 }, { y: 0, rotationX: 0, opacity: 1, ease: 'expo.out', duration: 1.4, scrollTrigger: { trigger: '.stage', start: 'top 85%' } });
+}
+
+/* ── 5 · How it works: horizontal keynote slides ── */
+function how() {
+  const track = $('#howTrack'), panels = $$('.panel', track), n = panels.length;
+  const bars = $$('.how-bar b');
+  const arc = $('#dialArc'), dt = $('#dialTime'), dl = $('#dialLbl'), stamp = $('#dialStamp');
+  const harc = $('#holdArc'), ht = $('#holdTime');
+  const st = $('#reqStatus'), send = $('#reqSend span');
+  const d1 = $('#dot1'), d2 = $('#dot2');
+  const days = $$('#days span'), dleft = $('#daysLeft');
+  const fmt = m => `${Math.floor(m / 60)}:${String(Math.floor(m % 60)).padStart(2, '0')}`;
+  const upd = p => {
+    const f = p * (n - 1);
+    const arr = i => clamp(f - i + 1);
+    bars.forEach((b, i) => b.style.transform = `scaleX(${clamp(f - i + 1)})`);
+    const sent = f > .25 || !MOTION;
+    st.textContent = sent ? 'Request sent' : 'Draft'; st.classList.toggle('ok', sent);
+    send.textContent = sent ? 'Sent ✓' : 'Send request';
+    const a1 = ease(clamp((arr(1) - .25) / .75));
+    arc.style.strokeDashoffset = (282.7 * (1 - a1 * .39)).toFixed(1);
+    dt.textContent = fmt(120 - 47 * a1); dl.textContent = a1 > .97 ? 'accepted with time to spare' : 'left to accept';
+    stamp.classList.toggle('on', a1 > .97);
+    const a2 = ease(clamp((arr(2) - .25) / .75));
+    const sec = Math.round(900 - 128 * a2);
+    ht.textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+    harc.style.strokeDashoffset = (282.7 * (128 * a2 / 900)).toFixed(1);
+    const a3 = ease(clamp((arr(3) - .2) / .8));
+    d1.style.transform = `translateY(${clamp(a3 * 2) * 22}px)`; d2.style.transform = `translateY(${clamp(a3 * 2 - 1) * 22}px)`;
+    d1.style.opacity = d2.style.opacity = a3 > 0 ? 1 : 0;
+    const a4 = clamp((arr(4) - .2) / .8);
+    const lit = Math.round(a4 * 2);
+    days.forEach((d, i) => d.classList.toggle('on', i < 7 - lit));
+    dleft.textContent = `${7 - lit} day${7 - lit === 1 ? '' : 's'} left`;
+  };
+  if (!MOTION) { upd(1); return; }
+  upd(0);
+  const slide = gsap.to(track, {
+    x: () => -(track.scrollWidth - $('#how').clientWidth), ease: 'none',
+    scrollTrigger: { trigger: '#how', start: 'top top', end: () => '+=' + (track.scrollWidth - $('#how').clientWidth) * 1.1, pin: true, scrub: .7, invalidateOnRefresh: true, onUpdate: s => upd(s.progress) }
+  });
+  panels.forEach((pn, i) => {
+    const h = $('h3', pn);
+    if (!i) return gsap.fromTo(h, { clipPath: 'inset(0 0 100% 0)', y: 40 }, { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '#how', start: 'top 60%' } });
+    gsap.fromTo(h, { clipPath: 'inset(0 0 100% 0)', y: 40 }, { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: pn, containerAnimation: slide, start: 'left 70%' } });
+  });
+}
+
+/* ── 6 · Badges burst out with spin and spring physics ── */
+function badges() {
+  const stage = $('#burst'), els = $$('.badge', stage);
+  // [x, y] as a share of the half-width / half-height around the centre copy
+  const DESK = [[-.78,-.62],[.72,-.66],[-.9,.12],[.88,.08],[-.66,.74],[.58,.72],[-.36,-.84],[.3,-.86],[.9,-.32],[-.92,-.24],[-.2,.86],[.24,.9],[.92,.5]];
+  const MOB = [[-.9,-.92],[.3,-.92],[0,-.56],[.62,.56],[-.62,.56],[0,.56],[-.3,-.92],[.9,-.92],[.6,-.56],[-.6,-.56],[-.62,.92],[.62,.92],[0,.92]];
+  const B = els.map((el, i) => ({ el, base: parseFloat(el.style.getPropertyValue('--s')), x: 0, y: 0, vx: 0, vy: 0, r: 0, vr: 0, s: 1, vs: 0, tx: 0, ty: 0, tr: ((i * 53) % 24) - 12 }));
+  const layout = () => {
+    const W = stage.clientWidth, H = stage.clientHeight, m = isMobile();
+    const L = m ? MOB : DESK, k = m ? .6 : Math.min(1, W / 1300);
+    B.forEach((b, i) => {
+      const sz = b.base * (m ? .56 : Math.max(.75, k));
+      b.el.style.setProperty('--s', sz + 'px');
+      b.tx = L[i][0] * (W / 2 - sz / 2 - 12); b.ty = L[i][1] * (H / 2 - sz / 2 - 12);
+    });
+  };
+  layout(); addEventListener('resize', () => { layout(); if (!running) place(); });
+  const place = () => B.forEach(b => b.el.style.transform = `translate(${b.x.toFixed(1)}px,${b.y.toFixed(1)}px) rotate(${b.r.toFixed(1)}deg) scale(${b.s.toFixed(3)})`);
+  const settle = () => B.forEach(b => { b.x = b.tx; b.y = b.ty; b.r = b.tr; b.s = 1; });
+  let running = false, ptr = null, last = 0, burstDone = false;
+  if (!MOTION) { settle(); place(); return; }
+  B.forEach(b => { b.s = 0; }); place();
+  const step = h => B.forEach(b => {
+    let fx = -90 * (b.x - b.tx) - 10 * b.vx, fy = -90 * (b.y - b.ty) - 10 * b.vy;
+    if (ptr) { const dx = b.x - ptr.x, dy = b.y - ptr.y, d = Math.hypot(dx, dy) || 1, R = 190; if (d < R) { const f = (1 - d / R) * 9000; fx += dx / d * f; fy += dy / d * f; b.vr += (dx > 0 ? 1 : -1) * (1 - d / R) * 40; } }
+    b.vx += fx * h; b.vy += fy * h; b.x += b.vx * h; b.y += b.vy * h;
+    b.vr += (-55 * (b.r - b.tr) - 6 * b.vr) * h; b.r += b.vr * h;
+    b.vs += (-160 * (b.s - 1) - 13 * b.vs) * h; b.s += b.vs * h;
+  });
+  const loop = now => {
+    let dt = Math.min(.04, (now - last) / 1000); last = now;
+    while (dt > 0) { const h = Math.min(dt, 1 / 240); step(h); dt -= h; }
+    place();
+    const energy = B.reduce((e, b) => e + Math.abs(b.vx) + Math.abs(b.vy) + Math.abs(b.vr) + Math.abs(b.vs) * 50, 0);
+    if (energy > .5 || ptr) requestAnimationFrame(loop); else running = false;
+  };
+  const kick = () => { if (!running) { running = true; last = performance.now(); requestAnimationFrame(loop); } };
+  const burst = () => {
+    if (burstDone) return; burstDone = true;
+    B.forEach((b, i) => {
+      const a = Math.atan2(b.ty, b.tx);
+      b.x = Math.cos(a) * 10; b.y = Math.sin(a) * 10; b.s = .15;
+      const d = Math.hypot(b.tx, b.ty);
+      b.vx = Math.cos(a) * d * 7; b.vy = Math.sin(a) * d * 7;
+      b.r = (i % 2 ? 1 : -1) * 160; b.vr = (i % 2 ? -1 : 1) * (500 + (i * 97) % 600);
+      b.vs = 6;
+    });
+    kick();
+  };
+  S.burst = () => { burst(); };
+  S.settleBadges = () => { burstDone = true; settle(); place(); };
+  ScrollTrigger.create({ trigger: stage, start: 'top 55%', once: true, onEnter: burst });
+  stage.addEventListener('pointermove', e => { if (!burstDone) return; const r = stage.getBoundingClientRect(); ptr = { x: e.clientX - r.left - r.width / 2, y: e.clientY - r.top - r.height / 2 }; kick(); });
+  stage.addEventListener('pointerleave', () => { ptr = null; });
+}
+
+/* ── shared: scroll reveals and count-ups ── */
+function reveals() {
+  if (!MOTION) return;
+  ['.glimpse-head > *', '.dash-head > *'].forEach(sel => {
+    gsap.utils.toArray(sel).forEach((el, i) => gsap.fromTo(el, { opacity: 0, y: 46 }, { opacity: 1, y: 0, duration: 1.1, ease: 'expo.out', delay: (i % 4) * .07, scrollTrigger: { trigger: el, start: 'top 90%' } }));
+  });
+  gsap.fromTo('.burst-center > *', { opacity: 0, y: 50, scale: .96 }, { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: 'expo.out', stagger: .08, scrollTrigger: { trigger: '#burst', start: 'top 55%' } });
+  gsap.fromTo('.dash', { y: 120, rotationX: 14, opacity: 0, transformPerspective: 1400 }, { y: 0, rotationX: 0, opacity: 1, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: '.dash', start: 'top 88%' } });
+  gsap.fromTo('.dc', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out', stagger: .06, scrollTrigger: { trigger: '.dash', start: 'top 75%' } });
+  gsap.fromTo('.bars span', { scaleY: 0 }, { scaleY: 1, duration: 1.2, ease: 'elastic.out(1,.6)', stagger: .07, scrollTrigger: { trigger: '.bars', start: 'top 85%' } });
+  $$('[data-count]').forEach(el => {
+    const to = +el.dataset.count, o = { v: 0 };
+    const out = v => el.textContent = el.dataset.fmt === 'r' ? Math.round(v).toLocaleString('en-ZA').replace(/,/g, ' ') : Math.round(v);
+    gsap.to(o, { v: to, duration: 1.6, ease: 'expo.out', onUpdate: () => out(o.v), scrollTrigger: { trigger: el, start: 'top 85%' }, onStart: () => out(0) });
+  });
+  gsap.fromTo('.foot-row > *, .foot small', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, ease: 'expo.out', stagger: .06, scrollTrigger: { trigger: '.foot', start: 'top 70%' } });
+  gsap.fromTo('.foot-lock', { yPercent: 30, opacity: 0, scale: .92 }, { yPercent: 0, opacity: 1, scale: 1, ease: 'none', scrollTrigger: { trigger: '.foot', start: 'top 95%', end: 'top 55%', scrub: .6 } });
+}
+
+$('#prompt').addEventListener('submit', e => { e.preventDefault(); $('#glimpse').scrollIntoView({ behavior: MOTION ? 'smooth' : 'auto' }); });
+
+intro(); hero(); ring(); glimpse(); how(); badges(); reveals();
+if (HAS_G) { document.fonts.ready.then(() => ScrollTrigger.refresh()); }
+})();
+</script>
+</body>
+</html>

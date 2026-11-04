@@ -1,0 +1,161 @@
+[
+ {
+  "w": 1280,
+  "lines": [
+   {
+    "text": ".p-main > .eyebrow",
+    "need": 4.5,
+    "worst": 4.09,
+    "p1": 5.26,
+    "p2": 5.26,
+    "pass": true
+   },
+   {
+    "text": ".p-h > span:not(.grey)",
+    "need": 3,
+    "worst": 13.08,
+    "p1": 16.83,
+    "p2": 16.83,
+    "pass": true
+   },
+   {
+    "text": ".p-h > .grey",
+    "need": 3,
+    "worst": 2.96,
+    "p1": 3.81,
+    "p2": 3.81,
+    "pass": true
+   },
+   {
+    "text": ".p-sub",
+    "need": 4.5,
+    "worst": 4.09,
+    "p1": 5.26,
+    "p2": 5.26,
+    "pass": true
+   },
+   {
+    "text": ".tlink",
+    "need": 4.5,
+    "worst": 10.11,
+    "p1": 10.22,
+    "p2": 10.22,
+    "pass": true
+   },
+   {
+    "text": ".p-svc > .eyebrow",
+    "need": 4.5,
+    "worst": 4.09,
+    "p1": 4.13,
+    "p2": 5.21,
+    "pass": true
+   }
+  ]
+ },
+ {
+  "w": 1440,
+  "lines": [
+   {
+    "text": ".p-main > .eyebrow",
+    "need": 4.5,
+    "worst": 4.09,
+    "p1": 5.26,
+    "p2": 5.26,
+    "pass": true
+   },
+   {
+    "text": ".p-h > span:not(.grey)",
+    "need": 3,
+    "worst": 13.05,
+    "p1": 16.83,
+    "p2": 16.83,
+    "pass": true
+   },
+   {
+    "text": ".p-h > .grey",
+    "need": 3,
+    "worst": 2.96,
+    "p1": 3.81,
+    "p2": 3.81,
+    "pass": true
+   },
+   {
+    "text": ".p-sub",
+    "need": 4.5,
+    "worst": 4.09,
+    "p1": 5.26,
+    "p2": 5.26,
+    "pass": true
+   },
+   {
+    "text": ".tlink",
+    "need": 4.5,
+    "worst": 12.23,
+    "p1": 12.33,
+    "p2": 12.33,
+    "pass": true
+   },
+   {
+    "text": ".p-svc > .eyebrow",
+    "need": 4.5,
+    "worst": 4.09,
+    "p1": 5.21,
+    "p2": 5.21,
+    "pass": true
+   }
+  ]
+ },
+ {
+  "w": 390,
+  "lines": [
+   {
+    "text": ".p-main > .eyebrow",
+    "need": 4.5,
+    "worst": 4.09,
+    "p1": 4.98,
+    "p2": 5.21,
+    "pass": true
+   },
+   {
+    "text": ".p-h > span:not(.grey)",
+    "need": 3,
+    "worst": 13.08,
+    "p1": 15.95,
+    "p2": 16.71,
+    "pass": true
+   },
+   {
+    "text": ".p-h > .grey",
+    "need": 3,
+    "worst": 2.95,
+    "p1": 3.77,
+    "p2": 3.8,
+    "pass": true
+   },
+   {
+    "text": ".p-sub",
+    "need": 4.5,
+    "worst": 4.04,
+    "p1": 5.03,
+    "p2": 5.21,
+    "pass": true
+   },
+   {
+    "text": ".tlink",
+    "need": 4.5,
+    "worst": 10.1,
+    "p1": 10.22,
+    "p2": 10.25,
+    "pass": true
+   },
+   {
+    "text": ".p-svc > .eyebrow",
+    "need": 4.5,
+    "worst": 4.08,
+    "p1": 4.87,
+    "p2": 4.92,
+    "pass": true
+   }
+  ]
+ }
+]

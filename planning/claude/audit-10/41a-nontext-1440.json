@@ -1,0 +1,266 @@
+[
+ {
+  "tag": "A",
+  "text": "Skip to the summary",
+  "border": "0px none rgb(255, 255, 255)",
+  "outline": "3px none rgb(255, 255, 255)",
+  "fill": "rgb(13, 15, 18)",
+  "backdrop": "rgb(242, 241, 238)"
+ },
+ {
+  "tag": "A",
+  "text": "CarworX pack, back to the top",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.72)"
+ },
+ {
+  "tag": "A",
+  "text": "Summary",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.72)"
+ },
+ {
+  "tag": "A",
+  "text": "Brand",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.72)"
+ },
+ {
+  "tag": "A",
+  "text": "Phone screens",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.72)"
+ },
+ {
+  "tag": "A",
+  "text": "Desktop",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.72)"
+ },
+ {
+  "tag": "A",
+  "text": "Journeys",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.72)"
+ },
+ {
+  "tag": "A",
+  "text": "Roadmap and decisions",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.72)"
+ },
+ {
+  "tag": "A",
+  "text": "Summary",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.86)"
+ },
+ {
+  "tag": "A",
+  "text": "Brand",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.86)"
+ },
+ {
+  "tag": "A",
+  "text": "Phone screens",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.86)"
+ },
+ {
+  "tag": "A",
+  "text": "Desktop",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.86)"
+ },
+ {
+  "tag": "A",
+  "text": "Journeys",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.86)"
+ },
+ {
+  "tag": "A",
+  "text": "Roadmap and decisions",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.86)"
+ },
+ {
+  "tag": "A",
+  "text": "Start with the one-page summary",
+  "border": "0px none rgb(255, 255, 255)",
+  "outline": "3px none rgb(255, 255, 255)",
+  "fill": "rgb(13, 15, 18)",
+  "backdrop": "rgb(242, 241, 238)"
+ },
+ {
+  "tag": "A",
+  "text": "See the two walkthroughs",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgb(255, 255, 255)",
+  "backdrop": "rgb(242, 241, 238)"
+ },
+ {
+  "tag": "A",
+  "text": "Roadmap and decisions",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgb(255, 255, 255)"
+ },
+ {
+  "tag": "BUTTON",
+  "text": "Play the logo animation again",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgb(255, 255, 255)",
+  "backdrop": "rgb(242, 241, 238)"
+ },
+ {
+  "tag": "A",
+  "text": "Home screen",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgb(255, 255, 255)"
+ },
+ {
+  "tag": "A",
+  "text": "Search results",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.62)"
+ },
+ {
+  "tag": "A",
+  "text": "Listing",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.62)"
+ },
+ {
+  "tag": "A",
+  "text": "Waiting state",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.62)"
+ },
+ {
+  "tag": "A",
+  "text": "Dashboard",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.62)"
+ },
+ {
+  "tag": "A",
+  "text": "Checkout",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.62)"
+ },
+ {
+  "tag": "A",
+  "text": "Search",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgb(255, 255, 255)"
+ },
+ {
+  "tag": "A",
+  "text": "Listing",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgb(255, 255, 255)"
+ },
+ {
+  "tag": "A",
+  "text": "Checkout",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.62)"
+ },
+ {
+  "tag": "A",
+  "text": "Write a quote",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.62)"
+ },
+ {
+  "tag": "A",
+  "text": "Quote approval",
+  "border": "0px none rgb(13, 15, 18)",
+  "outline": "3px none rgb(13, 15, 18)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgba(255, 255, 255, 0.62)"
+ },
+ {
+  "tag": "A",
+  "text": "PLAN 2.1",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgb(242, 241, 238)"
+ },
+ {
+  "tag": "A",
+  "text": "design/brand",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgb(242, 241, 238)"
+ },
+ {
+  "tag": "A",
+  "text": "exports/",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgb(242, 241, 238)"
+ },
+ {
+  "tag": "A",
+  "text": "QA.md",
+  "border": "0px none rgb(91, 100, 112)",
+  "outline": "3px none rgb(91, 100, 112)",
+  "fill": "rgba(0, 0, 0, 0)",
+  "backdrop": "rgb(242, 241, 238)"
+ }
+]
