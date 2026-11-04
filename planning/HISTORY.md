@@ -208,3 +208,7 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - K1 #12 passed hosted run 41825875526 at 4b25bf0; Claude approved that exact head and merged it into T1 at e5c393c. Six CI contract tests, ten real quality-fault cases, three health-route tests, full history/checkout scans and the final gate passed. One exact checklist-prose exception was reviewed by Claude; no broad exclusions.
 - Codex independently inspected the T1 scaffold and all three sanitized reports from combined-head run [41826670253](https://github.com/CarworX/carworx-new/actions/runs/41826670253), then recorded `REVIEW: APPROVE @7faf5a6af719b5b9973a432229314b96e9b6af88` on #11. RLS/Auth remain not applicable until their implementations; staging acceptance remains open. No merge or deployment by Codex.
 - [Codex 11](codex/11-k1-ci-handoff.md) records contracts, checks, limits and the receiving-agent steps. Supplementary real scanner-policy regression tests and records are published on codex/k1-ci-secrets for Claude's follow-up review; that current head requires its own CI evidence. Owner confirmed included Actions minutes/$0 cap.
+
+## 2026-11-04 — DS mobile loading page
+
+- New MobileLoading card (States) published to the live design system 1793808437-202e (from 1793783662-3fad): the D-041 loaders by mobile scenario at 360 px with reduced-motion stills; mirrored in PR https://github.com/CarworX/carworx-new/pull/16. D-060 owner checks stay open.
