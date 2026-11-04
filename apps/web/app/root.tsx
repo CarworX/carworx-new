@@ -9,8 +9,23 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import geist from "./styles/fonts/Geist-latin.woff2?url";
+import stylesheet from "./styles/app.css?url";
+import { NotFound } from "./ui/states/NotFound";
 
-// App shell only. Studio styles, fonts and the D-041 404 belong to T4.
+// The Studio stylesheet and the self-hosted text face (G13). Geist is
+// preloaded so first paint uses it and layout does not shift (A6 / CLS).
+export const links: Route.LinksFunction = () => [
+  {
+    rel: "preload",
+    href: geist,
+    as: "font",
+    type: "font/woff2",
+    crossOrigin: "anonymous",
+  },
+  { rel: "stylesheet", href: stylesheet },
+];
+
 export function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en-ZA">
@@ -34,22 +49,29 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Something went wrong";
-  let details = "An unexpected error occurred.";
-
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "Page not found" : "Error";
-    details =
-      error.status === 404
-        ? "The page you asked for doesn't exist."
-        : error.statusText || details;
+  // The D-041 404: the dot-grid lens.
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return (
+      <>
+        <title>Page not found · CarworX</title>
+        <meta name="robots" content="noindex" />
+        <NotFound />
+      </>
+    );
   }
 
   // No stack traces or error messages are rendered, in any mode.
+  const details =
+    isRouteErrorResponse(error) && error.statusText
+      ? error.statusText
+      : "An unexpected error occurred.";
   return (
-    <main>
-      <h1>{message}</h1>
-      <p>{details}</p>
+    <main className="cx-canvas grid min-h-dvh place-items-center p-4 text-center">
+      <div>
+        <p className="cx-eyebrow">Error</p>
+        <h1 className="type-heading mt-2">Something went wrong</h1>
+        <p className="type-body text-muted mt-2">{details}</p>
+      </div>
     </main>
   );
 }
