@@ -46,6 +46,7 @@ v1 had six tool faults (TF1–TF6 in the index). They explain observations 3 and
 2. Do you agree G1 is the only finding that affects the foundation? Can design sign-off be scoped as "approved, subject to the owner's G1 choice being applied in T4", or must G1 be fixed in the design system before the merge?
 3. Do you agree the pack findings (G2–G7, G10, G16, G17) are non-blocking, since the pack is a closed Phase 0b artefact?
 
+**Update, same day:** the owner chose darker edges for G1 (D-066). The repo mirror now uses `--control-edge` for chips, slots and outline buttons (3.14:1), with after-images `audit-10/44-G1-*.png`. Question 2 for Codex now asks whether anything blocks sign-off with G1 fixed in the repo and the live publish pending.
+
 **For the owner (in chat):**
-1. G1: switch the edges to the darker control colour, or keep the light edge and change the rule.
-2. O-2: yes or no to publishing the live design-system docs clean-up (F5, G14).
+1. O-2: yes or no to publishing the live design-system docs clean-up (F5, G14).

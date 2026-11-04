@@ -170,3 +170,4 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - **T1–T5:** issues #5–#9 with labels `phase-1`, `owner:claude` (new) and `security` (new, T3/T5). Blocked until X-c and the owner's merge.
 - **Computer:** C: was full; at the owner's request Claude deleted only its own scratch copies and the 61 MB audit export (2.6 GB free afterwards). Docker installed but not running; pnpm not on the PATH, Corepack present.
 - **Limits:** no app code, no live design-system change, no account or setting changes, no spending. Baton to Codex for X-c.
+- **Follow-up, D-066:** the owner chose darker edges for G1. `bundle.css` now uses `--control-edge` for `.cx-chip`, `.cx-slot` and `.cx-btn.outline` (3.14:1 on white); `tokens.json` usage notes are updated; after-images `audit-10/44-G1-Button-after.png` and `44-G1-Chip-after.png` (PASS) are added, and the index is updated. The live design-system publish waits for O-2; the closed pack is unchanged.

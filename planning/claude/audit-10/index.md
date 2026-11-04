@@ -63,14 +63,14 @@ None of these is a design finding. Each affected image was re-captured and reope
 | 3–10 | Phone groups, 8 figures and 31 panels | FINDING G5–G9 (all Minor) | each row's check passes: straight-line labels, mobile area only and no base pin, demand capture; listing checks with method and date; versioned quote, expiry blocks approval; checkout F1 copy, rebook or refund, hold dial exposed as "14 minutes 32 seconds left"; F3 refund stages; demo numbers labelled and the paused state; private base; no ID field and "no results ≠ no fines" |
 | 11 | Journeys | PASS | steps readable without motion; motion and reduced frames match after TF2 |
 | 12 | Roadmap and decisions | FINDING G10 | the check "matches D-037 to D-041" fails: the roadmap stops at D-036 |
-| 13 | 15 components + Iconography | Mirror: FINDING G1 (Important), G11–G14. **Live: BLOCKED** (D-060) | against tokens v4 and the brand book |
+| 13 | 15 components + Iconography | Mirror: G1 fixed in the repo (D-066); FINDING G11–G14. **Live: BLOCKED** (D-060) | against tokens v4 and the brand book |
 | 14 | NotFound, NotFoundPhone, PageLoader, Loaders | States page: PASS (G15 for the contrast tool). **Live: BLOCKED** | lens, pulse, hold and loader roles per scenario; 0 errors, no overflow (S3 check) |
 | 15 | Real 200 % zoom | **BLOCKED** (owner, D-060) | |
 | 16 | Keyboard and focus | PASS | 28 stops at 1440 and 23 at 390, all ringed, in DOM order; menu trap and Esc |
 | 16a | Target sizes | FINDING G17 (Minor) | sub-24 px targets are inline links in sentences (WCAG 2.5.8 exception); pack menu button 40 px and logo link 27 px are under the Studio 44 px rule |
 | 16b | Labels and reading order | PASS | every control named (22 at 390, 27 at 1440); h1 then section headings in order |
 | 17 | Contrast, including SVG text | PASS (sampling) | Q: 0 fails of 1055 and 1032 text nodes; SVG 8/8; states text by tokens and the concept run (G15) |
-| 17a | Control and non-text contrast | FINDING G1 (Important) | focus ring passes; chip, slot and outline-button edges 1.37:1 against the 3:1 rule |
+| 17a | Control and non-text contrast | PASS after D-066 (repo mirror) | focus ring passes; chip, slot and outline-button edges were 1.37:1 and are now 3.14:1 (`--control-edge`); live system pending publish |
 | 18 | Reduced motion | PASS | designed stills; the film shows the still lockup (after TF3) |
 | 19 | Screen reader | **BLOCKED** (owner, D-060) | |
 | 20 | Real phones and browsers | **BLOCKED** (owner, D-060) | |
@@ -80,7 +80,7 @@ None of these is a design finding. Each affected image was re-captured and reope
 
 | ID | Severity | Finding | Proposed fix and owner |
 |---|---|---|---|
-| G1 | **Important** | `.cx-chip`, `.cx-slot` and `.cx-btn.outline` draw their edge in `--line` `#dedcd6`: 1.37:1 on white and 1.21:1 on canvas. The Studio rule (`brand/studio/README.md:118`) is 3:1 for control edges. `--control-edge` `#8b929b` (3.14:1 on white) exists, and `.cx-input` already uses it. The text labels still identify these controls, so WCAG 1.4.11 is arguably met, but the brand rule is not, and T4 would copy it into code. The pack's `.scr .btn-s` and `.dk .btn` repeat it | Use `--control-edge` for interactive edges, or amend the rule. A visual change to an approved system: **owner's choice**. Claude, then Codex review |
+| G1 | **Important → fixed in the repo mirror (D-066)** | `.cx-chip`, `.cx-slot` and `.cx-btn.outline` drew their edge in `--line` `#dedcd6` (1.37:1 on white), below the Studio 3:1 rule for control edges. **The owner chose darker edges (D-066):** `bundle.css` now uses `--control-edge` `#8b929b` for all three (3.14:1 against the white fill; 2.78:1 against bare canvas, so controls keep their white fill). `tokens.json` usage notes updated. Evidence: `44-G1-Button-after.png`, `44-G1-Chip-after.png`. The earlier rows keep their pre-fix verdicts as a record | **Still to do:** the live design system (needs the owner's OK to publish, with O-2); T4 [#8](https://github.com/CarworX/carworx-new/issues/8) implements it. The closed pack (D-037) keeps its old drawing |
 | G2 | Minor | The summary's "What it costs" (screen and PDF p4) still lists an attorney; D-045 removed the attorney | Pack copy fix, or keep as a dated snapshot (see G10) |
 | G3 | Minor | The "Quote and invoice header" sample: the mark touches the card's left edge (`invoice-quote-header.svg` has about 20/2400 left margin) | Pad the sample in the pack, or note that the document margin supplies the clear space |
 | G4 | Minor | The "Bottom of a 360 × 640 screen" label covers words of the info note | Move the label clear of the text |
@@ -365,6 +365,8 @@ C4 status: **F7 documented** (C-c, `brand/README.md`). **F5 stays open as Minor*
 | `43-pdf-p40.png` | P | 21 | PyMuPDF, 110 dpi | `46eb0fa7f8c30f45e380f2afebc89cc39bb328875af262f46eddd5a5da2c8060` | FINDING G10 | decisions listed to D-036 |
 | `43-pdf-p41.png` | P | 21 | PyMuPDF, 110 dpi | `8c9e7e1571c2c10d4f942ac10a74a5c244c17e302c7a2fce34576f09227f05e5` | FINDING G10 | "Start building (Phase 1)?" still open |
 | `43-pdf-p42.png` | P | 21 | PyMuPDF, 110 dpi | `3137dc4267d36e4779161e38dc1b5e229787d2067aaefdb4f2445722f2159d24` | FINDING G10 | footer D-001-D-036 |
+| `44-G1-Button-after.png` | M | 13, 17a | mirror.mjs v3 on the working tree after D-066, Button card at 960 px; MIRROR, NOT LIVE | `6372f7dfdc00b1ea57376f13dcfd52196e598831562ff79ee7f96f8a2bc80858` | PASS | G1 fix: outline buttons now edged in --control-edge (3.14:1 on white), clearly visible |
+| `44-G1-Chip-after.png` | M | 13, 17a | mirror.mjs v3 on the working tree after D-066, Chip card at 960 px; MIRROR, NOT LIVE | `b17acd51c552cd99313ebed417599d0a8723e172ea63fe0bb8ee629f6de887e9` | PASS | G1 fix: filter chips and time slots now edged in --control-edge (3.14:1 on white), clearly visible |
 | `_logs/_capture-log-rerun.json` | C | tools/logs | v2 re-run log: 01-cover-390, 12 motion journey frames, 42-brand-reduced | `d25c8691af35ca599ab9592eece2b0d4b0d928f4f3ab746b3f5147b0b884c1f7` | LOG | reproducibility record, not evidence of design quality |
 | `_logs/_capture-log.json` | C | tools/logs | see log | `dc59f33976f5ca397de226c099f7e110cc5dabf822b345dd7be9695523e668aa` | LOG | reproducibility record, not evidence of design quality |
 | `_logs/_mirror-log-v2.json` | M | tools/logs | v3 mirror log: width chosen to fit the declared height, fonts loaded per card | `15f20b956956f315cd588029be3f5cfbcfd93e0bc39269cd2b264e918a5f83a1` | LOG | reproducibility record, not evidence of design quality |
@@ -379,4 +381,4 @@ C4 status: **F7 documented** (C-c, `brand/README.md`). **F5 stays open as Minor*
 | `_tools/sample.py` | tool | tools/logs | source / job list | `bba77d97d10789f4d10a585e14b90b9815286ec1b23a3756d8ac4946ed238a8a` | TOOL | reproducibility record, not evidence of design quality |
 | `qa-out.txt` | Q | 16, 17, 21 | pack qa.mjs, all widths | `3375306dcfa56755bca129d68305e2f11050bfe3769181d3a0574900e94f5a3d` | PASS | Q: layout equal at all widths, 0 contrast fails at 1440/390 (1055/1032 checked), 28 focus stops all ringed, menu trap and Esc, reduced motion still, no network resources |
 
-Verdict counts: FINDING 43, LOG 4, NOT USED 4, PASS 204, TOOL 8; 263 files in all, plus this index and `owner/.gitkeep`.
+Verdict counts: FINDING 43, LOG 4, NOT USED 4, PASS 206, TOOL 8; 265 files in all, plus this index and `owner/.gitkeep`.

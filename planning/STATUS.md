@@ -2,10 +2,10 @@
 
 ## 🟢 Baton: **CODEX**
 
-**For Codex now: X-c, the scoped design review.** [Claude 13](claude/13-c5-verdicts-and-handover.md) completes C-a/C-b (E1) and the full committed-byte hashes (E2) in [`claude/audit-10/index.md`](claude/audit-10/index.md): 263 files opened and judged, every matrix row with a verdict. One **Important** finding (G1, control edges 1.37:1 against the Studio 3:1 rule; the owner chooses the fix) and sixteen Minor. C4 F7 is documented; F5 stays Minor pending the owner's O-2. Owner guides are in [`owner-guides/`](owner-guides/README.md). Claude's T1–T5 are issues #5–#9.
+**For Codex now: X-c, the scoped design review.** [Claude 13](claude/13-c5-verdicts-and-handover.md) completes C-a/C-b (E1) and the full committed-byte hashes (E2) in [`claude/audit-10/index.md`](claude/audit-10/index.md): 263 files opened and judged, every matrix row with a verdict. The one **Important** finding, G1 (control edges 1.37:1 against the Studio 3:1 rule), is fixed in the repo mirror: the owner chose darker edges (D-066), now 3.14:1. Sixteen Minor remain. C4 F7 is documented; F5 stays Minor pending the owner's O-2. Owner guides are in [`owner-guides/`](owner-guides/README.md). Claude's T1–T5 are issues #5–#9.
 
 1. **Codex:** review the package at the commit that publishes Claude 13, and answer Claude 13 §5.
-2. **Owner:** choose G1's fix; answer O-2; work through guide 1 (C: needs about 20 GB free, Docker isn't running, pnpm isn't on the PATH).
+2. **Owner:** answer O-2 (it now also covers publishing D-066's edges to the live design system); work through guide 1 (C: needs about 20 GB free, Docker isn't running, pnpm isn't on the PATH).
 3. After Codex's sign-off: the **owner merges the design branch** (guide 2), then T1 with K1.
 
 **Phase: 1 approved (D-038), not started.** Local synthetic coding follows design review, owner merge and the §15 local prerequisites. Phase 1 finishes only with recorded staging evidence for A1–A7. D-060 defers live design-system screenshots, real 200% zoom, phone screen-reader and real-device/browser checks until **G-PROD**; they remain open, never passed by screenshots. PLAN's release checklist now includes them. The Coming Soon page is scrapped (D-063).
@@ -16,7 +16,7 @@
 |---|---|---|
 | PLAN | Version 2.1 | Technically signed D-033; owner-approved for Phase 1 only D-038. Task contracts agreed D-064/D-065 |
 | §22 | Presentation pack (Turbine + Studio) | Phase 0b closed D-037; expiry correction accepted within Codex 07's verified scope |
-| DS / C4 | Studio design system and system states | F7 documented in `design/brand/README.md`; F5 open Minor (needs owner O-2). G1 (control edges) needs the owner's choice. Scoped verdict pending X-c |
+| DS / C4 | Studio design system and system states | F7 documented in `design/brand/README.md`; F5 open Minor (needs owner O-2). G1 fixed in the repo per D-066; live publish waits for O-2. Scoped verdict pending X-c |
 | C5 | Package at `claude/audit-10/` | **Verdicts complete** (Claude 13): 263 files, full committed-byte SHA-256, E1/E2 closed; G1 Important, G2–G17 Minor; rows 13/14 live, 15, 19, 20 BLOCKED to G-PROD. Awaiting Codex X-c |
 | C09 | Claude 09 review plan | R1/R2/R3 accepted at planning level. Capture acceptance and contrast remain C5 work |
 | C10 / C12 | Phase 1 plan and remaining work | **AGREED** D-064/D-065. Claude T1–T5; Codex [K1 #1](https://github.com/CarworX/carworx-new/issues/1), [K2 #2](https://github.com/CarworX/carworx-new/issues/2), [K3 #3](https://github.com/CarworX/carworx-new/issues/3), [K4 #4](https://github.com/CarworX/carworx-new/issues/4). Implementation blocked on the design/owner-merge gate and dependencies |
