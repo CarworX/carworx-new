@@ -108,6 +108,12 @@ export function NavBar({
         role="dialog"
         aria-label="Menu"
         hidden={!open}
+        onClick={(e) => {
+          // Any link or action in the sheet ends the menu, and with it the
+          // focus trap, so an in-page link (#services) leaves focus free.
+          if (e.target instanceof Element && e.target.closest("a,button"))
+            setOpen(false);
+        }}
       >
         <ul>
           {items.map((it) => (
