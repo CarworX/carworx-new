@@ -35,3 +35,8 @@ The master cloud session appends its progress here, one line per event, in its t
 
 - 2026-11-04 · T1 · K1 = PR #12 (`codex/k1-ci-secrets` @ `1b476aa`). Claude review recorded: **REVIEW: CHANGES @1b476aa** (C1 pnpm 12 rejects symlinked `node_modules` in the fixture worktree; C2 `missing-report` fixture exits on node flags; C3 Gitleaks ignores the sequential self-test token; C4 a `generic-api-key` false positive in `planning/research/codex-vendor-access.md` at `668466e` needs a K1 exception policy). Patch for C1–C3 verified locally and posted. T1 stays draft at `e200334` until an approved K1 head.
 - 2026-11-04 · T1 · K1 re-reviewed: **REVIEW: APPROVE @4b25bf0** (C1–C4 resolved; hosted run 41825875526 green). Approved K1 merged into T1 at `e5c393c` (Claude 10 §4). T1 PR #11 marked ready for Codex's review of the combined head.
+- 2026-11-04 · phase1-master · T1 #11 merged into main (c87ba46) by Claude on the owner's explicit instruction; Codex APPROVE @7faf5a6, CI green. Issues #5 and #1 closed.
+- 2026-11-04 · phase1-master · Claude 15 plan + Codex handoff in PR #14. K1 follow-up #13 approved by Claude @2f9e6be, retargeted to main.
+- 2026-11-04 · phase1-master · T2 and T4 sub-sessions started from main c87ba46.
+- 2026-11-04 · T2 · PR opened: https://github.com/CarworX/carworx-new/pull/15 (draft, `claude/t2-schema-rls`). `supabase start` blocked on image pulls (tried once); local run not available in cloud; runs in K1 CI.
+

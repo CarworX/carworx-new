@@ -203,3 +203,10 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Limits: no CI workflow (K1), no deploys, accounts, settings, secrets or spending. A1 is base only until K1's CI runs on the combined head.
 - **K1 bootstrap:** Claude reviewed K1 PR #12 at `1b476aa` as CHANGES. Its hosted run was red on K1's own self-tests (the scaffold stages passed): pnpm 12 rejected the symlinked fixture `node_modules`; the `missing-report` fixture died on node flags; Gitleaks ignored the sequential token; and a `generic-api-key` false positive on prose (`codex-vendor-access.md:10`, `668466e`) had no exception path. Codex fixed all four. Claude approved `4b25bf0` (hosted CI green; locally, exactly one exception per scan and a modified line is blocked again) and merged it into T1 at `e5c393c`.
 
+## 2026-11-04 — Claude T2: schema and RLS with pgTAP (draft PR #15)
+
+- Base `main` at `c87ba46` (T1 merged). Branch `claude/t2-schema-rls`, sub-session of `phase1-master`. Refs #6.
+- Built: `supabase/` (CLI 2.122.1 exact, npm registry; Auth defaults untouched); one migration with `profiles`, `organisations`, `memberships`, `audit_log` and the server-controlled `private.platform_admins`. RLS on every table, every policy `to authenticated`, access only through an active membership. Admin policies need a `platform_admins` row **and** `aal2` inline. `audit_log` is written only by triggers and rejects update/delete/truncate for every role. SECURITY DEFINER helpers sit in the non-exposed `private` schema with `search_path = ''`. Default privileges no longer give anon/authenticated access to future objects.
+- Tests: 3 pgTAP files, 154 assertions (catalog 23, A4 matrix 85, aal/forged-metadata/revocation/column/append-only 46). `test:rls` writes one raw TAP file per SQL file (K1 contract).
+- Checks: Docker image pulls blocked by the cloud network policy, so no local Supabase. Locally the migration, seed and tests ran on the container's Postgres 16 against a scratch Supabase stub and a minimal pgTAP stand-in (not pgTAP, not committed): all pass, and 8 injected weaknesses each make the suite fail. The real pgTAP run is K1 CI.
+
