@@ -154,7 +154,7 @@ test("gate rejects stale head, failed/cancelled/skipped jobs and incomplete atte
     );
   for (const field of ["lint", "unit", "build"]) {
     const reports = gateFixture();
-    delete reports.checks.checks[field];
+    reports.checks.checks[field] = undefined;
     assert.throws(() => validateGate(results, reports, "head", "head"));
   }
   const reports = gateFixture();

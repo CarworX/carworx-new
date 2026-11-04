@@ -5,7 +5,6 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
-  readFileSync,
   unlinkSync,
   writeFileSync,
 } from "node:fs";
@@ -229,8 +228,25 @@ async function main() {
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  main().catch(() => {
-    console.error("Secret scanner failed; raw output withheld");
+  main().catch((error) => {
+    const safeMessages = new Set([
+      "Gitleaks checksum mismatch",
+      "Gitleaks download failed",
+      "Gitleaks version mismatch",
+      "Gitleaks execution failed",
+      "Gitleaks exit/report mismatch",
+      "Scanner did not detect checkout fixture",
+      "Scanner did not detect removed fixture in history",
+      "Clean checkout fixture did not pass",
+      "Sanitized output contains credential fixture",
+      "Secret scan failed; see sanitized metadata",
+      "Invalid scanner report",
+    ]);
+    console.error(
+      safeMessages.has(error.message)
+        ? error.message
+        : "Secret scanner failed; raw output withheld",
+    );
     process.exitCode = 1;
   });
 }
