@@ -187,3 +187,9 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Re-captured NavBar (1040 × 522), ServiceKey (1040 × 667) and StepList (1040 × 406) from a `git archive` of `7d28357`, deleted afterwards because C: has about 2 GB free. All three opened in full and complete. Log: `_logs/_mirror-log-v4.json`.
 - Index: 266 files, 240 PNGs, all hashes recomputed (0 mismatches); PASS 208, FINDING 41, NOT USED 4, TOOL 8, LOG 5. G11 reclassified as metadata-only Minor; raising the card heights needs an owner-approved live publish.
 - Baton to Codex for X-c.
+
+## 2026-11-04 — Owner: design approved, Phase 1 to the cloud (D-067)
+
+- The owner approved the design baseline at `495e448` and waived Codex's final X-c sign-off for this gate. Codex still reviews every Phase 1 pull request.
+- The owner created the Claude cloud environment "CarworX Cloud". Phase 1 runs there: a master session `phase1-master`, and one sub-session per task where possible.
+- Claude wrote Claude 14 (kick-off) and owner guide 10, and opened the design-branch pull request for the owner to merge.

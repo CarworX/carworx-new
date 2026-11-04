@@ -1,10 +1,12 @@
 # Status
 
-## 🟢 Baton: **CODEX**
+## 🟢 Baton: **OWNER**, then Claude's cloud master session
 
-**For Codex now: X-c on the corrected package.** Claude answered [Codex 10](codex/10-design-evidence-review.md) R1 ([Claude 13 §6](claude/13-c5-verdicts-and-handover.md)). Mirror tool v4 captures each card's full content height and writes no file for an incomplete capture. NavBar (1040 × 522), ServiceKey (1040 × 667) and StepList (1040 × 406) are re-captured, opened and complete; the log records content and capture sizes. Index: **266 files, 240 PNGs**, all hashes from committed bytes; PASS 208, FINDING 41, NOT USED 4, TOOL 8, LOG 5. G11 is now a metadata-only Minor.
+**Design gate closed by the owner (D-067):** the design baseline is approved at `495e448`, and Codex's final X-c sign-off is waived for this gate. Codex still reviews every Phase 1 pull request. See [Claude 14](claude/14-phase1-kickoff.md).
 
-Then the **owner merges the design branch** (guide 2), then T1 with K1. Owner prerequisites: [guide 1](owner-guides/01-docker-and-pnpm.md) (C: has about 2 GB free; a cleanup session is in progress).
+1. **Owner:** merge the design-branch pull request into `main` ([guide 2](owner-guides/02-merge-design-branch.md)).
+2. **Claude:** start the master cloud session `phase1-master` in **CarworX Cloud** ([guide 10](owner-guides/10-cloud-environment.md)). It runs T1, then T2 and T4, then T3 + T5, each as its own pull request.
+3. **Codex:** K1 against T1's branch, then K2–K4; review each T pull request. An optional review of `495e448` goes to the T4 pull request.
 
 **Phase: 1 approved (D-038), not started.** Local synthetic coding follows design review, owner merge and the §15 local prerequisites. Phase 1 finishes only with recorded staging evidence for A1–A7. D-060 defers live design-system screenshots, real 200% zoom, phone screen-reader and real-device/browser checks until **G-PROD**; they remain open, never passed by screenshots. PLAN's release checklist now includes them. The Coming Soon page is scrapped (D-063).
 
@@ -66,3 +68,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 23 | 2026-11-04 | Claude | Completed C5 verdicts ([Claude 13](claude/13-c5-verdicts-and-handover.md)): all 263 files opened, PASS 204 / FINDING 43 / NOT USED 4, full committed-byte hashes (E2), six own-tool faults fixed and re-captured; G1 Important, G2–G17 Minor. C4 F7 documented; nine owner guides; T1–T5 issues #5–#9. Baton to Codex for X-c. |
 | 24 | 2026-11-04 | Codex | Reviewed `1e97c78`: all 265 manifest hashes match; D-066 repo change inspected. Design sign-off withheld for three clipped required mirror cards (R1/G11); baton to Claude for complete captures and updated logs/manifest. Main/owner-merge and Phase 1 gates retained. |
 | 25 | 2026-11-04 | Claude | Answered Codex 10 R1: mirror v4 (full content height, rejects incomplete captures); NavBar, ServiceKey and StepList re-captured complete and opened; index 266 files / 240 PNGs, hashes refreshed, counts corrected. Baton to Codex for X-c. |
+| 26 | 2026-11-04 | Owner/Claude | Owner approved the design baseline at `495e448` and waived X-c (D-067). Claude 14 and guide 10 written; design-branch PR opened for the owner to merge; Phase 1 to run in the cloud environment "CarworX Cloud". |

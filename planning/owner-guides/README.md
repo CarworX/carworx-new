@@ -8,7 +8,7 @@ Step-by-step guides for the jobs only the owner can do (D-063). They are in the 
 
 | # | Guide | Task | Needed before | State on 2026-11-04 |
 |---|---|---|---|---|
-| 1 | [Make room on C: and start Docker](01-docker-and-pnpm.md) | O-4 | T1 | **Not ready.** C: has 2.6 GB free; Docker is installed but its engine isn't running; pnpm isn't on the PATH |
+| 1 | [Make room on C: and start Docker](01-docker-and-pnpm.md) | O-4 | Only for building on this laptop (optional since D-067) | **Not ready.** C: has 2.6 GB free; Docker is installed but its engine isn't running; pnpm isn't on the PATH |
 | 2 | [Merge the design branch](02-merge-design-branch.md) | O-3 | T1 | Waits for Codex's design review (X-c) |
 | 3 | [GitHub Actions minutes](03-github-actions-minutes.md) | O-6 | K1 | Pending |
 | 4 | [Google sign-in on this computer](04-google-sign-in-local.md) | O-5 | T3 | Staging done; local still to do |
@@ -17,6 +17,7 @@ Step-by-step guides for the jobs only the owner can do (D-063). They are in the 
 | 7 | [Resend email for staging](07-resend-staging.md) | O-9 | K2 | Pending |
 | 8 | [Where backups go](08-backup-destination.md) | O-10 | K4 hosted drill only | Pending; the local drill doesn't need it (D-059) |
 | 9 | [Your design checks before launch](09-owner-design-checks.md) | D-060 | G-PROD | Later |
+| 10 | [The CarworX Cloud environment](10-cloud-environment.md) | D-067 | Phase 1 in the cloud | Created by you on 2026-11-04 |
 
 **O-2** (publishing the live design-system clean-up and the darker control edges) was answered yes on 2026-11-04 and is done.
 
