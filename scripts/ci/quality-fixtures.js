@@ -4,7 +4,8 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
-  renameSync,
+  rmSync,
+  rmdirSync,
   cpSync,
   constants,
   writeFileSync,
@@ -33,12 +34,26 @@ const sourcePath = join(scratch, "apps/web/app/routes/healthz.ts");
 const testPath = join(scratch, "apps/web/app/routes/healthz.test.ts");
 const contractPath = join(scratch, "scripts/ci/contract.json");
 const packagePath = join(scratch, "package.json");
+const vitestPath = join(scratch, "apps/web/vitest.config.ts");
 const original = new Map(
-  [sourcePath, testPath, contractPath, packagePath].map((p) => [
+  [sourcePath, testPath, contractPath, packagePath, vitestPath].map((p) => [
     p,
     readFileSync(p, "utf8"),
   ]),
 );
+
+// Override the configured suite, rather than assuming healthz is its only file.
+function unitFixture(test) {
+  const config = original.get(vitestPath);
+  invariant(
+    config.includes("export default"),
+    "Unsupported Vitest fixture config",
+  );
+  writeFileSync(
+    vitestPath,
+    `${config.replace("export default", "const k1Original =")}\nexport default { ...k1Original, test: { ...k1Original.test, ...${JSON.stringify(test)} } };\n`,
+  );
+}
 
 const run = (stage, env) =>
   spawnSync(process.execPath, ["scripts/ci/checks.js", stage], {
@@ -54,8 +69,22 @@ function attempt(name, mutate, stage, expected) {
   const env = { ...process.env, RUNNER_TEMP: temp };
   const init = run("init", env);
   invariant(!init.error && init.status === 0, `Fixture setup failed: ${name}`);
-  mutate();
-  const result = run(stage, env);
+  let result;
+  const cleanups = [];
+  try {
+    mutate((cleanup) => cleanups.push(cleanup));
+    result = run(stage, env);
+  } finally {
+    for (const [path, content] of original) writeFileSync(path, content);
+    for (const cleanup of cleanups.reverse()) cleanup();
+    invariant(
+      execFileSync("git", ["status", "--porcelain"], {
+        cwd: scratch,
+        encoding: "utf8",
+      }).trim() === "",
+      `Fixture left modified files: ${name}`,
+    );
+  }
   if (
     result.error ||
     result.status === 0 ||
@@ -128,18 +157,13 @@ attempt(
 );
 attempt(
   "zero-tests",
-  () => renameSync(testPath, `${testPath}.disabled`),
+  () => unitFixture({ include: [], passWithNoTests: false }),
   "unit",
   /No test files found/,
 );
-renameSync(`${testPath}.disabled`, testPath);
 attempt(
   "all-skipped",
-  () =>
-    writeFileSync(
-      testPath,
-      original.get(testPath).replace("describe(", "describe.skip("),
-    ),
+  () => unitFixture({ testNamePattern: "^__k1_no_test_matches__$" }),
   "unit",
   /Tests missing, failed or skipped/,
 );
@@ -155,20 +179,34 @@ attempt(
 );
 attempt(
   "missing-required-command",
-  () =>
-    writeFileSync(
-      contractPath,
-      JSON.stringify({ version: 1, rls: true, integration: false }),
-    ),
+  () => {
+    const contract = JSON.parse(original.get(contractPath));
+    writeFileSync(contractPath, JSON.stringify({ ...contract, rls: true }));
+    const pkg = JSON.parse(original.get(packagePath));
+    delete pkg.scripts["test:rls"];
+    writeFileSync(packagePath, JSON.stringify(pkg));
+  },
   "init",
   /Missing test:rls command/,
 );
 attempt(
   "undeclared-auth",
-  () => {
+  (cleanup) => {
     const dir = join(scratch, "apps/web/app/auth");
     mkdirSync(dir);
     writeFileSync(join(dir, "fixture.ts"), "export {};\n");
+    cleanup(() => {
+      execFileSync(
+        "git",
+        ["restore", "--staged", "--", "apps/web/app/auth/fixture.ts"],
+        {
+          cwd: scratch,
+          stdio: "pipe",
+        },
+      );
+      rmSync(join(dir, "fixture.ts"));
+      rmdirSync(dir);
+    });
     execFileSync("git", ["add", "apps/web/app/auth/fixture.ts"], {
       cwd: scratch,
       stdio: "pipe",
