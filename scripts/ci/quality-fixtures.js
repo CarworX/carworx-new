@@ -51,6 +51,16 @@ function attempt(name, mutate, stage, expected) {
   invariant(!init.error && init.status === 0, `Fixture setup failed: ${name}`);
   mutate();
   const result = run(stage, env);
+  if (
+    result.error ||
+    result.status === 0 ||
+    !expected.test(result.stdout + result.stderr)
+  ) {
+    // Quality fixtures have no application secrets or running Supabase services.
+    console.error(
+      `Fixture ${name} exited ${result.status}: ${String(result.stdout + result.stderr).slice(-3500)}`,
+    );
+  }
   invariant(
     !result.error &&
       result.status !== null &&

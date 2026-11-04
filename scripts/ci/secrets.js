@@ -130,7 +130,7 @@ export function scannerFixtures(binary) {
   runGit("init");
   runGit("config", "user.name", "CI fixture");
   runGit("config", "user.email", "ci-fixture@example.invalid");
-  const token = ["gh", "p_", "0123456789abcdefghijklmnopqrstuvwxyz"].join("");
+  const token = ["gh", "p_", "4kT8mP2rW6xC9qL3vN7bF1sD5hJ0zA8uE6yR"].join("");
   const fixture = join(repo, "fixture.txt");
   writeFileSync(fixture, `token=${token}\n`);
   runGit("add", "fixture.txt");
