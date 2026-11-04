@@ -146,10 +146,23 @@ function runFuture() {
           ),
         );
         const restReport = join(privateRoot, "rls-rest.json");
-        command(process.execPath, ["scripts/ci/t2-rest-review.js"], {
-          ...quiet,
-          env: { ...process.env, CI_RLS_REST_REPORT: restReport },
-        });
+        try {
+          command(process.execPath, ["scripts/ci/t2-rest-review.js"], {
+            ...quiet,
+            env: { ...process.env, CI_RLS_REST_REPORT: restReport },
+          });
+        } catch {
+          const failure = existsSync(restReport) ? readJson(restReport) : {};
+          const safeStage = String(failure.stage ?? "before report")
+            .replace(/[^a-zA-Z0-9 _/-]/g, "")
+            .slice(0, 80);
+          const safeStatus = Number.isInteger(failure.http_status)
+            ? failure.http_status
+            : "none";
+          throw new Error(
+            `REST review failed: ${safeStage}; HTTP ${safeStatus}; completed ${Number(failure.tests ?? 0)}`,
+          );
+        }
         const rest = readJson(restReport);
         invariant(
           rest.status === "passed" && rest.tests > 0,

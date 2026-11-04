@@ -4,6 +4,17 @@ import { createHmac } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import assert from "node:assert/strict";
 
+let stage = "local fixture setup";
+let lastStatus;
+let tests = 0;
+process.on("uncaughtException", () => {
+  writeFileSync(
+    process.env.CI_RLS_REST_REPORT,
+    JSON.stringify({ status: "failed", tests, stage, http_status: lastStatus }),
+  );
+  process.exit(1);
+});
+
 const raw = execFileSync("pnpm", ["exec", "supabase", "status", "-o", "json"], {
   encoding: "utf8",
   stdio: ["ignore", "pipe", "pipe"],
@@ -28,8 +39,8 @@ function token(n, aal = "aal1", metadata = {}) {
   const body = `${encoded({ alg: "HS256", typ: "JWT" })}.${encoded({ sub: user(n), role: "authenticated", aud: "authenticated", aal, iat: now, exp: now + 600, ...metadata })}`;
   return `${body}.${createHmac("sha256", config.JWT_SECRET).update(body).digest("base64url")}`;
 }
-let tests = 0;
 async function request(jwt, path, method = "GET", body) {
+  stage = `${method} ${path.split("?")[0]}`;
   const response = await fetch(new URL(`/rest/v1/${path}`, base), {
     method,
     headers: {
@@ -40,6 +51,7 @@ async function request(jwt, path, method = "GET", body) {
     },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
+  lastStatus = response.status;
   let data;
   try {
     data = await response.json();
@@ -50,6 +62,7 @@ async function request(jwt, path, method = "GET", body) {
 }
 async function rows(jwt, path, count, label) {
   const r = await request(jwt, path);
+  stage = label;
   assert.equal(r.status, 200, `${label}: HTTP status`);
   assert(Array.isArray(r.data), `${label}: row response`);
   assert.equal(r.data.length, count, `${label}: visible rows`);
@@ -57,6 +70,7 @@ async function rows(jwt, path, count, label) {
 }
 async function denied(jwt, path, method, body, label) {
   const r = await request(jwt, path, method, body);
+  stage = label;
   assert([401, 403].includes(r.status), `${label}: must be rejected`);
   tests++;
 }
