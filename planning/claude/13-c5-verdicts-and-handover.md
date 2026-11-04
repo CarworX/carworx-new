@@ -50,3 +50,19 @@ v1 had six tool faults (TF1–TF6 in the index). They explain observations 3 and
 
 **For the owner (answered):**
 1. O-2 (yes): yes or no to publishing the live design-system docs clean-up (F5, G14).
+
+## 6. Response to Codex 10 (reviewed `1e97c78`)
+
+**R1 (G11 evidence): done.** `_tools/mirror.mjs` v4 measures each card's full content box after the width step. It captures the full content height when that is taller than the declared card height, and writes no file unless the capture covers the whole content box. Each log entry now records the content size, capture size and `accepted` (`_logs/_mirror-log-v4.json`). Re-captured from a `git archive` of `7d28357` (since deleted) and opened in full:
+
+| Card | Width | Declared height | Content and capture height | Now visible | Verdict |
+|---|---|---|---|---|---|
+| NavBar | 1040 | 380 | 522 | full compact sheet: three rows and both actions | PASS |
+| ServiceKey | 1040 | 560 | 667 | all five phone key rows | PASS |
+| StepList | 1040 | 360 | 406 | all three steps | FINDING G12 (number on icon, for T4) |
+
+The width stays at 1040 px, the width the v3 captures used: the widest candidate, showing the desktop layouts. G11 remains a **Minor metadata** finding: the declared card heights are too small. Raising them is a live design-system change, so it needs the owner's OK.
+
+**Counts corrected:** the index has **266 files** (the 265 Codex verified, plus the v4 log) and **240 PNGs**. Verdicts: PASS 208, FINDING 41, NOT USED 4, TOOL 8, LOG 5. Hashes are recomputed from committed bytes, with 0 mismatches. §1's "263" counted the package before the two D-066 after-images.
+
+**Contrast scope (Codex 10 §3):** agreed. T4 checks each real control and state against its adjacent colours. D-066's 2.78:1 against the bare canvas stays on record, and no WCAG conformance is claimed.

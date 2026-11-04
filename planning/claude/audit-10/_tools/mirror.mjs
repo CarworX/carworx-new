@@ -52,9 +52,19 @@ for (const c of comps) {
     }
   }
   const fontsOk = await b.evalJs('document.fonts.ready.then(() => [...new Set([...document.fonts].filter((f) => f.status === "loaded" && /^file:/.test(String(f.src || "file:")) ).map((f) => f.family.replace(/"/g, "")))])');
-  const { data } = await b.S('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width, height, scale: 1 }, captureBeyondViewport: true });
-  writeFileSync(join(outDir, `${c}-mirror.png`), Buffer.from(data, 'base64'));
-  log.push({ comp: c, width, height, fitsDeclaredHeight: fits, fontsLoaded: fontsOk, blobs: (html.match(/file:\/\//g) || []).length, unresolved: missing });
+  // v4 (Codex 10 R1, 2026-11-04): never crop a card's content. Measure the full content box; when it is taller
+  // than the declared card height, capture the full content height instead. Accept only a capture that covers
+  // the whole content box; otherwise write no file and log the rejection.
+  const [cw, ch] = await b.evalJs('[Math.max(document.documentElement.scrollWidth, document.body.scrollWidth), Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)]');
+  const capH = Math.max(height, ch);
+  if (capH > height) { await b.S('Emulation.setDeviceMetricsOverride', { width, height: capH, deviceScaleFactor: 1, mobile: false }); await sleep(800); }
+  const accepted = cw <= width && capH >= ch;
+  const entry = { comp: c, width, declaredHeight: height, contentWidth: cw, contentHeight: ch, captureWidth: width, captureHeight: capH, fitsDeclaredHeight: fits, extendedBeyondDeclared: capH > height, accepted, fontsLoaded: fontsOk, blobs: (html.match(/file:\/\//g) || []).length, unresolved: missing };
+  if (accepted) {
+    const { data } = await b.S('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width, height: capH, scale: 1 }, captureBeyondViewport: true });
+    writeFileSync(join(outDir, `${c}-mirror.png`), Buffer.from(data, 'base64'));
+  }
+  log.push(entry);
 }
 await b.close();
 console.log(JSON.stringify(log, null, 1));

@@ -1,12 +1,10 @@
 # Status
 
-## 🟢 Baton: **CLAUDE**
+## 🟢 Baton: **CODEX**
 
-**For Claude now:** [Codex 10](codex/10-design-evidence-review.md) reviewed `1e97c78c095f9fcc26a351e4d61940bcf6c5499b`: **AGREE WITH CHANGES; design sign-off pending.** All **265 indexed full SHA-256 values match** (240 PNGs). E2 is resolved; D-066's repo token change is accepted within the inspected scope.
+**For Codex now: X-c on the corrected package.** Claude answered [Codex 10](codex/10-design-evidence-review.md) R1 ([Claude 13 §6](claude/13-c5-verdicts-and-handover.md)). Mirror tool v4 captures each card's full content height and writes no file for an incomplete capture. NavBar (1040 × 522), ServiceKey (1040 × 667) and StepList (1040 × 406) are re-captured, opened and complete; the log records content and capture sizes. Index: **266 files, 240 PNGs**, all hashes from committed bytes; PASS 208, FINDING 41, NOT USED 4, TOOL 8, LOG 5. G11 is now a metadata-only Minor.
 
-**One required-evidence correction, R1/G11:** the NavBar, ServiceKey and StepList mirror captures lose lower content, and their log marks `fitsDeclaredHeight: false`. Capture the complete targets at their intended widths (full height or complete labelled slices), reject incomplete captures, open them, and refresh hashes/logs/counts and row 13. This is Important for evidence acceptance. Return the exact commit for Codex X-c; other saved images still require the final review.
-
-Owner guides and all nine task issues are received. Owner setup and live-system claims remain unverified by Codex. After design sign-off the **owner merges** the design branch, then T1 with K1. The closed-pack Minor findings remain recorded and need correction if reissued.
+Then the **owner merges the design branch** (guide 2), then T1 with K1. Owner prerequisites: [guide 1](owner-guides/01-docker-and-pnpm.md) (C: has about 2 GB free; a cleanup session is in progress).
 
 **Phase: 1 approved (D-038), not started.** Local synthetic coding follows design review, owner merge and the §15 local prerequisites. Phase 1 finishes only with recorded staging evidence for A1–A7. D-060 defers live design-system screenshots, real 200% zoom, phone screen-reader and real-device/browser checks until **G-PROD**; they remain open, never passed by screenshots. PLAN's release checklist now includes them. The Coming Soon page is scrapped (D-063).
 
@@ -67,3 +65,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 22 | 2026-11-04 | Codex | Reviewed `95637fb`: Codex 08 planning corrections resolved; Claude 12/task split agreed D-064/D-065. C5 receipt verified counts and found four CRLF hash mismatches; image acceptance/contrast remain open. Created K1–K4 issues #1–#4, retained D-060 in G-PROD, baton to Claude for C-a/C-b/C4/guides and T1–T5. |
 | 23 | 2026-11-04 | Claude | Completed C5 verdicts ([Claude 13](claude/13-c5-verdicts-and-handover.md)): all 263 files opened, PASS 204 / FINDING 43 / NOT USED 4, full committed-byte hashes (E2), six own-tool faults fixed and re-captured; G1 Important, G2–G17 Minor. C4 F7 documented; nine owner guides; T1–T5 issues #5–#9. Baton to Codex for X-c. |
 | 24 | 2026-11-04 | Codex | Reviewed `1e97c78`: all 265 manifest hashes match; D-066 repo change inspected. Design sign-off withheld for three clipped required mirror cards (R1/G11); baton to Claude for complete captures and updated logs/manifest. Main/owner-merge and Phase 1 gates retained. |
+| 25 | 2026-11-04 | Claude | Answered Codex 10 R1: mirror v4 (full content height, rejects incomplete captures); NavBar, ServiceKey and StepList re-captured complete and opened; index 266 files / 240 PNGs, hashes refreshed, counts corrected. Baton to Codex for X-c. |

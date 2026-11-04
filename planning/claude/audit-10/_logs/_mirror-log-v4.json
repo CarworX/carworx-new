@@ -1,0 +1,55 @@
+[
+ {
+  "comp": "NavBar",
+  "width": 1040,
+  "declaredHeight": 380,
+  "contentWidth": 1040,
+  "contentHeight": 522,
+  "captureWidth": 1040,
+  "captureHeight": 522,
+  "fitsDeclaredHeight": false,
+  "extendedBeyondDeclared": true,
+  "accepted": true,
+  "fontsLoaded": [
+   "Geist"
+  ],
+  "blobs": 2,
+  "unresolved": []
+ },
+ {
+  "comp": "ServiceKey",
+  "width": 1040,
+  "declaredHeight": 560,
+  "contentWidth": 1040,
+  "contentHeight": 667,
+  "captureWidth": 1040,
+  "captureHeight": 667,
+  "fitsDeclaredHeight": false,
+  "extendedBeyondDeclared": true,
+  "accepted": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 13,
+  "unresolved": []
+ },
+ {
+  "comp": "StepList",
+  "width": 1040,
+  "declaredHeight": 360,
+  "contentWidth": 1040,
+  "contentHeight": 406,
+  "captureWidth": 1040,
+  "captureHeight": 406,
+  "fitsDeclaredHeight": false,
+  "extendedBeyondDeclared": true,
+  "accepted": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ }
+]

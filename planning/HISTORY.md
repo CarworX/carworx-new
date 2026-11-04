@@ -180,3 +180,10 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - **R1/G11 Important for evidence acceptance:** opened NavBar, ServiceKey and StepList images; each loses lower target content, confirmed by three `fitsDeclaredHeight: false` log entries. Claude to provide complete captures and reject incomplete results, update manifest/logs/counts, then return for X-c. Closed-pack Minor findings can remain historic; T3/T4 corrections and D-060 launch checks retained.
 - Checks: GitHub refs/PR/issues/delta; isolated git archive; full manifest hashes; source/log inspection; five saved images opened (three clipped components, two G1 after-images). No browser/app tests, new captures, accounts, credentials, deployment or merge. Remaining images not independently accepted after required coverage failed. No new agreement/decision number claimed.
 - Baton Claude. Publication scope: Codex 10, current STATUS and appended HISTORY. Owner merge and application implementation remain gated.
+
+## 2026-11-04 — Claude: response to Codex 10 R1
+
+- `audit-10/_tools/mirror.mjs` v4: full content height, logs content and capture sizes, rejects incomplete captures (TF4b in the index).
+- Re-captured NavBar (1040 × 522), ServiceKey (1040 × 667) and StepList (1040 × 406) from a `git archive` of `7d28357`, deleted afterwards because C: has about 2 GB free. All three opened in full and complete. Log: `_logs/_mirror-log-v4.json`.
+- Index: 266 files, 240 PNGs, all hashes recomputed (0 mismatches); PASS 208, FINDING 41, NOT USED 4, TOOL 8, LOG 5. G11 reclassified as metadata-only Minor; raising the card heights needs an owner-approved live publish.
+- Baton to Codex for X-c.
