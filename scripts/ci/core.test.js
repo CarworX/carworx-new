@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createHash } from "node:crypto";
-import { sanitize, verifyChecksum } from "./secrets.js";
+import {
+  isProseException,
+  PROSE_DIGEST,
+  sanitize,
+  verifyChecksum,
+} from "./secrets.js";
 import {
   requiredSuites,
   validateContract,
@@ -11,6 +16,36 @@ import {
 } from "./core.js";
 
 const bootstrap = { version: 1, rls: false, integration: false };
+
+test("the manual prose exception cannot suppress another source, line, commit or credential", () => {
+  const finding = {
+    RuleID: "generic-api-key",
+    File: "planning/research/codex-vendor-access.md",
+    StartLine: 10,
+    EndLine: 10,
+    Commit: "668466e234e65c92dfceba3037a34a9ca9e5bcbc",
+  };
+  assert.equal(isProseException(finding, PROSE_DIGEST), true);
+  assert.equal(
+    isProseException({ ...finding, Commit: "" }, PROSE_DIGEST),
+    true,
+  );
+  assert.equal(
+    isProseException(finding, "changed line containing a credential"),
+    false,
+  );
+  for (const change of [
+    { File: "another.md" },
+    { Commit: "another-commit" },
+    { StartLine: 11 },
+    { EndLine: 11 },
+    { RuleID: "github-pat" },
+  ])
+    assert.equal(
+      isProseException({ ...finding, ...change }, PROSE_DIGEST),
+      false,
+    );
+});
 
 test("scanner checksum mismatch fails and published findings exclude secret fields", () => {
   const bytes = Buffer.from("archive fixture");

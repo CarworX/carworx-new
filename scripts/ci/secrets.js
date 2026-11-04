@@ -5,6 +5,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   unlinkSync,
   writeFileSync,
 } from "node:fs";
@@ -23,6 +24,23 @@ export const VERSION = "8.30.1";
 export const DIGEST =
   "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb";
 
+// Manual, exact prose exception for Claude's policy review, never a generated baseline.
+// The whole line is a Resend setup checklist; "retry/suppression" is not a credential.
+export const PROSE_DIGEST =
+  "e26004a8204052de2bb98025b77e9a30afc413c2ce14214eb18ee6c43c5e3f56";
+const PROSE_FILE = "planning/research/codex-vendor-access.md";
+const PROSE_COMMIT = "668466e234e65c92dfceba3037a34a9ca9e5bcbc";
+export function isProseException(finding, digest) {
+  return (
+    finding.RuleID === "generic-api-key" &&
+    finding.File === PROSE_FILE &&
+    finding.StartLine === 10 &&
+    finding.EndLine === 10 &&
+    ["", PROSE_COMMIT].includes(finding.Commit ?? "") &&
+    digest === PROSE_DIGEST
+  );
+}
+
 export function verifyChecksum(bytes, digest = DIGEST) {
   invariant(
     createHash("sha256").update(bytes).digest("hex") === digest,
@@ -40,7 +58,7 @@ export function sanitize(findings) {
   }));
 }
 
-function scan(binary, kind, cwd, privateDir) {
+function scan(binary, kind, cwd, privateDir, exceptions = []) {
   invariant(["history", "checkout"].includes(kind), "Invalid scanner mode");
   invariant(
     !existsSync(join(cwd, ".gitleaks.toml")),
@@ -82,7 +100,28 @@ function scan(binary, kind, cwd, privateDir) {
     (result.status === 0) === (safe.length === 0),
     "Gitleaks exit/report mismatch",
   );
-  return safe;
+  const retained = findings.filter((finding) => {
+    if (!isProseException(finding, PROSE_DIGEST)) return true;
+    const source = finding.Commit
+      ? execFileSync("git", ["show", `${PROSE_COMMIT}:${PROSE_FILE}`], {
+          cwd,
+          encoding: "utf8",
+          stdio: "pipe",
+        })
+      : readFileSync(join(cwd, PROSE_FILE), "utf8");
+    const digest = createHash("sha256")
+      .update(source.split(/\r?\n/)[9] ?? "")
+      .digest("hex");
+    if (!isProseException(finding, digest)) return true;
+    exceptions.push({
+      ...sanitize([finding])[0],
+      source_line_sha256: digest,
+      reason:
+        "Exact retry/suppression checklist prose; Claude policy review required",
+    });
+    return false;
+  });
+  return sanitize(retained);
 }
 
 function privateDir(prefix) {
@@ -199,15 +238,18 @@ async function main() {
     writeEvidence("secrets", report);
   } else if (["history", "checkout"].includes(operation)) {
     const report = readJson(reportPath);
+    const proseExceptions = [];
     const findings = scan(
       join(process.env.RUNNER_TEMP, "k1-gitleaks", "gitleaks"),
       operation,
       process.cwd(),
       privateDir(`k1-private-${operation}-`),
+      proseExceptions,
     );
     report.checks[operation] = {
       status: findings.length === 0 ? "passed" : "failed",
       findings,
+      prose_exceptions: proseExceptions,
     };
     writeEvidence("secrets", report);
     invariant(

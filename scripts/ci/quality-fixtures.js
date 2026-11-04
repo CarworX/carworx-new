@@ -5,7 +5,8 @@ import {
   mkdtempSync,
   readFileSync,
   renameSync,
-  symlinkSync,
+  cpSync,
+  constants,
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
@@ -22,7 +23,11 @@ for (const path of ["node_modules", "apps/web/node_modules"]) {
     existsSync(path),
     "Dependencies missing for actual failure fixtures",
   );
-  symlinkSync(join(process.cwd(), path), join(scratch, path), "dir");
+  cpSync(join(process.cwd(), path), join(scratch, path), {
+    recursive: true,
+    verbatimSymlinks: true,
+    mode: constants.COPYFILE_FICLONE,
+  });
 }
 const sourcePath = join(scratch, "apps/web/app/routes/healthz.ts");
 const testPath = join(scratch, "apps/web/app/routes/healthz.test.ts");

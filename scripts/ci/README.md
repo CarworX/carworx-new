@@ -6,7 +6,7 @@ K1 owns this directory and `.github/workflows/ci.yml`. The workflow checks the P
 
 The existing scaffold pins Node in `.node-version` and pnpm in `package.json`. K1 verifies both, installs the frozen lockfile, runs the existing lint/format/types/test/build commands and validates the Vitest JSON report. Currently there is one test workspace (`apps/web`); adding another test workspace must add an individual report contract rather than silently overwrite its results.
 
-`node --test scripts/ci/core.test.js` tests suite activation, report validation and the gate. The workflow additionally runs `quality-fixtures.js`: ten actual command/activation faults in a new temporary worktree. It shares installed dependencies via symlinks but edits neither the checked-out PR nor its index. Scanner fixtures use a separate temporary Git repository and an assembled synthetic credential; no credential fixture is committed to the project.
+`node --test scripts/ci/core.test.js` tests suite activation, report validation and the gate. The workflow additionally runs `quality-fixtures.js`: ten actual command/activation faults in a new temporary worktree. It copies installed dependencies while preserving package links; the real node_modules directory satisfies pnpm task-state safety. It edits neither the checked-out PR nor its index. Scanner fixtures use a separate temporary Git repository and an assembled synthetic credential; no credential fixture is committed to the project.
 
 ## Activating T2 and T3/T5
 
@@ -29,7 +29,7 @@ The corresponding Claude task adds its root script in a serialised edit of `pack
 
 ## Secret scanning
 
-Gitleaks CLI 8.30.1, Linux x64, is verified against SHA-256 `551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb`. History scans cover everything reachable from the tested HEAD; the clean checkout is scanned separately in a job that never installs project dependencies. Wrong checksums, scanner errors and findings fail. No automatic baselines, root `.gitleaks.toml`, inline allow comments or project ignore files can suppress results. Any future scanner-policy exception needs a reviewed K1 change.
+Gitleaks CLI 8.30.1, Linux x64, is verified against SHA-256 `551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb`. History scans cover everything reachable from the tested HEAD; the clean checkout is scanned separately in a job that never installs project dependencies. Wrong checksums, scanner errors and findings fail. No automatic baselines, root `.gitleaks.toml`, inline allow comments or project ignore files can suppress results. One manual prose exception is proposed for Claude review: the Resend checklist at codex-vendor-access.md line 10 (historical commit 668466e234e65c92dfceba3037a34a9ca9e5bcbc, or the identical checkout line). It matches only generic-api-key and the full line SHA-256 e26004a8204052de2bb98025b77e9a30afc413c2ce14214eb18ee6c43c5e3f56. The technical phrase retry/suppression is not a credential; the complete line was compared to known checklist prose. Every applied exception is reported explicitly. Changed lines, other commits, other files and other rules remain blocked. Any further scanner-policy exception needs a reviewed K1 change.
 
 The scanner runs with 100% redaction and captured stdout/stderr. Raw results stay in runner temporary storage and are never uploaded or printed. Published findings contain only rule, file, line and commit metadata. No Gitleaks Action licence or paid scanner service is used.
 
