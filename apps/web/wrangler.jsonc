@@ -1,0 +1,9 @@
+// Minimal Worker config needed for `react-router build` and local dev.
+// Owned by K2 (Codex) from here on: environments, routes, vars and secrets
+// names are added there, not in T1.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "carworx-web",
+  "main": "./workers/app.ts",
+  "compatibility_date": "2026-11-01",
+}

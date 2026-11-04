@@ -1,0 +1,14 @@
+packages:
+  - apps/*
+
+# Fail the install when Node or pnpm differs from package.json "engines".
+engineStrict: true
+
+# Exact versions only: `pnpm add` writes 1.2.3, never ^1.2.3.
+savePrefix: ""
+
+# Only these dependencies may run install scripts. Both only verify or fetch
+# their own platform binary. Anything new must be approved by name in review.
+allowBuilds:
+  esbuild: true
+  workerd: true
