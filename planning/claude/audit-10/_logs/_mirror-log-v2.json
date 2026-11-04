@@ -1,0 +1,245 @@
+[
+ {
+  "comp": "BookingTile",
+  "width": 720,
+  "height": 220,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Button",
+  "width": 960,
+  "height": 260,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Chip",
+  "width": 960,
+  "height": 300,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Cover",
+  "width": 960,
+  "height": 300,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist"
+  ],
+  "blobs": 1,
+  "unresolved": []
+ },
+ {
+  "comp": "EmptyState",
+  "width": 960,
+  "height": 330,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist"
+  ],
+  "blobs": 3,
+  "unresolved": []
+ },
+ {
+  "comp": "Field",
+  "width": 720,
+  "height": 380,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "HoldDial",
+  "width": 720,
+  "height": 260,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Iconography",
+  "width": 960,
+  "height": 900,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist Mono"
+  ],
+  "blobs": 40,
+  "unresolved": []
+ },
+ {
+  "comp": "KpiCard",
+  "width": 960,
+  "height": 420,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "Loaders",
+  "width": 1280,
+  "height": 1700,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "NavBar",
+  "width": 1040,
+  "height": 380,
+  "fitsDeclaredHeight": false,
+  "fontsLoaded": [
+   "Geist"
+  ],
+  "blobs": 2,
+  "unresolved": []
+ },
+ {
+  "comp": "NotFound",
+  "width": 1280,
+  "height": 860,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "NotFoundPhone",
+  "width": 390,
+  "height": 844,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "PageLoader",
+  "width": 1280,
+  "height": 720,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "PhoneFrame",
+  "width": 720,
+  "height": 760,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 6,
+  "unresolved": []
+ },
+ {
+  "comp": "ReceiptQuote",
+  "width": 720,
+  "height": 430,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "ResultCard",
+  "width": 720,
+  "height": 380,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "ServiceKey",
+  "width": 1040,
+  "height": 560,
+  "fitsDeclaredHeight": false,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 13,
+  "unresolved": []
+ },
+ {
+  "comp": "StatusNote",
+  "width": 720,
+  "height": 330,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "StepList",
+  "width": 1040,
+  "height": 360,
+  "fitsDeclaredHeight": false,
+  "fontsLoaded": [
+   "Geist",
+   "Geist Mono"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ },
+ {
+  "comp": "StickyNote",
+  "width": 720,
+  "height": 300,
+  "fitsDeclaredHeight": true,
+  "fontsLoaded": [
+   "Geist",
+   "Caveat"
+  ],
+  "blobs": 0,
+  "unresolved": []
+ }
+]

@@ -156,3 +156,17 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - **Backlog published:** Codex K1 [#1](https://github.com/CarworX/carworx-new/issues/1), K2 [#2](https://github.com/CarworX/carworx-new/issues/2), K3 [#3](https://github.com/CarworX/carworx-new/issues/3), K4 [#4](https://github.com/CarworX/carworx-new/issues/4), with `phase-1`/`owner:codex` labels, boundaries, dependencies, PR-head evidence and acceptance criteria. Issues remain blocked from implementation until the design/owner-merge gate. Claude creates T1–T5.
 - **Tools/checks:** GitHub read/compare/ref/tree inspections; native Git fetch/archive into an isolated temporary copy; local hashing/metadata checks and three `view_image` opens; official Supabase Google setup checked for guide accuracy. GitHub CLI created the two labels because the connector lacks label management; the connector created the four issues. No new audit/browser/application test, install, account change, production credential, deployment or merge.
 - **Next:** baton Claude for C-a/C-b (including four committed-byte hash repairs), C4, owner guides and T1–T5 issues. Return a completed exact-commit package for Codex X-c, then owner merge. A local pass cannot complete Phase 1; staging A1–A7 remain required.
+
+## 2026-11-04 — Claude 13: C5 verdicts, C4, owner guides, T1–T5
+
+- **Answers:** Codex 09 E1/E2 and Claude 12 C-a to C-f. Source captured: `5a805b3058cfe048ef0bb3d4a86f999f2b141c40` (`git archive`); v1 package `e3541c6c3d093dc315b86644c6c65b456f4955b2`.
+- **C-a:** every file in `claude/audit-10/` opened, tall pages in full-width slices. Verdicts: PASS 204, FINDING 43, NOT USED 4, TOOL 8, LOG 4. Each Claude 09 matrix row has a verdict. The five v1 observations are settled.
+- **Own-tool faults (TF1–TF6), fixed and re-captured in the same export:** short settle wait; capture during smooth scroll (the Thandi blank area); lazy film not loaded; mirror width; mirror fonts; SVG sampler ring. Re-captured: `01-cover-390`, 12 motion journey frames, `42-brand-reduced`, Cover and seven other mirror cards (all 21 re-rendered with repo fonts).
+- **C-b:** SVG text 8/8 (pins 19.19:1). Focus ring 16.99:1. Component edges: G1.
+- **Findings:** G1 Important (control edges 1.37:1 vs the 3:1 Studio rule; owner's choice of fix). G2–G17 Minor: pack copy and print layout, mirror card heights, the StepList selector, the font path, a contrast tool that measures nothing on the approved page, the 44 px pack chrome rule.
+- **E2:** full SHA-256 of committed bytes via `git cat-file blob :<path>`; two unchanged files match Codex 09's canonical values.
+- **C-c:** `design/brand/README.md` records the seven live-only cards and the font path. **C-d (F5)** stays Minor pending the owner's O-2.
+- **C-e:** `owner-guides/README.md` and guides 01–09, ordered by need, secrets kept out.
+- **T1–T5:** issues #5–#9 with labels `phase-1`, `owner:claude` (new) and `security` (new, T3/T5). Blocked until X-c and the owner's merge.
+- **Computer:** C: was full; at the owner's request Claude deleted only its own scratch copies and the 61 MB audit export (2.6 GB free afterwards). Docker installed but not running; pnpm not on the PATH, Corepack present.
+- **Limits:** no app code, no live design-system change, no account or setting changes, no spending. Baton to Codex for X-c.

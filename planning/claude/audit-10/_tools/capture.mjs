@@ -42,7 +42,8 @@ for (const j of jobs) {
   try {
     const media = j.media === 'reduced' ? [{ name: 'prefers-reduced-motion', value: 'reduce' }] : [{ name: 'prefers-reduced-motion', value: 'no-preference' }];
     await b.load(url + (j.hash || '#skip'), j.width, j.scale, media);
-    if (j.media === 'settled') { await b.evalJs(settle); await sleep(500); } else await sleep(+(j.wait || 3500));
+    // v2 (C-a, 2026-11-04): settled waits 1500 ms (was 500; the 390 cover was caught mid-fade).
+    if (j.media === 'settled') { await b.evalJs(settle); await sleep(+(j.wait || 1500)); } else await sleep(+(j.wait || 3500));
     if (j.eval === 'ax') {
       await b.S('Accessibility.enable');
       const { nodes } = await b.S('Accessibility.getFullAXTree');
@@ -65,7 +66,10 @@ for (const j of jobs) {
     let sel = j.sel;
     if (sel === ':focus') { sel = null; }
     if (j.scroll !== undefined) {
-      await b.evalJs(`(function(){var e=document.querySelector(${JSON.stringify(sel)});var r=e.getBoundingClientRect(),t=r.top+scrollY;scrollTo(0,t+${+j.scroll}*Math.max(0,r.height-innerHeight));return true})()`);
+      // v2: the pack sets scroll-behavior:smooth when motion is allowed, so v1 captured while the page was still
+      // scrolling (blank band at the top, nav pushed down). Jump instantly, then wait until scrollY is stable.
+      await b.evalJs(`(function(){document.documentElement.style.scrollBehavior='auto';var e=document.querySelector(${JSON.stringify(sel)});var r=e.getBoundingClientRect(),t=r.top+scrollY;scrollTo(0,t+${+j.scroll}*Math.max(0,r.height-innerHeight));return true})()`);
+      for (let last = -1, n = 0; n < 40; n++) { await sleep(150); const y = await b.evalJs('scrollY'); if (y === last) break; last = y; }
       await sleep(1200);
     }
     const box = await b.evalJs(`(function(){var e=${sel ? `document.querySelectorAll(${JSON.stringify(sel)})[${+(j.nth||0)}]` : 'document.activeElement'};if(!e||e===document.body)return null;

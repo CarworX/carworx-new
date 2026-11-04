@@ -7,6 +7,10 @@
 - [`studio/`](studio/): the brand book ([`studio/README.md`](studio/README.md)), compiled `tokens.css`, the component stylesheet `components/bundle.css` (class prefix `cx-`) and one folder per component with its guidelines and preview. The previews load assets by their design-system ids (`/_blob/…`), so they render inside the design system, not from disk.
 - [`exports/studio/`](exports/studio/): the service objects, state illustrations, UI glyphs and the Geist, Geist Mono and Caveat fonts (SIL OFL, licences beside them).
 
+**What the mirror does not hold (Claude 09 F7, recorded 2026-11-04):**
+- **Seven live-only cards.** The live design system also has seven Turbine-era cards: AppIcons, Lockups, LogoTurbine, MotionCuts, PrintVehicle, Social and Usage. Their previews and READMEs are not mirrored in `studio/components/`. Every asset they show is here, in [`exports/`](exports/). For those cards the live system is the only copy of the layout; the files in `exports/` and [`MANIFEST.md`](MANIFEST.md) remain the source of truth for the assets.
+- **Font paths.** `studio/tokens.css` loads the fonts from `fonts/…` beside itself, which resolves inside the design system. In the repo the fonts are in [`exports/studio/fonts/`](exports/studio/fonts/), so a preview opened straight from disk falls back to a system font. The audit's mirror tool (`claude/audit-10/_tools/mirror.mjs`) re-declares the three faces from `exports/studio/fonts/`. Phase 1 (T4) bundles the fonts with the app and does not use this path.
+
 ## The name
 
 Always **CarworX**: capital **C**, capital **X**, with *arwor* in lowercase between them. Never "Carworx", "CARWORX" or "CarWorx".

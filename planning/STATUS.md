@@ -1,13 +1,12 @@
 # Status
 
-## 🟢 Baton: **CLAUDE**
+## 🟢 Baton: **CODEX**
 
-**For Claude now:** [Codex 09](codex/09-claude12-and-c5-review.md) **AGREES** with Claude 12 and the amended Phase 1 task plan (D-064/D-065). Codex 08's R1, B1–B3, ownership, S1 and V1/V2 are resolved at planning level. K1–K4 backlog issues are created; application implementation is still gated.
+**For Codex now: X-c, the scoped design review.** [Claude 13](claude/13-c5-verdicts-and-handover.md) completes C-a/C-b (E1) and the full committed-byte hashes (E2) in [`claude/audit-10/index.md`](claude/audit-10/index.md): 263 files opened and judged, every matrix row with a verdict. One **Important** finding (G1, control edges 1.37:1 against the Studio 3:1 rule; the owner chooses the fix) and sixteen Minor. C4 F7 is documented; F5 stays Minor pending the owner's O-2. Owner guides are in [`owner-guides/`](owner-guides/README.md). Claude's T1–T5 are issues #5–#9.
 
-1. Finish **C-a/C-b**: inspect every accepted image; add PASS/FINDING/BLOCKED verdicts; classify the five observations; complete SVG and non-text contrast. Repair E2's four CRLF-based checksums from committed bytes and record full source/evidence identities and hashes.
-2. Finish **C4**: document/mirror the seven live-only cards (F7). F5's live documentation clean-up needs owner publication authority; retain it as an explicit Minor if that authority is absent.
-3. Write the ordered **owner guides** (C-e/D-063), create Claude's **T1–T5** issues under the agreed plan, and update shared records.
-4. Return the completed package and exact commit for **Codex X-c**. Codex then gives the scoped design verdict; the **owner merges the design branch** before T1/K1 implementation.
+1. **Codex:** review the package at the commit that publishes Claude 13, and answer Claude 13 §5.
+2. **Owner:** choose G1's fix; answer O-2; work through guide 1 (C: needs about 20 GB free, Docker isn't running, pnpm isn't on the PATH).
+3. After Codex's sign-off: the **owner merges the design branch** (guide 2), then T1 with K1.
 
 **Phase: 1 approved (D-038), not started.** Local synthetic coding follows design review, owner merge and the §15 local prerequisites. Phase 1 finishes only with recorded staging evidence for A1–A7. D-060 defers live design-system screenshots, real 200% zoom, phone screen-reader and real-device/browser checks until **G-PROD**; they remain open, never passed by screenshots. PLAN's release checklist now includes them. The Coming Soon page is scrapped (D-063).
 
@@ -17,8 +16,8 @@
 |---|---|---|
 | PLAN | Version 2.1 | Technically signed D-033; owner-approved for Phase 1 only D-038. Task contracts agreed D-064/D-065 |
 | §22 | Presentation pack (Turbine + Studio) | Phase 0b closed D-037; expiry correction accepted within Codex 07's verified scope |
-| DS / C4 | Studio design system and system states | Full scoped design verdict pending C5 completion and applicable C4 corrections. Mirror evidence is distinct from live evidence; F5 can remain a recorded Minor |
-| C5 | Saved package at `claude/audit-10/` | 259 indexed artefacts exist; 255 hash prefixes match committed bytes and four need LF-normalised values. 8 individual phones/31 state panels covered. C-a/C-b and E1/E2 remain open; complete image acceptance not done |
+| DS / C4 | Studio design system and system states | F7 documented in `design/brand/README.md`; F5 open Minor (needs owner O-2). G1 (control edges) needs the owner's choice. Scoped verdict pending X-c |
+| C5 | Package at `claude/audit-10/` | **Verdicts complete** (Claude 13): 263 files, full committed-byte SHA-256, E1/E2 closed; G1 Important, G2–G17 Minor; rows 13/14 live, 15, 19, 20 BLOCKED to G-PROD. Awaiting Codex X-c |
 | C09 | Claude 09 review plan | R1/R2/R3 accepted at planning level. Capture acceptance and contrast remain C5 work |
 | C10 / C12 | Phase 1 plan and remaining work | **AGREED** D-064/D-065. Claude T1–T5; Codex [K1 #1](https://github.com/CarworX/carworx-new/issues/1), [K2 #2](https://github.com/CarworX/carworx-new/issues/2), [K3 #3](https://github.com/CarworX/carworx-new/issues/3), [K4 #4](https://github.com/CarworX/carworx-new/issues/4). Implementation blocked on the design/owner-merge gate and dependencies |
 | REV / S1 | Revenue records and proposed experiments | Codex 08 S1/V1/V2 resolved in the written plan. D-054–D-057 remain binding; fee-exposed evidence, later contracts and G-REVENUE/G-PAY remain required |
@@ -26,7 +25,7 @@
 
 ## Owner prerequisites
 
-- **Before coding:** merge the design branch after X-c; make Docker's engine available and verify pnpm. pnpm previously worked; this turn did not recheck Docker.
+- **Before coding:** merge the design branch after X-c; free about 20 GB on C:, start Docker's engine and enable pnpm ([guide 1](owner-guides/01-docker-and-pnpm.md)). On 2026-11-04 C: had 2.6 GB free, Docker's engine was not running and pnpm was not on the PATH (Corepack present).
 - **K1:** confirm Actions allowance.
 - **T3/K2:** D-062 identifies “CarworX App” as synthetic staging; Claude reports Google enabled. Real login remains unverified. Complete local Google provider/callback configuration, account/DNS inventory, Cloudflare staging route, scoped secrets and restricted Resend/Auth SMTP. Claude supplies the guides; deployment execution stays owner-controlled.
 - **K4 hosted:** choose an existing private destination, a separate copy and operator; confirm proposed frequency, retention and measured cost/capacity. The local synthetic drill comes first (D-059).
@@ -66,3 +65,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 20 | 2026-11-04 | Claude | Built the C5 evidence package in `claude/audit-10/` from `git archive 5a805b3` (routes E, S1, S3, Q, C, M, P; 259 files with SHA-256). Counts matched (8 phones, 31 state panels), the blank check was clean and all 41 mirror blob ids resolved. Five observations and the BLOCKED rows are listed. Baton to Codex for review. |
 | 21 | 2026-11-04 | Claude | Published [Claude 12](claude/12-remaining-work-and-next-phase.md): what's left before Phase 1 by Claude, Codex and the owner; Phase 1 under the agreed split; later work with proposed writers. Recorded D-060–D-063 (owner checks before G-PROD, split kept, "CarworX App" is staging with Google on, owner guides, Coming Soon scrapped). Baton to Codex for approval. |
 | 22 | 2026-11-04 | Codex | Reviewed `95637fb`: Codex 08 planning corrections resolved; Claude 12/task split agreed D-064/D-065. C5 receipt verified counts and found four CRLF hash mismatches; image acceptance/contrast remain open. Created K1–K4 issues #1–#4, retained D-060 in G-PROD, baton to Claude for C-a/C-b/C4/guides and T1–T5. |
+| 23 | 2026-11-04 | Claude | Completed C5 verdicts ([Claude 13](claude/13-c5-verdicts-and-handover.md)): all 263 files opened, PASS 204 / FINDING 43 / NOT USED 4, full committed-byte hashes (E2), six own-tool faults fixed and re-captured; G1 Important, G2–G17 Minor. C4 F7 documented; nine owner guides; T1–T5 issues #5–#9. Baton to Codex for X-c. |
