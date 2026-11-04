@@ -1,14 +1,14 @@
 # Status
 
-## 🟢 Baton: **Claude reviews K1 repair**, then Codex final feature review
+## Baton: Claude reviews refreshed records; Codex proceeds with K2
 
 **Design gate closed by the owner (D-067):** the design baseline is approved at `495e448`, and Codex's final X-c sign-off is waived for this gate. Codex still reviews every Phase 1 pull request. See [Claude 14](claude/14-phase1-kickoff.md).
 
-1. **Claude:** independently review [K1 repair #18](https://github.com/CarworX/carworx-new/pull/18), then incorporate the approved repair into T2 #15 and T4 #17. Preserve both branches' records and regenerate the shared lockfile as needed.
-2. **Codex:** review the updated feature heads and fresh CI. Verification-only PRs #19/#20 do not approve or merge the original feature PRs. See [Codex 12](codex/12-takeover-review.md) for evidence and receiving-agent steps.
-3. **Next tasks:** K2 configuration/recipient-control agreement; K4 local drill after T2 acceptance and Docker availability; K3 measurements after T4 acceptance. Claude starts T3/T5 after T2 merges. Owner executes staging deployments.
+1. **Claude:** review the refreshed #21 head after its CI, then merge as reviewer under Q-021. Review the updated K2 inventory #23 and acknowledge the Auth email configuration clarification.
+2. **Codex:** next task is K2 implementation (configuration, manual owner-run staging workflow and recipient-control mechanism). The behavioral recipient contract is agreed with Claude; the concrete Auth delivery mechanism and actual restrictions remain unverified.
+3. **Claude:** T3/T5 is in progress in #24 and must consume the reviewed K1 integration/report contract. K3 local measurements and K4 local recovery can follow the accepted T4/T2 foundations, with resource preflight. Owner executes hosted deployment and supplies staging access/configuration privately.
 
-**Phase: 1 in progress (D-038).** Design #10, T1 #11 and K1 #13 are merged; main baseline `18cfedc`. T2/T4 remain unmerged. Phase 1 finishes only with recorded staging evidence for A1–A7. D-060's live design-system, real 200% zoom, screen-reader and physical-device/browser checks remain open until G-PROD. The Coming Soon page is scrapped (D-063).
+**Phase: 1 in progress (D-038).** Design #10, T1 #11, T2 #15, T4 #17 and K1 #13/#18/#22 are merged; current main baseline `888bc5d`. T3/T5 #24 is in progress. Phase 1 finishes only with recorded staging evidence for A1–A7. D-060's live design-system, real 200% zoom, screen-reader and physical-device/browser checks remain open until G-PROD. The Coming Soon page is scrapped (D-063).
 
 ## Open items
 
@@ -25,8 +25,8 @@
 
 ## Owner prerequisites
 
-- **Local Supabase:** Docker Desktop was started from its existing user installation, but its engine returns HTTP 500; Ubuntu WSL also reports a missing registered VHDX. Workstation database/restore checks remain blocked. C: had about 30 GB free this turn. Pinned Node 24.22.2 and pnpm 12.16.1 ran T4 checks successfully from temporary tooling.
-- **K1:** owner confirmed included Actions minutes with a $0 spending cap. Repair #18 requires Claude review.
+- **Local Supabase:** Docker 29.9.2 is healthy. The initial Windows CLI temp-directory failure was resolved for this run using process-local TMP/TEMP at `C:/Temp/carworx-supabase`. A clean local reset, 154 pgTAP assertions and 24 REST probes passed; all task containers were stopped. Docker has about 4 GB memory and C: about 6 GB free after image downloads, so K4 needs a capacity preflight. No images, user files or WSL installations were deleted.
+- **K1:** owner confirmed included Actions minutes/$0 cap. Both fixture repairs are Claude-approved and merged; Auth integration remains mandatory as T3/T5 arrives.
 - **T3/K2:** D-062 identifies “CarworX App” as synthetic staging; Claude reports Google enabled. Real login remains unverified. Complete local Google provider/callback configuration, account/DNS inventory, Cloudflare staging route, scoped secrets and restricted Resend/Auth SMTP. Claude supplies the guides; deployment execution stays owner-controlled.
 - **K4 hosted:** choose an existing private destination, a separate copy and operator; confirm proposed frequency, retention and measured cost/capacity. The local synthetic drill comes first (D-059).
 - **Before G-PROD:** complete D-060's owner-only design checks and the remaining PLAN release requirements, including Information Officer/retention/privacy and recovery evidence.
@@ -34,9 +34,9 @@
 
 ## Next steps
 
-**Foundation landed:** T1 #11 merged at `c87ba46`; Claude-approved K1 follow-up #13 merged at `18cfedc`. K1 repair #18 corrects two feature-suite fixture assumptions and restores scratch state after each fault. Scaffold run 41870256432 and isolated T4 candidate run 41870373184 passed. Isolated T2 run 41870352422 passed all 154 pgTAP assertions; additional REST verification is recorded in Codex 12.
+**Foundation code merged:** Codex approved T2 `95476d5` and merged #15 as `38f1852`; all 154 pgTAP assertions and 24 REST probes also passed on the workstation. Codex approved T4 `f6f82cb` after combined CI (78 unit tests + 154 RLS assertions), the local check/build and 3 focused menu browser checks; #17 merged as `888bc5d`. Claude approved and merged K1 Auth fixture #22 (`994d09d`, merge `8066700`). These are code-review results, not staging A1–A7 completion.
 
-**Feature approval pending:** T2 #15 and T4 #17 still need the independently reviewed CI repair incorporated and green CI on their resulting heads. T2's corrected candidate run 41877829916 has exact-head passed check/secret/gate artifacts: 154 pgTAP assertions plus 24 REST probes. Its workflow metadata still says queued despite completed logs/artifacts; reconcile status before merge. T4 passed Codex's pinned local check (75 tests/build), 13/13 saved hashes and independent browser audit (27 checks, zero failed). D11 staging flag accepted; no A6 or D-060 acceptance is implied. No Codex merge or deployment this turn.
+**Current handoff:** [Codex 13](codex/13-foundation-closeout-and-k2.md) records final evidence, the Windows workaround, merged SHAs and next work. #21 now incorporates current main and needs fresh CI/Claude review. #19/#20 are verification-only and are closed without merging. K2 preflight #23 is approved as inventory; its updated project-access fact and Auth email clarification need review. Staging remains blocked on access, owner configuration and demonstrated recipient restrictions. Disabling confirmations or leaving custom SMTP unset is not proof that all Auth email is off.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
@@ -73,3 +73,6 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 26 | 2026-11-04 | Owner/Claude | Owner approved the design baseline at `495e448` and waived X-c (D-067). Claude 14 and guide 10 written; design-branch PR opened for the owner to merge; Phase 1 to run in the cloud environment "CarworX Cloud". |
 | 27 | 2026-11-04 | Claude (T1) | Built the T1 scaffold on `claude/t1-scaffold` and opened draft [PR #11](https://github.com/CarworX/carworx-new/pull/11): pnpm 12.16.1 workspace, `apps/web` on React Router 7.18.5 with `@cloudflare/vite-plugin`, TypeScript 6.0.3 strict, ESLint + Prettier, Vitest, `/healthz` (`no-store`), PR template; versions from the npm registry and nodejs.org. `pnpm run check` passes offline on Node 24.22.2. Waiting on K1; Codex reviews. |
 | 28 | 2026-11-04 | Claude (T1) | Reviewed K1 PR #12: CHANGES @`1b476aa` (C1–C4, each reproduced locally), then APPROVE @`4b25bf0` after Codex's fixes (hosted CI green; prose-exception scope checked locally). Merged K1 into T1 at `e5c393c`; T1 ready for Codex's review of the combined head. |
+| 29 | 2026-11-04 | Claude (T2) | Opened draft [PR #15](https://github.com/CarworX/carworx-new/pull/15): Supabase CLI 2.122.1, Phase 1 schema (`profiles`, `organisations`, `memberships`, `audit_log`, `private.platform_admins`) with RLS deny-by-default, admin = server-controlled list + `aal2` in RLS, append-only audit; 154 pgTAP assertions and `test:rls`; `contract.json` `rls: true` as a labelled K1-file commit. No local Supabase (image pulls blocked); real pgTAP run is K1 CI. Codex reviews. |
+| 30 | 2026-11-04 | Claude (T2) | K1 fixture blocked PR #15's CI (pgTAP stage skipped); Codex reviewed CHANGES @`b823b03` with no schema/RLS defect and accepted `rls: true`. After K1 repair #18 merged (`ec7d658`), merged main into T2 for fresh CI and Codex's re-review. |
+| 31 | 2026-11-05 | Codex | Final T2/T4 reviews and Q-021 merges; local 154 pgTAP/24 REST and 78 unit/3 browser checks passed. K1 Auth fixture #22 Claude-approved/merged; K2 inventory #23 published and behavioral contract agreed. Records #21 refreshed after main 888bc5d; staging acceptance remains open. |

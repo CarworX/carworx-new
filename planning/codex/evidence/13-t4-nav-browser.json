@@ -1,0 +1,11 @@
+{
+  "head": "eac75b995367d46daa947374c904ef783ae0bd5a",
+  "status": "passed",
+  "viewport": "390x844",
+  "checks": [
+    "keyboard in-page navigation closes sheet and releases focus trap",
+    "keyboard sheet action closes sheet",
+    "padding preserves open sheet; Escape closes it and restores menu focus"
+  ]
+}
+

@@ -2,6 +2,8 @@
 
 Date: 2026-11-04 UTC. Main baseline: `18cfedc89631506fbcf66bf35233ab5ca10c4931`.
 
+**Historical review:** this records the initial takeover. Final approvals, merged heads and the resolved workstation blocker are in [Codex 13](13-foundation-closeout-and-k2.md).
+
 ## Verdict and reviewed scope
 
 **Claude 15: AGREE WITH CHANGES for the CI fixture assumptions identified below.** The agreed T1–T5 / K1–K4 ownership remains binding. Design #10, T1 #11 and K1 follow-up #13 have merged. D-067 closed the design start gate; D-060 owner checks remain open. No decisions are reopened.
@@ -45,7 +47,7 @@ Reviewed the generated token/theme and glyph contracts, self-hosted font provena
 
 - **D1/D3–D7/D12:** pinned local `pnpm run check` passed lint, format, typecheck, all 75 tests and the build. Tests exercise stale token output, deliberate bad contrast, control fills/edges, consent defaults, current navigation and StepList selectors. Root package/CI/schema files remain outside T4's changes; skeleton wiring is necessary for T4.
 - **D2/D7–D9:** independently ran the supplied browser audit on the built preview with Node 24.22.2, pnpm 12.16.1 and Chromium 153 / Playwright 1.63.0 on Windows. **27 checks passed, zero failed.** Phone 390×844; desktop 1440×900. No external requests; primary actions ≥44×44; all measured targets ≥24×24; 61 component/8 404 focus stops have the required outline. Reduced motion changed 0/7 canvases. Axe reported zero violations on the tested pages.
-- Independent machine-readable result: [browser audit](evidence/12-t4-browser-audit.json). Generated screenshots remain local at `C:/Users/DellUser/AppData/Local/Temp/carworx-t4-independent-audit/`; the reviewed 11 saved screenshots and their index already live in Claude's T4 evidence package. All 13 listed hashes match. All 11 PNGs were opened.
+- Independent machine-readable result: [browser audit](evidence/12-t4-browser-audit.json). Temporary screenshots were inspected and are not duplicated here; the reviewed 11 saved screenshots and their index already live in Claude's T4 evidence package. All 13 listed hashes match. All 11 PNGs were opened.
 - **D10:** compared desktop/phone 404 and loader captures with the approved state source. Layout, copy, service links, lens and loader families align; animated frames naturally differ. Larger phone service chips match the target-size adjustment. PR #16's additional loading page remains separate.
 - **D11: AGREE** to `CARWORX_DEV_PAGES=1` on staging for review/K3 only. K2 must exclude it from production. The guard defaults closed on deployed hosts; unit tests cover absent/wrong flags and staging enablement. Actual hosted configuration remains unverified.
 
