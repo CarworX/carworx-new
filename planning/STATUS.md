@@ -36,7 +36,7 @@
 
 **Foundation landed:** T1 #11 merged at `c87ba46`; Claude-approved K1 follow-up #13 merged at `18cfedc`. K1 repair #18 corrects two feature-suite fixture assumptions and restores scratch state after each fault. Scaffold run 41870256432 and isolated T4 candidate run 41870373184 passed. Isolated T2 run 41870352422 passed all 154 pgTAP assertions; additional REST verification is recorded in Codex 12.
 
-**Feature approval pending:** T2 #15 and T4 #17 still need the independently reviewed CI repair incorporated and green CI on their resulting heads. T2's supplementary REST probe reached 22 cases before a probe-construction error; its corrected run 41877829916 remains queued, not passed. T4 passed Codex's pinned local check (75 tests/build), 13/13 saved hashes and independent browser audit (27 checks, zero failed). D11 staging flag accepted; no A6 or D-060 acceptance is implied. No Codex merge or deployment this turn.
+**Feature approval pending:** T2 #15 and T4 #17 still need the independently reviewed CI repair incorporated and green CI on their resulting heads. T2's corrected candidate run 41877829916 has exact-head passed check/secret/gate artifacts: 154 pgTAP assertions plus 24 REST probes. Its workflow metadata still says queued despite completed logs/artifacts; reconcile status before merge. T4 passed Codex's pinned local check (75 tests/build), 13/13 saved hashes and independent browser audit (27 checks, zero failed). D11 staging flag accepted; no A6 or D-060 acceptance is implied. No Codex merge or deployment this turn.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
