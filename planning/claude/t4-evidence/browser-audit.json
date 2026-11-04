@@ -1,0 +1,141 @@
+{
+  "base": "http://localhost:4173",
+  "at": "2026-11-04T16:25:42.882Z",
+  "results": [
+    {
+      "check": "D2 built CSS has no remote URL",
+      "ok": true,
+      "detail": "1 file(s) clean"
+    },
+    {
+      "check": "/_dev/components phone: answers 200 locally",
+      "ok": true,
+      "detail": "status 200"
+    },
+    {
+      "check": "D2 components phone: no request leaves http://localhost:4173",
+      "ok": true,
+      "detail": "16 requests, 0 external; fonts: /assets/Geist-latin-DroUUXQz.woff2, /assets/GeistMono-latin-DqhEbPq3.woff2, /assets/Caveat-latin-BKIdHqrM.woff2"
+    },
+    {
+      "check": "D8 components phone: primary actions ≥ 44 × 44 px",
+      "ok": true,
+      "detail": "9 primary, smallest 44 px tall"
+    },
+    {
+      "check": "D8 components phone: every target ≥ 24 × 24 px (WCAG 2.5.8)",
+      "ok": true,
+      "detail": "none smaller"
+    },
+    {
+      "check": "D7 components phone: text contrast in the rendered DOM",
+      "ok": true,
+      "detail": "562 text elements measured (lowest 3.84:1), 18 on gradients skipped, 0 below floor"
+    },
+    {
+      "check": "404 phone: unknown path answers 404",
+      "ok": true,
+      "detail": "status 404"
+    },
+    {
+      "check": "D2 notFound phone: no request leaves http://localhost:4173",
+      "ok": true,
+      "detail": "14 requests, 0 external; fonts: /assets/Geist-latin-DroUUXQz.woff2, /assets/GeistMono-latin-DqhEbPq3.woff2"
+    },
+    {
+      "check": "D8 notFound phone: primary actions ≥ 44 × 44 px",
+      "ok": true,
+      "detail": "1 primary, smallest 56 px tall"
+    },
+    {
+      "check": "D8 notFound phone: every target ≥ 24 × 24 px (WCAG 2.5.8)",
+      "ok": true,
+      "detail": "none smaller"
+    },
+    {
+      "check": "D7 notFound phone: text contrast in the rendered DOM",
+      "ok": true,
+      "detail": "12 text elements measured (lowest 3.84:1), 0 on gradients skipped, 0 below floor"
+    },
+    {
+      "check": "/_dev/components desktop: answers 200 locally",
+      "ok": true,
+      "detail": "status 200"
+    },
+    {
+      "check": "D2 components desktop: no request leaves http://localhost:4173",
+      "ok": true,
+      "detail": "16 requests, 0 external; fonts: /assets/Geist-latin-DroUUXQz.woff2, /assets/GeistMono-latin-DqhEbPq3.woff2, /assets/Caveat-latin-BKIdHqrM.woff2"
+    },
+    {
+      "check": "D8 components desktop: primary actions ≥ 44 × 44 px",
+      "ok": true,
+      "detail": "9 primary, smallest 44 px tall"
+    },
+    {
+      "check": "D8 components desktop: every target ≥ 24 × 24 px (WCAG 2.5.8)",
+      "ok": true,
+      "detail": "none smaller"
+    },
+    {
+      "check": "D7 components desktop: text contrast in the rendered DOM",
+      "ok": true,
+      "detail": "567 text elements measured (lowest 3.84:1), 18 on gradients skipped, 0 below floor"
+    },
+    {
+      "check": "D8 components: focus ring on every Tab stop",
+      "ok": true,
+      "detail": "61 stops checked, all 2px solid rgb(13,15,18) offset 2px"
+    },
+    {
+      "check": "axe components",
+      "ok": true,
+      "detail": "34 rules passed, 0 violated"
+    },
+    {
+      "check": "404 desktop: unknown path answers 404",
+      "ok": true,
+      "detail": "status 404"
+    },
+    {
+      "check": "D2 notFound desktop: no request leaves http://localhost:4173",
+      "ok": true,
+      "detail": "14 requests, 0 external; fonts: /assets/Geist-latin-DroUUXQz.woff2, /assets/GeistMono-latin-DqhEbPq3.woff2"
+    },
+    {
+      "check": "D8 notFound desktop: primary actions ≥ 44 × 44 px",
+      "ok": true,
+      "detail": "1 primary, smallest 56 px tall"
+    },
+    {
+      "check": "D8 notFound desktop: every target ≥ 24 × 24 px (WCAG 2.5.8)",
+      "ok": true,
+      "detail": "none smaller"
+    },
+    {
+      "check": "D7 notFound desktop: text contrast in the rendered DOM",
+      "ok": true,
+      "detail": "12 text elements measured (lowest 3.84:1), 0 on gradients skipped, 0 below floor"
+    },
+    {
+      "check": "D8 notFound: focus ring on every Tab stop",
+      "ok": true,
+      "detail": "8 stops checked, all 2px solid rgb(13,15,18) offset 2px"
+    },
+    {
+      "check": "axe notFound",
+      "ok": true,
+      "detail": "23 rules passed, 0 violated"
+    },
+    {
+      "check": "D9 with motion: the same pieces move",
+      "ok": true,
+      "detail": "spinner cx-spin, shimmer cx-shim, 5 of 7 canvases changed (each still twin and the forced stills stay fixed)"
+    },
+    {
+      "check": "D9 reduced motion: spinner, shimmer, lens and ripple are still",
+      "ok": true,
+      "detail": "spinner none, shimmer none, 0 of 7 canvases changed"
+    }
+  ]
+}
