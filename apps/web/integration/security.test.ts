@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { APP, Browser, createConfirmedUser, signIn } from "./harness";
+import { APP, Browser, createConfirmedUser, PASSWORD, signIn } from "./harness";
 
 // T5 (issue #9) through the real routes: the production Worker build, the
 // real auth actions and local Supabase.
@@ -45,7 +45,7 @@ describe("CSRF and Origin checks on the sign-in and sign-out mutations", () => {
         form: {
           intent: "password",
           email: user.email,
-          password: "synthetic-Passw0rd-for-tests",
+          password: PASSWORD,
         },
       });
       expect(reply.status).toBe(403);
@@ -61,7 +61,7 @@ describe("CSRF and Origin checks on the sign-in and sign-out mutations", () => {
     const form = {
       intent: "password",
       email: user.email,
-      password: "synthetic-Passw0rd-for-tests",
+      password: PASSWORD,
     };
     expect(
       (await browser.send("/auth/sign-in", { form, csrf: false })).status,
@@ -114,7 +114,7 @@ describe("redirect allowlist on returnTo", () => {
       form: {
         intent: "password",
         email: user.email,
-        password: "synthetic-Passw0rd-for-tests",
+        password: PASSWORD,
         returnTo,
       },
     });
@@ -130,7 +130,7 @@ describe("redirect allowlist on returnTo", () => {
       form: {
         intent: "password",
         email: user.email,
-        password: "synthetic-Passw0rd-for-tests",
+        password: PASSWORD,
         returnTo: "/account?tab=organisations",
       },
     });
@@ -167,7 +167,7 @@ describe("session cookies and server-side validation", () => {
       form: {
         intent: "password",
         email: user.email,
-        password: "synthetic-Passw0rd-for-tests",
+        password: PASSWORD,
       },
     });
     expect(reply.status).toBe(302);

@@ -156,7 +156,8 @@ export function syntheticEmail(label: string): string {
   return `t3-${label}-${randomUUID().slice(0, 8)}@example.test`;
 }
 
-export const PASSWORD = "synthetic-Passw0rd-for-tests";
+// Built at run time: a synthetic password, never a literal in the repo.
+export const PASSWORD = `synthetic-${randomUUID()}`;
 
 export async function createConfirmedUser(
   label: string,
