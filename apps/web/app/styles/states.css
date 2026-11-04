@@ -1,0 +1,380 @@
+/* System states (D-041), ported from planning/design/states/index.html:
+ * the dot-grid lens 404, the hold dial (spinning arc and step ring),
+ * skeletons and the dot-grid ripple. Each has a reduced-motion still. */
+
+@layer components {
+  /* ---------- 404 ---------- */
+  .cx-404 {
+    position: relative;
+    min-height: 100dvh;
+    overflow: hidden;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+  }
+  .cx-404 > canvas.fx {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  /* Before the script runs, and as the no-JS fallback, the CSS dot grid shows. */
+  .cx-404:not([data-live]) {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      var(--dot) 1px,
+      transparent 1.4px
+    );
+    background-size: 24px 24px;
+  }
+  .cx-404 .page {
+    --gut: clamp(16px, 4vw, 48px);
+    position: relative;
+    z-index: 2;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 0 var(--gut) 24px;
+  }
+  .cx-404 .head {
+    height: 88px;
+    display: flex;
+    align-items: center;
+  }
+  .cx-404 .brand {
+    display: block;
+    width: 124px;
+    color: var(--ink);
+  }
+  .cx-404 .brand svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .cx-404 .main {
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 8px 0 24px;
+  }
+  .cx-404 .slot {
+    width: 100%;
+    height: clamp(150px, 30vh, 290px);
+    margin-bottom: 16px;
+  }
+  .cx-404 :is(h1, h2) {
+    font-size: clamp(32px, 4vw, 56px);
+    line-height: 1.04;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    margin: 16px 0 0;
+    text-wrap: balance;
+  }
+  .cx-404 :is(h1, h2) span {
+    display: block;
+  }
+  .cx-404 :is(h1, h2) .grey {
+    color: var(--quiet);
+  }
+  .cx-404 .sub {
+    font-size: clamp(16px, 1.3vw, 18px);
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 30em;
+    margin: 16px 0 0;
+    text-wrap: pretty;
+  }
+  .cx-404 .act {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    margin-top: 32px;
+  }
+  .cx-404 .act .cx-btn {
+    min-height: 56px;
+  }
+  .cx-404 .svc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .cx-404 .svc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  .cx-404 .svc a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 14px 0 6px;
+    border-radius: var(--radius-pill);
+    background: var(--frost);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: var(--sh-1);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--graphite);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .cx-404 .svc a:hover {
+    transform: translateY(-2px);
+  }
+  .cx-404 .svc img {
+    width: 30px;
+    height: 30px;
+    flex: none;
+  }
+  @media (max-width: 600px) {
+    .cx-404 .head {
+      height: 68px;
+    }
+    .cx-404 .brand {
+      width: 112px;
+    }
+    .cx-404 .act {
+      margin-top: 24px;
+      gap: 4px 16px;
+    }
+    .cx-404 .svc a {
+      padding: 0 12px;
+      font-size: 12.5px;
+    }
+    .cx-404 .svc img {
+      display: none;
+    }
+    .cx-404 .svc ul {
+      gap: 6px;
+    }
+  }
+
+  /* ---------- hold dial: spinning arc (in a button) ---------- */
+  .cx-spin {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+  .cx-spin .arc {
+    transform-origin: 50% 50%;
+    animation: cx-spin 1s linear infinite;
+  }
+  @keyframes cx-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* ---------- hold dial: the step ring (a multi-step wait) ---------- */
+  .cx-hd {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .cx-hd .dial {
+    position: relative;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 28%,
+      #fff 0,
+      #f7f6f3 45%,
+      #e9e7e2 100%
+    );
+    box-shadow:
+      inset 0 2px 1px #fff,
+      inset 0 -6px 12px rgba(13, 15, 18, 0.06),
+      var(--sh-2);
+  }
+  .cx-hd svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  .cx-hd .read {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    color: var(--ink);
+  }
+  .cx-hd .read b {
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .cx-hd .read small {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .cx-hd .line {
+    margin: 14px 0 0;
+    min-height: 21px;
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* ---------- skeleton ---------- */
+  .cx-sk {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: rgba(13, 15, 18, 0.06);
+    border-radius: 8px;
+  }
+  .cx-sk::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.85) 50%,
+      transparent 80%
+    );
+    animation: cx-shim 1.9s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes cx-shim {
+    0% {
+      transform: translateX(-100%);
+    }
+    60%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  .cx-skc {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 16px;
+    padding: 14px;
+    border-radius: var(--radius-lg);
+    background: var(--frost);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: var(--sh-1);
+  }
+  .cx-skc .t {
+    height: 96px;
+    border-radius: 16px;
+  }
+  .cx-skc .ls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 6px;
+  }
+  .cx-skc .pills {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .cx-skr {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px 10px 10px;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--hair);
+  }
+  .cx-skr .ls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  @media (max-width: 600px) {
+    .cx-skc {
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 12px;
+      padding: 12px;
+    }
+    .cx-skc .t {
+      height: 72px;
+    }
+  }
+
+  /* ---------- dot-grid ripple (between pages) ---------- */
+  .cx-ripple {
+    position: relative;
+    overflow: hidden;
+    background: var(--canvas);
+  }
+  .cx-ripple.full {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+  }
+  .cx-ripple.box {
+    width: 100%;
+    height: 100%;
+  }
+  .cx-ripple.full .cap {
+    top: calc(50% + clamp(142px, 8vmin + 118px, 172px));
+  }
+  .cx-ripple canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .cx-ripple .cap {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + 62px);
+    transform: translateX(-50%);
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* ---------- reduced motion: the designed stills ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .cx-spin .arc {
+      animation: none;
+    }
+    .cx-sk::after {
+      animation: none;
+      opacity: 0;
+    }
+    .cx-404 .svc a {
+      transition: none;
+    }
+    .cx-404 .svc a:hover {
+      transform: none;
+    }
+  }
+  /* The living page can force the still on any viewer, to compare. */
+  [data-motion="still"] .cx-spin .arc {
+    animation: none;
+  }
+  [data-motion="still"] .cx-sk::after {
+    animation: none;
+    opacity: 0;
+  }
+}

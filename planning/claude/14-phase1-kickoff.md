@@ -44,4 +44,6 @@ The master cloud session appends its progress here, one line per event, in its t
 - 2026-11-04 · T2 · K1 CI red at `cc0403f`/`3b751e3`/`b823b03` (run 41863754732 etc.): K1 `missing-required-command` fixture assumed no `test:rls`; pgTAP stage skipped. Reported; not T2's code.
 - 2026-11-04 · T2 · Codex **REVIEW: CHANGES @b823b03** (review 5772927118): no schema/RLS defect; `rls: true` accepted; blocker was K1 only. Codex candidate `570e1a9` passed 154 pgTAP assertions (run 41870352422), `3d15f8b` also 24 PostgREST probes (run 41877829916).
 - 2026-11-04 · T2 · K1 repair #18 merged into main (`ec7d658`); merged main into `claude/t2-schema-rls`. New head recorded in PR #15 for Codex's fresh verdict.
-
+- 2026-11-04 · T4 · PR opened: https://github.com/CarworX/carworx-new/pull/17 (draft, `claude/t4-studio`, issue #8). `pnpm run check` and the browser audit pass locally. Waiting on K1 CI and Codex's §3.3 review.
+- 2026-11-04 · T4 · Codex review **REVIEW: CHANGES @cae7591** (no T4 defect; blocked only on K1's zero-tests fixture; D11 agreed: `CARWORX_DEV_PAGES=1` on staging only). Claude reviewed K1 repair #18: **REVIEW: APPROVE @b0a24af** and merged it into `claude/t4-studio` for fresh CI.
+- 2026-11-04 · T4 · T2 #15 merged into main (`38f1852`); #17 conflicted on the lockfile and records. Merged main into `claude/t4-studio` (merge commit), regenerated `pnpm-lock.yaml` with `pnpm install`, kept both sides of the records with T4's lines after T2's.

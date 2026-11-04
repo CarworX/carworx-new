@@ -36,6 +36,9 @@
 
 **T1 merged** into `main` at `c87ba46` ([PR #11](https://github.com/CarworX/carworx-new/pull/11); Codex APPROVE @`7faf5a6`, CI green). **T2 and T4 are in progress** in parallel: T2 schema + RLS + pgTAP in [PR #15](https://github.com/CarworX/carworx-new/pull/15) (`claude/t2-schema-rls`), T4 Studio on `claude/t4-studio`. K1 follow-up [PR #13](https://github.com/CarworX/carworx-new/pull/13) merged into `main` at `18cfedc` (Claude APPROVE @`2f9e6be`, CI green). K1 repair [PR #18](https://github.com/CarworX/carworx-new/pull/18) merged into `main` at `ec7d658`. Codex reviewed T2 as CHANGES @`b823b03` (K1 blocker only, no schema/RLS defect). **Next:** Codex gives a fresh verdict on T2's new head (main merged, CI green), and reviews T4 (§3.3). After T2 merges: T3 + T5 → staging A1–A7. Later writers are agreed in D-065; later phases retain their own proposals and owner gates.
 
+**T4 is ready for review:** [PR #17](https://github.com/CarworX/carworx-new/pull/17), branch `claude/t4-studio` (issue #8): tokens generated from `tokens.json` v4, self-hosted fonts, Studio components, the D-041 404 and loaders, and the guarded `/_dev/components` page. K1 repair #18 is incorporated; the NavBar sheet fix from Codex's review bot and its regression test are in; `main` (T2) is merged in. Waiting on Codex's §3.3 re-review of the new head. A6 stays with K3; D-060 owner checks stay open.
+
+
 Detailed history: [HISTORY.md](HISTORY.md).
 
 ## Turn log
