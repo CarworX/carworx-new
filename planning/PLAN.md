@@ -7,7 +7,7 @@
 | Codex sign-off | ☑ Codex, 2026-10-27: R1–R8 resolved; technical plan and §22 pack scope accepted with the recorded 2.1 clarifications. This is not owner approval or permission to build the application. |
 | Colleague review | ☑ 2026-11-02: the owner's two colleagues saw the presentation pack (§22) and asked for no changes (D-037) |
 | Owner approval | ☑ 2026-11-02: approved for **Phase 1 only** (§3), starting local-only (D-038). Every later phase, gate, spend and production release needs separate approval (§21) |
-| Sources | D-001–D-033 in [DECISIONS.md](DECISIONS.md); owner decisions since then: D-034–D-059 |
+| Sources | D-001–D-065 in [DECISIONS.md](DECISIONS.md), including later owner directions and the scoped Codex 09 planning agreements |
 
 **OWNER DECISION** = not decided yet. **GATE** = must be satisfied before the step it guards. **PROPOSED DEFAULT** = a technical or operating default both agents recommend; the owner can change it.
 
@@ -402,7 +402,7 @@ Reporting keeps booked value, completed net value, fees billed, fees reversed an
 
 | Gate | Guards | Requires |
 |---|---|---|
-| **G-PROD** | Free public production site (Phase 2) | production on the Supabase free plan (D-044), with the agreed no-cost backup route running and a plan for pausing; **A7 restore drill passed** (from Phase 1) and re-run if the schema changed; latency measured and region confirmed; section 72 assessment; retention schedule approved (§9.3); Information Officer registered; privacy notice and terms for the free site; incident plan; owner-run release |
+| **G-PROD** | Free public production site (Phase 2) | production on the Supabase free plan (D-044), with the agreed no-cost backup route running and a plan for pausing; **A7 restore drill passed** (from Phase 1) and re-run if the schema changed; latency measured and region confirmed; **D-060 owner checks evidenced: live design-system screenshots, real 200% zoom, phone screen reader, and physical-device/browser checks** (open until evidenced); section 72 assessment; retention schedule approved (§9.3); Information Officer registered; privacy notice and terms for the free site; incident plan; owner-run release |
 | **G-PAY** | Any live collection | Paystack written confirmation of split, settlement, refund and chargeback mechanics; **registered company and business bank account (D-049)**; **the D-050 reserve-plus-recovery process actually funded**, with Paystack confirming that recovery from future payouts works (B4 optional, not a substitute); payment terms cross-referenced against the CPA and ECTA and reviewed by both agents (D-045); A18–A36 passing; restore drill repeated; live keys only in the owner-held production environment |
 | **G-PROVIDER** | Each provider taking live payments | G-PAY; production subaccount verified; provider terms accepted; honest services, resources and capacity; observed test booking |
 | **G-FINES** | Integrated fines lookup | Owner-authorised outreach; production entitlement; coverage and freshness; current legal sources; POPIA (incl. section 57); DPA and security review |
