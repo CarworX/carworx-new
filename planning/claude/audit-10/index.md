@@ -80,7 +80,7 @@ None of these is a design finding. Each affected image was re-captured and reope
 
 | ID | Severity | Finding | Proposed fix and owner |
 |---|---|---|---|
-| G1 | **Important → fixed in the repo mirror (D-066)** | `.cx-chip`, `.cx-slot` and `.cx-btn.outline` drew their edge in `--line` `#dedcd6` (1.37:1 on white), below the Studio 3:1 rule for control edges. **The owner chose darker edges (D-066):** `bundle.css` now uses `--control-edge` `#8b929b` for all three (3.14:1 against the white fill; 2.78:1 against bare canvas, so controls keep their white fill). `tokens.json` usage notes updated. Evidence: `44-G1-Button-after.png`, `44-G1-Chip-after.png`. The earlier rows keep their pre-fix verdicts as a record | **Still to do:** the live design system (needs the owner's OK to publish, with O-2); T4 [#8](https://github.com/CarworX/carworx-new/issues/8) implements it. The closed pack (D-037) keeps its old drawing |
+| G1 | **Important → fixed in the repo mirror (D-066)** | `.cx-chip`, `.cx-slot` and `.cx-btn.outline` drew their edge in `--line` `#dedcd6` (1.37:1 on white), below the Studio 3:1 rule for control edges. **The owner chose darker edges (D-066):** `bundle.css` now uses `--control-edge` `#8b929b` for all three (3.14:1 against the white fill; 2.78:1 against bare canvas, so controls keep their white fill). `tokens.json` usage notes updated. Evidence: `44-G1-Button-after.png`, `44-G1-Chip-after.png`. The earlier rows keep their pre-fix verdicts as a record | **Published** to the live design system version `1793780966-50db` (2026-11-04), with the owner's OK; read back and byte-identical to the repo. T4 [#8](https://github.com/CarworX/carworx-new/issues/8) implements it. The closed pack (D-037) keeps its old drawing |
 | G2 | Minor | The summary's "What it costs" (screen and PDF p4) still lists an attorney; D-045 removed the attorney | Pack copy fix, or keep as a dated snapshot (see G10) |
 | G3 | Minor | The "Quote and invoice header" sample: the mark touches the card's left edge (`invoice-quote-header.svg` has about 20/2400 left margin) | Pad the sample in the pack, or note that the document margin supplies the clear space |
 | G4 | Minor | The "Bottom of a 360 × 640 screen" label covers words of the info note | Move the label clear of the text |
@@ -93,12 +93,12 @@ None of these is a design finding. Each affected image was re-captured and reope
 | G11 | Minor | Mirror: NavBar, ServiceKey and StepList are taller than their declared card heights (380, 560, 360), so their last rows are cut. The live viewer is unverified (BLOCKED) | Raise the declared heights |
 | G12 | Minor | StepList: `bundle.css:166` `.cx-steps .k span{position:absolute…}` also positions the icon, so the number sits on the icon | Target the number only. T4 must not copy the selector |
 | G13 | Minor, documented | `studio/tokens.css` loads fonts from `fonts/…`, which the repo does not have beside it | Documented in `brand/README.md` with F7 (C-c). T4 bundles the fonts |
-| G14 | Minor | The KpiCard card subtitle names another product ("EquipFlow-style") | Reword with the F5 docs clean-up (owner OK to publish) |
+| G14 | Minor | The KpiCard card subtitle names another product ("EquipFlow-style") | **Done:** reworded in the repo and published to the live design system version `1793780966-50db` (2026-11-04) |
 | G15 | Minor | `qa.mjs contrast --approved` measures nothing: its selectors exist only on the concept page | Fix the selectors before T4 relies on the check |
 | G16 | Minor | PDF only: phone figures split across pages; input and outline-button edges don't print; the desktop frames are clipped on the right | Print CSS fix if the PDF is reissued |
 | G17 | Minor | Pack menu button 40 × 40 below 600 px and the logo link 27 px tall, under the 44 px Studio rule | Pack only; the design system's `.cx-menu` is 44 px |
 
-C4 status: **F7 documented** (C-c, `brand/README.md`). **F5 stays open as Minor**: it needs the owner's OK to publish the live design system (O-2), and G14 joins it.
+C4 status: **F7 documented** (C-c, `brand/README.md`). **F5 done** with the owner's OK (O-2): the eight stale generated docs for retired logo concepts (`api/components/Logo{Blocks,Circuit,Gauge,HighBeam,Keyfob,PitSignal,Slipstream,Tread}.md`) were removed from the live design system version `1793780966-50db` (2026-11-04); only `LogoTurbine` remains. The generated `api/assets/Logos.md` still shows the old concept text until the design-system page next rebuilds it. Its source (`assets/Logos/README.md`) is already correct, and the type forbids writing generated files.
 
 ## Blocked rows (owner, before G-PROD, D-060)
 

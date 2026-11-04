@@ -18,6 +18,6 @@ Step-by-step guides for the jobs only the owner can do (D-063). They are in the 
 | 8 | [Where backups go](08-backup-destination.md) | O-10 | K4 hosted drill only | Pending; the local drill doesn't need it (D-059) |
 | 9 | [Your design checks before launch](09-owner-design-checks.md) | D-060 | G-PROD | Later |
 
-The one decision without a guide is **O-2**: whether Claude may publish a clean-up of the live design system (C4 F5). It is a yes or no.
+**O-2** (publishing the live design-system clean-up and the darker control edges) was answered yes on 2026-11-04 and is done.
 
 Screens and menu names in the services' dashboards change from time to time. If a button isn't where a guide says, look for the same words nearby, or ask in chat and describe what you see. Never paste a secret while asking.

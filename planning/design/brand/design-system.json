@@ -908,9 +908,9 @@
   ],
   "lastChange": {
     "by": "Gerrard",
-    "at": "2026-11-03T05:32:07Z",
+    "at": "2026-11-04T08:28:41Z",
     "via": "Claude Code",
-    "note": "HoldDial guideline and StatusNote sample: hold-expiry copy no longer promises that nothing is charged; a payment can still arrive after expiry and goes to reconciliation (PLAN §6.3, Codex 05, Claude 09 F2)."
+    "note": "D-066: chips, time slots and outline buttons use control-edge (3.1:1) instead of line, meeting the 3:1 control rule (C5 G1). KpiCard subtitle reworded (G14). Stale generated docs for retired logo concepts removed (Claude 09 F5)."
   },
   "layout": "files",
   "libraries": [],
