@@ -1,6 +1,7 @@
 // Static checks on the Studio stylesheets: the audit findings T4 must not
 // regress (G1/D-066, G12, focus, targets, reduced motion, no remote URL).
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 
 import { describe, expect, it } from "vitest";
 
@@ -22,7 +23,7 @@ describe("D-066 / G1 control edges", () => {
   it.each([
     ".cx-chip",
     ".cx-slot",
-    ".cx-btn.outline",
+    ".cx-btn.outlined",
     ".cx-input",
     ".cx-box",
     ".cx-seg",
@@ -35,12 +36,40 @@ describe("D-066 / G1 control edges", () => {
     for (const sel of [
       ".cx-chip",
       ".cx-slot",
-      ".cx-btn.outline",
+      ".cx-btn.outlined",
       ".cx-input",
       ".cx-box",
       ".cx-seg",
     ])
       expect(rule(studio, sel)).not.toContain("--line");
+  });
+});
+
+describe("controls keep their white fill", () => {
+  // --control-edge is 3.14:1 on white but about 2.8:1 on canvas and 2.9:1 on
+  // the phone screen ground (contrast tests), so the edge meets 3:1 only
+  // against the control's own surface fill (D-066). Every edged control has one.
+  it.each([
+    ".cx-chip",
+    ".cx-slot",
+    ".cx-btn.outlined",
+    ".cx-input",
+    ".cx-box",
+    ".cx-seg",
+  ])("%s fills with --surface", (sel) => {
+    expect(rule(studio, sel)).toContain("background: var(--surface)");
+  });
+});
+
+describe("text size floor", () => {
+  it("never sets text below 12 px", () => {
+    const sizes = [
+      ...`${studio}\n${states}`.matchAll(
+        /font(?:-size)?:\s*(?:\d{3}\s+)?([\d.]+)px/g,
+      ),
+    ].map((m) => Number(m[1]));
+    expect(sizes.length).toBeGreaterThan(40);
+    expect(sizes.filter((px) => px < 12)).toEqual([]);
   });
 });
 
@@ -116,5 +145,38 @@ describe("no remote assets (G13)", () => {
         readFileSync(new URL(`../../app/styles/fonts/${f}`, import.meta.url))
           .length,
       ).toBeGreaterThan(1000);
+  });
+});
+
+describe("component classes never collide with Tailwind utilities", () => {
+  it("no cx- modifier or part class is also a Tailwind utility", async () => {
+    const { compile } = await import("tailwindcss");
+    const req = createRequire(import.meta.url);
+    const tw = await compile('@import "tailwindcss";', {
+      base: ".",
+      loadStylesheet: (id: string, base: string) => {
+        const path = req.resolve(
+          id === "tailwindcss" ? "tailwindcss/index.css" : id,
+        );
+        return Promise.resolve({
+          path,
+          base,
+          content: readFileSync(path, "utf8"),
+        });
+      },
+    });
+    const names = [
+      ...new Set(
+        [...`${studio}\n${states}`.matchAll(/\.([a-z][a-z0-9-]*)/g)].map(
+          (m) => m[1] ?? "",
+        ),
+      ),
+    ].filter((n) => n && !n.startsWith("cx-"));
+    expect(names.length).toBeGreaterThan(30);
+    const out = tw.build(names);
+    const hits = names.filter((n) => new RegExp(`\\.${n}\\s*\\{`).test(out));
+    // e.g. "outline" gave outline buttons Tailwind's 1 px outline over the focus ring.
+    expect(hits).toEqual([]);
+    expect(tw.build(["outline"])).toMatch(/\.outline\s*\{/); // the probe itself works
   });
 });

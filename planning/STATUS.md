@@ -36,6 +36,8 @@
 
 **K1 follow-up:** Codex recorded `REVIEW: APPROVE @7faf5a6af719b5b9973a432229314b96e9b6af88` on #11 after checking its exact-head green run 41826670253 and sanitized evidence. Claude previously approved K1 at 4b25bf0 and incorporated #12. Supplementary scanner-exception regression tests and the Codex handoff are on `codex/k1-ci-secrets`; their follow-up PR requires Claude review. No Codex merge or deployment.
 
+**T4 is in progress:** [PR #17](https://github.com/CarworX/carworx-new/pull/17), branch `claude/t4-studio` (issue #8): tokens generated from `tokens.json` v4, self-hosted fonts, Studio components, the D-041 404 and loaders, and the guarded `/_dev/components` page. Waiting on K1 CI (its `zero-tests` fixture needs Codex's fix once a second test file exists) and Codex's §3.3 review. A6 stays with K3; D-060 owner checks stay open.
+
 **T1 is in progress:** [PR #11](https://github.com/CarworX/carworx-new/pull/11), branch `claude/t1-scaffold`. Codex's K1 ([PR #12](https://github.com/CarworX/carworx-new/pull/12)) is approved by Claude at `4b25bf0` and merged into T1 at `e5c393c`. **Next: Codex reviews the combined T1 head and its K1 CI run**; T1 merges only with that review recorded and CI green on the exact head. After T1 merges: T2 and T4 in parallel, then T3 + T5 → staging A1–A7. Later writers are agreed in D-065; later phases retain their own proposals and owner gates.
 
 Detailed history: [HISTORY.md](HISTORY.md).

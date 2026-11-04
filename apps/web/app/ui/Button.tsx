@@ -25,9 +25,10 @@ const cls = (
 ) =>
   [
     "cx-btn",
-    variant,
+    // "outline" and "block" are Tailwind utilities too, so the classes differ.
+    variant === "outline" ? "outlined" : variant,
     size === "sm" ? "sm" : "",
-    block ? "block" : "",
+    block ? "wide" : "",
     arrow ? "arrow" : "",
     extra ?? "",
   ]

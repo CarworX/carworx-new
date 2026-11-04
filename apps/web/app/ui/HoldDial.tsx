@@ -59,7 +59,7 @@ export function HoldDial({
       <svg viewBox="0 0 200 200" aria-hidden="true">
         <circle className="track" cx="100" cy="100" r="80" />
         <circle
-          className="ring"
+          className="meter"
           cx="100"
           cy="100"
           r="80"

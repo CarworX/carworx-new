@@ -44,6 +44,35 @@ describe("contrast check (G15)", () => {
     expect(r.failures.some((f) => f.where === "404 · sub line")).toBe(true);
   });
 
+  it("shows why controls keep their white fill: the edge fails on bare grounds", () => {
+    const r = check(tokens(), [
+      {
+        where: "edge on bare canvas",
+        fg: "control-edge",
+        bg: "canvas",
+        kind: "ui",
+      },
+      // .cx-phone .scr ground (bundle.css): linear-gradient(#fafaf8, #f4f3f0)
+      {
+        where: "edge on the phone screen, top",
+        fg: "control-edge",
+        bg: "#fafaf8",
+        kind: "ui",
+      },
+      {
+        where: "edge on the phone screen, bottom",
+        fg: "control-edge",
+        bg: "#f4f3f0",
+        kind: "ui",
+      },
+    ]);
+    // The top of the phone screen just clears 3:1 (3.01); the rest does not.
+    expect(r.failures.map((f) => [f.where, f.ratio])).toEqual([
+      ["edge on bare canvas", 2.78],
+      ["edge on the phone screen, bottom", 2.83],
+    ]);
+  });
+
   it("measuring nothing is a failure", () => {
     expect(check(tokens(), [], []).ok).toBe(false);
   });
