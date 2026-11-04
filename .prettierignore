@@ -1,0 +1,13 @@
+# Generated or vendored
+pnpm-lock.yaml
+**/build/
+**/.react-router/
+**/.wrangler/
+**/worker-configuration.d.ts
+
+# Planning and design records keep their own hand formatting.
+planning/
+design/
+AGENTS.md
+CLAUDE.md
+README.md

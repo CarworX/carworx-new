@@ -1,0 +1,125 @@
+name: K1 CI
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: k1-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  CI: "true"
+  WRANGLER_SEND_METRICS: "false"
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      summary: ${{ steps.report.outputs.summary }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          run_install: false
+      - name: Verify head, pins and suite activation
+        run: node scripts/ci/checks.js init
+      - name: Frozen dependency install
+        run: node scripts/ci/checks.js install
+      - name: CI failure-case tests
+        run: node scripts/ci/checks.js selftest
+      - name: Lint
+        run: node scripts/ci/checks.js lint
+      - name: Format
+        run: node scripts/ci/checks.js format
+      - name: Types
+        run: node scripts/ci/checks.js typecheck
+      - name: Unit tests and report validation
+        run: node scripts/ci/checks.js unit
+      - name: Build
+        run: node scripts/ci/checks.js build
+      - name: Actual tool failure fixtures in an isolated worktree
+        run: node scripts/ci/checks.js adversarial
+      - name: Required database and Auth suites
+        run: node scripts/ci/checks.js future
+      - name: Assemble sanitized check evidence
+        id: report
+        if: always()
+        run: node scripts/ci/checks.js finish
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        if: always()
+        with:
+          name: k1-checks-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/k1-evidence/checks.json
+          retention-days: 7
+          if-no-files-found: error
+
+  secrets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      summary: ${{ steps.report.outputs.summary }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: Verify scanner checksum and adversarial fixtures
+        run: node scripts/ci/secrets.js setup
+      - name: All history reachable from tested head
+        run: node scripts/ci/secrets.js history
+      - name: Clean checkout before dependency installation
+        run: node scripts/ci/secrets.js checkout
+      - name: Assemble sanitized scanner evidence
+        id: report
+        if: always()
+        run: node scripts/ci/secrets.js finish
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        if: always()
+        with:
+          name: k1-secrets-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/k1-evidence/secrets.json
+          retention-days: 7
+          if-no-files-found: error
+
+  ci:
+    if: always()
+    needs: [checks, secrets]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require successful evidence and current PR head
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/ci/gate.js
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        if: always()
+        with:
+          name: k1-gate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/k1-evidence/gate.json
+          retention-days: 7
+          if-no-files-found: error
