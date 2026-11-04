@@ -8,7 +8,8 @@
     "pnpm": "12.16.1"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings=0",
+    "typegen": "pnpm --recursive --workspace-concurrency=1 run typegen",
+    "lint": "pnpm run typegen && eslint . --max-warnings=0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "pnpm --recursive --workspace-concurrency=1 run typecheck",
