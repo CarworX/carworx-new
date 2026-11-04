@@ -8,9 +8,12 @@
     "typecheck": "pnpm run typegen && tsc --build",
     "test": "vitest run",
     "build": "react-router build",
-    "preview": "pnpm run build && vite preview"
+    "preview": "pnpm run build && vite preview",
+    "test:integration": "react-router build && vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.118.0",
     "isbot": "5.2.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",

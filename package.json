@@ -15,6 +15,7 @@
     "typecheck": "pnpm --recursive --workspace-concurrency=1 run typecheck",
     "test": "pnpm --recursive --workspace-concurrency=1 run test",
     "test:rls": "node supabase/tests/run-rls.js",
+    "test:integration": "pnpm --filter @carworx/web run test:integration",
     "build": "pnpm --recursive --workspace-concurrency=1 run build",
     "check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test && pnpm run build"
   },
