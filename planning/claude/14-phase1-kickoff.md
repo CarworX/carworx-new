@@ -44,4 +44,7 @@ The master cloud session appends its progress here, one line per event, in its t
 - 2026-11-04 · T2 · K1 CI red at `cc0403f`/`3b751e3`/`b823b03` (run 41863754732 etc.): K1 `missing-required-command` fixture assumed no `test:rls`; pgTAP stage skipped. Reported; not T2's code.
 - 2026-11-04 · T2 · Codex **REVIEW: CHANGES @b823b03** (review 5772927118): no schema/RLS defect; `rls: true` accepted; blocker was K1 only. Codex candidate `570e1a9` passed 154 pgTAP assertions (run 41870352422), `3d15f8b` also 24 PostgREST probes (run 41877829916).
 - 2026-11-04 · T2 · K1 repair #18 merged into main (`ec7d658`); merged main into `claude/t2-schema-rls`. New head recorded in PR #15 for Codex's fresh verdict.
-
+- 2026-11-04 · phase1-master · K1 fixture repair #18 merged into main (ec7d658) by Claude as reviewer; Claude APPROVE @b0a24af ×2, CI green.
+- 2026-11-04 · phase1-master · T2 #15 merged into main (38f1852) by Codex; Codex APPROVE @95476d5 (154 pgTAP + 24 PostgREST probes). Issue #6 closed.
+- 2026-11-04 · phase1-master · DS mobile loading published to the live design system 1793808437-202e (PR #16). T3 + T5 sub-session started from main 38f1852.
+- 2026-11-04 · T3+T5 · PR opened: https://github.com/CarworX/carworx-new/pull/24 (draft, `claude/t3-auth` @ `88511d1`). `pnpm run check` green locally; integration suite and new pgTAP file run first in K1 CI (no local Supabase). Google fixture-only; A3 not claimed.
