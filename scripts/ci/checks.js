@@ -145,7 +145,15 @@ function runFuture() {
             readFileSync(join(dir, `${relative(sqlRoot, source)}.tap`), "utf8"),
           ),
         );
+        const restReport = join(privateRoot, "rls-rest.json");
+        command(process.execPath, ["scripts/ci/t2-rest-review.js"], {
+          ...quiet,
+          env: { ...process.env, CI_RLS_REST_REPORT: restReport },
+        });
+        const rest = readJson(restReport);
+        invariant(rest.status === "passed" && rest.tests > 0, "REST review evidence missing");
         return {
+          rest_tests: rest.tests,
           tests: results.reduce((sum, result) => sum + result.tests, 0),
           files: results.length,
         };
