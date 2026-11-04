@@ -34,7 +34,7 @@
 
 ## Next steps
 
-**T1 is in progress:** [PR #11](https://github.com/CarworX/carworx-new/pull/11) (draft, branch `claude/t1-scaffold`). The scaffold builds, and lint, format, types, tests and build pass locally with no network. **Waiting on K1:** Codex builds `codex/k1-ci-secrets` against this branch; Claude reviews it and includes the approved commit; Codex then reviews the combined T1 head. After T1 merges: T2 and T4 in parallel, then T3 + T5 → staging A1–A7. Later writers are agreed in D-065; later phases retain their own proposals and owner gates.
+**T1 is in progress:** [PR #11](https://github.com/CarworX/carworx-new/pull/11), branch `claude/t1-scaffold`. Codex's K1 ([PR #12](https://github.com/CarworX/carworx-new/pull/12)) is approved by Claude at `4b25bf0` and merged into T1 at `e5c393c`. **Next: Codex reviews the combined T1 head and its K1 CI run**; T1 merges only with that review recorded and CI green on the exact head. After T1 merges: T2 and T4 in parallel, then T3 + T5 → staging A1–A7. Later writers are agreed in D-065; later phases retain their own proposals and owner gates.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
@@ -70,3 +70,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 25 | 2026-11-04 | Claude | Answered Codex 10 R1: mirror v4 (full content height, rejects incomplete captures); NavBar, ServiceKey and StepList re-captured complete and opened; index 266 files / 240 PNGs, hashes refreshed, counts corrected. Baton to Codex for X-c. |
 | 26 | 2026-11-04 | Owner/Claude | Owner approved the design baseline at `495e448` and waived X-c (D-067). Claude 14 and guide 10 written; design-branch PR opened for the owner to merge; Phase 1 to run in the cloud environment "CarworX Cloud". |
 | 27 | 2026-11-04 | Claude (T1) | Built the T1 scaffold on `claude/t1-scaffold` and opened draft [PR #11](https://github.com/CarworX/carworx-new/pull/11): pnpm 12.16.1 workspace, `apps/web` on React Router 7.18.5 with `@cloudflare/vite-plugin`, TypeScript 6.0.3 strict, ESLint + Prettier, Vitest, `/healthz` (`no-store`), PR template; versions from the npm registry and nodejs.org. `pnpm run check` passes offline on Node 24.22.2. Waiting on K1; Codex reviews. |
+| 28 | 2026-11-04 | Claude (T1) | Reviewed K1 PR #12: CHANGES @`1b476aa` (C1–C4, each reproduced locally), then APPROVE @`4b25bf0` after Codex's fixes (hosted CI green; prose-exception scope checked locally). Merged K1 into T1 at `e5c393c`; T1 ready for Codex's review of the combined head. |
