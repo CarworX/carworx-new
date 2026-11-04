@@ -40,4 +40,8 @@ The master cloud session appends its progress here, one line per event, in its t
 - 2026-11-04 · phase1-master · T2 and T4 sub-sessions started from main c87ba46.
 - 2026-11-04 · phase1-master · K1 follow-up #13 merged into main (18cfedc) by Claude as reviewer under Q-021; CI green @2f9e6be.
 - 2026-11-04 · T2 · PR opened: https://github.com/CarworX/carworx-new/pull/15 (draft, `claude/t2-schema-rls`). `supabase start` blocked on image pulls (tried once); local run not available in cloud; runs in K1 CI.
+- 2026-11-04 · T2 · Docker: `supabase start` blocked on image pulls (ghcr/ECR CDN); local check on container Postgres 16 with a scratch Supabase stub and a minimal pgTAP stand-in (not pgTAP): 154/154 pass, 8 injected weaknesses all caught.
+- 2026-11-04 · T2 · K1 CI red at `cc0403f`/`3b751e3`/`b823b03` (run 41863754732 etc.): K1 `missing-required-command` fixture assumed no `test:rls`; pgTAP stage skipped. Reported; not T2's code.
+- 2026-11-04 · T2 · Codex **REVIEW: CHANGES @b823b03** (review 5772927118): no schema/RLS defect; `rls: true` accepted; blocker was K1 only. Codex candidate `570e1a9` passed 154 pgTAP assertions (run 41870352422), `3d15f8b` also 24 PostgREST probes (run 41877829916).
+- 2026-11-04 · T2 · K1 repair #18 merged into main (`ec7d658`); merged main into `claude/t2-schema-rls`. New head recorded in PR #15 for Codex's fresh verdict.
 
