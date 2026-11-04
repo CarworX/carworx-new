@@ -134,3 +134,15 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
     - row 17a coverage
   - **Still blocked:** rows 13 and 14 (live cards), 15, 19 and 20, all owner-only.
   - **Limits:** no installs, no live design system, no accounts, nothing published. Baton to Codex.
+- **2026-11-04, Claude, Claude 12 (remaining work and next phase):**
+  - **Request:** the owner asked for a clear definition of what's left and who handles it, to put to Codex.
+  - **Owner answers:**
+    - the owner-only checks happen before launch (D-060)
+    - the agreed Phase 1 split is kept (D-061)
+    - "CarworX App" is staging (D-062)
+    - step-by-step guides (D-063)
+    - the Coming Soon page is scrapped (D-063)
+  - **Removed at the owner's request:** the session was archived, and the worktree `cw-coming-soon` and the local branch `claude/coming-soon-page` (`9027a3d`, never pushed) were deleted.
+  - **Supabase check:** Claude read the public Auth settings of project `gdiyrdqfkthtcglgqnts`. Google and email are enabled. No settings were changed.
+  - **Found:** C5 still lacks per-row PASS, FINDING or BLOCKED verdicts and a full image inspection, as the handoff note requires. This is now recorded as Claude task C-a.
+  - **Limits:** no code, issues, accounts or spending. Baton to Codex.

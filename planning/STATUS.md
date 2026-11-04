@@ -2,17 +2,20 @@
 
 ## 🟢 Baton: **CODEX**
 
-The **C5 evidence package** is published in [`claude/audit-10/`](claude/audit-10/index.md) (turn 20), with the owner's OK to run the repo scripts on an isolated copy:
-- **Source:** `git archive 5a805b3`.
-- **Routes:** E, S1, S3, Q, C, M and P.
-- **Contents:** 259 files, each with a SHA-256.
-- **Counts:** the count check matched (8 phone figures and 31 state panels), and no crop came out blank. Route M resolved all 41 `/_blob/` ids for the 21 mirror cards.
-- **Observations:** five are listed for Codex in the index. They are not findings yet.
-- **Owner-only rows:** 13 and 14 (live cards), 15, 19 and 20 stay BLOCKED until the owner does them (route O).
+**For Codex now:** [Claude 12](claude/12-remaining-work-and-next-phase.md) defines what's left, who does it, and the next phase (turn 21). The owner puts it to Codex for approval (X-a), together with the confirmation of the Codex 08 corrections at `5a805b3` (X-b).
 
-**Codex next:** review the Codex 08 correction delta (`5a805b3`) and the C5 package together, then judge each row.
+**After approval:**
+1. Claude finishes C5's per-row verdicts and measurements, and C4 (C-a to C-d; F5 needs the owner's OK to publish).
+2. Codex reviews the design baseline (X-c).
+3. The owner merges the design branch (O-3).
+4. Phase 1 starts under the agreed split (D-061).
 
-**Still with Claude:** C4, the mirror and API gaps (F5, F7). Live publication needs the owner's OK.
+**Recorded today:**
+- **D-060:** the owner-only checks happen before G-PROD.
+- **D-062:** "CarworX App" is staging, with Google sign-in on.
+- **D-063:** step-by-step owner guides. The Coming Soon page is scrapped.
+
+The C5 package (`claude/audit-10/`, turn 20) stays as saved evidence. Its verdicts are still to come.
 
 The owner directions D-042–D-057 stand. This documentation review does not give full visual design sign-off. The owner merges the design branch after that review; Phase 1 then starts local-only under D-038 and the §15 prerequisites.
 
@@ -79,3 +82,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 19 | 2026-11-03 | Codex | Reviewed `280373e`: Claude 09 R2/R3 accepted, R1 state selectors remain; Claude 10/11 AGREE WITH CHANGES for Google prerequisites, security/backup evidence, current PLAN records and fee-exposed revenue cohorts. Published [Codex 08](codex/08-phase1-and-revenue-review.md); baton to Claude. Full visual/merge sign-off pending. |
 | 19 | 2026-11-03 | Claude | Responded to Codex 08: Claude 09 R1 (31 state panels, count checks), Claude 10 B1–B3, ownership and CI bootstrap agreed (§10), Claude 11 V1/V2 (§10), PLAN S1 reconciled; recorded D-058 and D-059. C4 and C5 still to do; baton stays with Claude. |
 | 20 | 2026-11-04 | Claude | Built the C5 evidence package in `claude/audit-10/` from `git archive 5a805b3` (routes E, S1, S3, Q, C, M, P; 259 files with SHA-256). Counts matched (8 phones, 31 state panels), the blank check was clean and all 41 mirror blob ids resolved. Five observations and the BLOCKED rows are listed. Baton to Codex for review. |
+| 21 | 2026-11-04 | Claude | Published [Claude 12](claude/12-remaining-work-and-next-phase.md): what's left before Phase 1 by Claude, Codex and the owner; Phase 1 under the agreed split; later work with proposed writers. Recorded D-060–D-063 (owner checks before G-PROD, split kept, "CarworX App" is staging with Google on, owner guides, Coming Soon scrapped). Baton to Codex for approval. |
