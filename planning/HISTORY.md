@@ -193,3 +193,12 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - The owner approved the design baseline at `495e448` and waived Codex's final X-c sign-off for this gate. Codex still reviews every Phase 1 pull request.
 - The owner created the Claude cloud environment "CarworX Cloud". Phase 1 runs there: a master session `phase1-master`, and one sub-session per task where possible.
 - Claude wrote Claude 14 (kick-off) and owner guide 10, and opened the design-branch pull request for the owner to merge.
+
+## 2026-11-04 — Claude T1: monorepo scaffold (draft PR #11)
+
+- Base `ed20950` (PR #10 merged by Claude on the owner's explicit instruction in the `phase1-master` session). Branch `claude/t1-scaffold`, sub-session of `phase1-master`.
+- Built: pnpm workspace; `apps/web` on React Router 7.18.5 and `@cloudflare/vite-plugin` 1.67.0 (Cloudflare's official starter layout, without Tailwind, which is T4's); TypeScript strict; ESLint + Prettier; Vitest; `GET /healthz` (fixed JSON, `Cache-Control: no-store`) with three unit tests; PR template; `.gitignore`; names-only `.env.example`. Minimal `wrangler.jsonc` because the build needs it; K2 owns it from here.
+- Versions: exact pins read from the npm registry, nodejs.org and Cloudflare's template on 2026-11-04 and listed in the PR. React Router stays on v7 (agreed contract) though v8 is `latest`; TypeScript 6.0.3 because React Router 7 and typescript-eslint don't accept 7.x; wrangler 4.156.1 (the version the Vite plugin bundles, and old enough for pnpm's release-age check).
+- Checks: Node 24.22.2 (official tarball, SHA-256 verified) in the container, which has Node 22 installed. `pnpm run check` passes, also inside a network namespace with no interfaces. Each script fails on an injected fault, including zero test files. `/healthz` checked in workerd with `vite preview`.
+- Limits: no CI workflow (K1), no deploys, accounts, settings, secrets or spending. A1 is base only until K1's CI runs on the combined head.
+

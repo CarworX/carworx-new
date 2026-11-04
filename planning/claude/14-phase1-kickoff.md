@@ -28,3 +28,8 @@ Phase 1 runs in Claude's cloud environment **CarworX Cloud** (owner guide 10).
 ## 3. Log
 
 The master cloud session appends its progress here, one line per event, in its task pull requests.
+
+- 2026-11-04 · phase1-master · PR #10 merged into main (ed20950) by Claude on the owner's explicit instruction in the phase1-master session.
+- 2026-11-04 · phase1-master · Sub-sessions available: one per task. Docker daemon not running in the cloud container (binary present); T2 will try to start it, else pgTAP runs in K1 CI.
+- 2026-11-04 · T1 · PR opened: https://github.com/CarworX/carworx-new/pull/11 (draft, `claude/t1-scaffold`). Scaffold builds; `pnpm run check` passes locally with no network. Waiting on K1 (`codex/k1-ci-secrets`).
+

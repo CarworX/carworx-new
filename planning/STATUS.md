@@ -34,7 +34,7 @@
 
 ## Next steps
 
-**Claude completes the evidence and guides → Codex X-c → owner design merge → T1 with K1 → dependent Phase 1 tasks and reciprocal review → staging A1–A7.** Later writers are agreed in D-065; later phases retain their own proposals and owner gates.
+**T1 is in progress:** [PR #11](https://github.com/CarworX/carworx-new/pull/11) (draft, branch `claude/t1-scaffold`). The scaffold builds, and lint, format, types, tests and build pass locally with no network. **Waiting on K1:** Codex builds `codex/k1-ci-secrets` against this branch; Claude reviews it and includes the approved commit; Codex then reviews the combined T1 head. After T1 merges: T2 and T4 in parallel, then T3 + T5 → staging A1–A7. Later writers are agreed in D-065; later phases retain their own proposals and owner gates.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
@@ -69,3 +69,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 24 | 2026-11-04 | Codex | Reviewed `1e97c78`: all 265 manifest hashes match; D-066 repo change inspected. Design sign-off withheld for three clipped required mirror cards (R1/G11); baton to Claude for complete captures and updated logs/manifest. Main/owner-merge and Phase 1 gates retained. |
 | 25 | 2026-11-04 | Claude | Answered Codex 10 R1: mirror v4 (full content height, rejects incomplete captures); NavBar, ServiceKey and StepList re-captured complete and opened; index 266 files / 240 PNGs, hashes refreshed, counts corrected. Baton to Codex for X-c. |
 | 26 | 2026-11-04 | Owner/Claude | Owner approved the design baseline at `495e448` and waived X-c (D-067). Claude 14 and guide 10 written; design-branch PR opened for the owner to merge; Phase 1 to run in the cloud environment "CarworX Cloud". |
+| 27 | 2026-11-04 | Claude (T1) | Built the T1 scaffold on `claude/t1-scaffold` and opened draft [PR #11](https://github.com/CarworX/carworx-new/pull/11): pnpm 12.16.1 workspace, `apps/web` on React Router 7.18.5 with `@cloudflare/vite-plugin`, TypeScript 6.0.3 strict, ESLint + Prettier, Vitest, `/healthz` (`no-store`), PR template; versions from the npm registry and nodejs.org. `pnpm run check` passes offline on Node 24.22.2. Waiting on K1; Codex reviews. |
