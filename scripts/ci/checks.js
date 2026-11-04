@@ -151,7 +151,10 @@ function runFuture() {
           env: { ...process.env, CI_RLS_REST_REPORT: restReport },
         });
         const rest = readJson(restReport);
-        invariant(rest.status === "passed" && rest.tests > 0, "REST review evidence missing");
+        invariant(
+          rest.status === "passed" && rest.tests > 0,
+          "REST review evidence missing",
+        );
         return {
           rest_tests: rest.tests,
           tests: results.reduce((sum, result) => sum + result.tests, 0),
