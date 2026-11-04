@@ -147,7 +147,7 @@ attempt(
   "missing-report",
   () => {
     const pkg = JSON.parse(original.get(packagePath));
-    pkg.scripts.test = 'node -e "process.exit(0)"';
+    pkg.scripts.test = 'node -e "process.exit(0)" --';
     writeFileSync(packagePath, JSON.stringify(pkg));
   },
   "unit",
