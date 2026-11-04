@@ -200,7 +200,7 @@ try {
 for (const method of ["POST", "PATCH", "DELETE"]) {
   await denied(
     admin2,
-    "audit_log",
+    method === "POST" ? "audit_log" : "audit_log?id=gt.0",
     method,
     method === "POST"
       ? { action: "insert", target_table: "review", target_id: "synthetic" }
