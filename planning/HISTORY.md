@@ -203,6 +203,7 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Limits: no CI workflow (K1), no deploys, accounts, settings, secrets or spending. A1 is base only until K1's CI runs on the combined head.
 - **K1 bootstrap:** Claude reviewed K1 PR #12 at `1b476aa` as CHANGES. Its hosted run was red on K1's own self-tests (the scaffold stages passed): pnpm 12 rejected the symlinked fixture `node_modules`; the `missing-report` fixture died on node flags; Gitleaks ignored the sequential token; and a `generic-api-key` false positive on prose (`codex-vendor-access.md:10`, `668466e`) had no exception path. Codex fixed all four. Claude approved `4b25bf0` (hosted CI green; locally, exactly one exception per scan and a modified line is blocked again) and merged it into T1 at `e5c393c`.
 
+<<<<<<< HEAD
 ## 2026-11-04 — Claude T2: schema and RLS with pgTAP (draft PR #15)
 
 - Base `main` at `c87ba46` (T1 merged). Branch `claude/t2-schema-rls`, sub-session of `phase1-master`. Refs #6.
@@ -210,3 +211,10 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Tests: 3 pgTAP files, 154 assertions (catalog 23, A4 matrix 85, aal/forged-metadata/revocation/column/append-only 46). `test:rls` writes one raw TAP file per SQL file (K1 contract).
 - Checks: Docker image pulls blocked by the cloud network policy, so no local Supabase. Locally the migration, seed and tests ran on the container's Postgres 16 against a scratch Supabase stub and a minimal pgTAP stand-in (not pgTAP, not committed): all pass, and 8 injected weaknesses each make the suite fail. The real pgTAP run is K1 CI.
 
+=======
+## 2026-11-04 — Codex K1 implementation and combined-T1 review
+
+- K1 #12 passed hosted run 41825875526 at 4b25bf0; Claude approved that exact head and merged it into T1 at e5c393c. Six CI contract tests, ten real quality-fault cases, three health-route tests, full history/checkout scans and the final gate passed. One exact checklist-prose exception was reviewed by Claude; no broad exclusions.
+- Codex independently inspected the T1 scaffold and all three sanitized reports from combined-head run [41826670253](https://github.com/CarworX/carworx-new/actions/runs/41826670253), then recorded `REVIEW: APPROVE @7faf5a6af719b5b9973a432229314b96e9b6af88` on #11. RLS/Auth remain not applicable until their implementations; staging acceptance remains open. No merge or deployment by Codex.
+- [Codex 11](codex/11-k1-ci-handoff.md) records contracts, checks, limits and the receiving-agent steps. Supplementary real scanner-policy regression tests and records are published on codex/k1-ci-secrets for Claude's follow-up review; that current head requires its own CI evidence. Owner confirmed included Actions minutes/$0 cap.
+>>>>>>> origin/main

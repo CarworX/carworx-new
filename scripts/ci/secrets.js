@@ -216,7 +216,43 @@ export function scannerFixtures(binary) {
     rejected = true;
   }
   invariant(rejected, "Incorrect checksum was accepted");
-  return { cases: 5 };
+  // Exercise the exact prose exception with the real scanner, including credentials
+  // in the same document and on the exception's own line. Nothing is allowlisted by path.
+  const prose = readFileSync(PROSE_FILE, "utf8").split(/\r?\n/)[9];
+  invariant(
+    createHash("sha256")
+      .update(prose ?? "")
+      .digest("hex") === PROSE_DIGEST,
+    "Prose fixture source changed",
+  );
+  mkdirSync(join(repo, "planning", "research"), { recursive: true });
+  const prosePath = join(repo, PROSE_FILE);
+  writeFileSync(prosePath, `${"\n".repeat(9)}${prose}\n`);
+  const applied = [];
+  invariant(
+    scan(binary, "checkout", repo, privateDir("k1-fixture-prose-"), applied)
+      .length === 0 && applied.length === 1,
+    "Exact prose exception fixture failed",
+  );
+  writeFileSync(prosePath, `${"\n".repeat(9)}${prose}\ncredential=${token}\n`);
+  invariant(
+    scan(binary, "checkout", repo, privateDir("k1-fixture-prose-secret-"))
+      .length > 0,
+    "Credential in prose document escaped scanning",
+  );
+  writeFileSync(prosePath, `${"\n".repeat(9)}${prose} ${token}\n`);
+  const changedLine = [];
+  invariant(
+    scan(
+      binary,
+      "checkout",
+      repo,
+      privateDir("k1-fixture-changed-prose-"),
+      changedLine,
+    ).length > 0 && changedLine.length === 0,
+    "Changed prose line escaped scanning",
+  );
+  return { cases: 8 };
 }
 
 async function main() {

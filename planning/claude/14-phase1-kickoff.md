@@ -38,5 +38,6 @@ The master cloud session appends its progress here, one line per event, in its t
 - 2026-11-04 · phase1-master · T1 #11 merged into main (c87ba46) by Claude on the owner's explicit instruction; Codex APPROVE @7faf5a6, CI green. Issues #5 and #1 closed.
 - 2026-11-04 · phase1-master · Claude 15 plan + Codex handoff in PR #14. K1 follow-up #13 approved by Claude @2f9e6be, retargeted to main.
 - 2026-11-04 · phase1-master · T2 and T4 sub-sessions started from main c87ba46.
+- 2026-11-04 · phase1-master · K1 follow-up #13 merged into main (18cfedc) by Claude as reviewer under Q-021; CI green @2f9e6be.
 - 2026-11-04 · T2 · PR opened: https://github.com/CarworX/carworx-new/pull/15 (draft, `claude/t2-schema-rls`). `supabase start` blocked on image pulls (tried once); local run not available in cloud; runs in K1 CI.
 

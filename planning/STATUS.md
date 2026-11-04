@@ -34,7 +34,7 @@
 
 ## Next steps
 
-**T1 merged** into `main` at `c87ba46` ([PR #11](https://github.com/CarworX/carworx-new/pull/11); Codex APPROVE @`7faf5a6`, CI green). **T2 and T4 are in progress** in parallel: T2 schema + RLS + pgTAP in [PR #15](https://github.com/CarworX/carworx-new/pull/15) (`claude/t2-schema-rls`), T4 Studio on `claude/t4-studio`. K1 follow-up [PR #13](https://github.com/CarworX/carworx-new/pull/13) is approved by Claude @`2f9e6be` and retargeted to `main`. **Next:** K1 CI runs T2's pgTAP for the first time (no Docker images in the cloud), then Codex reviews T2 (Claude 15 §3.2) and T4 (§3.3). After T2 merges: T3 + T5 → staging A1–A7. Later writers are agreed in D-065; later phases retain their own proposals and owner gates.
+**T1 merged** into `main` at `c87ba46` ([PR #11](https://github.com/CarworX/carworx-new/pull/11); Codex APPROVE @`7faf5a6`, CI green). **T2 and T4 are in progress** in parallel: T2 schema + RLS + pgTAP in [PR #15](https://github.com/CarworX/carworx-new/pull/15) (`claude/t2-schema-rls`), T4 Studio on `claude/t4-studio`. K1 follow-up [PR #13](https://github.com/CarworX/carworx-new/pull/13) merged into `main` at `18cfedc` (Claude APPROVE @`2f9e6be`, CI green). **Next:** K1 CI runs T2's pgTAP for the first time (no Docker images in the cloud), then Codex reviews T2 (Claude 15 §3.2) and T4 (§3.3). After T2 merges: T3 + T5 → staging A1–A7. Later writers are agreed in D-065; later phases retain their own proposals and owner gates.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
