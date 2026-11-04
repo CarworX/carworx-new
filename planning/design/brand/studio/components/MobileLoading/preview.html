@@ -1,0 +1,214 @@
+<!-- @dsCard group="States" height=2400 width=1600 subtitle="Loading on a phone: the ripple between pages, the hold dial for a watched search, skeletons for results and the button arc while a held booking starts payment. With the reduced-motion stills." -->
+<div class="cx-canvas ml">
+<style>
+.ml{padding:40px 24px 48px;min-height:100%;box-sizing:border-box}
+.ml *,.ml *::before,.ml *::after{box-sizing:border-box}
+.ml .ml-h{max-width:1520px;margin:0 auto 28px}
+.ml .ml-eb{margin:0 0 10px;font:500 12px/17px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ml .ml-h h2{margin:0;font:500 32px/36px var(--font-sans);letter-spacing:-.03em;text-wrap:balance}
+.ml .ml-h h2 span{color:var(--quiet)}
+.ml .ml-row{max-width:1520px;margin:0 auto 112px}
+.ml .ml-row>h3{margin:0 0 4px;font:500 22px/28px var(--font-sans);letter-spacing:-.02em}
+.ml .ml-row>p{margin:0 0 20px;font:400 14px/21px var(--font-sans);color:var(--muted);max-width:720px;text-wrap:pretty}
+.ml .ml-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:112px 24px;justify-items:center}
+.ml figure{margin:0;width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px}
+.ml figcaption{display:grid;gap:2px;align-content:start;min-height:120px}
+.ml .cx-phone .sb .c{font-size:12px}
+.ml figcaption b{font:500 17px/1.25 var(--font-sans);letter-spacing:-.01em}
+.ml figcaption small{font:400 13px/18px var(--font-sans);color:var(--muted);text-wrap:pretty}
+.ml .cx-phone>.scr{display:flex;flex-direction:column;height:720px}
+.ml .bd{flex:1;min-height:0;align-content:start}
+.ml .ab .btn{flex:none}
+.ml .chips{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--hair);box-shadow:var(--sh-1)}
+.ml .cap{margin:0;font:400 13px/18px var(--font-sans);color:var(--muted)}
+.ml .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* 01 between pages: the dot-grid ripple */
+.ml .rip{position:relative;flex:1;min-height:0;background:var(--canvas)}
+.ml .rip canvas{position:absolute;inset:0;display:block}
+.ml .rcap{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100% - 32px);margin:0;display:grid;gap:4px;padding:8px 14px;border-radius:var(--radius-sm);background:var(--canvas);text-align:center}
+.ml .rcap .t{font:500 12px/17px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ml .rcap .l{font:400 15px/21px var(--font-sans);color:var(--ink)}
+/* 02 a wait the user is watching: the hold dial (blue, never signal) */
+.ml .watch{display:flex;flex-direction:column;align-items:center;padding:24px 16px 20px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--hair);box-shadow:var(--sh-1)}
+.ml .watch .cx-btn{margin-top:20px}
+.ml .hd{position:relative;border-radius:50%;background:radial-gradient(circle at 35% 28%,var(--white) 0,#f7f6f3 45%,var(--canvas-2) 100%);box-shadow:inset 0 2px 1px var(--white),inset 0 -6px 12px rgba(13,15,18,.06),var(--sh-2)}
+.ml .hd svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ml .hd .read{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-mono);color:var(--ink)}
+.ml .hd .read b{font-weight:500;font-size:20px;letter-spacing:-.03em;line-height:1}
+.ml .hd .read small{font-size:12px;letter-spacing:.08em;color:var(--muted);margin-top:8px}
+.ml .roll{position:relative;overflow:hidden;height:24px;width:100%;margin-top:24px;text-align:center;font:400 15px/24px var(--font-sans);color:var(--graphite)}
+.ml .roll span{position:absolute;left:0;right:0;top:0;white-space:nowrap;transition:transform .7s cubic-bezier(.16,1,.3,1),opacity .7s cubic-bezier(.16,1,.3,1)}
+.ml .roll span.in{transform:translateY(0);opacity:1}
+.ml .roll span.wait{transform:translateY(100%);opacity:0}
+.ml .roll span.out{transform:translateY(-100%);opacity:0}
+.ml .steps{display:flex;gap:6px;margin-top:12px}
+.ml .steps i{display:block;width:28px;height:4px;border-radius:2px;background:rgba(13,15,18,.08);overflow:hidden;position:relative}
+.ml .steps i::after{content:"";position:absolute;inset:0;background:var(--blue);transform-origin:0 50%;transform:scaleX(var(--f,0))}
+/* 03 layout known: skeletons */
+.ml .sk{position:relative;overflow:hidden;display:block;background:rgba(13,15,18,.06);border-radius:8px}
+.ml .sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.85) 50%,transparent 80%);animation:mlshim 1.9s cubic-bezier(.45,0,.25,1) infinite;animation-delay:var(--d,0s)}
+@keyframes mlshim{0%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
+.ml .skc{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;padding:12px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--hair);box-shadow:var(--sh-1)}
+.ml .skc .t{height:72px;border-radius:12px}
+.ml .skc .ls{display:flex;flex-direction:column;gap:9px;padding-top:4px}
+.ml .skc .ls .row{display:flex;gap:8px;margin-top:4px}
+.ml .list{display:grid;gap:10px}
+/* 04 held booking, starting payment */
+.ml .tile{display:grid;gap:2px;padding:14px 16px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--hair);box-shadow:var(--sh-1)}
+.ml .tile b{font:500 15px/1.3 var(--font-sans)}
+.ml .tile small{font:400 13px/18px var(--font-sans);color:var(--muted)}
+.ml .tile .pr{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;font:500 15px/20px var(--font-mono)}
+.ml .tile .pr span:first-child{font-family:var(--font-sans);font-weight:400;font-size:14px;color:var(--muted)}
+.ml .tag{font:500 12px/16px var(--font-mono);letter-spacing:.06em;color:var(--muted);box-shadow:inset 0 0 0 1px var(--control-edge);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+.ml .hold{display:grid;grid-template-columns:104px minmax(0,1fr);gap:14px;align-items:center}
+.ml .hold .cx-dial .read b{font-size:20px}
+.ml .hold p{margin:0;font:400 13.5px/19px var(--font-sans);color:var(--ink);text-wrap:pretty}
+.ml .hold p+p{margin-top:6px;color:var(--muted)}
+.ml .cx-btn.busy{cursor:progress;gap:10px}
+.ml .cx-btn.busy:hover{transform:none}.ml .cx-btn.busy:hover::after{opacity:0}
+.ml .spin{display:block;flex:none}
+.ml .spin .arc{transform-origin:50% 50%;animation:mlspin 1s linear infinite}
+@keyframes mlspin{to{transform:rotate(360deg)}}
+@media (max-width:420px){.ml{padding:28px 16px 40px}}
+.ml .pay{display:grid;gap:8px;margin-top:4px}
+.ml .pay .cap{text-align:center}
+/* reduced motion: the designed stills */
+.ml .still .sk::after,.ml.reduce .sk::after{animation:none;opacity:0}
+.ml .still .spin .arc,.ml.reduce .spin .arc{animation:none}
+.ml .still .roll span,.ml.reduce .roll span{transition:none}
+@media (prefers-reduced-motion:reduce){.ml .sk::after{animation:none;opacity:0}.ml .spin .arc{animation:none}.ml .roll span{transition:none}}
+</style>
+
+<header class="ml-h">
+  <p class="ml-eb">States · mobile · concept, not final</p>
+  <h2>Loading on a phone<br><span>One loader for each kind of wait, at 360 px.</span></h2>
+</header>
+
+<section class="ml-row" data-mode="live" aria-labelledby="ml-live">
+  <h3 id="ml-live">With motion</h3>
+  <p>The D-041 loaders in their mobile scenarios. Every animation sits beside words that say the same thing, and nothing flashes: the fastest change is the button arc, one turn a second.</p>
+  <div class="ml-g"><figure><figcaption><span class="ml-eb">01 · Between pages</span><b>Dot-grid ripple · the loading screen</b><small>Use when the app opens or a page changes. Each 72° index sends a wave; the blades fill ink, then drain.</small></figcaption><div class="cx-phone"><div class="scr"><div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div><div class="rip" aria-busy="true"><canvas aria-hidden="true"></canvas><p class="rcap" role="status"><span class="t">Loading</span><span class="l">Opening your bookings…</span></p></div></div></div></figure><figure><figcaption><span class="ml-eb">02 · In a page · a wait you watch</span><b>Hold dial · the ring and its status line</b><small>Use for search, availability and quotes. The ring fills one honest step at a time, in blue: loading is not a countdown.</small></figcaption><div class="cx-phone"><div class="scr"><div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div><div class="ab"><span class="btn"><span class="cx-ic back" aria-hidden="true"></span></span><span class="t">Wash&nbsp;&amp; Detailing</span></div><div class="bd"><div class="chips"><span class="cx-chip"><span class="cx-ic pin sm" aria-hidden="true"></span> Ferndale, Randburg</span><span class="cx-chip">Saturday</span><span class="cx-chip">Within 10 km</span></div><div class="watch" aria-busy="true"><div class="hd" style="width:132px;height:132px"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="mlgL" x1="0" x2="1" y1="0" y2="1"><stop offset="0" style="stop-color:var(--blue-soft)"/><stop offset="1" style="stop-color:var(--blue)"/></linearGradient></defs><circle cx="100" cy="100" r="78" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="10"/><circle class="arc" cx="100" cy="100" r="78" fill="none" stroke="url(#mlgL)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 490.1"/><circle class="head" cx="178" cy="100" r="7" fill="#fff" style="stroke:var(--blue)" stroke-width="3" opacity="0"/></svg><div class="read" aria-hidden="true"><b>1/4</b><small>STEPS</small></div></div><div class="roll" role="status" aria-live="polite"></div><div class="steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div><button class="cx-btn outline sm" type="button">Cancel search</button></div></div><div class="tabs"><span><span class="cx-ic home" aria-hidden="true"></span>Home</span><span class="on"><span class="cx-ic search" aria-hidden="true"></span>Search</span><span><span class="cx-ic cal" aria-hidden="true"></span>Bookings</span><span><span class="cx-ic user" aria-hidden="true"></span>Account</span></div></div></div></figure><figure><figcaption><span class="ml-eb">03 · In a page · layout known</span><b>Skeleton · cards and the shimmer</b><small>Use for results, a listing or your bookings. The screen arrives in its real shape, then fills in. One soft sweep, no flashing.</small></figcaption><div class="cx-phone"><div class="scr"><div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div><div class="ab"><span class="btn"><span class="cx-ic back" aria-hidden="true"></span></span><span class="t">Results</span></div><div class="bd"><div class="cx-search"><span class="cx-ic search" aria-hidden="true"></span> Wash&nbsp;&amp; Detailing · Ferndale</div><p class="cap" role="status">Loading results near Ferndale…</p><div class="list" aria-busy="true" aria-label="Results, loading"><div class="skc"><span class="sk t"></span><div class="ls"><span class="sk" style="width:62%;height:15px;border-radius:8px"></span><span class="sk" style="width:86%;height:11px;border-radius:8px"></span><span class="sk" style="width:40%;height:11px;border-radius:8px"></span><div class="row"><span class="sk" style="width:84px;height:26px;border-radius:999px"></span><span class="sk" style="width:64px;height:26px;border-radius:999px"></span></div></div></div><div class="skc"><span class="sk t"></span><div class="ls"><span class="sk" style="width:54%;height:15px;border-radius:8px"></span><span class="sk" style="width:86%;height:11px;border-radius:8px"></span><span class="sk" style="width:40%;height:11px;border-radius:8px"></span><div class="row"><span class="sk" style="width:84px;height:26px;border-radius:999px"></span><span class="sk" style="width:64px;height:26px;border-radius:999px"></span></div></div></div><div class="skc"><span class="sk t"></span><div class="ls"><span class="sk" style="width:70%;height:15px;border-radius:8px"></span><span class="sk" style="width:86%;height:11px;border-radius:8px"></span><span class="sk" style="width:40%;height:11px;border-radius:8px"></span><div class="row"><span class="sk" style="width:84px;height:26px;border-radius:999px"></span><span class="sk" style="width:64px;height:26px;border-radius:999px"></span></div></div></div></div></div><div class="tabs"><span><span class="cx-ic home" aria-hidden="true"></span>Home</span><span class="on"><span class="cx-ic search" aria-hidden="true"></span>Search</span><span><span class="cx-ic cal" aria-hidden="true"></span>Bookings</span><span><span class="cx-ic user" aria-hidden="true"></span>Account</span></div></div></div></figure><figure><figcaption><span class="ml-eb">04 · In a button · a held booking</span><b>Hold dial · the spinning arc</b><small>Use when a tap starts a short wait. The label says what is happening. The signal ring beside it is the hold countdown, not a loader.</small></figcaption><div class="cx-phone"><div class="scr"><div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div><div class="ab"><span class="btn"><span class="cx-ic back" aria-hidden="true"></span></span><span class="t">Pay for your booking</span></div><div class="bd"><div class="tile"><b>Full wash <span class="tag">DEMO</span></b><small>Gleamline · Ferndale · Sat 31 Oct, 09:00</small><div class="pr"><span>Total</span><span>R330</span></div></div><div class="hold"><div class="cx-dial held" style="width:104px" role="img" aria-label="14 minutes 32 seconds left on the hold"><svg viewBox="0 0 200 200" aria-hidden="true"><circle class="track" cx="100" cy="100" r="80"/><circle class="ring" cx="100" cy="100" r="80" stroke-dashoffset="65"/></svg><div class="read" aria-hidden="true"><b>14:32</b><small>held</small></div></div><div><p>Gleamline is holding Sat 31 Oct, 09:00 for you.</p><p>If time runs out, the slot is released. If a payment arrives afterwards, we'll help you rebook or get a refund.</p></div></div><div class="pay"><button class="cx-btn primary block busy" type="button" aria-disabled="true" aria-busy="true"><svg class="spin" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2.2"/><g class="arc"><path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></g></svg><span>Starting payment</span></button><p class="cap" role="status">Opening the payment page…</p></div></div><div class="tabs"><span><span class="cx-ic home" aria-hidden="true"></span>Home</span><span><span class="cx-ic search" aria-hidden="true"></span>Search</span><span class="on"><span class="cx-ic cal" aria-hidden="true"></span>Bookings</span><span><span class="cx-ic user" aria-hidden="true"></span>Account</span></div></div></div></figure></div>
+</section>
+
+<section class="ml-row still" data-mode="still" aria-labelledby="ml-still">
+  <h3 id="ml-still">Reduced motion · the designed stills</h3>
+  <p>What each screen shows with reduced motion switched on. The ripple paints one frozen wave and the rotor rests as the solid ink logo; the dial holds its step; skeletons lose the shimmer; the arc stops; the countdown digits still update but the ring does not animate.</p>
+  <div class="ml-g"><figure><figcaption><span class="ml-eb">01 · Between pages</span><b>Dot-grid ripple · the loading screen</b><small>Use when the app opens or a page changes. Each 72° index sends a wave; the blades fill ink, then drain.</small></figcaption><div class="cx-phone"><div class="scr"><div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div><div class="rip"><canvas aria-hidden="true"></canvas><p class="rcap"><span class="t">Loading</span><span class="l">Opening your bookings…</span></p></div></div></div></figure><figure><figcaption><span class="ml-eb">02 · In a page · a wait you watch</span><b>Hold dial · the ring and its status line</b><small>Use for search, availability and quotes. The ring fills one honest step at a time, in blue: loading is not a countdown.</small></figcaption><div class="cx-phone"><div class="scr"><div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div><div class="ab"><span class="btn"><span class="cx-ic back" aria-hidden="true"></span></span><span class="t">Wash&nbsp;&amp; Detailing</span></div><div class="bd"><div class="chips"><span class="cx-chip"><span class="cx-ic pin sm" aria-hidden="true"></span> Ferndale, Randburg</span><span class="cx-chip">Saturday</span><span class="cx-chip">Within 10 km</span></div><div class="watch"><div class="hd" style="width:132px;height:132px"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="mlgS" x1="0" x2="1" y1="0" y2="1"><stop offset="0" style="stop-color:var(--blue-soft)"/><stop offset="1" style="stop-color:var(--blue)"/></linearGradient></defs><circle cx="100" cy="100" r="78" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="10"/><circle class="arc" cx="100" cy="100" r="78" fill="none" stroke="url(#mlgS)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 490.1"/><circle class="head" cx="178" cy="100" r="7" fill="#fff" style="stroke:var(--blue)" stroke-width="3" opacity="0"/></svg><div class="read" aria-hidden="true"><b>1/4</b><small>STEPS</small></div></div><div class="roll"></div><div class="steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div><button class="cx-btn outline sm" type="button">Cancel search</button></div></div><div class="tabs"><span><span class="cx-ic home" aria-hidden="true"></span>Home</span><span class="on"><span class="cx-ic search" aria-hidden="true"></span>Search</span><span><span class="cx-ic cal" aria-hidden="true"></span>Bookings</span><span><span class="cx-ic user" aria-hidden="true"></span>Account</span></div></div></div></figure><figure><figcaption><span class="ml-eb">03 · In a page · layout known</span><b>Skeleton · cards and the shimmer</b><small>Use for results, a listing or your bookings. The screen arrives in its real shape, then fills in. One soft sweep, no flashing.</small></figcaption><div class="cx-phone"><div class="scr"><div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div><div class="ab"><span class="btn"><span class="cx-ic back" aria-hidden="true"></span></span><span class="t">Results</span></div><div class="bd"><div class="cx-search"><span class="cx-ic search" aria-hidden="true"></span> Wash&nbsp;&amp; Detailing · Ferndale</div><p class="cap">Loading results near Ferndale…</p><div class="list" aria-label="Results, loading"><div class="skc"><span class="sk t"></span><div class="ls"><span class="sk" style="width:62%;height:15px;border-radius:8px"></span><span class="sk" style="width:86%;height:11px;border-radius:8px"></span><span class="sk" style="width:40%;height:11px;border-radius:8px"></span><div class="row"><span class="sk" style="width:84px;height:26px;border-radius:999px"></span><span class="sk" style="width:64px;height:26px;border-radius:999px"></span></div></div></div><div class="skc"><span class="sk t"></span><div class="ls"><span class="sk" style="width:54%;height:15px;border-radius:8px"></span><span class="sk" style="width:86%;height:11px;border-radius:8px"></span><span class="sk" style="width:40%;height:11px;border-radius:8px"></span><div class="row"><span class="sk" style="width:84px;height:26px;border-radius:999px"></span><span class="sk" style="width:64px;height:26px;border-radius:999px"></span></div></div></div><div class="skc"><span class="sk t"></span><div class="ls"><span class="sk" style="width:70%;height:15px;border-radius:8px"></span><span class="sk" style="width:86%;height:11px;border-radius:8px"></span><span class="sk" style="width:40%;height:11px;border-radius:8px"></span><div class="row"><span class="sk" style="width:84px;height:26px;border-radius:999px"></span><span class="sk" style="width:64px;height:26px;border-radius:999px"></span></div></div></div></div></div><div class="tabs"><span><span class="cx-ic home" aria-hidden="true"></span>Home</span><span class="on"><span class="cx-ic search" aria-hidden="true"></span>Search</span><span><span class="cx-ic cal" aria-hidden="true"></span>Bookings</span><span><span class="cx-ic user" aria-hidden="true"></span>Account</span></div></div></div></figure><figure><figcaption><span class="ml-eb">04 · In a button · a held booking</span><b>Hold dial · the spinning arc</b><small>Use when a tap starts a short wait. The label says what is happening. The signal ring beside it is the hold countdown, not a loader.</small></figcaption><div class="cx-phone"><div class="scr"><div class="sb"><span>09:41</span><span class="c">Concept, not final</span><span>4G</span></div><div class="ab"><span class="btn"><span class="cx-ic back" aria-hidden="true"></span></span><span class="t">Pay for your booking</span></div><div class="bd"><div class="tile"><b>Full wash <span class="tag">DEMO</span></b><small>Gleamline · Ferndale · Sat 31 Oct, 09:00</small><div class="pr"><span>Total</span><span>R330</span></div></div><div class="hold"><div class="cx-dial held" style="width:104px" role="img" aria-label="14 minutes 32 seconds left on the hold"><svg viewBox="0 0 200 200" aria-hidden="true"><circle class="track" cx="100" cy="100" r="80"/><circle class="ring" cx="100" cy="100" r="80" stroke-dashoffset="65"/></svg><div class="read" aria-hidden="true"><b>14:32</b><small>held</small></div></div><div><p>Gleamline is holding Sat 31 Oct, 09:00 for you.</p><p>If time runs out, the slot is released. If a payment arrives afterwards, we'll help you rebook or get a refund.</p></div></div><div class="pay"><button class="cx-btn primary block busy" type="button" aria-disabled="true"><svg class="spin" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2.2"/><g class="arc"><path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></g></svg><span>Starting payment</span></button><p class="cap">Opening the payment page…</p></div></div><div class="tabs"><span><span class="cx-ic home" aria-hidden="true"></span>Home</span><span><span class="cx-ic search" aria-hidden="true"></span>Search</span><span class="on"><span class="cx-ic cal" aria-hidden="true"></span>Bookings</span><span><span class="cx-ic user" aria-hidden="true"></span>Account</span></div></div></div></figure></div>
+</section>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><path id="ml-blade" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/></svg>
+<script>
+(() => {
+  'use strict';
+  const root = document.currentScript.closest('.ml');
+  const $ = (s, r = root) => r.querySelector(s), $$ = (s, r = root) => [...r.querySelectorAll(s)];
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const inOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const RM = matchMedia('(prefers-reduced-motion: reduce)');
+  const tok = (n) => getComputedStyle(root).getPropertyValue('--' + n).trim();
+  const COL = { canvas: tok('canvas') || '#f2f1ee', ink: tok('ink') || '#0d0f12', blue: tok('blue') || '#3d6dff' };
+  // the logo's own geometry (brand/motion/shape.mjs): rest angle, hub and tip radii, the 72° pitch and 1.8° overshoot
+  const REST = 21.9494, PITCH = 72, D2R = Math.PI / 180, OVERSHOOT = 1.8, MK = { rHub: 21, rTip: 100 }, PALE = 'rgba(13,15,18,.14)';
+  const BLADE = new Path2D($('#ml-blade').getAttribute('d'));
+  const stillOf = (el) => RM.matches || !!el.closest('.still');
+
+  /* ---------- 01 the dot-grid ripple with the blade pulse (states/NOTES.md) ---------- */
+  function drawMark(c, x, y, r, deg) { c.save(); c.translate(x, y); c.scale(r / 100, r / 100); c.rotate(deg * D2R); for (let i = 0; i < 5; i++) { c.fill(BLADE); c.rotate(PITCH * D2R); } c.restore(); }
+  function biAngle(t, rest) { const k = Math.floor(t / 1.2), u = t - k * 1.2, base = rest + k * PITCH; if (u < .3) return base - PITCH + PITCH * inOut(u / .3) + OVERSHOOT * inOut(u / .3); return base + OVERSHOOT * Math.exp(-14 * (u - .3)) * Math.cos(2 * Math.PI * 3 * (u - .3)); }
+  function bladePulse(c, t) {
+    const T = t + .9, k = Math.floor(T / 1.2), p = inOut(clamp((T - k * 1.2) / .45));
+    const f = 2, hub = MK.rHub - f, tip = MK.rTip + f, r = k % 2 ? lerp(tip, hub, p) : lerp(hub, tip, p), o = tip + f;
+    const g = c.createRadialGradient(0, 0, 0, 0, 0, o); g.addColorStop(clamp((r - f / 2) / o), COL.ink); g.addColorStop(clamp((r + f / 2) / o), PALE); return g;
+  }
+  function field(c, W, H, T, { cx, cy, R, pitch, base, speed, maxA }) {
+    const rings = [], reach = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy));
+    for (let k = 0; k < 6; k++) { const r = ((T % 1.2) + k * 1.2) * speed; if (r < reach + pitch * 4) rings.push(r, Math.pow(Math.max(0, 1 - r / reach), .7) * maxA); }
+    const w1 = pitch * 1.4, w2 = pitch * 1.2, lag = pitch * 2.4, cut = pitch * 5, pA = new Path2D(), pB = new Path2D(), pC = new Path2D();
+    for (let y = 1; y < H + pitch; y += pitch) for (let x = 1; x < W + pitch; x += pitch) {
+      const dx = x - cx, dy = y - cy, d = Math.hypot(dx, dy); if (d < R * 1.5) continue;
+      let crest = 0;
+      for (let k = 0; k < rings.length; k += 2) { const r = rings[k]; if (d < r - lag - cut || d > r + cut) continue; const q = (d - r) / w1, e = (d - r + lag) / w2; crest += (Math.exp(-q * q) + .35 * Math.exp(-e * e)) * rings[k + 1]; }
+      crest = Math.min(1.4, crest);
+      const push = crest * pitch * .2, px = x + dx / d * push, py = y + dy / d * push, rr = base * (1 + 2.6 * crest);
+      const p = crest > .55 ? pC : crest > .18 ? pB : pA; p.moveTo(px + rr, py); p.arc(px, py, rr, 0, 6.283);
+    }
+    c.fillStyle = 'rgba(13,15,18,.13)'; c.fill(pA); c.fillStyle = 'rgba(42,84,212,.4)'; c.fill(pB); c.fillStyle = COL.blue; c.fill(pC);
+  }
+  const ripples = $$('.rip').map((host) => ({ host, cv: $('canvas', host), cap: $('.rcap', host), w: 0, h: 0 }));
+  function sizeRipple(r) {
+    const b = r.host.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+    r.w = Math.max(10, Math.round(b.width)); r.h = Math.max(10, Math.round(b.height)); r.d = d;
+    r.cv.width = Math.round(r.w * d); r.cv.height = Math.round(r.h * d); r.cv.style.width = r.w + 'px'; r.cv.style.height = r.h + 'px';
+    r.R = 36; r.cy = Math.round(r.h * .42); r.cap.style.top = (r.cy + r.R * 1.5 + 36) + 'px'; r.painted = false;
+  }
+  function paintRipple(r, t) {
+    const c = r.cv.getContext('2d'), still = stillOf(r.host);
+    c.setTransform(r.d, 0, 0, r.d, 0, 0); c.fillStyle = COL.canvas; c.fillRect(0, 0, r.w, r.h);
+    field(c, r.w, r.h, still ? .28 : t, { cx: r.w / 2, cy: r.cy, R: r.R, pitch: 24, base: 1.15, speed: 220, maxA: still ? .9 : 1 });
+    c.fillStyle = still ? COL.ink : bladePulse(c, t); drawMark(c, r.w / 2, r.cy, r.R, still ? REST : biAngle(t + .9, REST));
+  }
+
+  /* ---------- 02 the hold dial: an honest list of what is happening ---------- */
+  const LINES = ['Finding businesses near Ferndale…', 'Checking who’s open Saturday…', 'Sorting by straight-line distance…', 'Loading listed prices…'], DONE = 'Done. Showing results.';
+  function roller(host) {
+    let cur = null;
+    return (text) => {
+      if (cur && cur.textContent === text) return;
+      const s = document.createElement('span'); s.textContent = text; s.className = 'wait'; host.appendChild(s);
+      if (cur) { const o = cur; o.className = 'out'; setTimeout(() => o.remove(), 800); }
+      requestAnimationFrame(() => { s.className = 'in'; }); cur = s;
+    };
+  }
+  const dials = $$('.hd').map((el) => {
+    const C = 2 * Math.PI * 78, box = el.closest('.watch');
+    return { el, C, arc: $('.arc', el), head: $('.head', el), b: $('.read b', el), bars: $$('.steps i', box), roll: roller($('.roll', box)), f: 0, k: -1 };
+  });
+  function stepDial(d, dt, T) {
+    const still = stillOf(d.el), n = LINES.length, per = 2.3, cyc = per * n + 1.8;
+    const t = still && d.el.closest('.still') ? per * 1.5 : T % cyc, k = Math.min(n, Math.floor(t / per)), u = (t - k * per) / per;
+    const target = k >= n ? 1 : (k + .92 * (1 - Math.exp(-3 * u))) / n;
+    if (k < d.k && !still) d.f = 0;
+    d.f = still ? (k >= n ? 1 : (k + .4) / n) : d.f + (target - d.f) * (1 - Math.exp(-dt * 8));
+    const len = (d.f * d.C).toFixed(1); if (d._l !== len) { d.arc.setAttribute('stroke-dasharray', `${len} ${d.C}`); d._l = len; }
+    const a = d.f * Math.PI * 2, show = d.f > .01 && d.f < .999 && !still;
+    d.head.setAttribute('cx', (100 + 78 * Math.cos(a)).toFixed(1)); d.head.setAttribute('cy', (100 + 78 * Math.sin(a)).toFixed(1)); d.head.setAttribute('opacity', show ? 1 : 0);
+    const v = k >= n ? 'Done' : `${k + 1}/${n}`; if (d.b.textContent !== v) d.b.textContent = v;
+    d.bars.forEach((b, i) => { const x = clamp(d.f * n - i).toFixed(2); if (b._v !== x) { b.style.setProperty('--f', x); b._v = x; } });
+    if (k !== d.k) { d.k = k; d.roll(k >= n ? DONE : LINES[k]); }
+  }
+
+  /* ---------- 03 skeletons: one sweep crosses the screen, each block starting by its x position ---------- */
+  function skSync() { $$('.scr').forEach((s) => { const sb = s.getBoundingClientRect(); $$('.sk', s).forEach((k) => { const b = k.getBoundingClientRect(); k.style.setProperty('--d', (-(1 - (b.left - sb.left + b.width / 2) / (sb.width || 1)) * .55).toFixed(3) + 's'); }); }); }
+
+  /* ---------- 04 the hold countdown (signal): the HoldDial component, not a loader ---------- */
+  const holds = $$('.cx-dial.held').map((el) => ({ el, ring: $('.ring', el), b: $('.read b', el), left: 872, lastMin: -1 }));
+  const words = (s) => { const m = Math.floor(s / 60), x = s % 60; return `${m} minute${m === 1 ? '' : 's'} ${x} second${x === 1 ? '' : 's'} left on the hold`; };
+  function paintHold(h) {
+    const s = Math.max(0, Math.round(h.left)), mm = String(Math.floor(s / 60)).padStart(2, '0'), ss = String(s % 60).padStart(2, '0');
+    h.b.textContent = `${mm}:${ss}`; h.ring.setAttribute('stroke-dashoffset', (502.7 * (900 - s) / 900).toFixed(1));
+    const m = Math.floor(s / 60); if (m !== h.lastMin) { h.lastMin = m; h.el.setAttribute('aria-label', words(s)); } // announce at most once a minute
+  }
+  function stepHold(h, dt) { if (!h.el.closest('.still')) { h.left -= dt; if (h.left < 600) h.left = 872; } paintHold(h); }
+
+  /* ---------- one loop, paused when the card is off screen or the tab is hidden ---------- */
+  let raf = 0, last = 0, T = 0, onScreen = true;
+  function frame(ms) {
+    const now = ms / 1000, dt = Math.min(.05, now - last); last = now; T += dt;
+    for (const r of ripples) { if (stillOf(r.host)) { if (!r.painted) { paintRipple(r, 0); r.painted = true; } } else { paintRipple(r, T); r.painted = false; } }
+    for (const d of dials) stepDial(d, dt, T);
+    for (const h of holds) stepHold(h, dt);
+    raf = requestAnimationFrame(frame);
+  }
+  const play = () => { if (!raf && onScreen && !document.hidden) { last = performance.now() / 1000; raf = requestAnimationFrame(frame); } };
+  const pause = () => { cancelAnimationFrame(raf); raf = 0; };
+  const resize = () => { ripples.forEach(sizeRipple); ripples.forEach((r) => paintRipple(r, T)); requestAnimationFrame(skSync); };
+  const applyRM = () => root.classList.toggle('reduce', RM.matches);
+  RM.addEventListener ? RM.addEventListener('change', () => { applyRM(); resize(); }) : RM.addListener(() => { applyRM(); resize(); });
+  document.addEventListener('visibilitychange', () => (document.hidden ? pause() : play()));
+  if ('IntersectionObserver' in window) new IntersectionObserver((es) => { onScreen = es.some((e) => e.isIntersecting); onScreen ? play() : pause(); }).observe(root);
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(root); else addEventListener('resize', resize);
+  applyRM(); resize(); holds.forEach(paintHold); dials.forEach((d) => stepDial(d, 0, 0)); play();
+})();
+</script>
+</div>
