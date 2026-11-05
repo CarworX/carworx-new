@@ -13,6 +13,12 @@ import {
   writeEvidence,
 } from "./core.js";
 import { runFutureStages } from "./future-stages.js";
+import {
+  validateEmailReport,
+  validateNodeReport,
+  validateOperationsFiles,
+  emailFailureDetails,
+} from "../ops/env/reports.js";
 
 const statePath = () => evidencePath("checks");
 const save = (state) => writeEvidence("checks", state);
@@ -34,7 +40,12 @@ function record(name, action) {
   try {
     state.checks[name] = { status: "passed", ...action() };
   } catch (error) {
-    state.checks[name] = { status: "failed" };
+    state.checks[name] = {
+      status: "failed",
+      ...(name === "auth_delivery"
+        ? emailFailureDetails(error.emailReport, context().head_sha)
+        : {}),
+    };
     throw error;
   } finally {
     save(state);
@@ -170,6 +181,34 @@ function runFuture() {
             return validateVitest(readJson(path));
           }
         : undefined,
+      auth_delivery: contract.integration
+        ? () => {
+            const path = join(privateRoot, "auth-email.json");
+            try {
+              command(
+                process.execPath,
+                ["scripts/ops/env/auth-email/direct-auth.js"],
+                {
+                  ...quiet,
+                  env: {
+                    ...process.env,
+                    CI_AUTH_EMAIL_REPORT: path,
+                    K1_HEAD_SHA: context().head_sha,
+                  },
+                },
+              );
+            } catch {
+              const error = new Error("Auth delivery command failed");
+              try {
+                error.emailReport = readJson(path);
+              } catch {
+                /* Fixed diagnostic only. */
+              }
+              throw error;
+            }
+            return validateEmailReport(readJson(path), context().head_sha);
+          }
+        : undefined,
       cleanup: () => {
         command("pnpm", ["exec", "supabase", "stop", "--no-backup"], quiet);
       },
@@ -187,6 +226,18 @@ const commands = {
       "scripts/ci/auth-fixture.test.js",
       "scripts/ci/future-stages.test.js",
     ]),
+  operations: () =>
+    validateNodeReport(
+      command(
+        process.execPath,
+        [
+          "--test",
+          "--test-reporter=tap",
+          ...validateOperationsFiles(filesUnder("scripts/ops/env", ".test.js")),
+        ],
+        { stdio: "pipe", encoding: "utf8" },
+      ).stdout,
+    ),
   lint: () => command("pnpm", ["run", "lint"]),
   format: () => command("pnpm", ["run", "format:check"]),
   typecheck: () => command("pnpm", ["run", "typecheck"]),
@@ -207,6 +258,7 @@ try {
     const required = [
       ...Object.keys(commands),
       ...["rls", "integration"].filter((s) => state.contract?.[s]),
+      ...(state.contract?.integration ? ["auth_delivery"] : []),
       ...(state.contract?.rls || state.contract?.integration
         ? ["startup", "reset", "cleanup"]
         : []),
@@ -219,7 +271,7 @@ try {
     invariant(Object.hasOwn(commands, operation), "Unknown CI check");
     record(operation, () => {
       const result = commands[operation]();
-      return operation === "unit" ? result : {};
+      return ["unit", "operations"].includes(operation) ? result : {};
     });
   }
 } catch (error) {
