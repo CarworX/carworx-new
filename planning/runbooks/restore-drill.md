@@ -52,3 +52,8 @@ missed-backup alert, with seven daily and four weekly sets subject to approved
 retention and legal holds. Measure a staging restore before setting RTO.
 A7 remains open until a staging restore verifies database data, object bytes
 and access controls. Scheduling and hosted execution remain owner-controlled.
+
+The K4 recovery workflow runs the same synthetic drill on standard Ubuntu with
+Docker-based Supabase. It validates every expected TAP report using the K1
+validator and derives the assertion count from those reports. Its only artifact
+is the sanitized summary. The WSL launcher is optional.

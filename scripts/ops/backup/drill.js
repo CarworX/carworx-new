@@ -13,14 +13,27 @@ import {
 } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { validateTap } from "../../ci/core.js";
 
 process.umask(0o077);
-const [repo, revision, pgBin] = process.argv.slice(2);
+const [repo, revision, pgBin, mode] = process.argv.slice(2);
 assert.match(revision ?? "", /^[a-f0-9]{40}$/);
-assert.equal(process.env.WSL_DISTRO_NAME, "CarworX-Native");
-assert.equal(process.env.USER, "carworx");
-const cli = join(homedir(), "bin/supabase");
-const root = mkdtempSync(join(homedir(), "k4-drill-"));
+assert.ok(mode === undefined || mode === "--ci");
+const ci = mode === "--ci";
+if (ci) {
+  assert.equal(process.platform, "linux");
+  assert.equal(process.env.GITHUB_ACTIONS, "true");
+  assert.ok(process.env.RUNNER_TEMP?.startsWith("/"));
+} else {
+  assert.equal(process.env.WSL_DISTRO_NAME, "CarworX-Native");
+  assert.equal(process.env.USER, "carworx");
+}
+const runtime = ci ? "docker" : "native";
+const workspace = ci ? process.env.RUNNER_TEMP : homedir();
+const cli = ci
+  ? join(repo, "node_modules/.bin/supabase")
+  : join(homedir(), "bin/supabase");
+const root = mkdtempSync(join(workspace, "k4-drill-"));
 const bundle = join(root, "bundle");
 mkdirSync(bundle);
 const env = Object.fromEntries(
@@ -28,7 +41,7 @@ const env = Object.fromEntries(
     ([name]) => !/^(?:SUPABASE_|PG)/.test(name),
   ),
 );
-env.SUPABASE_EXPERIMENTAL_STACK = "1";
+env.SUPABASE_EXPERIMENTAL_STACK = ci ? "0" : "1";
 env.PATH = pgBin + ":" + process.env.PATH;
 const tables = [
   "auth.users",
@@ -52,15 +65,19 @@ const sha = (data) => createHash("sha256").update(data).digest("hex");
 const gib = 1024 ** 3;
 
 function freeBytes() {
-  const disk = statfsSync("/mnt/c");
+  const disk = statfsSync(ci ? workspace : "/mnt/c");
   return disk.bavail * disk.bsize;
 }
 
 function capacity(minimum) {
-  assert.ok(freeBytes() >= minimum, "Windows disk safety margin reached");
+  assert.ok(freeBytes() >= minimum, "Recovery disk safety margin reached");
 }
 
+let stageName = "preflight";
+let diagnostic = "assertion";
 function run(stage, command, args, options = {}) {
+  stageName = stage;
+  diagnostic = "assertion";
   const result = spawnSync(command, args, {
     env,
     encoding: "utf8",
@@ -69,8 +86,20 @@ function run(stage, command, args, options = {}) {
     ...options,
   });
   writeFileSync(join(root, stage + ".log"), result.stderr ?? "");
-  if (result.status !== 0)
+  if (result.status !== 0) {
+    diagnostic = /no space|ENOSPC/i.test(result.stderr ?? "")
+      ? "capacity"
+      : /address already in use|port.*allocat/i.test(result.stderr ?? "")
+        ? "port"
+        : /permission denied|access denied/i.test(result.stderr ?? "")
+          ? "permission"
+          : /docker/i.test(result.stderr ?? "")
+            ? "docker-command"
+            : /supabase|postgres/i.test(result.stderr ?? "")
+              ? "stack-command"
+              : "command";
     throw Error(stage + " failed (private log in " + root + ")");
+  }
   return result.stdout;
 }
 
@@ -89,54 +118,78 @@ function stack(name) {
   cpSync(join(repo, "supabase"), join(cwd, "supabase"), { recursive: true });
   const config = join(cwd, "supabase/config.toml");
   const text = readFileSync(config, "utf8").replace(/\r/g, "");
+  let port = name === "source" ? 25000 : 26000;
   const local = text
     .replace(
       /^\[auth\.email\.template\.(?:confirmation|recovery)\]\n[\s\S]*?(?=^\[|$(?![\s\S]))/gm,
       "",
     )
-    .replace(/^(?:port|shadow_port|inspector_port) = .*\n/gm, "")
+    .replace(/^(port|shadow_port|inspector_port) = .*\n/gm, (_, key) =>
+      ci ? key + " = " + String(port++) + "\n" : "",
+    )
     .replace(
       /(^\[db\.seed\]\n(?:#[^\n]*\n)*)enabled = true/m,
       "$1enabled = false",
     );
   assert.ok(!/^content_path =/m.test(local));
   assert.match(local, /\[db\.seed\]\n(?:#[^\n]*\n)*enabled = false/);
-  writeFileSync(config, local);
+  const project = ci
+    ? local.replace(
+        /^project_id = .*$/m,
+        `project_id = "carworx-k4-${name}-${randomUUID().slice(0, 8)}"`,
+      )
+    : local;
+  writeFileSync(config, project);
   return { name, cwd };
 }
 
 function start(instance) {
+  stageName = instance.name + "-capacity";
   capacity(2 * gib);
   const { name, cwd } = instance;
-  const result = JSON.parse(
-    run(
-      name + "-start",
-      cli,
-      [
-        "start",
-        "--stack",
-        name,
-        "--runtime",
-        "native",
-        "--preparation",
-        "on-demand",
-        "--output-format",
-        "json",
-      ],
-      { cwd },
-    ),
-  );
-  assert.equal(result.runtime, "native");
-  const config = result.env;
+  let config;
+  if (ci) {
+    run(name + "-start", cli, ["start"], { cwd });
+    const status = run(name + "-status", cli, ["status", "-o", "json"], {
+      cwd,
+    });
+    config = JSON.parse(status.slice(status.indexOf("{")));
+  } else {
+    const result = JSON.parse(
+      run(
+        name + "-start",
+        cli,
+        [
+          "start",
+          "--stack",
+          name,
+          "--runtime",
+          "native",
+          "--preparation",
+          "on-demand",
+          "--output-format",
+          "json",
+        ],
+        { cwd },
+      ),
+    );
+    assert.equal(result.runtime, "native");
+    config = result.env;
+  }
   safePort(config.API_URL, "http:");
   safePort(config.DB_URL, "postgresql:");
   return config;
 }
 
 function stop(instance) {
-  run(instance.name + "-stop", cli, ["stop", "--stack", instance.name], {
-    cwd: instance.cwd,
-  });
+  run(
+    instance.name + "-stop",
+    cli,
+    ci ? ["stop", "--no-backup"] : ["stop", "--stack", instance.name],
+    {
+      cwd: instance.cwd,
+    },
+  );
 }
 
 async function api(config, path, { method = "GET", token, body } = {}) {
@@ -510,7 +563,11 @@ async function drill() {
         Object.fromEntries(
           paths.map((path) => [
             path,
-            readFileSync(join(directory, path), "utf8"),
+            path === "config.toml" && ci
+              ? readFileSync(join(directory, path), "utf8")
+                  .replace(/^project_id = .*$/m, 'project_id = "carworx-k4"')
+                  .replace(/^(?:port|shadow_port|inspector_port) = .*\n/gm, "")
+              : readFileSync(join(directory, path), "utf8"),
           ]),
         ),
       );
@@ -570,6 +627,7 @@ async function drill() {
     active = undefined;
 
     const restoreStart = Date.now();
+    stageName = "restore-manifest";
     validate(JSON.parse(read("manifest.json")), read);
     assert.equal(
       sha(baseline(target)),
@@ -637,29 +695,38 @@ async function drill() {
       ),
       manifest.bucket,
     );
-    const rls = run(
+    const tapDir = join(root, "tap");
+    run(
       "rls",
       process.execPath,
       [join(target.cwd, "supabase/tests/run-rls.js")],
       {
-        env: {
-          ...env,
-          RLS_DB_URL: restored.DB_URL,
-          CI_RLS_REPORT_DIR: join(root, "tap"),
-        },
+        env: { ...env, RLS_DB_URL: restored.DB_URL, CI_RLS_REPORT_DIR: tapDir },
       },
     );
-    const assertions = [...rls.matchAll(/\((\d+) assertions\)/g)].reduce(
-      (sum, match) => sum + Number(match[1]),
+    const reports = (path, suffix) =>
+      readdirSync(path, { recursive: true })
+        .filter((name) => name.endsWith(suffix))
+        .sort();
+    const expected = reports(
+      join(target.cwd, "supabase/tests/database"),
+      ".test.sql",
+    ).map((name) => name + ".tap");
+    assert.ok(expected.length > 0);
+    assert.deepEqual(reports(tapDir, ".tap"), expected);
+    const assertions = expected.reduce(
+      (sum, name) =>
+        sum + validateTap(readFileSync(join(tapDir, name), "utf8")).passed,
       0,
     );
-    assert.equal(assertions, 168);
+    assert.ok(assertions > 0);
     stop(target);
     active = undefined;
     return {
       version: 1,
       status: "passed",
       revision,
+      runtime,
       rlsAssertions: assertions,
       privateObjects: objects.length,
       tenantRecords: manifest.tables["public.organisations"].count,
@@ -676,12 +743,17 @@ async function drill() {
     };
   } finally {
     if (active) {
+      const failedStage = stageName;
+      const failedReason = diagnostic;
       try {
         stop(active);
       } catch {
         console.error(
           "Cleanup also failed for " + active.name + " under " + root,
         );
+      } finally {
+        stageName = failedStage;
+        diagnostic = failedReason;
       }
     }
   }
@@ -692,6 +764,13 @@ try {
 } catch (error) {
   // Assertion values and HTTP response bodies can contain private data.
   writeFileSync(join(root, "failure.log"), String(error.stack));
-  console.error("K4 drill failed. Private diagnostics: " + root);
+  console.error(
+    "K4 drill failed at " +
+      stageName +
+      " (" +
+      diagnostic +
+      "). Private diagnostics: " +
+      root,
+  );
   process.exitCode = 1;
 }
