@@ -30,6 +30,9 @@ const approved = [
   `unsupported-${tag}@example.test`,
   `invite-${tag}@example.test`,
   `change-${tag}@example.test`,
+  ...["invalid_policy", "provider_failure", "outage"].map(
+    (name) => `${name}-${tag}@example.test`,
+  ),
 ];
 const denied = `denied-${tag}@example.test`;
 const password = `Synthetic-${randomUUID()}`;
@@ -163,7 +166,6 @@ try {
         /(\[auth.hook.send_email\]\s*)enabled = false/,
         "$1enabled = true",
       )
-      .replace('max_frequency = "60s"', 'max_frequency = "0s"')
       .replace(
         'uri = "env(LOCAL_AUTH_EMAIL_HOOK_URI)"',
         `uri = "${localEnv.LOCAL_AUTH_EMAIL_HOOK_URI}"`,
@@ -316,9 +318,17 @@ try {
   await absent("unsupported_email_change", () =>
     call("user", { email: approved[4] }, login.data.access_token, "PUT"),
   );
-  for (const fault of ["invalid_policy", "provider_failure", "outage"]) {
+  for (const [index, fault] of [
+    "invalid_policy",
+    "provider_failure",
+    "outage",
+  ].entries()) {
+    // Separate identities preserve Auth's real cooldown while guaranteeing each
+    // fault reaches the hook rather than being hidden by a prior recovery send.
+    const email = approved[index + 5];
+    await create(email);
     mode = fault;
-    await absent(fault, () => call("recover", { email: approved[1] }));
+    await absent(fault, () => call("recover", { email }));
   }
   mode = "capture";
   // In addition to observing hook invocations and provider dispatch counts,
