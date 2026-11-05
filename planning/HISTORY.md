@@ -261,3 +261,7 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 ## 2026-11-05 — Codex K2 implementation handoff
 
 Owner approved the next K2 interfaces and waived the pre-build Claude agreement gate (D-068). Codex implemented app/hook recipient controls, disposable local Supabase boundary checks, readiness v2 and owner smoke contracts on codex/k2-environments (#23), based on main f871fe3. Codex 17 requests independent exact-head Claude review and replanning. Prior skeleton approval is historical only. No hosted configuration/deployment, private values, real mail or spend; promotion and A2 stay blocked pending required evidence. Workstation capacity precluded a new Docker stack; CI local-stack evidence is labelled separately. Publication/check references are recorded on PR #23.
+
+## 2026-11-05 UTC — local K3 initial slice
+
+Pinned Lighthouse 13.6.0 and added five-run serial mobile collector plus budget validation. Three budget tests and targeted ESLint passed. Attempted node perf/local.js at 0aac1a7; stopped before browser launch with available_ram_below_2_gib. No scores claimed. Reports stay private in a task temporary directory; sanitization and hosted promotion integration remain future work. K4 is deferred: C: approximately 3.0 GiB free, Docker engine unreachable; plan at least 10 GiB free and refine from measured images/volumes/exports. K2 draft #31 remains incomplete; no deployment/settings/mail/spend.

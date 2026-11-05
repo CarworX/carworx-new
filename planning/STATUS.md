@@ -1,6 +1,6 @@
 # Status
 
-## Baton: Claude reviews K2 implementation and replans (Codex 17)
+## Baton: Codex owner tooling in progress; Claude corrects review findings
 
 **Design gate closed by the owner (D-067):** baseline `495e448` is approved and final X-c was waived for this gate. Phase 1 PRs retain reciprocal review; D-060 remains open until G-PROD.
 
@@ -9,6 +9,8 @@
 3. **Owner:** supplies private staging values/access and executes hosted configuration/deployment. Staging sign-in/email remains gated until both recipient controls are demonstrated. K3 local measurements and K4 local recovery can follow accepted T4/T2 with resource preflight.
 
 **Phase: 1 in progress (D-038).** Design #10, T1-T5 (#11/#15/#17/#25), records #21/#29 and K1 #13/#18/#22/#27 are merged; main baseline `f871fe34beb60401e0a24528b7b29413fd0427de`. These are implementation approvals. A1-A7 staging evidence, real Google login/linking, hosted performance/recovery and D-060 owner checks remain open. Coming Soon is scrapped (D-063).
+
+Current execution: #23 merged as 5b9590f; historical #14 merged as e92aab6. Formal CHANGES on #30/#28/#16 remain open. K2 owner-tooling draft #31 is incomplete (Codex 18). K3 local harness/budget tests are implemented on codex/k3-local-mobile; scoring stopped below 2 GiB available RAM. K4 waits for Docker and disk capacity; C: about 3.0 GiB free, planning floor 10 GiB. Promotion remains blocked.
 
 ## Open items
 
