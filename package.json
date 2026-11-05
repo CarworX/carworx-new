@@ -25,6 +25,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "17.14.0",
+    "lighthouse": "13.6.0",
     "prettier": "3.9.10",
     "standardwebhooks": "1.1.1",
     "supabase": "2.122.1",

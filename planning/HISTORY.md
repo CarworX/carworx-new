@@ -278,3 +278,5 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 ## 2026-11-04 — DS mobile loading page
 
 - New MobileLoading card (States) published to the live design system 1793808437-202e (from 1793783662-3fad): the D-041 loaders by mobile scenario at 360 px with reduced-motion stills; mirrored in PR https://github.com/CarworX/carworx-new/pull/16. D-060 owner checks stay open.
+
+- 2026-11-05 19:31 UTC — D-069 through D-071 recorded at 55c8afc. Backlog #34, #35, #30, #28 and #16 merged. D-071 evidence gate #36 merged; native Auth #33 merged after exact-head K1 and 52 Auth/12 direct checks (run 42092379321). K2 #31, K3 #32 and K4 CI #37 remain under verification. Staging access and A1–A7 remain open.
