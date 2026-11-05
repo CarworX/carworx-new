@@ -108,6 +108,8 @@ describe("mutation checks", () => {
 
 describe("response finalisation", () => {
   const config = {
+    environment: "local" as const,
+    approvedRecipients: null,
     appOrigin: APP,
     supabaseUrl: env.SUPABASE_URL,
     supabasePublishableKey: env.SUPABASE_PUBLISHABLE_KEY,
@@ -234,6 +236,8 @@ describe("response finalisation", () => {
 
 describe("mutation body handling (regressions)", () => {
   const config = {
+    environment: "local" as const,
+    approvedRecipients: null,
     appOrigin: APP,
     supabaseUrl: env.SUPABASE_URL,
     supabasePublishableKey: env.SUPABASE_PUBLISHABLE_KEY,

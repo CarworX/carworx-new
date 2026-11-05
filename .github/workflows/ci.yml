@@ -51,6 +51,8 @@ jobs:
         run: node scripts/ci/checks.js unit
       - name: Build
         run: node scripts/ci/checks.js build
+      - name: Required operations contract and hook tests
+        run: node scripts/ci/checks.js operations
       - name: Actual tool failure fixtures in an isolated worktree
         run: node scripts/ci/checks.js adversarial
       - name: Required database and Auth suites

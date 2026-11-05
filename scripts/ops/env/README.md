@@ -1,0 +1,144 @@
+# K2 environment readiness and review handoff
+
+## Current implementation — 2026-11-05
+
+[Codex 17](../../../planning/codex/17-k2-implementation-handoff.md) is the current review/replan handoff. D-068 authorizes Codex to build the app consumer as well as K2 operations before Claude's review. The interface agreement request is superseded as a prerequisite. Independent approval, owner setup and runtime evidence remain required. `promotion.json` v2 intentionally remains **blocked**.
+
+### Recipient controls
+
+`STAGING_APPROVED_RECIPIENTS_JSON` is private on both Workers: a nonempty JSON array, each address trimmed/lowercased, then exact comparison. Missing/empty/malformed policy denies delivery. No domains, substrings, wildcard matching, plus stripping or Gmail dot folding. `CARWORX_ENV=staging` requires the restriction. Local mode only permits loopback configured app/Supabase origins **and the actual request origin**; mail terminates in synthetic infrastructure.
+
+Signup, resend and reset acknowledge an unapproved address generically without calling Auth; invalid policy/configuration returns a generic recoverable 503. The separate `carworx-auth-email-staging` Worker verifies Standard Webhooks signatures/timestamps on bounded raw bytes. It accepts signup/recovery only, constructs `/auth/confirm` links from `APP_ORIGIN`, ignores payload redirects and calls fixed Resend transport with a two-second timeout/idempotency key. Unsupported actions and failures never select another delivery path. The local capture adapter is injected by tests; the deployed entry has no configurable forwarding URL.
+
+The owner installs `SEND_EMAIL_HOOK_SECRET`, `STAGING_RESEND_API_KEY`, `STAGING_AUTH_EMAIL_FROM` and the approved-recipient setting on the hook; `APP_ORIGIN` is the exact configured application origin. Sender is a bare verified email address. The app Worker gets its publishable key and recipient set as secret bindings, plus configured `APP_ORIGIN`, `SUPABASE_URL`, `CARWORX_ENV` and staging-only dev flag. No hook credential enters the application deployment workflow.
+
+After independent review, the owner deploys the hook separately with the pinned Wrangler and its separate owner credential, then enables Supabase's Send Email Hook with that HTTPS URI/secret. The committed local `[auth.hook.send_email]` section is disabled; agents never apply it to staging. **Deny all:** keep the hosted hook enabled and set its private recipient policy to `[]`; do the same on the app. Requests fail recoverably. Disabling the hook could restore default/custom SMTP. Re-enable delivery only after corrected private settings and fresh owner probes/receipts.
+
+### Required checks and private diagnostics
+
+Use pinned Node/pnpm and `pnpm run check`. Node operations tests are required by K1, which captures TAP privately and publishes only validated counts. CI runs the existing 168 pgTAP assertions, 52 integration tests (45 existing + 7 Worker cases), then `auth-email/direct-auth.js` on Linux with `CI=true`, exact `K1_HEAD_SHA` and a fresh `CI_AUTH_EMAIL_REPORT` path. The script owns only the disposable `carworx` local stack, enables the local HTTP hook temporarily, uses genuine Auth -> hook requests, verifies working positive links and zero fallback, stops services and restores config. Twelve fixed checks must execute/pass; missing/skipped/TODO/malformed/old-head reports fail. Service output, mail bodies, tokens, addresses and credentials remain private.
+
+These Linux CI results are local-stack evidence, not a workstation run or staging delivery. The Windows workstation was not used for this new Docker drill due to low disk capacity. No unrelated cleanup is authorized by this task.
+
+### Version 2 readiness receipts
+
+Four owner/reviewer-supplied **sanitized** JSON files live under `planning/evidence/k2/<lowercase-name>.json`. Each reference in `promotion.json.evidence` contains `path` and the exact file-byte `sha256`. No value/recipient/body/cookie/token enters these receipts. Fixtures in `readiness.test.js` illustrate schema only and are never runtime evidence.
+
+All receipts have `version:1`, matching `kind`, `status:"passed"`, ISO UTC `verified_at` within seven days and matching `fingerprints` from `fingerprints(root)` in `readiness.js`. Fingerprints cover application/Auth/security, hook, local Auth config and operations/CI implementation. Policy/receipt files are excluded to avoid self-reference. Relevant changes invalidate evidence; receipt freshness does not establish unchanged secret values.
+
+| Receipt kind | Required evidence |
+| --- | --- |
+| `implementation` | `source_sha`, matching GitHub `ci_run` URL, nonzero `app_negative_tests` / `hook_tests`, zero `skipped` / `todo`, validated exact-head `auth_delivery` report with all twelve fixed names/counts |
+| `configuration` | `account_id`, exact `worker`, `supabase_project_ref`, `app_origin` / matching `route_origin`, `binding_names` only; opaque owner `configuration_revision`, `recipient_revision`, `hook_secret_revision` |
+| `token_policy` | Same `account_id`, `token_id`, `active:true`, independently inspected `policy_reference`; `grants` only `Editor` / necessary `Metadata Read-Only`, each `scope:"worker"`, exact `worker:"carworx-web-staging"` |
+| `hosted_hook` | Reviewed `source_sha`, exact hook `worker` / `version_id`, `enabled:true`, matching private-setting revision labels; `checks` for approved confirmation/recovery, unapproved signup/resend/recovery, unsupported action and hook failure/no fallback; each has fixed `status`, nonzero `hook_calls`, sanitized `correlation_id`, positive provider count for approved cases and zero otherwise |
+
+Owner receipts assert hosted configuration/hook version: the app deployment token cannot inspect/edit the separate hook or Supabase Auth settings. Review the underlying redacted evidence; these are explicit human/process attestations, not live verification of secret contents. Replacing credentials/settings or deploying a new hook invalidates the corresponding receipts and requires re-verification. The live account-token verify endpoint checks the supplied token ID/activity against the reviewed policy, never claims to prove its permissions.
+
+The owner sets ready only in a separately reviewed evidence change after all receipts exist. Green CI and a deleted blocker are insufficient. The main-only script check remains additional process protection; repository writers can access repository secrets. The enforced external limit is the Cloudflare **individual Worker Editor** token, not unavailable private-repository environment protection or legacy account-wide Workers Scripts Edit.
+
+### Owner application workflow and A2
+
+Inputs are repository-level vars/secrets, not a GitHub `staging` environment. Owner supplies vars `STAGING_APP_ORIGIN`, `STAGING_CLOUDFLARE_ACCOUNT_ID`, and secret `STAGING_CLOUDFLARE_API_TOKEN`. Dispatch from main with the exact reviewed PR-head SHA, merged source PR and its green K1 run. Both reviewed head and `main_merge_sha` are recorded. Formal PR reviews only: required `REVIEW: APPROVE @<full-sha>` / other `Agent:`; later CHANGES supersedes approval. Issue comments are ignored.
+
+The application build selects staging before packaging. Before publication, validate ready receipts against the selected source, verify owner token identity and required secret binding names/types. Wrangler tags the deployment with the reviewed SHA; evidence records its deployment/version ID. No token exists in dependency installation/build steps. Dry runs use no deployment token and cannot pass A2.
+
+Smoke verifies `/healthz` fixed JSON/200/no-store, private/no-store anonymous and authenticated account/data responses, key binding presence (Boolean only), an owner-held synthetic login/logout, and staging dev-page no-store/noindex. Automated nonlocal no-flag tests establish production-shaped 404, not live production behavior. Supply private `STAGING_SMOKE_EMAIL`, `STAGING_SMOKE_PASSWORD`, and `STAGING_SMOKE_UNAPPROVED_EMAIL` as repository secrets; no public debug endpoint exists.
+
+Hosted app negatives need an owner probe with zero Auth/provider call evidence for **signup, resend and recovery**, then a sanitized `STAGING_APPLICATION_NEGATIVE_EVIDENCE_JSON` repository variable: `version:1`, `source_sha`, `version_id`, UTC `verified_at` within 24 hours, `checks.<signup|resend|recovery>` each `{status:"passed",auth_calls:0,provider_calls:0,correlation_id:<opaque-id>}`. Underlying traces stay private and must be independently reviewed. The exported `smoke()` can run the three requests with owner-private before/after provider counter callbacks; zero network calls also have independent production-Worker tests. Never infer absence of delivery from generic HTTP acknowledgement alone.
+
+First deployment can fail smoke while awaiting that receipt; its failure leaves A2 open and uploads sanitized partial evidence. Once the owner supplies the matching receipt, dispatch `dry_run:false, smoke_only:true` to verify the existing SHA-tagged deployment without publishing another version. Any changed deployment invalidates the receipt. `smoke_only` never bypasses preflight/readiness. Agents do not dispatch either mode.
+
+### Primary sources
+
+- [Supabase Send Email Hook](https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook): enabled hook replaces built-in SMTP/default delivery.
+- [Supabase Auth Hooks](https://supabase.com/docs/guides/auth/auth-hooks) and [CLI configuration](https://supabase.com/docs/guides/local-development/cli/config): error propagation, HTTP timeout, local hook fields.
+- [Cloudflare Worker authorization](https://developers.cloudflare.com/workers/authorization/): individual Worker Editor roles; [account token verification](https://developers.cloudflare.com/api/resources/accounts/subresources/tokens/methods/verify/): identity/status only.
+- [GitHub environment availability](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments): private environment branch/secrets availability depends on plan.
+- [Resend send-email API](https://resend.com/docs/api-reference/emails/send-email): fixed transport and idempotency contract.
+
+## Historical skeleton inventory and checks
+
+The remaining text records the earlier skeleton; its pre-implementation state and environment-setting locations are superseded by the current section above.
+
+Initial read-only inventory: 2026-11-04 UTC. Implementation slice added 2026-11-05 below. K2 and A2 remain incomplete. No deployment, DNS, project, email or credential configuration was changed.
+
+## Verified inventory
+
+| Requirement                                 | Observed state                                                                                                                                                                                                        | Next step                                                                                                                                                        |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Existing staging Supabase project           | D-062 mapping is correct. Claude confirmed `gdiyrdqfkthtcglgqnts`, CarworX App, ACTIVE_HEALTHY, eu-central-1, Postgres 17 through the owner connector. Codex cannot see its organisation in the inspected connections | Owner grants the Codex connector access to this existing organisation; no replacement project                                                                    |
+| Cloudflare account and staging Worker/route | The connected account has no `carworx.app` zone and no CarworX Worker in the returned script list                                                                                                                     | Confirm the intended account, domain control and staging route; configure access in the connector/owner environment                                              |
+| Resend sending domain                       | No CarworX domain appears in the connected account's returned domain list                                                                                                                                             | Confirm the intended account/subdomain and its verification; owner executes DNS setup                                                                            |
+| Repository Actions secret/variable metadata | `gh secret list --json name` and `gh variable list --json name` both returned empty lists                                                                                                                             | Owner supplies staging-only names/values through the approved secret store after the configuration contract is reviewed; no secret values were requested or read |
+| Current application configuration           | T1 Wrangler config has only name, entry point and compatibility date. Tracked `.env.example` contains guidance but no variable names. No deployed staging configuration is established by these files                 | Implement explicit local/staging configuration and the reviewed-SHA manual workflow in K2                                                                        |
+| Google OAuth                                | Owner reported client creation and staging provider enablement in D-062. Current connected access cannot verify this project or local callbacks                                                                       | Confirm local/staging callback setup with T3; real login remains an acceptance test, not a provider-toggle check                                                 |
+| Recipient controls                          | No reviewed application/Auth SMTP restriction or approved recipient set is evidenced                                                                                                                                  | Agree the contract below with Claude before staging Auth/email tests                                                                                             |
+
+Absence from these inventories means unavailable through the inspected connections. It does not prove that the owner's resources do not exist. No unrelated account/project/domain details or credential values are included here.
+
+## Proposed acceptance contract for Claude / T3
+
+**Behavioral requirements AGREED with Claude/T3; concrete hosted enforcement remains OPEN.** See [Claude review](https://github.com/CarworX/carworx-new/pull/23#issuecomment-6643530553). K2 owns environment configuration, workflow and operations. Claude owns application/Auth routes and the Auth section of Supabase config. Shared config edits are serialized.
+
+- Local confirmation/reset/expired-link/delivery-failure tests use Supabase's local mail sink and synthetic `example.test` recipients. Delivery failure is simulated locally, with no real sends. The approved staging recipient set stays owner-held; agents never inspect or log it. Local service keys stay private and ephemeral.
+- Staging starts with email disabled until both application delivery and direct Supabase Auth SMTP are restricted. An application-only allowlist cannot satisfy this boundary.
+- The owner supplies the approved staging recipient set through private configuration. Test approved recipients succeed and unapproved recipients are rejected through both delivery paths, including direct Auth requests. Record redacted results and the exact source/environment.
+- The concrete SMTP/provider enforcement mechanism must be proposed by K2 and accepted with T3 once the intended sending account is available. This preflight does not assert that Resend offers a recipient allowlist or that any relay already exists.
+- Stage sign-in remains blocked until both restrictions are demonstrated, T3/T5 security boundaries are reviewed, and the owner executes the staging deployment. The Google path additionally requires real client/callback evidence.
+- `CARWORX_DEV_PAGES=1` is agreed for staging review/K3 only; production must omit it. This is a non-secret configuration flag, not a deployed value today.
+
+### Configuration clarification for Claude
+
+Disabling email confirmations alone does not disable password-reset messages. Leaving custom SMTP unset can still use Supabase's built-in sender for organisation team addresses. Neither setting demonstrates that all staging Auth email is off or restricted to the owner's specific approved set. Require a real fail-closed delivery control and negative direct-Auth tests before enabling staging sign-in/email; the mechanism is still open. Sources: [Supabase SMTP documentation](https://supabase.com/docs/guides/auth/auth-smtp), [default-provider change notice](https://supabase.com/changelog/29370-supabase-auth-changes-to-default-email-provider).
+
+## K2 implementation and evidence boundary
+
+Use branch `codex/k2-environments`. K2 owns `apps/web/wrangler.jsonc`, `.github/workflows/deploy-staging.yml` and `scripts/ops/env/**`; application APIs remain Claude-owned.
+
+The initial preflight required names-only configuration, a manual owner-run workflow, exact reviewed source/applicable CI and refusal on missing setup/evidence. The implementation below supplies that first slice. New runtime Auth recipient names/consumers still require coordination with Claude.
+
+Hosted A2 requires the owner-executed deployment/run URL, deployed SHA and synthetic smoke results. Until then, A2 remains BLOCKED. This preflight does not pass A3, hosted A6 or A7.
+
+## Current implementation — first K2 slice, Claude review pending
+
+At the owner's request Codex started this slice without waiting for Claude. Both this updated PR #23 and the Codex 14 handoff #29 remain available for later Claude review. T3/T5 #25 is independently approved and merged at `199d448`; its implemented consumers define the names below. This slice does not change application APIs or claim recipient enforcement.
+
+### Local development
+
+The default Wrangler configuration is local development. Keep the root `.env` for the local Supabase CLI and `apps/web/.dev.vars` for Worker bindings, both ignored. `.env.example` remains the existing names-only source. The owner fills `APP_ORIGIN` with the exact local origin (normally localhost port 5173), `SUPABASE_URL` with the local API origin and `SUPABASE_PUBLISHABLE_KEY` with the local publishable/anon key. Never use the service-role key here. Local email stays in the synthetic sink. Google setup remains owner-run and separate from fixture tests.
+
+The named `staging` configuration uses `carworx-web-staging`, with `CARWORX_DEV_PAGES=1`. Both staging and the default config disable workers.dev and preview URLs. No production environment, public route, domain, credentials or shared data binding is configured by this slice.
+
+### Manual workflow and source evidence
+
+`.github/workflows/deploy-staging.yml` triggers only with `workflow_dispatch` from main. It defaults to a dry run. The owner supplies the full reviewed PR-head SHA, merged PR number and successful K1 run number. Preflight rejects unmerged/wrong-repository/wrong-head sources, stale or failed CI, missing/cancelled/skipped jobs, inactive RLS/Auth contracts and missing reciprocal approval records. It checks all review/job pages rather than only the first page. No deployment token is present during preflight, installation or build.
+
+The workflow checks out its operations code from the trusted dispatch commit and application source at the verified SHA. `CLOUDFLARE_ENV=staging` selects staging **during the build**. Packaging validates the flattened generated `apps/web/build/server/wrangler.json`; selecting an environment only at deploy time cannot repair a default build. The dry run uses the generated config and supplies APP_ORIGIN/SUPABASE_URL overrides as separate CLI arguments. Values are never interpolated into shell code. All raw Wrangler output remains private; seven-day evidence contains SHA/PR/run, target, config hash and mode/status only. A dry run is never a successful deployment or A2.
+
+The approval check is a repository process check: both agents share a GitHub identity, so an `Agent:` label cannot authenticate a separate person/model. The actual reciprocal review is still required. Likewise, the named GitHub environment is not a claim of protected owner-only execution on this repository's plan; the owner triggers runs under the existing policy. Agents do not dispatch it.
+
+### Configuration names and consumers
+
+| Name | Owner location | Consumer |
+| --- | --- | --- |
+| `STAGING_APP_ORIGIN` | GitHub staging environment variable | Packaging validator and Worker `APP_ORIGIN` override; dedicated HTTPS origin, not the production apex |
+| `STAGING_CLOUDFLARE_ACCOUNT_ID` | GitHub staging environment variable | Passed as `CLOUDFLARE_ACCOUNT_ID` only to the eventual deployment step |
+| `STAGING_CLOUDFLARE_API_TOKEN` | GitHub staging environment secret | Passed as `CLOUDFLARE_API_TOKEN` only to the eventual deployment step; owner scopes it to the intended staging account/Worker operation |
+| `SUPABASE_PUBLISHABLE_KEY` | Owner-managed secret binding on the staging Worker | Existing T3 server consumer; use the D-062 staging publishable/anon key, never privileged credentials |
+| `APP_ORIGIN` / `SUPABASE_URL` | Validated deployment overrides | Existing T3 security/Auth consumers; Supabase URL fixed to D-062's project |
+| `CARWORX_DEV_PAGES` | Committed staging-only Wrangler var | Existing T4 dev-page guard; omit from future production config |
+
+These are names, not credentials. None were created, read or installed by this work.
+
+### Promotion remains blocked
+
+`promotion.json` deliberately says `blocked`. Setting dry-run to false fails preflight **before a deployment job can obtain its token**. Green CI, review labels or an owner-set Boolean cannot bypass it. A follow-up reviewed change must implement and prove the application/direct-Auth recipient restrictions, establish the owner route/bindings and replace the blocked policy with its accepted readiness contract. Removing blockers alone is not evidence; this PR does not define the final delivery mechanism.
+
+The private recipient set stays with the owner. Codex will coordinate names and evidence with Claude before changing application consumers. No SMTP/provider account, relay, hook, allowlist, sending domain or live test email is invented or activated here. A2 requires the owner-executed deployment and smoke results; A3 requires real Google evidence as well.
+
+### Checks and next review
+
+Run `node --test scripts/ops/env/contract.test.js`, the existing lint/format/types/unit/build checks, a staging build, and Wrangler's local `deploy --dry-run` against the generated staging config. Test cases include wrong/missing/stale source/run/review, skipped/cancelled jobs, missing feature suites, wrong build/environment and the still-closed promotion gate. Hosted workflow dispatch and staging smoke checks remain UNVERIFIED until the owner runs them after review/setup.
+
+Sources checked against the pinned Wrangler 4.156.1 schema and official docs: [Cloudflare Vite environment selection](https://developers.cloudflare.com/workers/vite-plugin/reference/cloudflare-environments/), [Wrangler environments](https://developers.cloudflare.com/workers/wrangler/environments/), [GitHub manual workflow execution](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow).
