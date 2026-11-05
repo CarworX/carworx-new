@@ -139,7 +139,11 @@ function runFuture() {
   // Supabase prints local keys. Keep all service output private and ephemeral.
   try {
     probed("supabase start", ["pnpm", "exec", "supabase", "start"], quiet);
-    probed("db reset", ["pnpm", "exec", "supabase", "db", "reset", "--local"], quiet);
+    probed(
+      "db reset",
+      ["pnpm", "exec", "supabase", "db", "reset", "--local"],
+      quiet,
+    );
     if (contract.rls)
       record("rls", () => {
         const dir = join(privateRoot, "rls");
