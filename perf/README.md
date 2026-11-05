@@ -21,3 +21,8 @@ subsequent work. Accessibility scores are automated checks, not WCAG compliance.
 Current K4 capacity gate: approximately 3.5 GiB free C:, Docker engine unreachable.
 Plan for at least 10 GiB free (about 6.5 GiB additional), then measure image,
 volume and export requirements plus safety margin. No user files/images are deleted.
+
+GitHub K3 runs the same lab profile on standard Ubuntu and publishes the exact
+source SHA, run conditions, numeric samples and verdict. Raw browser reports
+are private runner files. A real staging dispatch requires a passing matching
+K3 run via the perf_run input. Hosted CPU and route evidence remain separate.
