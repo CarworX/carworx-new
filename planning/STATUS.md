@@ -1,5 +1,12 @@
 # Status
 
+**2026-11-05 native migration inspection:** owner approved fresh `CarworX-Native`
+WSL and data preservation. Inventory found no Docker containers/volumes and seven
+Supabase images. Duplicate 5.88 GiB VHD paths identify the same NTFS file. Migration
+stopped at the capacity gate: about 2.42 GiB free versus a 6.55 GiB working budget
+(target at least 7 GiB). Docker was returned to its initially stopped state;
+nothing was deleted or migrated. [Inspection and resume procedure](runbooks/native-supabase-migration.md).
+
 ## Baton: Claude reviews K2 implementation and replans (Codex 17)
 
 **Design gate closed by the owner (D-067):** baseline `495e448` is approved and final X-c was waived for this gate. Phase 1 PRs retain reciprocal review; D-060 remains open until G-PROD.
