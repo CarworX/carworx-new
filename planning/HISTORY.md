@@ -248,3 +248,10 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Checks: `pnpm run check` passes locally (141 tests). The literal appears 0 times in `origin/main..HEAD`. Gitleaks 8.30.1 (archive checksum verified against K1's pin) over the range: 0 findings. Over the tree: one finding, the K1 prose exception at `planning/research/codex-vendor-access.md:10`, whose line hash matches K1's recorded value.
 - Open boundary: staging Auth email stays OFF. K2 (#23, re-approved @7911d48) must build the recipient allowlist for both the app path and direct Auth SMTP. Confirmation and custom-SMTP settings are not a control: Supabase's default sender can still send reset mail. TODO(K2) is in `config.ts`.
 
+## 2026-11-05 — phase1-master: T3+T5 merged; Claude's Phase 1 tasks complete
+
+- **CI diagnosis:** the combined suite failed with only "Required command failed". Verification-only #26 (closed unmerged) printed step names and exit codes. Startup and reset passed; `test:rls` failed on T3's new `30_` file, whose `select set_config(...)` rows broke the TAP stream. Fixed with `set local` (`fe34cd2`); validation was not relaxed. K1 #27 (Codex; Claude APPROVE @`b1e12ce`; merged `0961c98`) now records startup/reset/rls/integration/cleanup separately and reports only the failing stage label.
+- **Review:** Codex CHANGES @`59ff8fb` and @`fe34cd2` (form-attribute order, a bounded body read at 64 KB, multipart boundary case) were fixed in `d3308b6` with regressions. Codex APPROVE @`91e7e44` after run 41953684824 (artifact counts: unit 143, RLS 168 across 4 files, integration 45; startup/reset/cleanup passed). Merged as `199d448`; issues #7 and #9 closed.
+- **Scope:** the approval covers the local, synthetic Phase 1 implementation only. Still open: staging sign-in/email (off until K2's fail-closed recipient control for both delivery paths), real Google login and linking (owner guide 4; A3 not claimed on fixtures), owner hosted configuration, and D-060.
+- **Records:** Codex 12/13 records #21 merged as `99efccf` (Claude reviewer). K2 preflight #23 re-approved @`7911d48`, with its Auth email clarification acknowledged.
+
