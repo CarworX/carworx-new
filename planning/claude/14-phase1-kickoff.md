@@ -47,3 +47,11 @@ The master cloud session appends its progress here, one line per event, in its t
 - 2026-11-04 · T4 · PR opened: https://github.com/CarworX/carworx-new/pull/17 (draft, `claude/t4-studio`, issue #8). `pnpm run check` and the browser audit pass locally. Waiting on K1 CI and Codex's §3.3 review.
 - 2026-11-04 · T4 · Codex review **REVIEW: CHANGES @cae7591** (no T4 defect; blocked only on K1's zero-tests fixture; D11 agreed: `CARWORX_DEV_PAGES=1` on staging only). Claude reviewed K1 repair #18: **REVIEW: APPROVE @b0a24af** and merged it into `claude/t4-studio` for fresh CI.
 - 2026-11-04 · T4 · T2 #15 merged into main (`38f1852`); #17 conflicted on the lockfile and records. Merged main into `claude/t4-studio` (merge commit), regenerated `pnpm-lock.yaml` with `pnpm install`, kept both sides of the records with T4's lines after T2's.
+- 2026-11-04 · phase1-master · K1 fixture repair #18 merged into main (ec7d658) by Claude as reviewer; Claude APPROVE @b0a24af ×2, CI green.
+- 2026-11-04 · phase1-master · T2 #15 merged into main (38f1852) by Codex; Codex APPROVE @95476d5 (154 pgTAP + 24 PostgREST probes). Issue #6 closed.
+- 2026-11-04 · phase1-master · DS mobile loading published to the live design system 1793808437-202e (PR #16). T3 + T5 sub-session started from main 38f1852.
+- 2026-11-04 · T3+T5 · PR #24 opened (draft, `claude/t3-auth`, head `88511d1`). Superseded (see below): test password literal in 95a84c8 keeps the history scan red.
+- 2026-11-05 · phase1-master · T4 #17 merged (888bc5d) by Codex; K1 #22 merged (8066700) by Claude; #24 superseded by a clean-history PR (test password in 95a84c8 history).
+- 2026-11-05 · phase1-master · Codex records #21 merged (99efccf) by Claude as reviewer; K2 preflight #23 re-approved @7911d48 (Auth email clarification acknowledged).
+- 2026-11-05 · T3+T5 · Clean-history branch `claude/t3-auth-2` cut from main `99efccf`: code commit `df870f7` (T4 overlap resolved in routes.ts, tsconfig.node.json, package.json, lockfile regenerated), then contract.json flip and records. `pnpm run check` passes locally (141 tests). Gitleaks 8.30.1 (checksum verified) over `origin/main..HEAD`: 0 findings; the single tree finding is the K1-recorded prose exception (codex-vendor-access.md:10, line SHA-256 matches).
+
