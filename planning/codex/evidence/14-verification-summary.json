@@ -1,0 +1,128 @@
+{
+  "date_utc": "2026-11-05",
+  "reviewed_head": "91e7e4400690c97f8cc38a0f54b48032352c69b8",
+  "verdict": "APPROVE: local/synthetic implementation; staging acceptance remains open",
+  "merge": "199d44804ea74844f3de36513582abd79e6846d3",
+  "hosted_ci": {
+    "run": 41953684824,
+    "unit": 143,
+    "rls": 168,
+    "rls_files": 4,
+    "integration": 45,
+    "checks": "passed",
+    "secrets": "passed",
+    "gate": "passed",
+    "startup": "passed",
+    "reset": "passed",
+    "cleanup": "passed",
+    "downloaded_exact_head_verified": true
+  },
+  "local": {
+    "unit_build_head": "d3308b6f0c1b44efb9fb4323286feb0d3ace50d6",
+    "unit": 143,
+    "check_exit": 0,
+    "application_identical_to_reviewed_head": true,
+    "database": {
+      "head": "fe34cd25ff71d170ca693e44b044a4dec73ea23e",
+      "exit": 0,
+      "files": [
+        {
+          "file": "00_catalog.test.sql.tap",
+          "passed": 23,
+          "failed": 0,
+          "nonTap": 0
+        },
+        {
+          "file": "10_a4_matrix.test.sql.tap",
+          "passed": 85,
+          "failed": 0,
+          "nonTap": 0
+        },
+        {
+          "file": "20_boundaries.test.sql.tap",
+          "passed": 46,
+          "failed": 0,
+          "nonTap": 0
+        },
+        {
+          "file": "30_t3_caller_admin_status.test.sql.tap",
+          "passed": 14,
+          "failed": 0,
+          "nonTap": 0
+        }
+      ]
+    },
+    "integration": {
+      "tests": 45,
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "validator": "scripts/ci/core.js validateVitest"
+    },
+    "extra_refresh_probe": {
+      "tests": 1,
+      "passed": 1,
+      "expiry": "past positive synthetic cookie timestamp; real Auth refresh-token rotation"
+    },
+    "boundary_probes": {
+      "tests": 2,
+      "passed": 2
+    },
+    "browser": {
+      "head": "91e7e4400690c97f8cc38a0f54b48032352c69b8",
+      "runtime": "Node bridge to production Worker build; Chromium",
+      "results": [
+        {
+          "name": "phone signup: consent unticked, keyboard order and no horizontal overflow",
+          "status": "passed"
+        },
+        {
+          "name": "signup reaches recoverable check-email state",
+          "status": "passed"
+        },
+        {
+          "name": "confirmation POST survives prefetch/reload; Chromium accepts protected session cookies",
+          "status": "passed"
+        },
+        {
+          "name": "no Auth tokens in browser local/session storage",
+          "status": "passed"
+        },
+        {
+          "name": "logout clears session and protects account",
+          "status": "passed"
+        },
+        {
+          "name": "password sign-in works in Chromium",
+          "status": "passed"
+        },
+        {
+          "name": "password recovery and save work in Chromium",
+          "status": "passed"
+        },
+        {
+          "name": "personal Chromium response is private, no-store",
+          "status": "passed"
+        }
+      ]
+    },
+    "stopped": true
+  },
+  "ci_repair": {
+    "head": "b1e12cef9006416c7639b290397fcd32d231a9ee",
+    "pr": 27,
+    "tests": 18,
+    "claude_approvals": 2,
+    "run": 41952735152,
+    "merge": "0961c989c4911de10d36840693181bd7cc6ca18f"
+  },
+  "limits": [
+    "Windows Supabase CLI-launch adapter outside Git; original application/tests unchanged",
+    "Chromium through Node bridge to production Worker export, not hosted Workers",
+    "Reduced ancillary local Supabase services for about 4GB Docker memory",
+    "Google fixture only; no real login or account-linking acceptance",
+    "K2 application and direct-Auth recipient restrictions remain unimplemented/unverified",
+    "A1-A7 staging acceptance and D-060 owner checks remain open"
+  ]
+}
