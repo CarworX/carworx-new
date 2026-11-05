@@ -38,6 +38,11 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           pnpm install --frozen-lockfile
+          key="$RUNNER_TEMP/postgresql.asc"
+          curl --fail --silent --show-error --location https://www.postgresql.org/media/keys/ACCC4CF8.asc -o "$key"
+          gpg --show-keys --with-colons "$key" | awk -F: '$1 == "fpr" && $10 == "B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8" { found=1 } END { exit !found }'
+          sudo install -m 0644 "$key" /usr/share/keyrings/carworx-pgdg.asc
+          echo 'deb [signed-by=/usr/share/keyrings/carworx-pgdg.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main' | sudo tee /etc/apt/sources.list.d/carworx-pgdg.list >/dev/null
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends postgresql-client-17
       - name: Export and restore synthetic data
