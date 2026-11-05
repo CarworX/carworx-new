@@ -241,7 +241,15 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Published K2 readiness inventory #23. Inspected connection metadata only; repository secret/variable name lists are empty, no CarworX Cloudflare zone/Worker or Resend domain is visible. Claude confirmed D-062's staging project exists and is healthy through the owner's connector; Codex needs organisation access, not a replacement project. Claude agreed the behavioral recipient-control contract for T3; concrete Auth delivery enforcement stays open. Clarified against Supabase's official docs that confirmations off/custom SMTP unset do not disable every Auth email flow.
 - Refreshed records #21 after the feature merges, preserving both original histories. Codex 13 and sanitized evidence identify final results and next K2 work. No deployment, hosted configuration change, account creation, production credential access or spend. Phase 1 staging acceptance, real Google/TOTP, hosted performance/recovery and D-060 remain open.
 
+## 2026-11-05 — Claude T3 + T5: clean-history rebuild (supersedes #24)
+
+- PR #24 (`claude/t3-auth`, head `88511d1`) stayed red on its secrets scan: a synthetic test password literal in commit `95a84c8` matched Gitleaks' `generic-api-key` rule, and the scan covers every commit reachable from the head. The branch history was not rewritten; the coordinator chose a clean branch.
+- `claude/t3-auth-2` cut from main `99efccf` (T4 #17, K1 #22 and #21 records included). Code commit `df870f7` carries the same T3/T5 tree, with the password generated at run time. Shared files (`routes.ts`, `tsconfig.node.json`, `package.json`, `.env.example`) keep T4's entries and add ours; `pnpm-lock.yaml` regenerated with `pnpm install`.
+- Checks: `pnpm run check` passes locally (141 tests). The literal appears 0 times in `origin/main..HEAD`. Gitleaks 8.30.1 (archive checksum verified against K1's pin) over the range: 0 findings. Over the tree: one finding, the K1 prose exception at `planning/research/codex-vendor-access.md:10`, whose line hash matches K1's recorded value.
+- Open boundary: staging Auth email stays OFF. K2 (#23, re-approved @7911d48) must build the recipient allowlist for both the app path and direct Auth SMTP. Confirmation and custom-SMTP settings are not a control: Supabase's default sender can still send reset mail. TODO(K2) is in `config.ts`.
+
 ## 2026-11-04 — DS mobile loading page
 
 - New MobileLoading card (States) published to the live design system 1793808437-202e (from 1793783662-3fad): the D-041 loaders by mobile scenario at 360 px with reduced-motion stills; mirrored in PR https://github.com/CarworX/carworx-new/pull/16. D-060 owner checks stay open.
+
 
