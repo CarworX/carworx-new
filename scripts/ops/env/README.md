@@ -142,3 +142,20 @@ The private recipient set stays with the owner. Codex will coordinate names and 
 Run `node --test scripts/ops/env/contract.test.js`, the existing lint/format/types/unit/build checks, a staging build, and Wrangler's local `deploy --dry-run` against the generated staging config. Test cases include wrong/missing/stale source/run/review, skipped/cancelled jobs, missing feature suites, wrong build/environment and the still-closed promotion gate. Hosted workflow dispatch and staging smoke checks remain UNVERIFIED until the owner runs them after review/setup.
 
 Sources checked against the pinned Wrangler 4.156.1 schema and official docs: [Cloudflare Vite environment selection](https://developers.cloudflare.com/workers/vite-plugin/reference/cloudflare-environments/), [Wrangler environments](https://developers.cloudflare.com/workers/wrangler/environments/), [GitHub manual workflow execution](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow).
+
+### D-071 Phase 1 staging self-check
+
+Use the reciprocal review path for source with a valid independent approval.
+For a Codex-authored Phase 1 candidate, trusted main may instead contain one
+`phase1_self_check` in `promotion.json`. The record identifies decision
+`D-071`, `status: "passed"`, `source_sha`, `merge_sha`, numeric `pr`, numeric
+`ci_run`, numeric `ci_attempt`, and UTC `checked_at` and `expires_at`. The
+window is at most seven days. Record the self-check in the source PR and
+verify the current CI attempt before adding the record. Never label it an
+independent approval. An opposing exact-head review still blocks it.
+
+The current main workflow validates the record before acquiring deployment
+credentials. This is scoped to the repository, app Worker and staging
+Supabase target already pinned in the policy. All readiness receipts,
+worker-token and smoke gates still apply. Set the record to null at Phase 1
+closeout or when invalidating the candidate.

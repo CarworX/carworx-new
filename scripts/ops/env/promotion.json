@@ -4,6 +4,7 @@
   "worker": "carworx-web-staging",
   "supabase_project_ref": "gdiyrdqfkthtcglgqnts",
   "promotion": "blocked",
+  "phase1_self_check": null,
   "recipient_control": {
     "setting": "STAGING_APPROVED_RECIPIENTS_JSON",
     "matching": "exact-email-v1",
@@ -25,7 +26,7 @@
     "application_recipient_negative"
   ],
   "blockers": [
-    "Fresh independent review and combined-head CI evidence are required",
+    "Exact-head review or a D-071 self-check and combined-head CI are required",
     "Owner target, binding names, private configuration revisions and Worker-scoped token policy are unverified",
     "Owner must deploy/enable the reviewed hook and supply positive/negative hosted delivery evidence"
   ]
