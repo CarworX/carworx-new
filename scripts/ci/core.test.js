@@ -152,6 +152,7 @@ function gateFixture() {
         ...status([
           "install",
           "selftest",
+          "operations",
           "lint",
           "format",
           "typecheck",
@@ -207,4 +208,11 @@ test("gate rejects stale head, failed/cancelled/skipped jobs and incomplete atte
       assert.throws(() => validateGate(results, bad, "head", "head"));
     }
   }
+  reports.checks.contract.integration = true;
+  reports.checks.checks.integration = { status: "passed", tests: 1 };
+  assert.throws(() => validateGate(results, reports, "head", "head"));
+  reports.checks.checks.auth_delivery = { status: "passed", tests: 12 };
+  validateGate(results, reports, "head", "head");
+  reports.checks.checks.auth_delivery.tests = 0;
+  assert.throws(() => validateGate(results, reports, "head", "head"));
 });

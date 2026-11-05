@@ -9,7 +9,13 @@ export function runFutureStages(actions, record) {
     }
   };
   try {
-    for (const name of ["startup", "reset", "rls", "integration"]) {
+    for (const name of [
+      "startup",
+      "reset",
+      "rls",
+      "integration",
+      "auth_delivery",
+    ]) {
       if (actions[name]) run(name);
     }
   } catch (error) {
