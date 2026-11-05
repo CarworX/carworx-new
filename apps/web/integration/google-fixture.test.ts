@@ -95,9 +95,13 @@ describe("FIXTURE Google sign-in: callback outcomes", () => {
 
   it("only offers a CSRF-protected POST to start Google sign-in", async () => {
     const page = await new Browser().send("/auth/sign-in");
-    expect(page.body).toMatch(
-      /<form method="post"[^>]*>[\s\S]*?name="intent" value="google"/,
-    );
+    // Attribute order is not part of the contract: match method="post" anywhere in the tag.
+    const googleForm =
+      /<form\b[^>]*\bmethod="post"[^>]*>[\s\S]*?<\/form>/.exec(
+        page.body,
+      )?.[0] ?? "";
+    expect(googleForm).toContain('name="intent" value="google"');
+    expect(googleForm).toContain('name="csrf"');
     const forged = new Browser();
     await forged.send("/auth/sign-in");
     const reply = await forged.send("/auth/sign-in", {

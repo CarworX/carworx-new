@@ -52,6 +52,36 @@ export type MutationCheck =
   | { ok: true }
   | { ok: false; reason: "origin" | "content-type" | "too-large" | "csrf" };
 
+/** Reads a request body up to `limit` bytes. Returns null (and cancels) on overflow. */
+export async function readBounded(
+  stream: ReadableStream<Uint8Array> | null,
+  limit: number,
+): Promise<ArrayBuffer | null> {
+  if (stream === null) return new ArrayBuffer(0);
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > limit) {
+      // Not awaited: the body is teed, and the tee's cancel only settles once
+      // both branches are cancelled, so awaiting here would hang the request.
+      reader.cancel().catch(() => undefined);
+      return null;
+    }
+    chunks.push(value);
+  }
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return out.buffer;
+}
+
 export async function checkMutation(
   request: Request,
   config: ServerConfig,
@@ -64,10 +94,13 @@ export async function checkMutation(
   if (site !== null && site !== "same-origin") {
     return { ok: false, reason: "origin" };
   }
-  const type = (request.headers.get("Content-Type") ?? "").toLowerCase();
+  // Keep the header as sent: a multipart boundary is case-sensitive. Only the
+  // media type (before any ";") is compared, case-insensitively.
+  const contentType = request.headers.get("Content-Type") ?? "";
+  const mediaType = (contentType.split(";")[0] ?? "").trim().toLowerCase();
   if (
-    !type.startsWith("application/x-www-form-urlencoded") &&
-    !type.startsWith("multipart/form-data")
+    mediaType !== "application/x-www-form-urlencoded" &&
+    mediaType !== "multipart/form-data"
   ) {
     return { ok: false, reason: "content-type" };
   }
@@ -75,14 +108,15 @@ export async function checkMutation(
   if (!Number.isFinite(length) || length > MAX_FORM_BYTES) {
     return { ok: false, reason: "too-large" };
   }
-  const body = await request.clone().arrayBuffer();
-  if (body.byteLength > MAX_FORM_BYTES)
-    return { ok: false, reason: "too-large" };
+  // Read at most MAX_FORM_BYTES + 1, then stop: a body without Content-Length
+  // (chunked) must not be buffered whole before the limit applies.
+  const body = await readBounded(request.clone().body, MAX_FORM_BYTES);
+  if (body === null) return { ok: false, reason: "too-large" };
   let form: FormData;
   try {
     form = await new Request(request.url, {
       method: "POST",
-      headers: { "Content-Type": type },
+      headers: { "Content-Type": contentType },
       body,
     }).formData();
   } catch {

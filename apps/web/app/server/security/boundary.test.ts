@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  checkMutation,
   finalizeResponse,
   MAX_FORM_BYTES,
   withSecurityBoundary,
@@ -228,5 +229,70 @@ describe("response finalisation", () => {
       () => Promise.resolve(Response.json({})),
     );
     expect(json.headers.getSetCookie()).toEqual([]);
+  });
+});
+
+describe("mutation body handling (regressions)", () => {
+  const config = {
+    appOrigin: APP,
+    supabaseUrl: env.SUPABASE_URL,
+    supabasePublishableKey: env.SUPABASE_PUBLISHABLE_KEY,
+  };
+
+  it("accepts a multipart body whose case-sensitive boundary is mixed case", async () => {
+    const boundary = "----WebKitFormBoundaryAbCdEf123456";
+    const body = [
+      `--${boundary}`,
+      'Content-Disposition: form-data; name="csrf"',
+      "",
+      TOKEN,
+      `--${boundary}`,
+      'Content-Disposition: form-data; name="email"',
+      "",
+      "a@example.test",
+      `--${boundary}--`,
+      "",
+    ].join("\r\n");
+    const request = new Request(`${APP}/auth/sign-in`, {
+      method: "POST",
+      headers: {
+        Origin: APP,
+        Cookie: goodCookie,
+        "Content-Type": `Multipart/Form-Data; boundary=${boundary}`,
+      },
+      body,
+    });
+    expect(await checkMutation(request, config)).toEqual({ ok: true });
+  });
+
+  it("stops reading an oversize body without Content-Length at the limit", async () => {
+    const total = 1024 * 1024;
+    let pulled = 0;
+    const stream = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        if (pulled >= total) {
+          controller.close();
+          return;
+        }
+        const chunk = new Uint8Array(16 * 1024);
+        pulled += chunk.byteLength;
+        controller.enqueue(chunk);
+      },
+    });
+    const request = new Request(`${APP}/auth/sign-in`, {
+      method: "POST",
+      headers: {
+        Origin: APP,
+        Cookie: goodCookie,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: stream,
+      duplex: "half",
+    } as RequestInit & { duplex: "half" });
+    expect(await checkMutation(request, config)).toEqual({
+      ok: false,
+      reason: "too-large",
+    });
+    expect(pulled).toBeLessThan(total / 4);
   });
 });
