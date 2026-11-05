@@ -118,6 +118,13 @@ function probed(step, args, options) {
   console.log(
     `k1-probe: ${step} exit=${result.status ?? `signal:${result.signal ?? "none"}`}`,
   );
+  // Names only: the RLS runner prints "FAIL <sql file name>" lines.
+  if (result.status !== 0 && typeof result.stdout === "string") {
+    for (const line of result.stdout.split("\n")) {
+      if (/^FAIL \S+\.sql$/.test(line))
+        console.log(`k1-probe: ${step} ${line}`);
+    }
+  }
   invariant(!result.error && result.status === 0, "Required command failed");
   return result;
 }
