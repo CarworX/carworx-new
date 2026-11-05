@@ -41,7 +41,7 @@ const env = Object.fromEntries(
     ([name]) => !/^(?:SUPABASE_|PG)/.test(name),
   ),
 );
-env.SUPABASE_EXPERIMENTAL_STACK = "1";
+env.SUPABASE_EXPERIMENTAL_STACK = ci ? "0" : "1";
 env.PATH = pgBin + ":" + process.env.PATH;
 const tables = [
   "auth.users",
@@ -118,19 +118,28 @@ function stack(name) {
   cpSync(join(repo, "supabase"), join(cwd, "supabase"), { recursive: true });
   const config = join(cwd, "supabase/config.toml");
   const text = readFileSync(config, "utf8").replace(/\r/g, "");
+  let port = name === "source" ? 25000 : 26000;
   const local = text
     .replace(
       /^\[auth\.email\.template\.(?:confirmation|recovery)\]\n[\s\S]*?(?=^\[|$(?![\s\S]))/gm,
       "",
     )
-    .replace(/^(?:port|shadow_port|inspector_port) = .*\n/gm, "")
+    .replace(/^(port|shadow_port|inspector_port) = .*\n/gm, (_, key) =>
+      ci ? key + " = " + String(port++) + "\n" : "",
+    )
     .replace(
       /(^\[db\.seed\]\n(?:#[^\n]*\n)*)enabled = true/m,
       "$1enabled = false",
     );
   assert.ok(!/^content_path =/m.test(local));
   assert.match(local, /\[db\.seed\]\n(?:#[^\n]*\n)*enabled = false/);
-  writeFileSync(config, local);
+  const project = ci
+    ? local.replace(
+        /^project_id = .*$/m,
+        `project_id = "carworx-k4-${name}-${randomUUID().slice(0, 8)}"`,
+      )
+    : local;
+  writeFileSync(config, project);
   return { name, cwd };
 }
 
@@ -138,35 +147,49 @@ function start(instance) {
   stageName = instance.name + "-capacity";
   capacity(2 * gib);
   const { name, cwd } = instance;
-  const result = JSON.parse(
-    run(
-      name + "-start",
-      cli,
-      [
-        "start",
-        "--stack",
-        name,
-        "--runtime",
-        runtime,
-        "--preparation",
-        "on-demand",
-        "--output-format",
-        "json",
-      ],
-      { cwd },
-    ),
-  );
-  assert.equal(result.runtime, runtime);
-  const config = result.env;
+  let config;
+  if (ci) {
+    run(name + "-start", cli, ["start"], { cwd });
+    const status = run(name + "-status", cli, ["status", "-o", "json"], {
+      cwd,
+    });
+    config = JSON.parse(status.slice(status.indexOf("{")));
+  } else {
+    const result = JSON.parse(
+      run(
+        name + "-start",
+        cli,
+        [
+          "start",
+          "--stack",
+          name,
+          "--runtime",
+          "native",
+          "--preparation",
+          "on-demand",
+          "--output-format",
+          "json",
+        ],
+        { cwd },
+      ),
+    );
+    assert.equal(result.runtime, "native");
+    config = result.env;
+  }
   safePort(config.API_URL, "http:");
   safePort(config.DB_URL, "postgresql:");
   return config;
 }
 
 function stop(instance) {
-  run(instance.name + "-stop", cli, ["stop", "--stack", instance.name], {
-    cwd: instance.cwd,
-  });
+  run(
+    instance.name + "-stop",
+    cli,
+    ci ? ["stop", "--no-backup"] : ["stop", "--stack", instance.name],
+    {
+      cwd: instance.cwd,
+    },
+  );
 }
 
 async function api(config, path, { method = "GET", token, body } = {}) {
@@ -540,7 +563,11 @@ async function drill() {
         Object.fromEntries(
           paths.map((path) => [
             path,
-            readFileSync(join(directory, path), "utf8"),
+            path === "config.toml" && ci
+              ? readFileSync(join(directory, path), "utf8")
+                  .replace(/^project_id = .*$/m, 'project_id = "carworx-k4"')
+                  .replace(/^(?:port|shadow_port|inspector_port) = .*\n/gm, "")
+              : readFileSync(join(directory, path), "utf8"),
           ]),
         ),
       );
