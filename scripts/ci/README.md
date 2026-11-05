@@ -40,7 +40,8 @@ The scanner runs with 100% redaction and captured stdout/stderr. Raw results sta
 `checks.json`, `secrets.json` and `gate.json` record source/base/merge-base/workflow SHAs, run/attempt and tool/image details. The checks summary records every stage and the reason for future suites being not applicable. Job summaries pass to the final gate through outputs; upload failure still fails the originating job. Artefacts last seven days; retain relevant run links and results in the task handoff.
 
 K1 targets `claude/t1-scaffold`. Claude reviews the exact K1 commit and incorporates it into T1; Codex reviews the combined head and checks its new CI run. This workflow performs no merges or deployments. Bootstrap success is not acceptance of future suites, A1/A5 for absent features, A3 or Phase 1 staging A1–A7.
-# K2 required delivery and operations checks
+
+## K2 required delivery and operations checks
 
 K2 adds required `operations` test counts to the checks gate and `auth_delivery`
 after the existing integration stage. The latter runs a disposable Linux local

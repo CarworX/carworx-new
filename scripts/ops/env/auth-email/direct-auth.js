@@ -10,6 +10,8 @@ const execute = promisify(execFile);
 const checks = [];
 const deliveries = [];
 let invoked = 0;
+let authStatus = 0;
+let hookStatus = 0;
 let mode = "capture";
 let phase = "setup";
 let server;
@@ -82,20 +84,30 @@ try {
   original = readFileSync(configPath, "utf8");
   requireSafe(/^project_id = "carworx"$/m.test(original));
   requireSafe(/\[auth.hook.send_email\]\s*enabled = false/.test(original));
+  // The project network can be removed/reallocated on stop/start. The host's
+  // default bridge address is stable across this disposable stack restart.
   const network = JSON.parse(
     await command("docker", [
+      "network",
       "inspect",
-      "supabase_db_carworx",
+      "bridge",
       "--format",
-      "{{json .NetworkSettings.Networks}}",
+      "{{json .IPAM.Config}}",
     ]),
   );
-  const gateways = [...new Set(Object.values(network).map((n) => n.Gateway))];
+  const gateways = [
+    ...new Set(
+      network
+        .map((n) => n.Gateway)
+        .filter((g) => typeof g === "string" && privateGateway(g)),
+    ),
+  ];
   requireSafe(gateways.length === 1 && privateGateway(gateways[0]));
   server = createServer(async (req, res) => {
     try {
       invoked++;
       if (mode === "outage") {
+        hookStatus = 503;
         req.resume();
         res.writeHead(503);
         res.end();
@@ -119,9 +131,11 @@ try {
           ? { ...hookEnv, STAGING_APPROVED_RECIPIENTS_JSON: "[]" }
           : hookEnv,
       );
+      hookStatus = response.status;
       res.writeHead(response.status, Object.fromEntries(response.headers));
       res.end(await response.text());
     } catch {
+      hookStatus = 503;
       res.writeHead(503);
       res.end();
     }
@@ -133,7 +147,7 @@ try {
     LOCAL_AUTH_EMAIL_HOOK_URI: `http://${gateways[0]}:${port}/hook`,
     LOCAL_AUTH_EMAIL_HOOK_SECRET: secret,
   };
-  phase = "hook_stack_startup";
+  phase = "hook_stack_stop";
   await supabase(["stop", "--no-backup"]);
   writeFileSync(
     configPath,
@@ -145,8 +159,11 @@ try {
       .replace('max_frequency = "60s"', 'max_frequency = "0s"'),
   );
   changed = true;
+  phase = "hook_stack_startup";
   await supabase(["start"], localEnv);
+  phase = "hook_stack_reset";
   await supabase(["db", "reset", "--local"], localEnv);
+  phase = "hook_stack_status";
   const raw = await supabase(["status", "-o", "json"], localEnv);
   const status = JSON.parse(raw.slice(raw.indexOf("{")));
   const api = status.API_URL;
@@ -168,6 +185,7 @@ try {
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(20_000),
     });
+    authStatus = response.status;
     let data;
     try {
       data = await response.json();
@@ -298,6 +316,12 @@ try {
     skipped: 0,
     todo: 0,
     checks,
+    observed: {
+      hook_calls: invoked,
+      provider_calls: deliveries.length,
+      auth_status: authStatus,
+      hook_status: hookStatus,
+    },
   };
   if (
     process.env.CI_AUTH_EMAIL_REPORT &&

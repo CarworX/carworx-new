@@ -25,7 +25,7 @@
 
 ## Owner prerequisites
 
-- **Local Supabase:** Docker 29.9.2 is healthy. The initial Windows CLI temp-directory failure was resolved for this run using process-local TMP/TEMP at `C:/Temp/carworx-supabase`. A clean local reset, 154 pgTAP assertions and 24 REST probes passed; all task containers were stopped. Docker has about 4 GB memory and C: about 6 GB free after image downloads, so K4 needs a capacity preflight. No images, user files or WSL installations were deleted.
+- **Local Supabase:** Docker 29.9.2 is healthy. The initial Windows CLI temp-directory failure was resolved for this run using process-local TMP/TEMP at `C:/Temp/carworx-supabase`. A clean local reset, 154 pgTAP assertions and 24 REST probes passed; all task containers were stopped. Docker has about 4 GB memory. During K2, C: varied from roughly 0.6 to 4.3 GB free; no new workstation stack was started. K4 needs a fresh capacity preflight. No images, user files or WSL installations were deleted.
 - **K1:** owner confirmed included Actions minutes/$0 cap. Both fixture repairs are Claude-approved and merged; Auth integration remains mandatory as T3/T5 arrives.
 - **T3/K2:** D-062 identifies “CarworX App” as synthetic staging; Claude reports Google enabled. Real login remains unverified. Complete local Google provider/callback configuration, account/DNS inventory, Cloudflare staging route, scoped secrets and restricted Resend/Auth SMTP. Claude supplies the guides; deployment execution stays owner-controlled.
 - **K4 hosted:** choose an existing private destination, a separate copy and operator; confirm proposed frequency, retention and measured cost/capacity. The local synthetic drill comes first (D-059).
@@ -36,7 +36,9 @@
 
 **Foundation code merged:** Codex approved T2 `95476d5` and merged #15 as `38f1852`; all 154 pgTAP assertions and 24 REST probes also passed on the workstation. Codex approved T4 `f6f82cb` after combined CI (78 unit tests + 154 RLS assertions), the local check/build and 3 focused menu browser checks; #17 merged as `888bc5d`. Claude approved and merged K1 Auth fixture #22 (`994d09d`, merge `8066700`). These are code-review results, not staging A1–A7 completion.
 
-**Current handoff:** [Codex 14](codex/14-t3-t5-review-and-k1-diagnostics.md) records four resolved T3/T5 findings, K1's reviewed diagnostics repair, exact-head hosted results (143 unit / 168 RLS / 45 integration), independent local/browser evidence and K2 inputs. #25 is approved at `91e7e44` and merged as `199d448`; #27 is Claude-approved and merged as `0961c98`. #21 is merged; #23 is re-approved at `7911d48`. Superseded #24 and verification-only #26 are closed unmerged. Staging remains blocked on access, owner configuration and demonstrated application plus direct-Auth recipient restrictions. Confirmations off/custom SMTP unset do not establish that Auth mail is disabled.
+**Prior foundation handoff:** [Codex 14](codex/14-t3-t5-review-and-k1-diagnostics.md) records four resolved T3/T5 findings, K1's reviewed diagnostics repair, exact-head hosted results (143 unit / 168 RLS / 45 integration), independent local/browser evidence and K2 inputs. #25 is approved at `91e7e44` and merged as `199d448`; #27 is Claude-approved and merged as `0961c98`. #21 is merged; #23 is re-approved at `7911d48`. Superseded #24 and verification-only #26 are closed unmerged. Staging remains blocked on access, owner configuration and demonstrated application plus direct-Auth recipient restrictions. Confirmations off/custom SMTP unset do not establish that Auth mail is disabled.
+
+**Current handoff:** [Codex 17](codex/17-k2-implementation-handoff.md), K2 PR #23. The owner waived the pre-build agreement gate (D-068). Claude reviews the implemented app/hook controls, required CI and readiness/smoke contracts, then replans owner evidence and any findings. Prior skeleton approvals are superseded; deployment and A2 remain gated.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 

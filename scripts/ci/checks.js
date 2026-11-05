@@ -13,7 +13,12 @@ import {
   writeEvidence,
 } from "./core.js";
 import { runFutureStages } from "./future-stages.js";
-import { validateEmailReport, validateNodeReport } from "../ops/env/reports.js";
+import {
+  validateEmailReport,
+  validateNodeReport,
+  validateOperationsFiles,
+  emailFailureDetails,
+} from "../ops/env/reports.js";
 
 const statePath = () => evidencePath("checks");
 const save = (state) => writeEvidence("checks", state);
@@ -35,7 +40,12 @@ function record(name, action) {
   try {
     state.checks[name] = { status: "passed", ...action() };
   } catch (error) {
-    state.checks[name] = { status: "failed" };
+    state.checks[name] = {
+      status: "failed",
+      ...(name === "auth_delivery"
+        ? emailFailureDetails(error.emailReport, context().head_sha)
+        : {}),
+    };
     throw error;
   } finally {
     save(state);
@@ -174,18 +184,28 @@ function runFuture() {
       auth_delivery: contract.integration
         ? () => {
             const path = join(privateRoot, "auth-email.json");
-            command(
-              process.execPath,
-              ["scripts/ops/env/auth-email/direct-auth.js"],
-              {
-                ...quiet,
-                env: {
-                  ...process.env,
-                  CI_AUTH_EMAIL_REPORT: path,
-                  K1_HEAD_SHA: context().head_sha,
+            try {
+              command(
+                process.execPath,
+                ["scripts/ops/env/auth-email/direct-auth.js"],
+                {
+                  ...quiet,
+                  env: {
+                    ...process.env,
+                    CI_AUTH_EMAIL_REPORT: path,
+                    K1_HEAD_SHA: context().head_sha,
+                  },
                 },
-              },
-            );
+              );
+            } catch {
+              const error = new Error("Auth delivery command failed");
+              try {
+                error.emailReport = readJson(path);
+              } catch {
+                /* Fixed diagnostic only. */
+              }
+              throw error;
+            }
             return validateEmailReport(readJson(path), context().head_sha);
           }
         : undefined,
@@ -213,7 +233,7 @@ const commands = {
         [
           "--test",
           "--test-reporter=tap",
-          ...filesUnder("scripts/ops/env", ".test.js"),
+          ...validateOperationsFiles(filesUnder("scripts/ops/env", ".test.js")),
         ],
         { stdio: "pipe", encoding: "utf8" },
       ).stdout,

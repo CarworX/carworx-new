@@ -2,9 +2,53 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   EMAIL_CHECKS,
+  OPERATIONS_TEST_FILES,
+  validateOperationsFiles,
+  emailFailureDetails,
   validateEmailReport,
   validateNodeReport,
 } from "./reports.js";
+
+test("failed email reports expose only fixed stage names and numeric observations", () => {
+  const sha = "a".repeat(40);
+  const report = {
+    version: 1,
+    source_sha: sha,
+    checks: [{ name: "approved_confirmation_working_link", status: "failed" }],
+    observed: {
+      hook_calls: 0,
+      provider_calls: 0,
+      auth_status: 500,
+      hook_status: 0,
+      secret: "private output",
+    },
+    raw: "private output",
+  };
+  const safe = emailFailureDetails(report, sha);
+  assert.deepEqual(safe.stages, ["approved_confirmation_working_link"]);
+  assert.equal(safe.auth_status, 500);
+  assert.equal(JSON.stringify(safe).includes("private output"), false);
+  report.checks[0].name = "private output";
+  assert.deepEqual(emailFailureDetails(report, sha), {
+    diagnostic: "missing_or_invalid_report",
+  });
+  assert.deepEqual(emailFailureDetails(null, sha), {
+    diagnostic: "missing_or_invalid_report",
+  });
+});
+
+test("removing any required operations suite cannot leave the remaining suites green", () => {
+  assert.deepEqual(
+    validateOperationsFiles(OPERATIONS_TEST_FILES),
+    OPERATIONS_TEST_FILES,
+  );
+  for (const removed of OPERATIONS_TEST_FILES)
+    assert.throws(() =>
+      validateOperationsFiles(
+        OPERATIONS_TEST_FILES.filter((name) => name !== removed),
+      ),
+    );
+});
 
 test("email boundary requires exact-head nonzero complete fixed coverage", () => {
   const report = {
