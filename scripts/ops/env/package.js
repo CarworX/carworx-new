@@ -109,6 +109,11 @@ try {
     supabase_project_ref: policy.supabase_project_ref,
     generated_config_sha256: createHash("sha256").update(raw).digest("hex"),
     packaging: "passed",
+    operation: dryRun
+      ? "package"
+      : process.env.SMOKE_ONLY === "true"
+        ? "verify_existing"
+        : "deploy",
     deployed: !dryRun,
     ...(dryRun ? {} : await currentDeployment(policy.worker, process.env)),
   });
@@ -119,7 +124,9 @@ try {
   console.log(
     dryRun
       ? "Staging dry run passed; nothing deployed"
-      : "Owner-triggered staging deployment command succeeded; smoke acceptance still required",
+      : process.env.SMOKE_ONLY === "true"
+        ? "Existing owner-deployed version verified; smoke acceptance still required"
+        : "Owner-triggered staging deployment command succeeded; smoke acceptance still required",
   );
 } catch {
   console.error(
