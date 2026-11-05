@@ -73,7 +73,11 @@ function capacity(minimum) {
   assert.ok(freeBytes() >= minimum, "Recovery disk safety margin reached");
 }
 
+let stageName = "preflight";
+let diagnostic = "assertion";
 function run(stage, command, args, options = {}) {
+  stageName = stage;
+  diagnostic = "assertion";
   const result = spawnSync(command, args, {
     env,
     encoding: "utf8",
@@ -82,8 +86,20 @@ function run(stage, command, args, options = {}) {
     ...options,
   });
   writeFileSync(join(root, stage + ".log"), result.stderr ?? "");
-  if (result.status !== 0)
+  if (result.status !== 0) {
+    diagnostic = /no space|ENOSPC/i.test(result.stderr ?? "")
+      ? "capacity"
+      : /address already in use|port.*allocat/i.test(result.stderr ?? "")
+        ? "port"
+        : /permission denied|access denied/i.test(result.stderr ?? "")
+          ? "permission"
+          : /docker/i.test(result.stderr ?? "")
+            ? "docker-command"
+            : /supabase|postgres/i.test(result.stderr ?? "")
+              ? "stack-command"
+              : "command";
     throw Error(stage + " failed (private log in " + root + ")");
+  }
   return result.stdout;
 }
 
@@ -698,6 +714,8 @@ async function drill() {
     };
   } finally {
     if (active) {
+      const failedStage = stageName;
+      const failedReason = diagnostic;
       try {
         stop(active);
       } catch {
@@ -714,6 +732,13 @@ try {
 } catch (error) {
   // Assertion values and HTTP response bodies can contain private data.
   writeFileSync(join(root, "failure.log"), String(error.stack));
-  console.error("K4 drill failed. Private diagnostics: " + root);
+  console.error(
+    "K4 drill failed at " +
+      stageName +
+      " (" +
+      diagnostic +
+      "). Private diagnostics: " +
+      root,
+  );
   process.exitCode = 1;
 }
