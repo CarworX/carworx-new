@@ -6,6 +6,7 @@ import { createServer } from "node:http";
 import { promisify } from "node:util";
 import { createAuthEmailHandler } from "./handler.js";
 import { classifyLocalFailure } from "../reports.js";
+import { nativeMailConfig } from "../../native/mail-config.js";
 
 const execute = promisify(execFile);
 const checks = [];
@@ -22,6 +23,7 @@ let server;
 let original;
 let changed = false;
 const configPath = "supabase/config.toml";
+const native = process.env.CARWORX_NATIVE_TEST_STACK === "native-direct";
 const secret = `v1,whsec_${randomBytes(32).toString("base64")}`;
 const tag = randomUUID();
 const approved = [
@@ -70,8 +72,30 @@ async function command(file, args, env = process.env) {
     throw new Error("local infrastructure command failed", { cause: error });
   }
 }
-const supabase = (args, env) =>
-  command("pnpm", ["exec", "supabase", ...args], env);
+const supabase = (args, env = process.env) => {
+  let options = args;
+  if (native) {
+    const common = ["--stack", "native-direct"];
+    options =
+      args[0] === "start"
+        ? [
+            "start",
+            ...common,
+            "--runtime",
+            "native",
+            "--preparation",
+            "on-demand",
+          ]
+        : args[0] === "stop"
+          ? ["stop", ...common]
+          : ["status", ...common, "--output-format", "json"];
+  }
+  return command(
+    "pnpm",
+    ["exec", "supabase", ...options],
+    native ? { ...env, SUPABASE_EXPERIMENTAL_STACK: "1" } : env,
+  );
+};
 async function check(name, action) {
   phase = name;
   await action();
@@ -95,23 +119,26 @@ try {
   requireSafe(/\[auth.hook.send_email\]\s*enabled = false/.test(original));
   // The project network can be removed/reallocated on stop/start. The host's
   // default bridge address is stable across this disposable stack restart.
-  const network = JSON.parse(
-    await command("docker", [
-      "network",
-      "inspect",
-      "bridge",
-      "--format",
-      "{{json .IPAM.Config}}",
-    ]),
-  );
-  const gateways = [
-    ...new Set(
-      network
-        .map((n) => n.Gateway)
-        .filter((g) => typeof g === "string" && privateGateway(g)),
-    ),
-  ];
-  requireSafe(gateways.length === 1 && privateGateway(gateways[0]));
+  let gateways = [];
+  if (!native) {
+    const network = JSON.parse(
+      await command("docker", [
+        "network",
+        "inspect",
+        "bridge",
+        "--format",
+        "{{json .IPAM.Config}}",
+      ]),
+    );
+    gateways = [
+      ...new Set(
+        network
+          .map((n) => n.Gateway)
+          .filter((g) => typeof g === "string" && privateGateway(g)),
+      ),
+    ];
+    requireSafe(gateways.length === 1 && privateGateway(gateways[0]));
+  }
   server = createServer(async (req, res) => {
     try {
       invoked++;
@@ -149,60 +176,68 @@ try {
       res.end();
     }
   });
-  await new Promise((resolve) => server.listen(0, "0.0.0.0", resolve));
+  await new Promise((resolve) =>
+    server.listen(0, native ? "127.0.0.1" : "0.0.0.0", resolve),
+  );
   const port = server.address().port;
   const localEnv = {
     ...process.env,
-    LOCAL_AUTH_EMAIL_HOOK_URI: `http://host.docker.internal:${port}/hook`,
+    LOCAL_AUTH_EMAIL_HOOK_URI: `http://${native ? "127.0.0.1" : "host.docker.internal"}:${port}/hook`,
     LOCAL_AUTH_EMAIL_HOOK_SECRET: secret,
   };
   activeEnv = localEnv;
   phase = "hook_stack_stop";
-  await supabase(["stop", "--no-backup"]);
+  if (!native) await supabase(["stop", "--no-backup"]);
   writeFileSync(
     configPath,
-    original
-      .replace(
-        /(\[auth.hook.send_email\]\s*)enabled = false/,
-        "$1enabled = true",
-      )
-      .replace(
-        'uri = "env(LOCAL_AUTH_EMAIL_HOOK_URI)"',
-        `uri = "${localEnv.LOCAL_AUTH_EMAIL_HOOK_URI}"`,
-      ),
+    native
+      ? nativeMailConfig(original, localEnv.LOCAL_AUTH_EMAIL_HOOK_URI)
+      : original
+          .replace(
+            /(\[auth.hook.send_email\]\s*)enabled = false/,
+            "$1enabled = true",
+          )
+          .replace(
+            'uri = "env(LOCAL_AUTH_EMAIL_HOOK_URI)"',
+            `uri = "${localEnv.LOCAL_AUTH_EMAIL_HOOK_URI}"`,
+          ),
   );
   changed = true;
   phase = "hook_stack_startup";
   await supabase(["start"], localEnv);
-  phase = "hook_stack_reset";
-  await supabase(["db", "reset", "--local"], localEnv);
-  phase = "hook_host_mapping";
-  try {
-    await command("docker", [
-      "exec",
-      "supabase_auth_carworx",
-      "getent",
-      "hosts",
-      "host.docker.internal",
-    ]);
-  } catch {
-    // Only this disposable task container is changed. No host OS/network files.
-    // GoTrue permits this development hostname over HTTP, but rejects bridge IPs.
-    await command("docker", [
-      "exec",
-      "--user",
-      "0",
-      "supabase_auth_carworx",
-      "sh",
-      "-c",
-      'printf "%s host.docker.internal\\n" "$1" >> /etc/hosts',
-      "k2-hook-host",
-      gateways[0],
-    ]);
+  if (!native) {
+    phase = "hook_stack_reset";
+    await supabase(["db", "reset", "--local"], localEnv);
+    phase = "hook_host_mapping";
+    try {
+      await command("docker", [
+        "exec",
+        "supabase_auth_carworx",
+        "getent",
+        "hosts",
+        "host.docker.internal",
+      ]);
+    } catch {
+      // Only this disposable task container is changed. No host OS/network files.
+      // GoTrue permits this development hostname over HTTP, but rejects bridge IPs.
+      await command("docker", [
+        "exec",
+        "--user",
+        "0",
+        "supabase_auth_carworx",
+        "sh",
+        "-c",
+        'printf "%s host.docker.internal\\n" "$1" >> /etc/hosts',
+        "k2-hook-host",
+        gateways[0],
+      ]);
+    }
   }
   phase = "hook_stack_status";
   const raw = await supabase(["status", "-o", "json"], localEnv);
-  const status = JSON.parse(raw.slice(raw.indexOf("{")));
+  const parsedStatus = JSON.parse(raw.slice(raw.indexOf("{")));
+  if (native) requireSafe(parsedStatus.runtime === "native");
+  const status = native ? parsedStatus.env : parsedStatus;
   const api = status.API_URL;
   requireSafe(
     new URL(api).origin === api &&

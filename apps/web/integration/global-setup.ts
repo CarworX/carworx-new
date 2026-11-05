@@ -32,7 +32,11 @@ function fail(message: string): never {
 
 function readStatus(): Record<string, unknown> {
   const cli = join(root, "node_modules", ".bin", "supabase");
-  const status = spawnSync(cli, ["status", "-o", "json"], {
+  const native = process.env["CARWORX_NATIVE_TEST_STACK"] === "native-auth";
+  const args = native
+    ? ["status", "--stack", "native-auth", "--output-format", "json"]
+    : ["status", "-o", "json"];
+  const status = spawnSync(cli, args, {
     cwd: root,
     encoding: "utf8",
   });
@@ -40,7 +44,18 @@ function readStatus(): Record<string, unknown> {
     fail("`supabase status` failed; start local Supabase first");
   const start = status.stdout.indexOf("{");
   try {
-    return JSON.parse(status.stdout.slice(start)) as Record<string, unknown>;
+    const parsed = JSON.parse(status.stdout.slice(start)) as Record<
+      string,
+      unknown
+    >;
+    if (!native) return parsed;
+    if (
+      parsed["runtime"] !== "native" ||
+      typeof parsed["env"] !== "object" ||
+      parsed["env"] === null
+    )
+      return fail("native stack status is incomplete");
+    return parsed["env"] as Record<string, unknown>;
   } catch {
     return fail("could not parse `supabase status -o json`");
   }
