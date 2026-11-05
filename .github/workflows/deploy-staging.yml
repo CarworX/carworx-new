@@ -1,0 +1,136 @@
+name: K2 owner staging workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      reviewed_sha:
+        description: Full reviewed head SHA of a merged main PR
+        required: true
+        type: string
+      source_pr:
+        description: Merged source PR number
+        required: true
+        type: string
+      ci_run:
+        description: Successful K1 run for that exact head
+        required: true
+        type: string
+      dry_run:
+        description: Package only; deployment stays blocked until K2 recipient controls are reviewed
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: k2-staging
+  cancel-in-progress: false
+
+env:
+  CI: "true"
+  WRANGLER_SEND_METRICS: "false"
+  CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "false"
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.evidence.outputs.sha }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: Verify exact source, CI, review and promotion policy
+        id: evidence
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+          SOURCE_PR: ${{ inputs.source_pr }}
+          SOURCE_CI_RUN: ${{ inputs.ci_run }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          STAGING_EVIDENCE: ${{ runner.temp }}/staging-evidence.json
+        run: node scripts/ops/env/verify.js
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: k2-preflight-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/staging-evidence.json
+          retention-days: 7
+          if-no-files-found: error
+
+  staging:
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: staging
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          path: operations
+          persist-credentials: false
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ needs.preflight.outputs.sha }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: source/.node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          package_json_file: source/package.json
+          run_install: false
+      - name: Check operations contracts
+        run: node --test operations/scripts/ops/env/contract.test.js
+      - name: Install frozen source dependencies
+        working-directory: source
+        run: pnpm install --frozen-lockfile
+      - name: Select staging at build time
+        working-directory: source
+        env:
+          CLOUDFLARE_ENV: staging
+        run: pnpm run build
+      - name: Restore verified source evidence
+        env:
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+          SOURCE_PR: ${{ inputs.source_pr }}
+          SOURCE_CI_RUN: ${{ inputs.ci_run }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          GITHUB_TOKEN: ${{ github.token }}
+          STAGING_EVIDENCE: ${{ runner.temp }}/staging-evidence.json
+        run: node operations/scripts/ops/env/verify.js
+      - name: Package without deployment
+        if: inputs.dry_run
+        env:
+          DRY_RUN: "true"
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+          STAGING_SOURCE_DIR: ${{ github.workspace }}/source
+          STAGING_APP_ORIGIN: ${{ vars.STAGING_APP_ORIGIN }}
+          STAGING_EVIDENCE: ${{ runner.temp }}/staging-evidence.json
+        run: node operations/scripts/ops/env/package.js
+      - name: Owner deployment after promotion is explicitly unblocked
+        if: ${{ !inputs.dry_run }}
+        env:
+          DRY_RUN: "false"
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+          STAGING_SOURCE_DIR: ${{ github.workspace }}/source
+          STAGING_APP_ORIGIN: ${{ vars.STAGING_APP_ORIGIN }}
+          STAGING_EVIDENCE: ${{ runner.temp }}/staging-evidence.json
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.STAGING_CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.STAGING_CLOUDFLARE_API_TOKEN }}
+        run: node operations/scripts/ops/env/package.js
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: k2-staging-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/staging-evidence.json
+          retention-days: 7
+          if-no-files-found: error

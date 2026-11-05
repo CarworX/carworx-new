@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "environment": "staging",
+  "worker": "carworx-web-staging",
+  "supabase_project_ref": "gdiyrdqfkthtcglgqnts",
+  "promotion": "blocked",
+  "blockers": [
+    "Application recipient restriction and negative tests are not implemented",
+    "Direct Auth delivery restriction and negative tests are not implemented",
+    "Owner staging route and private Worker bindings are not verified"
+  ]
+}

@@ -1,6 +1,6 @@
 # K2 environment readiness and T3 handoff
 
-Read-only inventory, 2026-11-04 UTC. This is preflight evidence, not K2 completion or A2. No deployment, DNS, project, email or credential configuration was changed.
+Initial read-only inventory: 2026-11-04 UTC. Implementation slice added 2026-11-05 below. K2 and A2 remain incomplete. No deployment, DNS, project, email or credential configuration was changed.
 
 ## Verified inventory
 
@@ -35,6 +35,49 @@ Disabling email confirmations alone does not disable password-reset messages. Le
 
 Use branch `codex/k2-environments`. K2 owns `apps/web/wrangler.jsonc`, `.github/workflows/deploy-staging.yml` and `scripts/ops/env/**`; application APIs remain Claude-owned.
 
-The next K2 implementation must document actual configuration/secret names without values, supply a manually triggered owner-run staging workflow, identify the exact reviewed source SHA and applicable successful CI, and fail on missing setup or evidence. It must not deploy on push or reuse production credentials. Add runtime environment names only with their actual consumers and Claude-reviewed contracts; this inventory introduces none beyond the previously agreed dev-page flag.
+The initial preflight required names-only configuration, a manual owner-run workflow, exact reviewed source/applicable CI and refusal on missing setup/evidence. The implementation below supplies that first slice. New runtime Auth recipient names/consumers still require coordination with Claude.
 
 Hosted A2 requires the owner-executed deployment/run URL, deployed SHA and synthetic smoke results. Until then, A2 remains BLOCKED. This preflight does not pass A3, hosted A6 or A7.
+
+## Current implementation — first K2 slice, Claude review pending
+
+At the owner's request Codex started this slice without waiting for Claude. Both this updated PR #23 and the Codex 14 handoff #29 remain available for later Claude review. T3/T5 #25 is independently approved and merged at `199d448`; its implemented consumers define the names below. This slice does not change application APIs or claim recipient enforcement.
+
+### Local development
+
+The default Wrangler configuration is local development. Keep the root `.env` for the local Supabase CLI and `apps/web/.dev.vars` for Worker bindings, both ignored. `.env.example` remains the existing names-only source. The owner fills `APP_ORIGIN` with the exact local origin (normally localhost port 5173), `SUPABASE_URL` with the local API origin and `SUPABASE_PUBLISHABLE_KEY` with the local publishable/anon key. Never use the service-role key here. Local email stays in the synthetic sink. Google setup remains owner-run and separate from fixture tests.
+
+The named `staging` configuration uses `carworx-web-staging`, with `CARWORX_DEV_PAGES=1`. Both staging and the default config disable workers.dev and preview URLs. No production environment, public route, domain, credentials or shared data binding is configured by this slice.
+
+### Manual workflow and source evidence
+
+`.github/workflows/deploy-staging.yml` triggers only with `workflow_dispatch` from main. It defaults to a dry run. The owner supplies the full reviewed PR-head SHA, merged PR number and successful K1 run number. Preflight rejects unmerged/wrong-repository/wrong-head sources, stale or failed CI, missing/cancelled/skipped jobs, inactive RLS/Auth contracts and missing reciprocal approval records. It checks all review/job pages rather than only the first page. No deployment token is present during preflight, installation or build.
+
+The workflow checks out its operations code from the trusted dispatch commit and application source at the verified SHA. `CLOUDFLARE_ENV=staging` selects staging **during the build**. Packaging validates the flattened generated `apps/web/build/server/wrangler.json`; selecting an environment only at deploy time cannot repair a default build. The dry run uses the generated config and supplies APP_ORIGIN/SUPABASE_URL overrides as separate CLI arguments. Values are never interpolated into shell code. All raw Wrangler output remains private; seven-day evidence contains SHA/PR/run, target, config hash and mode/status only. A dry run is never a successful deployment or A2.
+
+The approval check is a repository process check: both agents share a GitHub identity, so an `Agent:` label cannot authenticate a separate person/model. The actual reciprocal review is still required. Likewise, the named GitHub environment is not a claim of protected owner-only execution on this repository's plan; the owner triggers runs under the existing policy. Agents do not dispatch it.
+
+### Configuration names and consumers
+
+| Name | Owner location | Consumer |
+| --- | --- | --- |
+| `STAGING_APP_ORIGIN` | GitHub staging environment variable | Packaging validator and Worker `APP_ORIGIN` override; dedicated HTTPS origin, not the production apex |
+| `STAGING_CLOUDFLARE_ACCOUNT_ID` | GitHub staging environment variable | Passed as `CLOUDFLARE_ACCOUNT_ID` only to the eventual deployment step |
+| `STAGING_CLOUDFLARE_API_TOKEN` | GitHub staging environment secret | Passed as `CLOUDFLARE_API_TOKEN` only to the eventual deployment step; owner scopes it to the intended staging account/Worker operation |
+| `SUPABASE_PUBLISHABLE_KEY` | Owner-managed secret binding on the staging Worker | Existing T3 server consumer; use the D-062 staging publishable/anon key, never privileged credentials |
+| `APP_ORIGIN` / `SUPABASE_URL` | Validated deployment overrides | Existing T3 security/Auth consumers; Supabase URL fixed to D-062's project |
+| `CARWORX_DEV_PAGES` | Committed staging-only Wrangler var | Existing T4 dev-page guard; omit from future production config |
+
+These are names, not credentials. None were created, read or installed by this work.
+
+### Promotion remains blocked
+
+`promotion.json` deliberately says `blocked`. Setting dry-run to false fails preflight **before a deployment job can obtain its token**. Green CI, review labels or an owner-set Boolean cannot bypass it. A follow-up reviewed change must implement and prove the application/direct-Auth recipient restrictions, establish the owner route/bindings and replace the blocked policy with its accepted readiness contract. Removing blockers alone is not evidence; this PR does not define the final delivery mechanism.
+
+The private recipient set stays with the owner. Codex will coordinate names and evidence with Claude before changing application consumers. No SMTP/provider account, relay, hook, allowlist, sending domain or live test email is invented or activated here. A2 requires the owner-executed deployment and smoke results; A3 requires real Google evidence as well.
+
+### Checks and next review
+
+Run `node --test scripts/ops/env/contract.test.js`, the existing lint/format/types/unit/build checks, a staging build, and Wrangler's local `deploy --dry-run` against the generated staging config. Test cases include wrong/missing/stale source/run/review, skipped/cancelled jobs, missing feature suites, wrong build/environment and the still-closed promotion gate. Hosted workflow dispatch and staging smoke checks remain UNVERIFIED until the owner runs them after review/setup.
+
+Sources checked against the pinned Wrangler 4.156.1 schema and official docs: [Cloudflare Vite environment selection](https://developers.cloudflare.com/workers/vite-plugin/reference/cloudflare-environments/), [Wrangler environments](https://developers.cloudflare.com/workers/wrangler/environments/), [GitHub manual workflow execution](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow).
