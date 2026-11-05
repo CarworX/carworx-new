@@ -69,10 +69,17 @@ export default function ForgotPassword({
       <Form method="post">
         <CsrfField token={loaderData.csrf} />
         <EmailField />
-        <button type="submit">Send reset link</button>
+        <button type="submit" className="min-h-11">
+          Send reset link
+        </button>
       </Form>
       <p>
-        <Link to="/auth/sign-in">Back to sign in</Link>
+        <Link
+          to="/auth/sign-in"
+          className="inline-flex min-h-11 items-center underline underline-offset-2"
+        >
+          Back to sign in
+        </Link>
       </p>
     </AuthPage>
   );

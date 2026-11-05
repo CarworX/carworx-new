@@ -15,6 +15,10 @@ on:
         description: Successful K1 run for that exact head
         required: true
         type: string
+      perf_run:
+        description: Successful K3 run for the same source (required for deployment)
+        required: false
+        type: string
       dry_run:
         description: Package only; deployment stays blocked until K2 recipient controls are reviewed
         required: true
@@ -64,6 +68,13 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run }}
           STAGING_EVIDENCE: ${{ runner.temp }}/staging-evidence.json
         run: node scripts/ops/env/verify.js
+      - name: Verify K3 lab evidence for the exact source
+        if: inputs.dry_run == false
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+          PERF_RUN: ${{ inputs.perf_run }}
+        run: node scripts/ops/env/perf-gate.js
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: k2-preflight-${{ github.run_id }}-${{ github.run_attempt }}

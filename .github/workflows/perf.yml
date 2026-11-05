@@ -1,0 +1,82 @@
+name: K3 mobile performance
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    paths:
+      - "apps/web/**"
+      - "perf/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/perf.yml"
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full SHA already in main history
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: perf-${{ github.event.pull_request.number || inputs.source_sha }}
+  cancel-in-progress: true
+
+jobs:
+  perf:
+    name: perf-${{ github.event.pull_request.head.sha || inputs.source_sha }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || inputs.source_sha }}
+      CI: "true"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify and select the exact candidate
+        run: |
+          [[ "$TESTED_SHA" =~ ^[a-f0-9]{40}$ ]]
+          if [[ "$GITHUB_EVENT_NAME" = workflow_dispatch ]]; then
+            git merge-base --is-ancestor "$TESTED_SHA" "$GITHUB_SHA"
+            git checkout --detach "$TESTED_SHA"
+          fi
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          run_install: false
+      - name: Install and build
+        run: |
+          pnpm install --frozen-lockfile
+          node --test perf/budgets.test.js
+          pnpm --filter @carworx/web exec playwright install --with-deps chromium
+          cat > apps/web/.dev.vars <<'VARS'
+          CARWORX_ENV=local
+          CARWORX_DEV_PAGES=1
+          APP_ORIGIN=http://127.0.0.1:8787
+          SUPABASE_URL=http://127.0.0.1:54321
+          SUPABASE_PUBLISHABLE_KEY=local-synthetic-publishable-fixture
+          VARS
+          pnpm run build
+      - name: Measure five serial mobile runs per route
+        run: |
+          pnpm --filter @carworx/web exec vite preview --host 127.0.0.1 --port 8787 --strictPort > "$RUNNER_TEMP/k3-preview.log" 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          curl --silent --fail --retry 20 --retry-connrefused --retry-delay 1 --max-time 3 http://127.0.0.1:8787/healthz >/dev/null
+          K3_REPORT="$RUNNER_TEMP/k3-summary.json" node perf/local.js http://127.0.0.1:8787
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: k3-mobile-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/k3-summary.json
+          retention-days: 7
+          if-no-files-found: error
