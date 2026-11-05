@@ -94,16 +94,31 @@ try {
       reviews,
       contract,
       comparison,
+      policy,
     ),
     workflow_sha: process.env.GITHUB_SHA,
     mode: process.env.DRY_RUN === "true" ? "dry-run" : "deploy",
     promotion: policy.promotion,
     readiness,
   };
+  if (summary.review_mode === "owner-delegated-phase1") {
+    const main = await get("git/ref/heads/main");
+    requireCondition(
+      main.object?.sha === process.env.GITHUB_SHA,
+      "Delegated staging requires the current main policy",
+    );
+  }
   writeFileSync(
     process.env.STAGING_EVIDENCE,
     JSON.stringify(summary, null, 2) + "\n",
   );
+  if (summary.review_mode === "owner-delegated-phase1") {
+    const main = await get("git/ref/heads/main");
+    requireCondition(
+      main.object?.sha === process.env.GITHUB_SHA,
+      "Delegated staging requires the current main policy",
+    );
+  }
   writeFileSync(process.env.GITHUB_OUTPUT, `sha=${request.sha}\n`, {
     flag: "a",
   });
@@ -111,7 +126,7 @@ try {
 } catch {
   // Never print API payloads, credentials or input values.
   console.error(
-    "Staging preflight failed: check reviewed SHA/PR/run, reciprocal review and promotion policy",
+    "Staging preflight failed: check reviewed SHA/PR/run, review or D-071 record, and promotion policy",
   );
   process.exitCode = 1;
 }
