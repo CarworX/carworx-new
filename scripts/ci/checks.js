@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import {
@@ -106,6 +107,21 @@ function runUnit() {
   return validateVitest(readJson(path));
 }
 
+// VERIFICATION ONLY (claude/t3-ci-probe, never merged): prints step names
+// and exit codes. Output stays piped, so no Supabase keys reach the log.
+function probed(step, args, options) {
+  console.log(`k1-probe: ${step} start`);
+  const result = spawnSync(args[0], args.slice(1), {
+    timeout: 20 * 60 * 1000,
+    ...options,
+  });
+  console.log(
+    `k1-probe: ${step} exit=${result.status ?? `signal:${result.signal ?? "none"}`}`,
+  );
+  invariant(!result.error && result.status === 0, "Required command failed");
+  return result;
+}
+
 function runFuture() {
   const { contract } = readJson(statePath());
   if (!contract.rls && !contract.integration) return;
@@ -122,13 +138,13 @@ function runFuture() {
   const quiet = { stdio: "pipe", encoding: "utf8" };
   // Supabase prints local keys. Keep all service output private and ephemeral.
   try {
-    command("pnpm", ["exec", "supabase", "start"], quiet);
-    command("pnpm", ["exec", "supabase", "db", "reset", "--local"], quiet);
+    probed("supabase start", ["pnpm", "exec", "supabase", "start"], quiet);
+    probed("db reset", ["pnpm", "exec", "supabase", "db", "reset", "--local"], quiet);
     if (contract.rls)
       record("rls", () => {
         const dir = join(privateRoot, "rls");
         mkdirSync(dir);
-        command("pnpm", ["run", "test:rls"], {
+        probed("test:rls", ["pnpm", "run", "test:rls"], {
           ...quiet,
           env: { ...process.env, CI_RLS_REPORT_DIR: dir },
         });
@@ -153,7 +169,7 @@ function runFuture() {
     if (contract.integration)
       record("integration", () => {
         const path = join(privateRoot, "integration.json");
-        command("pnpm", ["run", "test:integration"], {
+        probed("test:integration", ["pnpm", "run", "test:integration"], {
           ...quiet,
           env: { ...process.env, CI_INTEGRATION_REPORT: path },
         });
