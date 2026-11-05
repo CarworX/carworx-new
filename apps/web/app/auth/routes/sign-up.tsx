@@ -8,6 +8,7 @@ import {
 import { isTicked, parseEmail, parsePassword } from "../forms";
 import { authRequest } from "../session.server";
 import { emailDecision } from "../email-policy.server";
+import { observeEmailProbe } from "../email-probe.server";
 import { appUrl } from "../../server/security/redirect";
 import { AuthPage, CsrfField, EmailField, Notice, PasswordField } from "../ui";
 import type { Route } from "./+types/sign-up";
@@ -50,8 +51,11 @@ export async function action({ request, context }: Route.ActionArgs) {
   const auth = authRequest(request, context.security);
   const decision = emailDecision(request, auth.config, email);
   if (decision === "unavailable") return fail("email_failed", { status: 503 });
-  if (decision === "acknowledge")
+  if (decision === "acknowledge") {
+    await observeEmailProbe(request, context, email, "signup", "app_terminal");
     return redirect("/auth/check-email?sent=signup");
+  }
+  await observeEmailProbe(request, context, email, "signup", "auth_attempt");
   const { error } = await auth.supabase.auth.signUp({
     email,
     password,

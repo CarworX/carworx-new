@@ -1,3 +1,4 @@
+import { matchReadinessSource } from "./readiness.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { evidenceReader, validateReadiness } from "./readiness.js";
@@ -59,6 +60,9 @@ function fixture() {
       "CARWORX_ENV",
       "CARWORX_DEV_PAGES",
       "STAGING_APPROVED_RECIPIENTS_JSON",
+      "STAGING_PROBE_EVENT_KEY",
+      "STAGING_PROBE_ORIGIN",
+      "STAGING_WORKER_VERSION",
     ],
     configuration_revision: "config-0001",
     recipient_revision: "recipients-0001",
@@ -231,4 +235,17 @@ test("evidence references cannot load arbitrary private files or omit integrity"
     { path: "planning/evidence/k2/receipt.json" },
   ])
     assert.throws(() => load(ref));
+});
+
+test("promotion evidence binds the deployed source and CI run", () => {
+  const sha = "a".repeat(40);
+  const readiness = {
+    source_sha: sha,
+    ci_run: "https://github.com/CarworX/carworx-new/actions/runs/42",
+  };
+  matchReadinessSource(readiness, { sha, run: 42 });
+  assert.throws(() => matchReadinessSource(readiness, { sha, run: 43 }));
+  assert.throws(() =>
+    matchReadinessSource(readiness, { sha: "b".repeat(40), run: 42 }),
+  );
 });

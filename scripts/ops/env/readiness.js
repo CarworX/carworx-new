@@ -145,6 +145,9 @@ export function validateReadiness(policy, load, current, now = Date.now()) {
         "CARWORX_ENV",
         "CARWORX_DEV_PAGES",
         "STAGING_APPROVED_RECIPIENTS_JSON",
+        "STAGING_PROBE_EVENT_KEY",
+        "STAGING_PROBE_ORIGIN",
+        "STAGING_WORKER_VERSION",
       ].every((name) => config.binding_names.includes(name)),
     "Owner binding evidence missing",
   );
@@ -220,6 +223,8 @@ export function validateReadiness(policy, load, current, now = Date.now()) {
   );
   return {
     fingerprints: current,
+    source_sha: implementation.source_sha,
+    ci_run: implementation.ci_run,
     account_id: config.account_id,
     app_origin: config.app_origin,
     token_id: token.token_id,
@@ -228,4 +233,13 @@ export function validateReadiness(policy, load, current, now = Date.now()) {
     recipient_revision: config.recipient_revision,
     hook_secret_revision: config.hook_secret_revision,
   };
+}
+
+export function matchReadinessSource(readiness, request) {
+  requireCondition(
+    readiness.source_sha === request.sha &&
+      readiness.ci_run ===
+        `https://github.com/CarworX/carworx-new/actions/runs/${request.run}`,
+    "Readiness must match the requested source and CI run",
+  );
 }

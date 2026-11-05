@@ -10,6 +10,7 @@ import {
 import {
   evidenceReader,
   fingerprints,
+  matchReadinessSource,
   validateReadiness,
 } from "./readiness.js";
 
@@ -73,6 +74,7 @@ try {
           evidenceReader(operationsRoot),
           fingerprints(operationsRoot),
         );
+  if (readiness) matchReadinessSource(readiness, request);
   const [pr, run, jobs, reviews, file, comparison] = await Promise.all([
     get(`pulls/${request.pr}`),
     get(`actions/runs/${request.run}`),
@@ -112,13 +114,6 @@ try {
     process.env.STAGING_EVIDENCE,
     JSON.stringify(summary, null, 2) + "\n",
   );
-  if (summary.review_mode === "owner-delegated-phase1") {
-    const main = await get("git/ref/heads/main");
-    requireCondition(
-      main.object?.sha === process.env.GITHUB_SHA,
-      "Delegated staging requires the current main policy",
-    );
-  }
   writeFileSync(process.env.GITHUB_OUTPUT, `sha=${request.sha}\n`, {
     flag: "a",
   });

@@ -4,6 +4,7 @@ import { classifyAuthError, FAILURE_MESSAGES } from "../errors";
 import { parseEmail } from "../forms";
 import { authRequest } from "../session.server";
 import { emailDecision } from "../email-policy.server";
+import { observeEmailProbe } from "../email-probe.server";
 import { appUrl } from "../../server/security/redirect";
 import { AuthPage, CsrfField, EmailField, Notice } from "../ui";
 import type { Route } from "./+types/check-email";
@@ -34,7 +35,11 @@ export async function action({ request, context }: Route.ActionArgs) {
   const decision = emailDecision(request, auth.config, email);
   if (decision === "unavailable")
     return data({ outcome: "email_failed" as const }, { status: 503 });
-  if (decision === "acknowledge") return data({ outcome: "sent" as const });
+  if (decision === "acknowledge") {
+    await observeEmailProbe(request, context, email, "resend", "app_terminal");
+    return data({ outcome: "sent" as const });
+  }
+  await observeEmailProbe(request, context, email, "resend", "auth_attempt");
   const { error } = await auth.supabase.auth.resend({
     type: "signup",
     email,

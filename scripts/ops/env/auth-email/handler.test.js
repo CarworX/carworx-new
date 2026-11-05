@@ -90,7 +90,7 @@ test("unapproved, alias and wildcard addresses cannot invoke delivery", async ()
       }),
       f.env,
     );
-    assert.equal(response.status, 403);
+    assert.equal(response.status, email.startsWith("*") ? 403 : 200);
     assert.equal(f.deliveries.length, 0);
     assert.equal((await response.text()).includes(email), false);
   }

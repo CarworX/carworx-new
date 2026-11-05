@@ -1,4 +1,6 @@
 import { createAuthEmailHandler } from "./handler.js";
+import { observeHook, probeEndpoint } from "./probe-runtime.js";
+export { StagingProbe } from "./probe-runtime.js";
 
 export async function deliverResend(message, env, idempotencyKey) {
   if (
@@ -21,4 +23,11 @@ export async function deliverResend(message, env, idempotencyKey) {
   if (!response.ok) throw new Error("Delivery unavailable");
 }
 
-export default { fetch: createAuthEmailHandler(deliverResend) };
+const hook = createAuthEmailHandler(deliverResend, { observe: observeHook });
+export default {
+  fetch(request, env) {
+    return new URL(request.url).pathname === "/_ops/probe"
+      ? probeEndpoint(request, env)
+      : hook(request, env);
+  },
+};

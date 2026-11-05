@@ -42,7 +42,7 @@ async function boundedText(request) {
 // Injection is used only by the local test entry. Production supplies fixed Resend transport.
 export function createAuthEmailHandler(
   deliver,
-  { allowLocalOrigin = false } = {},
+  { allowLocalOrigin = false, observe = async () => undefined } = {},
 ) {
   return async (request, env) => {
     if (request.method !== "POST") return failure(405);
@@ -64,9 +64,19 @@ export function createAuthEmailHandler(
       );
       if (recipients === null) return failure(503);
       const recipient = canonicalEmail(payload?.user?.email);
-      if (recipient === null || !recipients.has(recipient)) return failure(403);
+      if (recipient === null) return failure(403);
       const action = payload?.email_data?.email_action_type;
-      if (action !== "signup" && action !== "recovery") return failure(403);
+      const id = request.headers.get("webhook-id");
+      if (id === null || !/^[A-Za-z0-9_-]{1,200}$/.test(id))
+        return failure(400);
+      const supported = action === "signup" || action === "recovery";
+      const allowed = recipients.has(recipient);
+      const event = { recipient, id, eligible: supported && allowed };
+      await observe("hook_invocation", event, env);
+      if (!supported) {
+        await observe("unsupported_action", event, env);
+        return failure(403);
+      }
       const hash = payload?.email_data?.token_hash;
       if (typeof hash !== "string" || !/^[A-Za-z0-9_-]{8,256}$/.test(hash))
         return failure(400);
@@ -83,6 +93,10 @@ export function createAuthEmailHandler(
         return failure(503);
       const from = canonicalEmail(env.STAGING_AUTH_EMAIL_FROM);
       if (from === null) return failure(503);
+      if (!allowed) {
+        await observe("recipient_denied", event, env);
+        return Response.json({}, { headers: HEADERS });
+      }
       const link = new URL("/auth/confirm", origin);
       link.searchParams.set("token_hash", hash);
       link.searchParams.set("type", action === "signup" ? "email" : "recovery");
@@ -90,9 +104,7 @@ export function createAuthEmailHandler(
         action === "signup"
           ? "Confirm your CarworX email"
           : "Reset your CarworX password";
-      const id = request.headers.get("webhook-id");
-      if (id === null || !/^[A-Za-z0-9_-]{1,200}$/.test(id))
-        return failure(400);
+      await observe("provider_attempt", event, env);
       await deliver(
         {
           from,
@@ -104,6 +116,7 @@ export function createAuthEmailHandler(
         env,
         `cx-auth/${id}`,
       );
+      await observe("provider_success", event, env);
       return Response.json({}, { headers: HEADERS });
     } catch {
       return failure(503);
