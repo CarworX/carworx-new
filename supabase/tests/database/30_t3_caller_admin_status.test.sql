@@ -46,29 +46,25 @@ select ok(has_function_privilege('authenticated', 'public.caller_is_listed_admin
 set local role authenticated;
 
 -- 3. answers only for the caller ----------------------------------------------
-select set_config('request.jwt.claims',
-  '{"sub":"a3000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}', true);
+set local request.jwt.claims = '{"sub":"a3000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
 select is(public.caller_is_listed_admin(), true, 'listed admin at aal1: true');
 
 -- 4. ...but grants nothing at aal1
 select is((select count(*)::int from public.organisations), 0,
   'listed admin at aal1 still sees no organisations');
 
-select set_config('request.jwt.claims',
-  '{"sub":"a3000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal2"}', true);
+set local request.jwt.claims = '{"sub":"a3000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal2"}';
 select is(public.caller_is_listed_admin(), true, 'listed admin at aal2: true');
 select is((select count(*)::int from public.organisations where id = 'b3000000-0000-4000-8000-00000000000a'), 1,
   'listed admin at aal2 sees organisations (T2 policy)');
 
-select set_config('request.jwt.claims',
-  '{"sub":"a3000000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal2"}', true);
+set local request.jwt.claims = '{"sub":"a3000000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal2"}';
 select is(public.caller_is_listed_admin(), false, 'unlisted user at aal2: false');
 
-select set_config('request.jwt.claims',
-  '{"sub":"a3000000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal2","user_metadata":{"is_admin":true},"app_metadata":{"role":"admin"}}', true);
+set local request.jwt.claims = '{"sub":"a3000000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal2","user_metadata":{"is_admin":true},"app_metadata":{"role":"admin"}}';
 select is(public.caller_is_listed_admin(), false, 'forged metadata claims: false');
 
-select set_config('request.jwt.claims', '{"role":"authenticated","aal":"aal2"}', true);
+set local request.jwt.claims = '{"role":"authenticated","aal":"aal2"}';
 select is(public.caller_is_listed_admin(), false, 'no subject: false');
 
 select * from finish();
