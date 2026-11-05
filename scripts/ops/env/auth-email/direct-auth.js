@@ -172,6 +172,8 @@ try {
   changed = true;
   phase = "hook_stack_startup";
   await supabase(["start"], localEnv);
+  phase = "hook_stack_reset";
+  await supabase(["db", "reset", "--local"], localEnv);
   phase = "hook_host_mapping";
   try {
     await command("docker", [
@@ -196,8 +198,6 @@ try {
       gateways[0],
     ]);
   }
-  phase = "hook_stack_reset";
-  await supabase(["db", "reset", "--local"], localEnv);
   phase = "hook_stack_status";
   const raw = await supabase(["status", "-o", "json"], localEnv);
   const status = JSON.parse(raw.slice(raw.indexOf("{")));
