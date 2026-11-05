@@ -17,8 +17,8 @@ export async function deliverResend(message, env, idempotencyKey) {
     signal: AbortSignal.timeout(2000),
   });
   // Provider bodies may echo recipients; never log/return them or fall back to SMTP.
-  if (!response.ok) throw new Error("Delivery unavailable");
   void response.body?.cancel().catch(() => undefined);
+  if (!response.ok) throw new Error("Delivery unavailable");
 }
 
 export default { fetch: createAuthEmailHandler(deliverResend) };

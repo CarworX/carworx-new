@@ -234,3 +234,60 @@ test("production transport fixes URL/timeout and uses idempotency without return
     globalThis.fetch = original;
   }
 });
+
+test("missing signing/provider configuration cannot dispatch mail", async () => {
+  const f = fixture();
+  assert.equal(
+    (
+      await f.handle(f.request(), {
+        ...f.env,
+        SEND_EMAIL_HOOK_SECRET: undefined,
+      })
+    ).status,
+    503,
+  );
+  assert.equal(f.deliveries.length, 0);
+  const original = globalThis.fetch;
+  let calls = 0;
+  try {
+    globalThis.fetch = async () => {
+      calls++;
+      throw new Error("unexpected network");
+    };
+    await assert.rejects(deliverResend({}, {}, "fixture-id"), {
+      message: "Delivery unavailable",
+    });
+    assert.equal(calls, 0);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test("provider timeout aborts a stalled request with one attempt and no fallback", async () => {
+  const original = globalThis.fetch;
+  let calls = 0;
+  let aborted = false;
+  const alive = setTimeout(() => undefined, 5000);
+  try {
+    globalThis.fetch = async (_url, init) =>
+      new Promise((_resolve, reject) => {
+        calls++;
+        init.signal.addEventListener(
+          "abort",
+          () => {
+            aborted = true;
+            reject(new Error("synthetic timeout"));
+          },
+          { once: true },
+        );
+      });
+    await assert.rejects(
+      deliverResend({}, { STAGING_RESEND_API_KEY: randomUUID() }, "fixture-id"),
+    );
+    assert.equal(aborted, true);
+    assert.equal(calls, 1);
+  } finally {
+    clearTimeout(alive);
+    globalThis.fetch = original;
+  }
+});
