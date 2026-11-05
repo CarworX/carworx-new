@@ -1,0 +1,29 @@
+pass  D2 built CSS has no remote URL: 1 file(s) clean
+pass  /_dev/components phone: answers 200 locally: status 200
+pass  D2 components phone: no request leaves http://localhost:4173: 16 requests, 0 external; fonts: /assets/Geist-latin-DroUUXQz.woff2, /assets/GeistMono-latin-DqhEbPq3.woff2, /assets/Caveat-latin-BKIdHqrM.woff2
+pass  D8 components phone: primary actions ≥ 44 × 44 px: 9 primary, smallest 44 px tall
+pass  D8 components phone: every target ≥ 24 × 24 px (WCAG 2.5.8): none smaller
+pass  D7 components phone: text contrast in the rendered DOM: 562 text elements measured (lowest 3.84:1), 18 on gradients skipped, 0 below floor
+pass  404 phone: unknown path answers 404: status 404
+pass  D2 notFound phone: no request leaves http://localhost:4173: 14 requests, 0 external; fonts: /assets/Geist-latin-DroUUXQz.woff2, /assets/GeistMono-latin-DqhEbPq3.woff2
+pass  D8 notFound phone: primary actions ≥ 44 × 44 px: 1 primary, smallest 56 px tall
+pass  D8 notFound phone: every target ≥ 24 × 24 px (WCAG 2.5.8): none smaller
+pass  D7 notFound phone: text contrast in the rendered DOM: 12 text elements measured (lowest 3.84:1), 0 on gradients skipped, 0 below floor
+pass  /_dev/components desktop: answers 200 locally: status 200
+pass  D2 components desktop: no request leaves http://localhost:4173: 16 requests, 0 external; fonts: /assets/Geist-latin-DroUUXQz.woff2, /assets/GeistMono-latin-DqhEbPq3.woff2, /assets/Caveat-latin-BKIdHqrM.woff2
+pass  D8 components desktop: primary actions ≥ 44 × 44 px: 9 primary, smallest 44 px tall
+pass  D8 components desktop: every target ≥ 24 × 24 px (WCAG 2.5.8): none smaller
+pass  D7 components desktop: text contrast in the rendered DOM: 567 text elements measured (lowest 3.84:1), 18 on gradients skipped, 0 below floor
+pass  D8 components: focus ring on every Tab stop: 61 stops checked, all 2px solid rgb(13,15,18) offset 2px
+pass  axe components: 34 rules passed, 0 violated
+pass  404 desktop: unknown path answers 404: status 404
+pass  D2 notFound desktop: no request leaves http://localhost:4173: 14 requests, 0 external; fonts: /assets/Geist-latin-DroUUXQz.woff2, /assets/GeistMono-latin-DqhEbPq3.woff2
+pass  D8 notFound desktop: primary actions ≥ 44 × 44 px: 1 primary, smallest 56 px tall
+pass  D8 notFound desktop: every target ≥ 24 × 24 px (WCAG 2.5.8): none smaller
+pass  D7 notFound desktop: text contrast in the rendered DOM: 12 text elements measured (lowest 3.84:1), 0 on gradients skipped, 0 below floor
+pass  D8 notFound: focus ring on every Tab stop: 8 stops checked, all 2px solid rgb(13,15,18) offset 2px
+pass  axe notFound: 23 rules passed, 0 violated
+pass  D9 with motion: the same pieces move: spinner cx-spin, shimmer cx-shim, 5 of 7 canvases changed (each still twin and the forced stills stay fixed)
+pass  D9 reduced motion: spinner, shimmer, lens and ripple are still: spinner none, shimmer none, 0 of 7 canvases changed
+
+browser audit: 27 checks, 0 failed. Screenshots and audit.json in build/audit

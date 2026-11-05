@@ -1,0 +1,33 @@
+/* The app stylesheet: Tailwind v4, the generated Studio theme, then the
+ * Studio component and state layers. Fonts are self-hosted (G13): the
+ * @font-face rules in tokens.generated.css point at ./fonts beside it. */
+@import "tailwindcss";
+@import "./tokens.generated.css";
+@import "./studio.css";
+@import "./states.css";
+
+@layer base {
+  html {
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* One focus style for every interactive element: a 2 px ink outline with a
+   * 2 px offset (Studio, audit-10 row 17a). Only the keyboard shows it. */
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+    }
+  }
+}

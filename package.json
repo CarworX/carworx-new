@@ -14,6 +14,8 @@
     "format:check": "prettier --check .",
     "typecheck": "pnpm --recursive --workspace-concurrency=1 run typecheck",
     "test": "pnpm --recursive --workspace-concurrency=1 run test",
+    "test:rls": "node supabase/tests/run-rls.js",
+    "test:integration": "pnpm --filter @carworx/web run test:integration",
     "build": "pnpm --recursive --workspace-concurrency=1 run build",
     "check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test && pnpm run build"
   },
@@ -24,6 +26,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "17.14.0",
     "prettier": "3.9.10",
+    "supabase": "2.122.1",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1"
   }

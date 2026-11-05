@@ -196,5 +196,15 @@ test("gate rejects stale head, failed/cancelled/skipped jobs and incomplete atte
   reports.checks.contract = { ...bootstrap, rls: true };
   assert.throws(() => validateGate(results, reports, "head", "head"));
   reports.checks.checks.rls = { status: "passed", tests: 1 };
+  for (const stage of ["startup", "reset", "cleanup"]) {
+    reports.checks.checks[stage] = { status: "passed" };
+  }
   validateGate(results, reports, "head", "head");
+  for (const stage of ["startup", "reset", "cleanup"]) {
+    for (const status of [undefined, "failed", "not_applicable"]) {
+      const bad = structuredClone(reports);
+      bad.checks.checks[stage] = status ? { status } : undefined;
+      assert.throws(() => validateGate(results, bad, "head", "head"));
+    }
+  }
 });

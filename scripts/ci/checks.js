@@ -12,6 +12,7 @@ import {
   validateVitest,
   writeEvidence,
 } from "./core.js";
+import { runFutureStages } from "./future-stages.js";
 
 const statePath = () => evidencePath("checks");
 const save = (state) => writeEvidence("checks", state);
@@ -121,53 +122,71 @@ function runFuture() {
   mkdirSync(privateRoot);
   const quiet = { stdio: "pipe", encoding: "utf8" };
   // Supabase prints local keys. Keep all service output private and ephemeral.
-  try {
-    command("pnpm", ["exec", "supabase", "start"], quiet);
-    command("pnpm", ["exec", "supabase", "db", "reset", "--local"], quiet);
-    if (contract.rls)
-      record("rls", () => {
-        const dir = join(privateRoot, "rls");
-        mkdirSync(dir);
-        command("pnpm", ["run", "test:rls"], {
-          ...quiet,
-          env: { ...process.env, CI_RLS_REPORT_DIR: dir },
-        });
-        const sqlRoot = "supabase/tests/database";
-        const sources = filesUnder(sqlRoot, ".sql");
-        invariant(sources.length > 0, "Required pgTAP SQL files missing");
-        const reports = filesUnder(dir, ".tap");
-        invariant(
-          reports.length === sources.length,
-          "Missing or unexpected pgTAP reports",
-        );
-        const results = sources.map((source) =>
-          validateTap(
-            readFileSync(join(dir, `${relative(sqlRoot, source)}.tap`), "utf8"),
-          ),
-        );
-        return {
-          tests: results.reduce((sum, result) => sum + result.tests, 0),
-          files: results.length,
-        };
-      });
-    if (contract.integration)
-      record("integration", () => {
-        const path = join(privateRoot, "integration.json");
-        command("pnpm", ["run", "test:integration"], {
-          ...quiet,
-          env: { ...process.env, CI_INTEGRATION_REPORT: path },
-        });
-        return validateVitest(readJson(path));
-      });
-  } finally {
-    command("pnpm", ["exec", "supabase", "stop", "--no-backup"], quiet);
-  }
+  runFutureStages(
+    {
+      startup: () => {
+        command("pnpm", ["exec", "supabase", "start"], quiet);
+      },
+      reset: () => {
+        command("pnpm", ["exec", "supabase", "db", "reset", "--local"], quiet);
+      },
+      rls: contract.rls
+        ? () => {
+            const dir = join(privateRoot, "rls");
+            mkdirSync(dir);
+            command("pnpm", ["run", "test:rls"], {
+              ...quiet,
+              env: { ...process.env, CI_RLS_REPORT_DIR: dir },
+            });
+            const sqlRoot = "supabase/tests/database";
+            const sources = filesUnder(sqlRoot, ".sql");
+            invariant(sources.length > 0, "Required pgTAP SQL files missing");
+            const reports = filesUnder(dir, ".tap");
+            invariant(
+              reports.length === sources.length,
+              "Missing or unexpected pgTAP reports",
+            );
+            const results = sources.map((source) =>
+              validateTap(
+                readFileSync(
+                  join(dir, `${relative(sqlRoot, source)}.tap`),
+                  "utf8",
+                ),
+              ),
+            );
+            return {
+              tests: results.reduce((sum, result) => sum + result.tests, 0),
+              files: results.length,
+            };
+          }
+        : undefined,
+      integration: contract.integration
+        ? () => {
+            const path = join(privateRoot, "integration.json");
+            command("pnpm", ["run", "test:integration"], {
+              ...quiet,
+              env: { ...process.env, CI_INTEGRATION_REPORT: path },
+            });
+            return validateVitest(readJson(path));
+          }
+        : undefined,
+      cleanup: () => {
+        command("pnpm", ["exec", "supabase", "stop", "--no-backup"], quiet);
+      },
+    },
+    record,
+  );
 }
 
 const commands = {
   install: () => command("pnpm", ["install", "--frozen-lockfile"]),
   selftest: () =>
-    command(process.execPath, ["--test", "scripts/ci/core.test.js"]),
+    command(process.execPath, [
+      "--test",
+      "scripts/ci/core.test.js",
+      "scripts/ci/auth-fixture.test.js",
+      "scripts/ci/future-stages.test.js",
+    ]),
   lint: () => command("pnpm", ["run", "lint"]),
   format: () => command("pnpm", ["run", "format:check"]),
   typecheck: () => command("pnpm", ["run", "typecheck"]),
@@ -188,6 +207,9 @@ try {
     const required = [
       ...Object.keys(commands),
       ...["rls", "integration"].filter((s) => state.contract?.[s]),
+      ...(state.contract?.rls || state.contract?.integration
+        ? ["startup", "reset", "cleanup"]
+        : []),
     ];
     state.status = required.every((s) => state.checks[s]?.status === "passed")
       ? "passed"
