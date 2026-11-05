@@ -24,7 +24,7 @@ test -n "`$pg_dump"
 "@
 $launcher = "$archive.sh"
 try {
-    git -C $repo archive --format=tar "--output=$archive" $revision -- package.json supabase scripts/ops/backup/drill.js
+    git -C $repo archive --format=tar "--output=$archive" $revision -- package.json supabase scripts/ci/core.js scripts/ops/backup/drill.js
     if ($LASTEXITCODE -ne 0) { throw 'Cannot package the K4 fixture source.' }
     [IO.File]::WriteAllText($launcher, ($launch -replace "`r`n", "`n") + "`n")
     & wsl.exe -d CarworX-Native -u carworx -- bash "$linuxArchive.sh" $linuxArchive $revision

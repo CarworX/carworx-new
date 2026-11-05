@@ -13,14 +13,27 @@ import {
 } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { validateTap } from "../../ci/core.js";
 
 process.umask(0o077);
-const [repo, revision, pgBin] = process.argv.slice(2);
+const [repo, revision, pgBin, mode] = process.argv.slice(2);
 assert.match(revision ?? "", /^[a-f0-9]{40}$/);
-assert.equal(process.env.WSL_DISTRO_NAME, "CarworX-Native");
-assert.equal(process.env.USER, "carworx");
-const cli = join(homedir(), "bin/supabase");
-const root = mkdtempSync(join(homedir(), "k4-drill-"));
+assert.ok(mode === undefined || mode === "--ci");
+const ci = mode === "--ci";
+if (ci) {
+  assert.equal(process.platform, "linux");
+  assert.equal(process.env.GITHUB_ACTIONS, "true");
+  assert.ok(process.env.RUNNER_TEMP?.startsWith("/"));
+} else {
+  assert.equal(process.env.WSL_DISTRO_NAME, "CarworX-Native");
+  assert.equal(process.env.USER, "carworx");
+}
+const runtime = ci ? "docker" : "native";
+const workspace = ci ? process.env.RUNNER_TEMP : homedir();
+const cli = ci
+  ? join(repo, "node_modules/.bin/supabase")
+  : join(homedir(), "bin/supabase");
+const root = mkdtempSync(join(workspace, "k4-drill-"));
 const bundle = join(root, "bundle");
 mkdirSync(bundle);
 const env = Object.fromEntries(
@@ -52,12 +65,12 @@ const sha = (data) => createHash("sha256").update(data).digest("hex");
 const gib = 1024 ** 3;
 
 function freeBytes() {
-  const disk = statfsSync("/mnt/c");
+  const disk = statfsSync(ci ? workspace : "/mnt/c");
   return disk.bavail * disk.bsize;
 }
 
 function capacity(minimum) {
-  assert.ok(freeBytes() >= minimum, "Windows disk safety margin reached");
+  assert.ok(freeBytes() >= minimum, "Recovery disk safety margin reached");
 }
 
 function run(stage, command, args, options = {}) {
@@ -117,7 +130,7 @@ function start(instance) {
         "--stack",
         name,
         "--runtime",
-        "native",
+        runtime,
         "--preparation",
         "on-demand",
         "--output-format",
@@ -126,7 +139,7 @@ function start(instance) {
       { cwd },
     ),
   );
-  assert.equal(result.runtime, "native");
+  assert.equal(result.runtime, runtime);
   const config = result.env;
   safePort(config.API_URL, "http:");
   safePort(config.DB_URL, "postgresql:");
@@ -637,29 +650,38 @@ async function drill() {
       ),
       manifest.bucket,
     );
-    const rls = run(
+    const tapDir = join(root, "tap");
+    run(
       "rls",
       process.execPath,
       [join(target.cwd, "supabase/tests/run-rls.js")],
       {
-        env: {
-          ...env,
-          RLS_DB_URL: restored.DB_URL,
-          CI_RLS_REPORT_DIR: join(root, "tap"),
-        },
+        env: { ...env, RLS_DB_URL: restored.DB_URL, CI_RLS_REPORT_DIR: tapDir },
       },
     );
-    const assertions = [...rls.matchAll(/\((\d+) assertions\)/g)].reduce(
-      (sum, match) => sum + Number(match[1]),
+    const reports = (path, suffix) =>
+      readdirSync(path, { recursive: true })
+        .filter((name) => name.endsWith(suffix))
+        .sort();
+    const expected = reports(
+      join(target.cwd, "supabase/tests/database"),
+      ".test.sql",
+    ).map((name) => name + ".tap");
+    assert.ok(expected.length > 0);
+    assert.deepEqual(reports(tapDir, ".tap"), expected);
+    const assertions = expected.reduce(
+      (sum, name) =>
+        sum + validateTap(readFileSync(join(tapDir, name), "utf8")).passed,
       0,
     );
-    assert.equal(assertions, 168);
+    assert.ok(assertions > 0);
     stop(target);
     active = undefined;
     return {
       version: 1,
       status: "passed",
       revision,
+      runtime,
       rlsAssertions: assertions,
       privateObjects: objects.length,
       tenantRecords: manifest.tables["public.organisations"].count,
