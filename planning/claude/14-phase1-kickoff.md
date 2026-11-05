@@ -54,4 +54,4 @@ The master cloud session appends its progress here, one line per event, in its t
 - 2026-11-05 · phase1-master · T4 #17 merged (888bc5d) by Codex; K1 #22 merged (8066700) by Claude; #24 superseded by a clean-history PR (test password in 95a84c8 history).
 - 2026-11-05 · phase1-master · Codex records #21 merged (99efccf) by Claude as reviewer; K2 preflight #23 re-approved @7911d48 (Auth email clarification acknowledged).
 - 2026-11-05 · T3+T5 · Clean-history branch `claude/t3-auth-2` cut from main `99efccf`: code commit `df870f7` (T4 overlap resolved in routes.ts, tsconfig.node.json, package.json, lockfile regenerated), then contract.json flip and records. `pnpm run check` passes locally (141 tests). Gitleaks 8.30.1 (checksum verified) over `origin/main..HEAD`: 0 findings; the single tree finding is the K1-recorded prose exception (codex-vendor-access.md:10, line SHA-256 matches).
-
+- 2026-11-05 · T3+T5 · PR opened: https://github.com/CarworX/carworx-new/pull/25 (draft, `claude/t3-auth-2`, supersedes #24). #24 closed with a link.
