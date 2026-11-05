@@ -247,7 +247,9 @@ try {
       const calls = invoked;
       const response = await action();
       requireSafe(
-        invoked > calls && deliveries.length === before && !response.ok,
+        invoked > calls &&
+          deliveries.length === before &&
+          response.ok === name.startsWith("direct_unapproved_"),
       );
       requireSafe(
         name === "provider_failure"
@@ -291,7 +293,7 @@ try {
   await absent("direct_unapproved_signup", () =>
     call("signup", { email: denied, password }),
   );
-  // Failed signup may already create an unconfirmed identity. Ensure this case
+  // A suppressed signup may create an unconfirmed identity. Ensure this case
   // exercises a real existing unconfirmed identity rather than enumeration hiding.
   const resendEmail = `resend-${tag}@example.test`;
   await create(resendEmail, false);

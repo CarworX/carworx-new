@@ -142,3 +142,45 @@ The private recipient set stays with the owner. Codex will coordinate names and 
 Run `node --test scripts/ops/env/contract.test.js`, the existing lint/format/types/unit/build checks, a staging build, and Wrangler's local `deploy --dry-run` against the generated staging config. Test cases include wrong/missing/stale source/run/review, skipped/cancelled jobs, missing feature suites, wrong build/environment and the still-closed promotion gate. Hosted workflow dispatch and staging smoke checks remain UNVERIFIED until the owner runs them after review/setup.
 
 Sources checked against the pinned Wrangler 4.156.1 schema and official docs: [Cloudflare Vite environment selection](https://developers.cloudflare.com/workers/vite-plugin/reference/cloudflare-environments/), [Wrangler environments](https://developers.cloudflare.com/workers/wrangler/environments/), [GitHub manual workflow execution](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow).
+
+### Staging probe operator
+
+The dedicated hook Worker uses a SQLite Durable Object for short-lived probe
+observations. Set the staging-only bindings `STAGING_PROBE_ADMIN_KEY` and
+`STAGING_PROBE_EVENT_KEY` privately on that Worker. Set
+`STAGING_PROBE_EVENT_KEY` and the exact HTTPS `STAGING_PROBE_ORIGIN` on the
+application Worker. The admin key stays off the app Worker. The reviewed hook
+deployment helper supplies the source SHA. The app has a staging-only version
+metadata binding. The ledger expires active observations after 15 minutes.
+
+Use the reviewed checkout and a private process environment. Set
+`STAGING_HOOK_ORIGIN`, `STAGING_APP_ORIGIN`, `STAGING_HOOK_SOURCE_SHA` and the
+private keys and controlled probe address. The operator tool never prints an
+address, link, credential or body.
+
+- `node scripts/ops/env/auth-email/probe.js register <case> <uuid>` opens one
+  direct probe. Invoke the matching real Supabase Auth action against the
+  recorded staging project. Use distinct controlled fixtures or respect the
+  cooldown. A live positive may send only to an owner-approved inbox.
+- `node scripts/ops/env/auth-email/probe.js seal <case> <uuid>` seals observed
+  counts. For positives, pass the privately captured `STAGING_PROBE_LINK`,
+  staging Supabase URL and publishable key in the private environment. The
+  command verifies the link against Auth before recording success. For the
+  hook failure case, use an approved fixture and check the configured Auth
+  path and redacted provider evidence for absence of fallback.
+- Put the seven sanitized sealed observations in a JSON map keyed by case.
+  `node scripts/ops/env/auth-email/probe.js hook-receipt <file>` builds the
+  fingerprinted hosted-hook receipt using the deployment ID and configuration
+  revision labels. Treat it as evidence only after checking the installed
+  hook, deployment version and private traces.
+- After the app deploy, set `STAGING_APP_SOURCE_SHA` and
+  `STAGING_APP_VERSION_ID` and run
+  `node scripts/ops/env/auth-email/probe.js app-negative` with a controlled
+  unapproved address. It sends signed probes on the three app paths and
+  outputs the smoke receipt. Missing terminal events, auth attempts, wrong
+  version and duplicate terminal events fail the receipt.
+
+The hook acknowledges valid signed unapproved recipient requests without
+attempting provider delivery. Invalid configuration, malformed payloads,
+unsupported actions and provider failures remain fail-closed. Hosted
+application timing and provider evidence require staging access.

@@ -3,6 +3,9 @@ const events = new Set([
   "app_terminal",
   "auth_attempt",
   "hook_invocation",
+  "recipient_denied",
+  "unsupported_action",
+  "hook_failure",
   "provider_attempt",
   "provider_success",
   "link_verified",
@@ -36,6 +39,7 @@ export function sealNegative(ledger, now = Date.now()) {
   if (
     counts.app_terminal !== 1 ||
     counts.auth_attempt ||
+    counts.hook_invocation ||
     counts.provider_attempt
   )
     throw new Error("Incomplete or unsafe negative evidence");

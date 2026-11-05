@@ -47,6 +47,8 @@ export function deploymentPlan(options, env) {
       options.domain,
       "--var",
       `APP_ORIGIN:${origin}`,
+      "--var",
+      `STAGING_PROBE_SOURCE_SHA:${options.sha}`,
       "--tag",
       options.sha,
     ],
@@ -130,6 +132,10 @@ if (
         { cwd: root, encoding: "utf8" },
       ),
     );
+    const policyFile = get("contents/scripts/ops/env/promotion.json?ref=main");
+    const trustedPolicy = JSON.parse(
+      Buffer.from(policyFile.content, "base64").toString("utf8"),
+    );
     validateEvidence(
       request,
       "CarworX/carworx-new",
@@ -139,6 +145,7 @@ if (
       pages(`pulls/${request.pr}/reviews`),
       contract,
       get(`compare/${request.sha}...main`),
+      trustedPolicy,
     );
     const cli = fileURLToPath(
       new URL(
