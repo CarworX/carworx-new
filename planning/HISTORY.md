@@ -262,6 +262,8 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 
 Owner approved the next K2 interfaces and waived the pre-build Claude agreement gate (D-068). Codex implemented app/hook recipient controls, disposable local Supabase boundary checks, readiness v2 and owner smoke contracts on codex/k2-environments (#23), based on main f871fe3. Codex 17 requests independent exact-head Claude review and replanning. Prior skeleton approval is historical only. No hosted configuration/deployment, private values, real mail or spend; promotion and A2 stay blocked pending required evidence. Workstation capacity precluded a new Docker stack; CI local-stack evidence is labelled separately. Publication/check references are recorded on PR #23.
 
+- 2026-11-05 17:17 UTC — Codex ran the K4 native WSL drill at 44ec4a1. Two tenants, four Auth identities, two private objects and 168 RLS assertions verified. The first committed run exported in 1.29 s and restored/verified in 36.26 s. Hosted A7 and Claude review remain open. Issue #4.
+
 ## 2026-11-05 — phase1-master: T3+T5 merged; Claude's Phase 1 tasks complete
 
 - **CI diagnosis:** the combined suite failed with only "Required command failed". Verification-only #26 (closed unmerged) printed step names and exit codes. Startup and reset passed; `test:rls` failed on T3's new `30_` file, whose `select set_config(...)` rows broke the TAP stream. Fixed with `set local` (`fe34cd2`); validation was not relaxed. K1 #27 (Codex; Claude APPROVE @`b1e12ce`; merged `0961c98`) now records startup/reset/rls/integration/cleanup separately and reports only the failing stage label.

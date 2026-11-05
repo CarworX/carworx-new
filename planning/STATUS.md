@@ -1,14 +1,22 @@
 # Status
 
-## Baton: owner staging setup (guide 11) and Codex K2 follow-ups; K3/K4 local
+## Baton: Codex completes Phase 1 staging (D-071)
 
-**Design gate closed by the owner (D-067):** baseline `495e448` is approved and final X-c was waived for this gate. Phase 1 PRs retain reciprocal review; D-060 remains open until G-PROD.
+**Phase 1 in progress.** Design #10, T1–T5, K1 and K2 #23 are merged. K4 #34
+passed the native WSL synthetic restore drill with 168 RLS assertions, two
+private objects and genuine TOTP, then merged after Claude's exact-head
+approval. Hosted A7 and the remaining A1–A7 evidence are open. D-060 remains
+open until G-PROD.
 
-1. **Owner:** follow [guide 11](owner-guides/11-staging-bootstrap.md) (PR #30): Supabase access for Codex, the two staging origins, Resend for the hook only (SMTP stays off), an account-owned **Editor** token scoped to `carworx-web-staging` only, private settings by exact name, hook deploy/enable/probes, then the four readiness receipts. Values and the recipient list never enter chat, Git or receipts.
-2. **Codex:** K2 follow-ups: the exact owner command to deploy `carworx-auth-email-staging`, and owner probe/counter tooling that produces the sanitized `hosted_hook` and application-negative receipts. Then K3 local measurements; K4 local recovery after the C: capacity preflight.
-3. **Claude:** maintain the application recipient guard from now on (built by Codex under D-068). Address the non-blocking K2 notes with Codex: the direct-Auth allowlist probe via the hook's 403, app-path timing, and a production email mode before G-PROD.
-
-**Phase: 1 in progress (D-038).** Design #10, T1–T5 (#11/#15/#17/#25), records #21/#29, K1 #13/#18/#22/#27, K2 #23 (Claude APPROVE @`b1a4f72`; merged `5b9590f`) and Claude 15 #14 (`e92aab6`) are merged; main baseline `e92aab6`. `promotion.json` v2 stays **blocked** until reviewed owner receipts exist. These are implementation approvals. A1–A7 staging evidence, real Google login/linking, hosted performance/recovery and D-060 owner checks remain open. Coming Soon is scrapped (D-063).
+- **Codex:** Finish K2 tooling and hardening, native Auth parity (#33), K3 in CI
+  (#32) and K4 CI. Use exact-head CI and D-071 self-checks for Codex-authored
+  work. Heavy runs use included GitHub Actions minutes and the $0 ceiling.
+- **Staging:** Promotion is blocked. Restore access to CarworX App and
+  Cloudflare, verify the scoped token, hook, bindings and allowlisted inboxes
+  against [guide 11](owner-guides/11-staging-bootstrap.md), then capture the
+  required evidence. Owner-held keys and independent private copies gate A7.
+- **Phase 2:** proposal after Phase 1 closeout. Implementation requires separate
+  owner approval.
 
 ## Open items
 
@@ -25,7 +33,7 @@
 
 ## Owner prerequisites
 
-- **Local Supabase:** Docker 29.9.2 is healthy. The initial Windows CLI temp-directory failure was resolved for this run using process-local TMP/TEMP at `C:/Temp/carworx-supabase`. A clean local reset, 154 pgTAP assertions and 24 REST probes passed; all task containers were stopped. Docker has about 4 GB memory. During K2, C: varied from roughly 0.6 to 4.3 GB free; no new workstation stack was started. K4 needs a fresh capacity preflight. No images, user files or WSL installations were deleted.
+- **Local Supabase:** Docker Desktop was removed. The native WSL stack passed the K4 local drill. Native Auth email template parity remains open in #33.
 - **K1:** owner confirmed included Actions minutes/$0 cap. Both fixture repairs are Claude-approved and merged; Auth integration remains mandatory as T3/T5 arrives.
 - **T3/K2:** D-062 identifies “CarworX App” as synthetic staging; Claude reports Google enabled. Real login remains unverified. Complete local Google provider/callback configuration, account/DNS inventory, Cloudflare staging route, scoped secrets and restricted Resend/Auth SMTP. Claude supplies the guides; deployment execution stays owner-controlled.
 - **K4 hosted:** choose an existing private destination, a separate copy and operator; confirm proposed frequency, retention and measured cost/capacity. The local synthetic drill comes first (D-059).
