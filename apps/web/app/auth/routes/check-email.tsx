@@ -36,22 +36,10 @@ export async function action({ request, context }: Route.ActionArgs) {
   if (decision === "unavailable")
     return data({ outcome: "email_failed" as const }, { status: 503 });
   if (decision === "acknowledge") {
-    await observeEmailProbe(
-      request,
-      context.cloudflare?.env,
-      email,
-      "resend",
-      "app_terminal",
-    );
+    await observeEmailProbe(request, context, email, "resend", "app_terminal");
     return data({ outcome: "sent" as const });
   }
-  await observeEmailProbe(
-    request,
-    context.cloudflare?.env,
-    email,
-    "resend",
-    "auth_attempt",
-  );
+  await observeEmailProbe(request, context, email, "resend", "auth_attempt");
   const { error } = await auth.supabase.auth.resend({
     type: "signup",
     email,

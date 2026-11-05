@@ -52,22 +52,10 @@ export async function action({ request, context }: Route.ActionArgs) {
   const decision = emailDecision(request, auth.config, email);
   if (decision === "unavailable") return fail("email_failed", { status: 503 });
   if (decision === "acknowledge") {
-    await observeEmailProbe(
-      request,
-      context.cloudflare?.env,
-      email,
-      "signup",
-      "app_terminal",
-    );
+    await observeEmailProbe(request, context, email, "signup", "app_terminal");
     return redirect("/auth/check-email?sent=signup");
   }
-  await observeEmailProbe(
-    request,
-    context.cloudflare?.env,
-    email,
-    "signup",
-    "auth_attempt",
-  );
+  await observeEmailProbe(request, context, email, "signup", "auth_attempt");
   const { error } = await auth.supabase.auth.signUp({
     email,
     password,

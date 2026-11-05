@@ -1,3 +1,4 @@
+import type { AppLoadContext } from "react-router";
 import { canonicalEmail } from "../server/security/recipient-policy";
 
 const encode = (value: string) => new TextEncoder().encode(value);
@@ -10,16 +11,16 @@ type Kind = "app_terminal" | "auth_attempt";
 
 export async function observeEmailProbe(
   request: Request,
-  bindings: unknown,
+  context: AppLoadContext,
   email: string,
   flow: Flow,
   kind: Kind,
 ): Promise<void> {
   const header = request.headers.get("x-carworx-app-probe");
-  const env = (bindings ?? {}) as Record<string, unknown>;
+  if (!header) return;
+  const env = context.cloudflare.env as unknown as Record<string, unknown>;
   const key = env["STAGING_PROBE_EVENT_KEY"];
   if (
-    !header ||
     env["CARWORX_ENV"] !== "staging" ||
     typeof key !== "string" ||
     key.length < 32

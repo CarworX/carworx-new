@@ -29,20 +29,14 @@ export async function action({ request, context }: Route.ActionArgs) {
   if (decision === "acknowledge") {
     await observeEmailProbe(
       request,
-      context.cloudflare?.env,
+      context,
       email,
       "recovery",
       "app_terminal",
     );
     return data({ outcome: "sent" as const });
   }
-  await observeEmailProbe(
-    request,
-    context.cloudflare?.env,
-    email,
-    "recovery",
-    "auth_attempt",
-  );
+  await observeEmailProbe(request, context, email, "recovery", "auth_attempt");
   const { error } = await auth.supabase.auth.resetPasswordForEmail(email, {
     redirectTo: appUrl(auth.config.appOrigin, "/auth/confirm"),
   });
