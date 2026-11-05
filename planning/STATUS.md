@@ -1,11 +1,11 @@
 # Status
 
-**2026-11-05 native migration inspection:** owner approved fresh `CarworX-Native`
-WSL and data preservation. Inventory found no Docker containers/volumes and seven
-Supabase images. Duplicate 5.88 GiB VHD paths identify the same NTFS file. Migration
-stopped at the capacity gate: about 2.42 GiB free versus a 6.55 GiB working budget
-(target at least 7 GiB). Docker was returned to its initially stopped state;
-nothing was deleted or migrated. [Inspection and resume procedure](runbooks/native-supabase-migration.md).
+**2026-11-05 workstation update:** Docker Desktop and its data disks were removed
+after a final empty container/volume inventory. Native Supabase runs in
+`CarworX-Native`. Local checks passed for 168 RLS assertions, password sign-in,
+private Storage and database restart persistence. The pinned native runtime
+cannot serve the custom email templates, so full Auth parity remains open.
+[Operator commands and evidence](runbooks/native-supabase-migration.md).
 
 ## Baton: Claude reviews K2 implementation and replans (Codex 17)
 

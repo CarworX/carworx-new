@@ -106,3 +106,36 @@ null inventory when the engine is stopped, and rejection of a reduced safety mar
 Sources: [Supabase native runtime](https://supabase.com/docs/guides/local-development/docker-and-native-runtimes),
 [Microsoft WSL catalog](https://github.com/microsoft/WSL/blob/master/distributions/DistributionInfo.json),
 [Docker backup/restore](https://docs.docker.com/desktop/settings-and-maintenance/backup-and-restore/).
+
+## Workstation execution update — 2026-11-05
+
+The owner directed Docker removal before native verification. The final Docker
+inventory found zero containers, volumes and build-cache entries, with seven
+unused Supabase images. There was no stack data to export. The official
+uninstaller exited successfully. Both views of the data disk disappeared, the
+Docker executable and WSL registration were removed, and the existing Ubuntu
+registration was preserved. Windows free space rose from 2.66 to 11.91 GiB
+immediately after uninstall. Automated policy blocked recursive removal of small
+residual Docker directories.
+
+Ubuntu 24.04.5 was imported as `CarworX-Native` after SHA-256 verification.
+The named `carworx` stack runs under the unprivileged `carworx` user. Verified
+versions are Supabase 2.122.1, Node 24.22.2 and pnpm 12.16.1. The Linux source
+snapshot was taken from `fa96fb4`. Its separate local config omits the two
+custom email template tables because the pinned experimental stack rejects
+`content_path`. The original config is retained in the service user's home.
+The stack is for synthetic local development. Its listeners bind to loopback.
+
+From the Windows checkout, run
+`pwsh -File scripts/ops/native/stack.ps1 -Action status`. The same script
+accepts `start` and `stop`. Start and status suppress local connection secrets.
+The start action uses the named native stack and on-demand preparation.
+No automatic startup is configured.
+
+Verified on the native stack: 168 RLS assertions, a database marker surviving
+stop/start, Auth password sign-in with a synthetic preconfirmed user, private
+Storage upload and byte-for-byte download with anonymous access denied, and
+HTTP 200 on Auth health, Storage status and REST. The Linux application build
+also passed. Full Auth integration, genuine Auth-to-hook delivery, application
+connectivity and K4 recovery acceptance remain open. The custom template
+limitation must be resolved before claiming Auth parity.
