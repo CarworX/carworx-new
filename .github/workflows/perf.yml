@@ -32,7 +32,6 @@ jobs:
       TESTED_SHA: ${{ github.event.pull_request.head.sha || inputs.source_sha }}
       CI: "true"
       WRANGLER_SEND_METRICS: "false"
-      K3_REPORT: ${{ runner.temp }}/k3-summary.json
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -73,7 +72,7 @@ jobs:
           preview_pid=$!
           trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
           curl --silent --fail --retry 20 --retry-connrefused --retry-delay 1 --max-time 3 http://127.0.0.1:8787/healthz >/dev/null
-          node perf/local.js http://127.0.0.1:8787
+          K3_REPORT="$RUNNER_TEMP/k3-summary.json" node perf/local.js http://127.0.0.1:8787
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         if: always()
         with:
