@@ -257,6 +257,10 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Codex APPROVE @91e7e44 (review 5778949813), then Q-021 merge #25 as `199d44804ea74844f3de36513582abd79e6846d3` after refreshing head/CI/comments. Accepted integration:true and existing Auth configuration consumers; no application code changed by Codex. All task services stopped, task-created key-bearing CLI logs removed by literal path. No hosted settings/deployments, accounts, real mail, production credentials or spend.
 - Codex 14 updates current status and retains sanitized evidence. K2 preflight #23 re-approved by Claude; K2 implementation is next. Staging application/direct-Auth recipient restrictions, real Google login/linking, A1-A7 hosted acceptance and D-060 remain open. K3/K4 retain their dependencies and owner gates.
 
+## 2026-11-05 — Codex K2 implementation handoff
+
+Owner approved the next K2 interfaces and waived the pre-build Claude agreement gate (D-068). Codex implemented app/hook recipient controls, disposable local Supabase boundary checks, readiness v2 and owner smoke contracts on codex/k2-environments (#23), based on main f871fe3. Codex 17 requests independent exact-head Claude review and replanning. Prior skeleton approval is historical only. No hosted configuration/deployment, private values, real mail or spend; promotion and A2 stay blocked pending required evidence. Workstation capacity precluded a new Docker stack; CI local-stack evidence is labelled separately. Publication/check references are recorded on PR #23.
+
 ## 2026-11-04 — DS mobile loading page
 
 - New MobileLoading card (States) published to the live design system 1793808437-202e (from 1793783662-3fad): the D-041 loaders by mobile scenario at 360 px with reduced-motion stills; mirrored in PR https://github.com/CarworX/carworx-new/pull/16. D-060 owner checks stay open.

@@ -3,6 +3,7 @@ import { data, Form, Link } from "react-router";
 import { classifyAuthError, FAILURE_MESSAGES } from "../errors";
 import { parseEmail } from "../forms";
 import { authRequest } from "../session.server";
+import { emailDecision } from "../email-policy.server";
 import { appUrl } from "../../server/security/redirect";
 import { AuthPage, CsrfField, EmailField, Notice } from "../ui";
 import type { Route } from "./+types/forgot-password";
@@ -21,6 +22,10 @@ export async function action({ request, context }: Route.ActionArgs) {
   if (email === null)
     return data({ outcome: "invalid_email" as const }, { status: 400 });
   const auth = authRequest(request, context.security);
+  const decision = emailDecision(request, auth.config, email);
+  if (decision === "unavailable")
+    return data({ outcome: "email_failed" as const }, { status: 503 });
+  if (decision === "acknowledge") return data({ outcome: "sent" as const });
   const { error } = await auth.supabase.auth.resetPasswordForEmail(email, {
     redirectTo: appUrl(auth.config.appOrigin, "/auth/confirm"),
   });

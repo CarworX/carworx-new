@@ -53,6 +53,9 @@ export interface Reply {
 /** A browser stand-in: a cookie jar plus the headers a browser would send. */
 export class Browser {
   readonly jar = new Map<string, string>();
+  constructor(
+    readonly env: typeof workerEnv & Record<string, string> = workerEnv,
+  ) {}
 
   cookieHeader(): string {
     return [...this.jar].map(([k, v]) => `${k}=${v}`).join("; ");
@@ -89,10 +92,14 @@ export class Browser {
       headers.set("Content-Type", "application/x-www-form-urlencoded");
     }
     if (method !== "GET" && init.origin !== null && !headers.has("Origin")) {
-      headers.set("Origin", init.origin ?? APP);
+      headers.set("Origin", init.origin ?? this.env.APP_ORIGIN);
     }
-    const request = new Request(new URL(path, APP), { method, headers, body });
-    const response = await (await loadWorker()).fetch(request, workerEnv, ctx);
+    const request = new Request(new URL(path, this.env.APP_ORIGIN), {
+      method,
+      headers,
+      body,
+    });
+    const response = await (await loadWorker()).fetch(request, this.env, ctx);
     const setCookies = response.headers.getSetCookie();
     for (const header of setCookies) {
       const [pair = ""] = header.split(";");

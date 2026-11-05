@@ -1,3 +1,5 @@
+import { approvedRecipients, loopbackOrigin } from "./recipient-policy";
+
 /**
  * Server configuration for Auth and the security boundary (T3/T5).
  *
@@ -12,14 +14,12 @@ export interface ServerConfig {
   supabaseUrl: string;
   /** Supabase publishable (anon) key. Public by design; RLS protects data. */
   supabasePublishableKey: string;
+  environment: "local" | "staging" | null;
+  /** Server-only. Never return configuration from a loader/action. */
+  approvedRecipients: ReadonlySet<string> | null;
 }
 
-// TODO(K2): staging recipient allowlist. Not built yet: the app-path check
-// (sign-up, resend, reset) reads a names-only setting that K2 will define, and
-// direct Auth SMTP needs the same restriction. Until both are in place and
-// demonstrated, staging email and sign-in stay OFF. Confirmation and custom
-// SMTP settings are NOT a control: Supabase's default sender can still send
-// reset mail. Local tests use the mail sink and example.test only.
+// App-side checks do not replace the separately deployed direct Auth hook.
 
 export class ConfigError extends Error {
   constructor(name: string) {
@@ -51,9 +51,25 @@ export function readServerConfig(env: unknown): ServerConfig {
   if (typeof key !== "string" || key.length < 20) {
     throw new ConfigError("SUPABASE_PUBLISHABLE_KEY");
   }
+  const appOrigin = origin(vars["APP_ORIGIN"], "APP_ORIGIN");
+  const supabaseUrl = origin(vars["SUPABASE_URL"], "SUPABASE_URL");
+  const mode = vars["CARWORX_ENV"];
+  const environment =
+    mode === "staging"
+      ? "staging"
+      : mode === "local" ||
+          (mode === undefined &&
+            loopbackOrigin(appOrigin) &&
+            loopbackOrigin(supabaseUrl))
+        ? "local"
+        : null;
   return {
-    appOrigin: origin(vars["APP_ORIGIN"], "APP_ORIGIN"),
-    supabaseUrl: origin(vars["SUPABASE_URL"], "SUPABASE_URL"),
+    appOrigin,
+    supabaseUrl,
     supabasePublishableKey: key,
+    environment,
+    approvedRecipients: approvedRecipients(
+      vars["STAGING_APPROVED_RECIPIENTS_JSON"],
+    ),
   };
 }
