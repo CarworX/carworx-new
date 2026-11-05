@@ -9,10 +9,8 @@
 1. **Account.** Sign in to <https://resend.com> (or create the account; that's yours to do).
 2. **Add a sending subdomain, not the main domain.** Resend → **Domains → Add Domain**, and enter a subdomain such as `mail.staging.carworx.app` or the name Codex proposes. A subdomain keeps test mail apart from any future mail on `carworx.app` itself.
 3. **Add the DNS records Resend shows** (usually SPF, DKIM and a return-path record) at whoever manages your DNS (guide 5). Copy each exactly. Wait for Resend to show **Verified**; it can take from minutes to a few hours.
-4. **Make an API key for staging only.** Resend → **API Keys → Create**, with *Sending access* limited to that domain. Copy it once, and paste it only where Codex says:
-   - Supabase **CarworX App → Authentication → Emails → SMTP settings**, for sign-in emails. Resend's SMTP host is `smtp.resend.com`, the username is `resend`, and the password is the key.
-   - and/or a GitHub or Cloudflare staging secret for app emails.
-5. **Write the allowlist.** List the email addresses allowed to receive staging mail: yours and the team's. Send Codex the list. K2 builds the rule that blocks every other address on staging.
+4. **Superseded by [guide 11](11-staging-bootstrap.md), step 3.** Make the API key as described there. It goes **only** into the hook Worker. **Don't** put it into Supabase's SMTP settings: K2's email hook replaces SMTP, and SMTP stays off.
+5. **Superseded by [guide 11](11-staging-bootstrap.md), step 5.** The allowlist stays private to you. **Don't send it to Codex or Claude.** You put it straight into both staging Workers as `STAGING_APPROVED_RECIPIENTS_JSON`.
 
 ## Check
 

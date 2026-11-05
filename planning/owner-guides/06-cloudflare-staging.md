@@ -11,7 +11,7 @@
 3. **Make a deploy token, limited to staging.** Cloudflare dashboard → your profile → **API Tokens → Create Token**. Use the template Codex names, with permission for this one account and the app only.
    - Copy the token once. Paste it **only** into GitHub: repository **carworx-new → Settings → Secrets and variables → Actions → Environments → staging → Add secret**, with the name Codex gives you.
    - Never paste it into chat or a file.
-4. **Add the staging-only app secrets.** These are the Supabase staging keys the app needs on the server. Supabase dashboard → **CarworX App → Project Settings → API**: copy the values Codex names, and paste each into the Cloudflare app's **Settings → Variables and Secrets** as a **Secret**, with the exact name given.
+4. **Superseded by [guide 11](11-staging-bootstrap.md), steps 4–5,** which give the exact token scope and secret names K2 checks. Original text, for reference: **Add the staging-only app secrets.** These are the Supabase staging keys the app needs on the server. Supabase dashboard → **CarworX App → Project Settings → API**: copy the values Codex names, and paste each into the Cloudflare app's **Settings → Variables and Secrets** as a **Secret**, with the exact name given.
    - Use the **staging** project's keys only. The production project doesn't exist yet and is created before launch.
 5. **Keep staging private.** Codex's K2 plan says how: for example Cloudflare Access in front of `staging.carworx.app`, so only you and the team can open it. You switch it on in **Zero Trust → Access → Applications** if K2 asks for it.
 
