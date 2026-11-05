@@ -135,6 +135,7 @@ function stack(name) {
 }
 
 function start(instance) {
+  stageName = instance.name + "-capacity";
   capacity(2 * gib);
   const { name, cwd } = instance;
   const result = JSON.parse(
@@ -599,6 +600,7 @@ async function drill() {
     active = undefined;
 
     const restoreStart = Date.now();
+    stageName = "restore-manifest";
     validate(JSON.parse(read("manifest.json")), read);
     assert.equal(
       sha(baseline(target)),
