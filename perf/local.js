@@ -7,6 +7,7 @@ import { pathToFileURL } from "node:url";
 import { evaluate, ROUTES } from "./budgets.js";
 
 const directory = mkdtempSync(join(tmpdir(), "carworx-perf-private-"));
+let phase = "preflight";
 const summary = {
   version: 1,
   scope: "loopback-mobile-lab",
@@ -25,9 +26,8 @@ try {
     origin.href !== `${origin.origin}/`
   )
     throw new Error("loopback_origin_required");
-  const require = createRequire(
-    new URL("../node_modules/lighthouse/package.json", import.meta.url),
-  );
+  phase = "toolchain";
+  const require = createRequire(import.meta.resolve("lighthouse"));
   const { launch } = await import(
     pathToFileURL(require.resolve("chrome-launcher")).href
   );
@@ -37,6 +37,7 @@ try {
   );
   const { chromium } = appRequire("playwright");
   for (const [index, route] of ROUTES.entries()) {
+    phase = "preview_route";
     const reports = [];
     const samples = [];
     const routeUrl = new URL(route, origin).href;
@@ -53,6 +54,7 @@ try {
     for (let run = 0; run < 5; run++) {
       if (freemem() < 2 * 1024 ** 3)
         throw new Error("available_ram_below_2_gib");
+      phase = "chromium_launch";
       const chrome = await launch({
         chromePath: chromium.executablePath(),
         chromeFlags: [
@@ -63,6 +65,7 @@ try {
         logLevel: "silent",
       });
       try {
+        phase = "lighthouse_measurement";
         const result = await lighthouse(routeUrl, {
           port: chrome.port,
           output: ["json", "html"],
@@ -95,6 +98,7 @@ try {
         await chrome.kill();
       }
     }
+    phase = "budget_evaluation";
     summary.routes.push({ route, samples, ...evaluate(reports) });
   }
   summary.status = summary.routes.every((r) => r.status === "passed")
@@ -108,7 +112,7 @@ try {
     "loopback_origin_required",
   ].includes(error.message)
     ? error.message
-    : "measurement_failed";
+    : phase;
   process.exitCode = 1;
 } finally {
   writeFileSync(
