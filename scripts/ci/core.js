@@ -236,6 +236,14 @@ export function validateGate(results, reports, expected, currentHead) {
     );
     if (job === "checks") {
       validateContract(report.contract);
+      if (report.contract.rls || report.contract.integration) {
+        invariant(
+          ["startup", "reset", "cleanup"].every(
+            (stage) => report.checks[stage]?.status === "passed",
+          ),
+          "Required service stage evidence missing or failed",
+        );
+      }
       for (const suite of ["rls", "integration"]) {
         const check = report.checks[suite];
         invariant(

@@ -10,6 +10,8 @@ The existing scaffold pins Node in `.node-version` and pnpm in `package.json`. K
 
 ## Activating T2 and T3/T5
 
+Service stages are recorded separately as `startup`, `reset`, `rls`, `integration` and `cleanup`. A failure publishes only its fixed stage label; command output and validator details remain private. Later stages do not run after a failure, cleanup is always attempted, and a cleanup error cannot replace the first failure. The gate requires passed startup/reset/cleanup evidence whenever either feature suite applies. `future-stages.test.js` covers stage failures, missing/malformed reports and simultaneous suite/cleanup failure.
+
 `contract.json` version 1 has boolean `rls` and `integration` flags. Unit tests cannot be disabled. The base contract and base/current source paths are checked: introduced migrations require RLS; Auth/security implementation paths and conventional auth routes require integration. Once required in the base, a suite cannot be disabled or made not applicable by deleting its files. Required commands, tests and reports must exist and execute. False flags are explicitly **not applicable**, never feature acceptance.
 
 The corresponding Claude task adds its root script in a serialised edit of `package.json` and enables its flag in coordination with K1. No application APIs belong to K1.
