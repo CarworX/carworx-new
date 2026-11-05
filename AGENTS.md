@@ -4,8 +4,8 @@ This repo is the single source of truth for CarworX. Two agents work here: **Cla
 
 **Current phase: Phase 1 in progress (D-038).** The owner approved the design gate under D-067; design PR #10, T1 #11 and K1 #13 are merged. See STATUS for current feature reviews.
 - Work uses synthetic local/staging data. Phase completion still requires A1–A7 staging evidence; D-060 owner checks remain open until G-PROD.
-- Application code follows [PLAN §12](planning/PLAN.md): pull requests, `claude/*` and `codex/*` branches, an `Agent:` trailer, and the other agent's review.
-- **Never, for agents:** creating accounts, handling production secrets, deploying, or spending money (PLAN §15, §18).
+- Application code follows [PLAN §12](planning/PLAN.md): pull requests, `claude/*` and `codex/*` branches, and an `Agent:` trailer. For the owner-delegated Phase 1 scope only (D-071), Codex-authored work uses exact-head CI and a recorded self-check.
+- D-071 permits Codex to operate the pinned Phase 1 staging targets, including scoped settings, migrations, deployment and email probes to owner-approved inboxes. Owner credentials stay private. Creating accounts, using production secrets, production deployment and spending still require separate authority.
 
 Before doing anything:
 

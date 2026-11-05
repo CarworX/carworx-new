@@ -8,9 +8,9 @@ private objects and genuine TOTP, then merged after Claude's exact-head
 approval. Hosted A7 and the remaining A1–A7 evidence are open. D-060 remains
 open until G-PROD.
 
-- **Codex:** Finish K2 tooling and hardening, native Auth parity (#33), K3 in CI
-  (#32) and K4 CI. Use exact-head CI and D-071 self-checks for Codex-authored
-  work. Heavy runs use included GitHub Actions minutes and the $0 ceiling.
+- **Codex:** Native Auth parity #33 and the D-071 gate #36 are merged. K2
+  tooling (#31), K3 CI (#32), and K4 CI (#37) are being verified. Heavy runs
+  use included GitHub Actions minutes and the $0 ceiling.
 - **Staging:** Promotion is blocked. Restore access to CarworX App and
   Cloudflare, verify the scoped token, hook, bindings and allowlisted inboxes
   against [guide 11](owner-guides/11-staging-bootstrap.md), then capture the
@@ -33,9 +33,9 @@ open until G-PROD.
 
 ## Owner prerequisites
 
-- **Local Supabase:** Docker Desktop was removed. The native WSL stack passed the K4 local drill. Native Auth email template parity remains open in #33.
+- **Local Supabase:** The WSL synthetic restore passed. Native Linux CI on #33 passed 52 Auth integration tests and 12 Auth-to-hook checks. Workstation Auth parity was not rerun.
 - **K1:** owner confirmed included Actions minutes/$0 cap. Both fixture repairs are Claude-approved and merged; Auth integration remains mandatory as T3/T5 arrives.
-- **T3/K2:** D-062 identifies “CarworX App” as synthetic staging; Claude reports Google enabled. Real login remains unverified. Complete local Google provider/callback configuration, account/DNS inventory, Cloudflare staging route, scoped secrets and restricted Resend/Auth SMTP. Claude supplies the guides; deployment execution stays owner-controlled.
+- **T3/K2:** The recorded synthetic target is CarworX App. Restore connector access and verify real Google login and linking, the approved sender and both recipient paths. D-071 delegates staging execution to Codex.
 - **K4 hosted:** choose an existing private destination, a separate copy and operator; confirm proposed frequency, retention and measured cost/capacity. The local synthetic drill comes first (D-059).
 - **Before G-PROD:** complete D-060's owner-only design checks and the remaining PLAN release requirements, including Information Officer/retention/privacy and recovery evidence.
 - **Later:** company/business bank and funded reserve before G-PAY; optional automation budget under G-AUTO. No provider outreach or production action is authorised here.
@@ -46,7 +46,7 @@ open until G-PROD.
 
 **Prior foundation handoff:** [Codex 14](codex/14-t3-t5-review-and-k1-diagnostics.md) records four resolved T3/T5 findings, K1's reviewed diagnostics repair, exact-head hosted results (143 unit / 168 RLS / 45 integration), independent local/browser evidence and K2 inputs. #25 is approved at `91e7e44` and merged as `199d448`; #27 is Claude-approved and merged as `0961c98`. #21 is merged; #23 is re-approved at `7911d48`. Superseded #24 and verification-only #26 are closed unmerged. Staging remains blocked on access, owner configuration and demonstrated application plus direct-Auth recipient restrictions. Confirmations off/custom SMTP unset do not establish that Auth mail is disabled.
 
-**Current handoff:** [Codex 17](codex/17-k2-implementation-handoff.md), K2 PR #23. The owner waived the pre-build agreement gate (D-068). Claude reviews the implemented app/hook controls, required CI and readiness/smoke contracts, then replans owner evidence and any findings. Prior skeleton approvals are superseded; deployment and A2 remain gated.
+**Current handoff:** [Codex 19](codex/19-phase1-staging-completion.md) applies D-071. Promotion stays blocked on verified staging access and exact-version evidence.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
