@@ -168,9 +168,9 @@ address, link, credential or body.
   command verifies the link against Auth before recording success. For the
   hook failure case, use an approved fixture and check the configured Auth
   path and redacted provider evidence for absence of fallback.
-- Put the seven sanitized sealed observations in a JSON map keyed by case.
+- Prepare a private JSON map of the seven case names to objects containing the registered address and correlation_id.
   `node scripts/ops/env/auth-email/probe.js hook-receipt <file>` builds the
-  fingerprinted hosted-hook receipt using the deployment ID and configuration
+  fingerprinted hosted-hook receipt by reading sealed counts from the live ledger. It uses the deployment ID and configuration
   revision labels. Treat it as evidence only after checking the installed
   hook, deployment version and private traces.
 - After the app deploy, set `STAGING_APP_SOURCE_SHA` and

@@ -123,6 +123,8 @@ export async function probeEndpoint(request, env) {
       });
     }
     if (op === "seal") return await sendProbe(env, recipient, { op, id });
+    if (op === "read" && version === env.STAGING_PROBE_SOURCE_SHA)
+      return await sendProbe(env, recipient, { op, id, flow, version });
     if (op === "event" && kind === "link_verified") {
       return await sendProbe(env, recipient, { op, id, kind, app_version });
     }
@@ -228,6 +230,17 @@ export class StagingProbe {
             inject_failure: current.flow === "hook_failure_no_fallback",
           };
         }
+        if (body.op === "read") {
+          if (
+            !current.sealed ||
+            current.id !== body.id ||
+            current.flow !== body.flow ||
+            current.version !== body.version ||
+            !current.receipt
+          )
+            throw Error("Sealed probe evidence unavailable");
+          return current.receipt;
+        }
         if (body.op !== "seal" || current.id !== body.id || current.sealed)
           throw Error("Invalid seal");
         if (app.includes(current.flow)) {
@@ -253,13 +266,14 @@ export class StagingProbe {
                   : "recipient_denied",
             ) > 0;
         if (hook === 0 || !passed) throw Error("Incomplete hook evidence");
-        await storage.put("probe", { ...current, sealed: true });
-        return {
+        const receipt = {
           status: "passed",
           hook_calls: hook,
           provider_calls: provider,
           correlation_id: current.id,
         };
+        await storage.put("probe", { ...current, sealed: true, receipt });
+        return receipt;
       });
       return send(result);
     } catch {

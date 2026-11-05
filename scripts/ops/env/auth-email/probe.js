@@ -159,8 +159,9 @@ async function confirmLink(app, email) {
   );
 }
 
-function hookReceipt(path) {
-  const checks = JSON.parse(readFileSync(path, "utf8"));
+async function hookReceipt(path) {
+  const hook = stagingOrigin(env.STAGING_HOOK_ORIGIN);
+  const registrations = JSON.parse(readFileSync(path, "utf8"));
   const fields = [
     "configuration_revision",
     "recipient_revision",
@@ -176,33 +177,47 @@ function hookReceipt(path) {
     "Hook deployment evidence missing",
   );
   requireCondition(
-    Object.keys(checks).length === direct.length,
+    Object.keys(registrations).length === direct.length,
     "Incomplete hook checks",
   );
   const sanitized = Object.fromEntries(
-    direct.map((name) => {
-      const result = checks[name];
-      requireCondition(
-        result?.status === "passed" &&
-          Number.isSafeInteger(result.hook_calls) &&
-          result.hook_calls > 0 &&
-          Number.isSafeInteger(result.provider_calls) &&
-          (confirm.includes(name)
-            ? result.provider_calls > 0
-            : result.provider_calls === 0) &&
-          uuid.test(result.correlation_id),
-        "Incomplete hook check",
-      );
-      return [
-        name,
-        {
-          status: "passed",
-          hook_calls: result.hook_calls,
-          provider_calls: result.provider_calls,
-          correlation_id: result.correlation_id,
-        },
-      ];
-    }),
+    await Promise.all(
+      direct.map(async (name) => {
+        const { address, correlation_id } = registrations[name] ?? {};
+        const email = canonicalEmail(address);
+        requireCondition(
+          email && uuid.test(correlation_id),
+          "Private probe registration missing",
+        );
+        const recipient = await recipientId(env.STAGING_PROBE_EVENT_KEY, email);
+        const result = await operator(hook, recipient, {
+          op: "read",
+          id: correlation_id,
+          flow: name,
+          version: env.STAGING_HOOK_SOURCE_SHA,
+        });
+        requireCondition(
+          result?.status === "passed" &&
+            Number.isSafeInteger(result.hook_calls) &&
+            result.hook_calls > 0 &&
+            Number.isSafeInteger(result.provider_calls) &&
+            (confirm.includes(name)
+              ? result.provider_calls > 0
+              : result.provider_calls === 0) &&
+            uuid.test(result.correlation_id),
+          "Incomplete hook check",
+        );
+        return [
+          name,
+          {
+            status: "passed",
+            hook_calls: result.hook_calls,
+            provider_calls: result.provider_calls,
+            correlation_id: result.correlation_id,
+          },
+        ];
+      }),
+    ),
   );
   return {
     version: 1,
@@ -220,7 +235,7 @@ function hookReceipt(path) {
 
 try {
   if (command === "hook-receipt") {
-    const receipt = hookReceipt(flow);
+    const receipt = await hookReceipt(flow);
     const root = fileURLToPath(new URL("../../../../", import.meta.url));
     console.log(
       JSON.stringify({ ...receipt, fingerprints: fingerprints(root) }),
