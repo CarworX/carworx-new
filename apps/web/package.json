@@ -11,10 +11,13 @@
     "typegen": "node scripts/tokens/cli.ts --check && wrangler types && react-router typegen",
     "typecheck": "pnpm run typegen && tsc --build",
     "test": "vitest run",
+    "test:integration": "react-router build && vitest run --config vitest.integration.config.ts",
     "build": "react-router build",
     "preview": "pnpm run build && vite preview"
   },
   "dependencies": {
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.118.0",
     "isbot": "5.2.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
