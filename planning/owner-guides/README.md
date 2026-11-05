@@ -18,6 +18,7 @@ Step-by-step guides for the jobs only the owner can do (D-063). They are in the 
 | 8 | [Where backups go](08-backup-destination.md) | O-10 | K4 hosted drill only | Pending; the local drill doesn't need it (D-059) |
 | 9 | [Your design checks before launch](09-owner-design-checks.md) | D-060 | G-PROD | Later |
 | 10 | [The CarworX Cloud environment](10-cloud-environment.md) | D-067 | Phase 1 in the cloud | Created by you on 2026-11-04 |
+| 11 | [Set up staging, end to end](11-staging-bootstrap.md) | K2 → A2 | Staging deploy (A2), and staging A3–A5 | Written 2026-11-05. Starts once K2 #23 merges; steps 1–3 can start now. Replaces guide 6 step 4 and guide 7 steps 4–5 |
 
 **O-2** (publishing the live design-system clean-up and the darker control edges) was answered yes on 2026-11-04 and is done.
 
