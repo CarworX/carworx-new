@@ -78,6 +78,15 @@ try {
         samples.push({
           performance: result.lhr.categories.performance.score * 100,
           accessibility: result.lhr.categories.accessibility.score * 100,
+          failed_accessibility_audits:
+            result.lhr.categories.accessibility.auditRefs
+              .filter(
+                ({ id, weight }) =>
+                  weight > 0 &&
+                  /^[a-z0-9-]+$/.test(id) &&
+                  result.lhr.audits[id]?.score === 0,
+              )
+              .map(({ id }) => id),
           lcp_ms: result.lhr.audits["largest-contentful-paint"].numericValue,
           cls: result.lhr.audits["cumulative-layout-shift"].numericValue,
         });
