@@ -64,7 +64,7 @@ async function command(file, args, env = process.env) {
     ).stdout;
   } catch (error) {
     infraReason ||= classifyLocalFailure(error);
-    throw new Error("local infrastructure command failed");
+    throw new Error("local infrastructure command failed", { cause: error });
   }
 }
 const supabase = (args, env) =>
