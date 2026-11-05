@@ -49,16 +49,21 @@ The app address must **not** be `carworx.app` or `www.carworx.app`; the code ref
 
 ## 4. Cloudflare: a deploy token that can only touch the app Worker
 
-1. Cloudflare dashboard → your profile → **API Tokens → Create Token → Custom token**.
-2. Permissions:
-   - **Workers Scripts: Edit** scoped to the **single Worker `carworx-web-staging`** (Cloudflare's per-Worker "Editor" role), not the whole account.
-   - Plus only the metadata read access Cloudflare requires for that.
-3. Don't include the hook Worker, DNS, or anything account-wide.
+Cloudflare can only scope a token to a Worker that already exists, and creating a Worker needs more than the token will have. So do this in three steps.
+
+1. **Create the app Worker yourself.** Use your own login, with Admin access. In **Workers & Pages**, create a Worker named exactly `carworx-web-staging`. It can be empty; the workflow deploys the real code later.
+2. **Attach its address now.** On that Worker, add the app address from step 2 as its **custom domain**. Adding or changing a route or domain needs extra zone permission, so do it once, yourself, and the deploy token won't need that permission.
+3. **Create an account-owned token:** **Manage Account → Account API Tokens → Create token**.
+   - Under **Workers**, set the scope to **Specified Workers** and select only `carworx-web-staging`.
+   - Give it the **Editor** role. Editor can update and deploy that Worker but can't delete it or touch any other Worker.
+   - If the dashboard asks for it, also add **Metadata Read-Only** on that same Worker. Nothing else.
+   - **Don't** use the legacy **Workers Scripts Edit** permission, or a token made under your profile's **API Tokens** page. Workers Scripts Edit means Editor across **every** Worker in the account.
+   - Don't include the hook Worker, DNS, zone or route permissions.
 4. Copy the token **ID** (not secret) and keep the token itself for step 5.
 
-**Why so narrow:** this repository can't use GitHub's protected-environment rule on its current plan. So anyone who can push to the repo can, in principle, reach this token. A token that can only edit one staging Worker limits what any mistake can do.
+**Why so narrow:** this repository can't use GitHub's protected-environment rule on its current plan, so anyone who can push to the repo can, in principle, reach this token. A token that can only edit one staging Worker limits what any mistake can do. K2's readiness check refuses any token whose recorded scope is broader.
 
-The per-Worker role may first need the Worker to exist. If Cloudflare won't let you scope it yet, create an empty Worker called `carworx-web-staging` first, or ask Codex.
+Source: Cloudflare's [Workers roles and permissions](https://developers.cloudflare.com/workers/authorization/workers/) and [account-owned API tokens](https://developers.cloudflare.com/fundamentals/api/get-started/account-owned-tokens/).
 
 ## 5. Put the settings in place
 
@@ -101,7 +106,7 @@ And as plain text: `APP_ORIGIN` = the app address from step 2.
 
 ## 6. Deploy the hook, switch it on, and test it
 
-1. **Deploy the hook Worker** using your own Cloudflare login, not the step 4 token, and attach the hook address from step 2 as its custom domain. **Codex supplies the exact command**; it isn't in the repo yet. Ask for it.
+1. **Deploy the hook Worker** using your own Cloudflare login, not the step 4 token, and attach the hook address from step 2 as its custom domain. **Codex supplies the exact command**; it isn't in the repo yet. Ask for it. The step 4 token can't touch this Worker, which is intended.
 2. Supabase **CarworX App → Authentication → Hooks → Send Email hook**:
    - choose **HTTPS**
    - enter `https://<hook address>`
@@ -125,7 +130,7 @@ These are short JSON files under `planning/evidence/k2/`. They hold **no secrets
 |---|---|
 | `implementation` | the reviewed commit and its green CI run (Codex can prepare this) |
 | `configuration` | account ID, Worker name, Supabase project, app and route address, the secret **names**, and your own revision labels (e.g. `recipients-v1`) |
-| `token_policy` | the token ID from step 4, active, scoped to `carworx-web-staging` only |
+| `token_policy` | the token ID from step 4, active, account-owned, with only **Editor** (and, if added, **Metadata Read-Only**) scoped to the single Worker `carworx-web-staging` |
 | `hosted_hook` | the hook's deployed version ID, enabled, and the step 6 test results with counts |
 
 The exact fields are in `scripts/ops/env/README.md` ("Version 2 readiness receipts"). Each receipt is valid for **7 days**, and changing the code, settings or hook makes it invalid. So do steps 6–9 close together.
