@@ -261,3 +261,8 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 ## 2026-11-05 — Codex K2 implementation handoff
 
 Owner approved the next K2 interfaces and waived the pre-build Claude agreement gate (D-068). Codex implemented app/hook recipient controls, disposable local Supabase boundary checks, readiness v2 and owner smoke contracts on codex/k2-environments (#23), based on main f871fe3. Codex 17 requests independent exact-head Claude review and replanning. Prior skeleton approval is historical only. No hosted configuration/deployment, private values, real mail or spend; promotion and A2 stay blocked pending required evidence. Workstation capacity precluded a new Docker stack; CI local-stack evidence is labelled separately. Publication/check references are recorded on PR #23.
+
+## 2026-11-05 UTC — K2 merge and owner tooling work in progress
+
+Owner requested #23 ready/merge; verified Claude review 5784282916 and green exact-head CI 42017206105, merged b1a4f72 as 5b9590f with promotion blocked. Reviewed/merged historical #14 as e92aab6. Formal CHANGES: #30 token-role instructions, #28 stale status/conflicts, #16 history conflict (visual verdict pending). Added owner OAuth hook deployment helper and pure ledger proof contract; 41 operations tests pass. Durable Object transport, app instrumentation and hosted receipt orchestration remain incomplete; Codex 18 records remaining work. No hosted deployment/settings/mail/spend.
+

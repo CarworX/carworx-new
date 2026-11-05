@@ -39,6 +39,8 @@ export const OPERATIONS_TEST_FILES = [
   "reports.test.js",
   "smoke.test.js",
   "auth-email/handler.test.js",
+  "auth-email/deploy.test.js",
+  "auth-email/probe-ledger.test.js",
 ].map((name) => `scripts/ops/env/${name}`);
 export function validateOperationsFiles(paths) {
   const normalized = paths.map((path) => path.replaceAll("\\", "/"));
