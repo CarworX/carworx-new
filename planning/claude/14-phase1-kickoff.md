@@ -58,3 +58,4 @@ The master cloud session appends its progress here, one line per event, in its t
 - 2026-11-05 · T3+T5 · CI on #25: probe #26 (verification-only, closed unmerged) located the failing stage at test:rls → `30_t3_caller_admin_status.test.sql` printed `set_config` rows into the TAP stream; fixed with `set local` (fe34cd2). Codex's three security findings fixed with regressions (d3308b6).
 - 2026-11-05 · phase1-master · K1 diagnostics #27 merged (0961c98) by Claude as reviewer (Claude APPROVE @b1e12ce ×2, CI green).
 - 2026-11-05 · phase1-master · T3+T5 #25 merged (199d448) at Codex APPROVE @91e7e44; run 41953684824 green (unit 143, RLS 168/4 files, integration 45). Issues #7 and #9 closed. All Claude tasks T1–T5 are merged; remaining Phase 1 work is Codex's K2–K4 and owner staging prerequisites.
+- 2026-11-04 · DS · mobile loading page published to the live design system 1793808437-202e; PR https://github.com/CarworX/carworx-new/pull/16

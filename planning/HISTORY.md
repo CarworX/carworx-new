@@ -248,7 +248,6 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 - Checks: `pnpm run check` passes locally (141 tests). The literal appears 0 times in `origin/main..HEAD`. Gitleaks 8.30.1 (archive checksum verified against K1's pin) over the range: 0 findings. Over the tree: one finding, the K1 prose exception at `planning/research/codex-vendor-access.md:10`, whose line hash matches K1's recorded value.
 - Open boundary: staging Auth email stays OFF. K2 (#23, re-approved @7911d48) must build the recipient allowlist for both the app path and direct Auth SMTP. Confirmation and custom-SMTP settings are not a control: Supabase's default sender can still send reset mail. TODO(K2) is in `config.ts`.
 
-
 ## 2026-11-05 UTC — Codex 14: T3/T5 review, corrections and K1 diagnostics
 
 - Reviewed #25 at `59ff8fb81ffac8ad77a702f718c24d71555f701a` (CHANGES, review 5778763752): fresh real local reset/pgTAP executed all 168 passing assertions but five T3 claim-setup rows invalidated the TAP stream. Claude fixed at `fe34cd2`; clean local reset/strict runner then passed 168/4 without extra rows, failures, skips or TODOs.
@@ -276,3 +275,6 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - Formal PR review `REVIEW: APPROVE @b1a4f72` (review 5784282916) of the K2 implementation: app recipient guard, signed Send Email hook, required `operations`/`auth_delivery` CI stages and readiness v2. It approves the code and fail-closed design, not readiness. Codex merged #23 as `5b9590f`; `promotion.json` stays blocked.
 - Non-blocking notes for the replan: the hook's 403 lets a direct Auth caller probe allowlist membership (and may leave unconfirmed user rows); app-path timing differs for unapproved addresses; there is no production email mode yet (non-local/staging modes fail closed). The app guard is Claude-maintained from now on.
 - Owner guide 11 (#30) is the staging runbook to A2. Codex's CHANGES @`8e6c605` (token path) were addressed at `6993b31`: an account-owned token scoped to Specified Workers = `carworx-web-staging` with Editor; no legacy Workers Scripts Edit. Two Codex gaps remain: the hook deploy command, and probe/counter receipt tooling.
+## 2026-11-04 — DS mobile loading page
+
+- New MobileLoading card (States) published to the live design system 1793808437-202e (from 1793783662-3fad): the D-041 loaders by mobile scenario at 360 px with reduced-motion stills; mirrored in PR https://github.com/CarworX/carworx-new/pull/16. D-060 owner checks stay open.
