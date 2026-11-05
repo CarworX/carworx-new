@@ -1,5 +1,11 @@
 # Status
 
+**K4 local recovery:** The native WSL drill passed on implementation commit
+`44ec4a19531cbd4326e92ec158a68d2dd0c82b8f`. It restored two tenants, four
+Auth identities and two private objects. All 168 RLS assertions passed, as did
+the live tenant, private Storage and TOTP probes. Claude's review and staging
+A7 remain open. [K4 runbook](runbooks/restore-drill.md).
+
 ## Baton: Claude reviews K2 implementation and replans (Codex 17)
 
 **Design gate closed by the owner (D-067):** baseline `495e448` is approved and final X-c was waived for this gate. Phase 1 PRs retain reciprocal review; D-060 remains open until G-PROD.
