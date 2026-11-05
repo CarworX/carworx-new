@@ -1,17 +1,15 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import {
   existsSync,
-  mkdirSync,
   mkdtempSync,
   readFileSync,
-  rmSync,
-  rmdirSync,
   cpSync,
   constants,
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
 import { invariant } from "./core.js";
+import { injectUndeclaredAuth } from "./auth-fixture.js";
 
 // Only mutate our new temporary worktree, never the checked-out PR or its index.
 const root = mkdtempSync(join(process.env.RUNNER_TEMP, "k1-quality-fixtures-"));
@@ -191,27 +189,7 @@ attempt(
 );
 attempt(
   "undeclared-auth",
-  (cleanup) => {
-    const dir = join(scratch, "apps/web/app/auth");
-    mkdirSync(dir);
-    writeFileSync(join(dir, "fixture.ts"), "export {};\n");
-    cleanup(() => {
-      execFileSync(
-        "git",
-        ["restore", "--staged", "--", "apps/web/app/auth/fixture.ts"],
-        {
-          cwd: scratch,
-          stdio: "pipe",
-        },
-      );
-      rmSync(join(dir, "fixture.ts"));
-      rmdirSync(dir);
-    });
-    execFileSync("git", ["add", "apps/web/app/auth/fixture.ts"], {
-      cwd: scratch,
-      stdio: "pipe",
-    });
-  },
+  (cleanup) => injectUndeclaredAuth(scratch, cleanup),
   "init",
   /Required suite cannot be disabled: integration/,
 );

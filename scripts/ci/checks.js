@@ -167,7 +167,11 @@ function runFuture() {
 const commands = {
   install: () => command("pnpm", ["install", "--frozen-lockfile"]),
   selftest: () =>
-    command(process.execPath, ["--test", "scripts/ci/core.test.js"]),
+    command(process.execPath, [
+      "--test",
+      "scripts/ci/core.test.js",
+      "scripts/ci/auth-fixture.test.js",
+    ]),
   lint: () => command("pnpm", ["run", "lint"]),
   format: () => command("pnpm", ["run", "format:check"]),
   typecheck: () => command("pnpm", ["run", "typecheck"]),

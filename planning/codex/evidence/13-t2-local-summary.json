@@ -1,0 +1,17 @@
+{
+  "head": "95476d5fe18fab463752e7ab6763c9755f0e0cc2",
+  "status": "passed",
+  "local": true,
+  "rls": {
+    "tests": 154,
+    "files": 3
+  },
+  "rest": {
+    "tests": 24,
+    "status": "passed",
+    "synthetic": true,
+    "scope": "local PostgREST with signed fixture claims; not real Auth/MFA"
+  },
+  "limits": "Reduced ancillary services for 4GB Docker; signed fixture AAL claims, not actual Auth/TOTP"
+}
+
