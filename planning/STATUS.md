@@ -1,12 +1,5 @@
 # Status
 
-**2026-11-05 workstation update:** Docker Desktop and its data disks were removed
-after a final empty container/volume inventory. Native Supabase runs in
-`CarworX-Native`. Local checks passed for 168 RLS assertions, password sign-in,
-private Storage and database restart persistence. The pinned native runtime
-cannot serve the custom email templates, so full Auth parity remains open.
-[Operator commands and evidence](runbooks/native-supabase-migration.md).
-
 ## Baton: Claude reviews K2 implementation and replans (Codex 17)
 
 **Design gate closed by the owner (D-067):** baseline `495e448` is approved and final X-c was waived for this gate. Phase 1 PRs retain reciprocal review; D-060 remains open until G-PROD.

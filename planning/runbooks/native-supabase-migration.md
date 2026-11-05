@@ -139,3 +139,24 @@ HTTP 200 on Auth health, Storage status and REST. The Linux application build
 also passed. Full Auth integration, genuine Auth-to-hook delivery, application
 connectivity and K4 recovery acceptance remain open. The custom template
 limitation must be resolved before claiming Auth parity.
+
+## Native Auth mail parity
+
+The pinned native stack rejects custom template file serving. In a disposable
+checkout, the native Auth runner replaces the template config sections with a
+signed loopback Send Email Hook and renders the actual checked-in confirmation
+and recovery templates to local Mailpit. The token hash and type stay in the
+app confirmation link. Only synthetic example.test recipients are accepted.
+
+The Native Auth parity workflow uses fresh Linux native stacks for the full
+Auth integration and direct Auth-to-hook suites. It uploads only counts. This
+is separate from WSL workstation verification and hosted Google sign-in.
+
+For interactive WSL capture, create a separate Linux checkout with the
+original config and pinned Node/pnpm dependencies, stop any task stack
+using the same fixed ports, then run
+`node scripts/ops/native/auth-parity.js --serve` as carworx. Keep that process
+running while exercising the named native-auth stack. Ctrl+C stops the task
+stack and restores the original config. Use the original stack launcher for
+the existing development stack. If the capture cannot start, leave hosted
+Auth unchanged and inspect the stage failure before retrying.
