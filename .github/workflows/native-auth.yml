@@ -1,0 +1,53 @@
+name: Native Auth parity
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    paths:
+      - "scripts/ops/native/**"
+      - "scripts/ops/env/auth-email/direct-auth.js"
+      - "apps/web/integration/**"
+      - "supabase/config.toml"
+      - "supabase/templates/**"
+      - ".github/workflows/native-auth.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-auth-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  native-auth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      K1_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      CI: "true"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ env.K1_HEAD_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          run_install: false
+      - name: Native synthetic Auth parity
+        run: |
+          test "$(git rev-parse HEAD)" = "$K1_HEAD_SHA"
+          pnpm install --frozen-lockfile
+          node --test scripts/ops/native/mail-config.test.js
+          NATIVE_AUTH_SUMMARY="$RUNNER_TEMP/native-auth-summary.json" node scripts/ops/native/auth-parity.js
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: native-auth-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-auth-summary.json
+          retention-days: 7
+          if-no-files-found: error
