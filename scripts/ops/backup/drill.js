@@ -724,6 +724,9 @@ async function drill() {
         console.error(
           "Cleanup also failed for " + active.name + " under " + root,
         );
+      } finally {
+        stageName = failedStage;
+        diagnostic = failedReason;
       }
     }
   }
