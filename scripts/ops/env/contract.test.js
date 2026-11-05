@@ -31,6 +31,7 @@ function fixture() {
   return {
     pr: {
       merged_at: "2026-11-05",
+      merge_commit_sha: "d".repeat(40),
       body: "Agent: codex",
       head: { sha, repo: { full_name: repository } },
       base: { ref: "main", repo: { full_name: repository } },
@@ -187,7 +188,7 @@ test("committed policy blocks real deployment even when CI/review succeed", () =
     name: policy.worker,
     workers_dev: false,
     preview_urls: false,
-    vars: { CARWORX_DEV_PAGES: "1" },
+    vars: { CARWORX_ENV: "staging", CARWORX_DEV_PAGES: "1" },
   };
   validateBuild(config, policy);
   for (const change of [
@@ -215,4 +216,15 @@ test("origin configuration rejects missing, HTTP, credential, path and productio
     "https://www.carworx.app",
   ])
     assert.throws(() => stagingOrigin(value));
+});
+
+test("plain review comments and issue comments cannot supply an approval", () => {
+  const f = fixture();
+  f.comments = structuredClone(f.reviews);
+  f.reviews = [];
+  assert.throws(() => verify(f));
+  f.reviews = [
+    { commit_id: sha, state: "COMMENTED", body: "Looks good. Agent: claude" },
+  ];
+  assert.throws(() => verify(f));
 });

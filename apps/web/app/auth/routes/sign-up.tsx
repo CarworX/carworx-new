@@ -7,6 +7,7 @@ import {
 } from "../errors";
 import { isTicked, parseEmail, parsePassword } from "../forms";
 import { authRequest } from "../session.server";
+import { emailDecision } from "../email-policy.server";
 import { appUrl } from "../../server/security/redirect";
 import { AuthPage, CsrfField, EmailField, Notice, PasswordField } from "../ui";
 import type { Route } from "./+types/sign-up";
@@ -47,6 +48,10 @@ export async function action({ request, context }: Route.ActionArgs) {
     return fail(problem ?? "unexpected", { status: 400 });
   }
   const auth = authRequest(request, context.security);
+  const decision = emailDecision(request, auth.config, email);
+  if (decision === "unavailable") return fail("email_failed", { status: 503 });
+  if (decision === "acknowledge")
+    return redirect("/auth/check-email?sent=signup");
   const { error } = await auth.supabase.auth.signUp({
     email,
     password,

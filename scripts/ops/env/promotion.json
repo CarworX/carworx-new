@@ -1,12 +1,32 @@
 {
-  "version": 1,
+  "version": 2,
   "environment": "staging",
   "worker": "carworx-web-staging",
   "supabase_project_ref": "gdiyrdqfkthtcglgqnts",
   "promotion": "blocked",
+  "recipient_control": {
+    "setting": "STAGING_APPROVED_RECIPIENTS_JSON",
+    "matching": "exact-email-v1",
+    "hook_worker": "carworx-auth-email-staging"
+  },
+  "token_guard": { "mode": "worker-editor", "worker": "carworx-web-staging" },
+  "evidence": {
+    "implementation": null,
+    "configuration": null,
+    "token_policy": null,
+    "hosted_hook": null
+  },
+  "post_deploy": [
+    "health",
+    "personal_cache",
+    "publishable_binding",
+    "synthetic_auth",
+    "staging_dev_pages",
+    "application_recipient_negative"
+  ],
   "blockers": [
-    "Application recipient restriction and negative tests are not implemented",
-    "Direct Auth delivery restriction and negative tests are not implemented",
-    "Owner staging route and private Worker bindings are not verified"
+    "Fresh independent review and combined-head CI evidence are required",
+    "Owner target, binding names, private configuration revisions and Worker-scoped token policy are unverified",
+    "Owner must deploy/enable the reviewed hook and supply positive/negative hosted delivery evidence"
   ]
 }

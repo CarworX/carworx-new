@@ -7,6 +7,11 @@ import {
   validatePolicy,
   validateRequest,
 } from "./contract.js";
+import {
+  evidenceReader,
+  fingerprints,
+  validateReadiness,
+} from "./readiness.js";
 
 const policy = JSON.parse(
   readFileSync(
@@ -14,6 +19,7 @@ const policy = JSON.parse(
     "utf8",
   ),
 );
+const operationsRoot = fileURLToPath(new URL("../../../", import.meta.url));
 
 async function get(path) {
   const response = await fetch(
@@ -59,6 +65,14 @@ try {
     run: process.env.SOURCE_CI_RUN,
   });
   validatePolicy(policy, process.env.DRY_RUN === "true");
+  const readiness =
+    process.env.DRY_RUN === "true"
+      ? undefined
+      : validateReadiness(
+          policy,
+          evidenceReader(operationsRoot),
+          fingerprints(operationsRoot),
+        );
   const [pr, run, jobs, reviews, file, comparison] = await Promise.all([
     get(`pulls/${request.pr}`),
     get(`actions/runs/${request.run}`),
@@ -84,6 +98,7 @@ try {
     workflow_sha: process.env.GITHUB_SHA,
     mode: process.env.DRY_RUN === "true" ? "dry-run" : "deploy",
     promotion: policy.promotion,
+    readiness,
   };
   writeFileSync(
     process.env.STAGING_EVIDENCE,

@@ -5,12 +5,13 @@
   "compatibility_date": "2026-11-01",
   "workers_dev": false,
   "preview_urls": false,
+  "vars": { "CARWORX_ENV": "local" },
   "env": {
     "staging": {
       "name": "carworx-web-staging",
       "workers_dev": false,
       "preview_urls": false,
-      "vars": { "CARWORX_DEV_PAGES": "1" },
+      "vars": { "CARWORX_ENV": "staging", "CARWORX_DEV_PAGES": "1" },
     },
   },
 }

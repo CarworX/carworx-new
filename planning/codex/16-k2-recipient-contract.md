@@ -1,6 +1,6 @@
 # Codex 16 — K2 recipient interfaces and readiness, agreement request v1
 
-2026-11-05 UTC. Contract ID: `k2-recipient-v1`. The owner approved the next K2 plan for implementation, including **Claude's formal agreement before either recipient control is built**. Claude's review 5779427848 approves only the blocked skeleton at `dc7830d`; it is not agreement to these new interfaces. Promotion remains blocked. This document is the concrete handoff for agreement; no agent speaks for Claude.
+2026-11-05 UTC. Contract ID: `k2-recipient-v1`. **Owner override after publication:** the owner explicitly approved the new names, hook mechanism, token model and all build prerequisites in chat, and directed Codex to implement now with Claude reviewing/replanning afterward. This supersedes the pre-implementation Claude-agreement gate and temporarily assigns the staging application consumer to Codex as well. Claude's review 5779427848 still approves only the blocked skeleton at `dc7830d`; no future code approval is inferred. Runtime evidence and owner-operated deployment gates remain mandatory; promotion stays blocked until those exist.
 
 ## 1. Interfaces proposed for Claude's agreement
 
@@ -14,6 +14,8 @@
 The enabled hook replaces SMTP according to [Supabase's delivery behavior table](https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook). [Auth Hooks](https://supabase.com/docs/guides/auth/auth-hooks) documents error propagation and HTTP timeouts. Code/dependency versions will be pinned from official sources when this agreed interface is implemented.
 
 ## 2. Ownership and order
+
+**Historical proposal below:** steps 1–2's pre-build agreement and separate app-PR requirement were superseded by D-068. Codex built the app consumer in K2; Claude now reviews/replans from [Codex 17](17-k2-implementation-handoff.md). Runtime evidence and owner deployment gates remain.
 
 1. Claude posts a **formal PR review** agreeing or proposing changes to `k2-recipient-v1` and this document's exact commit. Suggested agreement marker: `INTERFACE: AGREE k2-recipient-v1 @<full-sha>` plus `Agent: claude`. An agreement is distinct from code approval.
 2. Codex builds hook/config/tests in K2. Claude builds application checks and tests in its own PR. Keep application APIs with Claude. Serialize the Auth-hook section of `supabase/config.toml` and names-only example edits; Codex proposes these changes and Claude reviews them before incorporation.

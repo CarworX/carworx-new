@@ -222,6 +222,7 @@ export function validateGate(results, reports, expected, currentHead) {
         ? [
             "install",
             "selftest",
+            "operations",
             "lint",
             "format",
             "typecheck",
@@ -256,6 +257,16 @@ export function validateGate(results, reports, expected, currentHead) {
         );
       }
       invariant(report.checks.unit.tests > 0, "Unit test counts missing");
+      invariant(
+        report.checks.operations.tests > 0,
+        "Operations test counts missing",
+      );
+      if (report.contract.integration)
+        invariant(
+          report.checks.auth_delivery?.status === "passed" &&
+            report.checks.auth_delivery.tests > 0,
+          "Auth delivery evidence missing",
+        );
     }
   }
 }

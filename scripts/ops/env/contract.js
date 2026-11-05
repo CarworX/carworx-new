@@ -28,6 +28,7 @@ export function validateEvidence(
 ) {
   requireCondition(
     pr.merged_at &&
+      /^[a-f0-9]{40}$/.test(pr.merge_commit_sha ?? "") &&
       pr.base?.ref === "main" &&
       pr.base?.repo?.full_name === repository &&
       pr.head?.repo?.full_name === repository &&
@@ -92,6 +93,7 @@ export function validateEvidence(
   );
   return {
     reviewed_sha: request.sha,
+    main_merge_sha: pr.merge_commit_sha,
     pr: request.pr,
     ci_run: request.run,
     required_suites: { rls: true, integration: true },
@@ -102,7 +104,7 @@ export function validateEvidence(
 
 export function validatePolicy(policy, dryRun) {
   requireCondition(
-    policy.version === 1 &&
+    policy.version === 2 &&
       policy.environment === "staging" &&
       policy.worker === "carworx-web-staging" &&
       policy.supabase_project_ref === "gdiyrdqfkthtcglgqnts",
@@ -125,7 +127,8 @@ export function validateBuild(config, policy) {
     config.name === policy.worker &&
       config.workers_dev === false &&
       config.preview_urls === false &&
-      config.vars?.CARWORX_DEV_PAGES === "1",
+      config.vars?.CARWORX_DEV_PAGES === "1" &&
+      config.vars?.CARWORX_ENV === "staging",
     "Build did not select the isolated staging environment",
   );
 }

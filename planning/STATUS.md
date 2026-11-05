@@ -1,14 +1,14 @@
 # Status
 
-## Baton: Claude reviews Codex 14; Codex next K2
+## Baton: Claude reviews K2 implementation and replans (Codex 17)
 
 **Design gate closed by the owner (D-067):** baseline `495e448` is approved and final X-c was waived for this gate. Phase 1 PRs retain reciprocal review; D-060 remains open until G-PROD.
 
-1. **Claude:** review Codex 14's records PR after its CI, then merge as reviewer under Q-021. Application findings R1-R4 are resolved; T3/T5 #25 is approved and merged.
-2. **Codex next:** K2 local/staging configuration, manual owner-run staging workflow and recipient-control mechanism, using the accepted Auth inputs. The behavioral recipient contract is agreed; its concrete direct-Auth delivery enforcement remains open. Claude owns application consumers.
+1. **Claude:** independently review the new exact head of K2 draft PR #23 and its required CI evidence, then replan from [Codex 17](codex/17-k2-implementation-handoff.md). Old skeleton approval does not cover this code; records PR #29 is merged.
+2. **Codex:** owner authorized K2 and its app consumer before Claude review (D-068). Recipient policy, signed Send Email Worker, direct-Auth CI tests, readiness v2 and owner smoke harness are implemented for review. Promotion remains blocked on independent review and owner runtime/configuration evidence.
 3. **Owner:** supplies private staging values/access and executes hosted configuration/deployment. Staging sign-in/email remains gated until both recipient controls are demonstrated. K3 local measurements and K4 local recovery can follow accepted T4/T2 with resource preflight.
 
-**Phase: 1 in progress (D-038).** Design #10, T1-T5 (#11/#15/#17/#25), records #21 and K1 #13/#18/#22/#27 are merged; main baseline `199d44804ea74844f3de36513582abd79e6846d3`. These are implementation approvals. A1-A7 staging evidence, real Google login/linking, hosted performance/recovery and D-060 owner checks remain open. Coming Soon is scrapped (D-063).
+**Phase: 1 in progress (D-038).** Design #10, T1-T5 (#11/#15/#17/#25), records #21/#29 and K1 #13/#18/#22/#27 are merged; main baseline `f871fe34beb60401e0a24528b7b29413fd0427de`. These are implementation approvals. A1-A7 staging evidence, real Google login/linking, hosted performance/recovery and D-060 owner checks remain open. Coming Soon is scrapped (D-063).
 
 ## Open items
 
@@ -79,3 +79,5 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 32 | 2026-11-05 | Claude (T3+T5) | Superseded #24 by a clean-history branch `claude/t3-auth-2` from main `99efccf`, after the test password literal in #24's history failed the secrets scan. Local `pnpm run check` passes; Gitleaks over the commit range is clean. CI and review pending. |
 
 | 33 | 2026-11-05 | Codex | Reproduced T3 TAP failure; four findings fixed by Claude and rechecked. K1 diagnostics #27 Claude-approved/merged; #25 approved @91e7e44 after green 143 unit/168 RLS/45 integration evidence, local refresh/boundary/browser checks, merged as 199d448. Codex 14 hands off to K2; staging gates remain open. |
+
+| 34 | 2026-11-05 | Codex | Owner authorized K2 build before Claude review (D-068). Recipient app/hook controls, required local-stack CI coverage, readiness v2 and owner smoke contracts implemented in #23; Codex 17 requests exact-head review/replan. Hosted evidence and A2 remain open. |

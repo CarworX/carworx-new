@@ -20,6 +20,11 @@ on:
         required: true
         default: true
         type: boolean
+      smoke_only:
+        description: Verify the current tagged deployment without publishing another version (dry_run must be false)
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -70,7 +75,8 @@ jobs:
     needs: preflight
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    environment: staging
+    # Repository-level inputs. Resource-scoped Cloudflare token is the enforced
+    # boundary; private-repository environment branch protection is unavailable.
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -121,6 +127,7 @@ jobs:
         if: ${{ !inputs.dry_run }}
         env:
           DRY_RUN: "false"
+          SMOKE_ONLY: ${{ inputs.smoke_only }}
           REVIEWED_SHA: ${{ inputs.reviewed_sha }}
           STAGING_SOURCE_DIR: ${{ github.workspace }}/source
           STAGING_APP_ORIGIN: ${{ vars.STAGING_APP_ORIGIN }}
@@ -128,7 +135,21 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.STAGING_CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.STAGING_CLOUDFLARE_API_TOKEN }}
         run: node operations/scripts/ops/env/package.js
+      - name: Owner smoke acceptance for the exact deployed version
+        if: ${{ !inputs.dry_run }}
+        env:
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+          STAGING_APP_ORIGIN: ${{ vars.STAGING_APP_ORIGIN }}
+          STAGING_EVIDENCE: ${{ runner.temp }}/staging-evidence.json
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.STAGING_CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.STAGING_CLOUDFLARE_API_TOKEN }}
+          STAGING_SMOKE_EMAIL: ${{ secrets.STAGING_SMOKE_EMAIL }}
+          STAGING_SMOKE_PASSWORD: ${{ secrets.STAGING_SMOKE_PASSWORD }}
+          STAGING_SMOKE_UNAPPROVED_EMAIL: ${{ secrets.STAGING_SMOKE_UNAPPROVED_EMAIL }}
+          STAGING_APPLICATION_NEGATIVE_EVIDENCE_JSON: ${{ vars.STAGING_APPLICATION_NEGATIVE_EVIDENCE_JSON }}
+        run: node operations/scripts/ops/env/smoke.js
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        if: always()
         with:
           name: k2-staging-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/staging-evidence.json

@@ -3,6 +3,13 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import {
+  evidenceReader,
+  fingerprints,
+  validateReadiness,
+} from "./readiness.js";
+import { currentDeployment, verifyOwnerTarget } from "./hosted.js";
+import { fileURLToPath } from "node:url";
+import {
   requireCondition,
   stagingOrigin,
   validateBuild,
@@ -18,6 +25,10 @@ try {
     "Explicit dry-run mode required",
   );
   const dryRun = process.env.DRY_RUN === "true";
+  requireCondition(
+    !(dryRun && process.env.SMOKE_ONLY === "true"),
+    "Smoke-only mode requires deployment evidence",
+  );
   validatePolicy(policy, dryRun);
   const origin = stagingOrigin(process.env.STAGING_APP_ORIGIN);
   const root = process.env.STAGING_SOURCE_DIR;
@@ -43,18 +54,34 @@ try {
         process.env.CLOUDFLARE_API_TOKEN,
       "Owner staging credentials required",
     );
+  if (!dryRun) {
+    const readiness = validateReadiness(
+      policy,
+      evidenceReader(fileURLToPath(new URL("../../../", import.meta.url))),
+      fingerprints(root),
+    );
+    requireCondition(
+      JSON.stringify(readiness) === JSON.stringify(summary.readiness),
+      "Readiness changed after preflight",
+    );
+    await verifyOwnerTarget(policy, readiness, process.env);
+  }
   const args = [
     "--filter",
     "@carworx/web",
     "exec",
     "wrangler",
     "deploy",
+    "--tag",
+    process.env.REVIEWED_SHA,
     "--config",
     "build/server/wrangler.json",
     "--var",
     `APP_ORIGIN:${origin}`,
     "--var",
     `SUPABASE_URL:https://${policy.supabase_project_ref}.supabase.co`,
+    "--var",
+    "CARWORX_ENV:staging",
   ];
   if (dryRun)
     args.push(
@@ -63,12 +90,15 @@ try {
       join(process.env.RUNNER_TEMP, "k2-dry-run"),
     );
   // This entry point runs on the Ubuntu manual workflow, never through a shell.
-  const result = spawnSync("pnpm", args, {
-    cwd: root,
-    stdio: "pipe",
-    encoding: "utf8",
-    timeout: 10 * 60 * 1000,
-  });
+  const result =
+    process.env.SMOKE_ONLY === "true"
+      ? { status: 0 }
+      : spawnSync("pnpm", args, {
+          cwd: root,
+          stdio: "pipe",
+          encoding: "utf8",
+          timeout: 10 * 60 * 1000,
+        });
   requireCondition(
     !result.error && result.status === 0,
     "Staging packaging command failed",
@@ -80,6 +110,7 @@ try {
     generated_config_sha256: createHash("sha256").update(raw).digest("hex"),
     packaging: "passed",
     deployed: !dryRun,
+    ...(dryRun ? {} : await currentDeployment(policy.worker, process.env)),
   });
   writeFileSync(
     process.env.STAGING_EVIDENCE,
