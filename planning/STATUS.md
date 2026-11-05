@@ -8,13 +8,16 @@ private objects and genuine TOTP, then merged after Claude's exact-head
 approval. Hosted A7 and the remaining A1–A7 evidence are open. D-060 remains
 open until G-PROD.
 
-- **Codex:** Native Auth parity #33 and the D-071 gate #36 are merged. K2
-  tooling (#31), K3 CI (#32), and K4 CI (#37) are being verified. Heavy runs
-  use included GitHub Actions minutes and the $0 ceiling.
-- **Staging:** Promotion is blocked. Restore access to CarworX App and
-  Cloudflare, verify the scoped token, hook, bindings and allowlisted inboxes
-  against [guide 11](owner-guides/11-staging-bootstrap.md), then capture the
-  required evidence. Owner-held keys and independent private copies gate A7.
+- **Repository:** D-071 gate #36, native Auth #33, K2 #31, K3 #32 and K4 CI
+  #37 are merged. The combined K2 head `024ab0a` passed K1, 52 native Auth
+  integration tests, 12 direct Auth checks and 25 Lighthouse measurements.
+  K4 CI passed 168 TAP assertions and restored both private objects.
+- **Staging:** Promotion is blocked. CarworX App is absent from the connected
+  Supabase projects, Cloudflare requires reauthentication, and no staging
+  GitHub secrets or variables are installed. Once access is available, verify
+  the scoped token, hook, bindings and approved inboxes against
+  [guide 11](owner-guides/11-staging-bootstrap.md). Live timing, delivery,
+  OAuth, hosted performance and A1–A7 receipts remain open.
 - **Phase 2:** proposal after Phase 1 closeout. Implementation requires separate
   owner approval.
 
@@ -36,7 +39,7 @@ open until G-PROD.
 - **Local Supabase:** The WSL synthetic restore passed. Native Linux CI on #33 passed 52 Auth integration tests and 12 Auth-to-hook checks. Workstation Auth parity was not rerun.
 - **K1:** owner confirmed included Actions minutes/$0 cap. Both fixture repairs are Claude-approved and merged; Auth integration remains mandatory as T3/T5 arrives.
 - **T3/K2:** The recorded synthetic target is CarworX App. Restore connector access and verify real Google login and linking, the approved sender and both recipient paths. D-071 delegates staging execution to Codex.
-- **K4 hosted:** choose an existing private destination, a separate copy and operator; confirm proposed frequency, retention and measured cost/capacity. The local synthetic drill comes first (D-059).
+- **K4 hosted:** Owner-only Drive and a separate Windows folder are prepared for encrypted copies (D-072). Verify quota and owner-held key procedure before export. Staging-sourced restore and A7 remain open.
 - **Before G-PROD:** complete D-060's owner-only design checks and the remaining PLAN release requirements, including Information Officer/retention/privacy and recovery evidence.
 - **Later:** company/business bank and funded reserve before G-PAY; optional automation budget under G-AUTO. No provider outreach or production action is authorised here.
 

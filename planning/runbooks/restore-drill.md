@@ -57,3 +57,21 @@ The K4 recovery workflow runs the same synthetic drill on standard Ubuntu with
 Docker-based Supabase. It validates every expected TAP report using the K1
 validator and derives the assertion count from those reports. Its only artifact
 is the sanitized summary. The WSL launcher is optional.
+
+## Selected staging destinations (D-072)
+
+The primary is an owner-only Google Drive folder. The second is
+`%LOCALAPPDATA%\CarworX\StagingBackups`, outside synced folders. Both folders
+were prepared and are empty. Keep private folder identifiers and credentials
+outside Git. Before export, check available Drive and disk capacity against
+the measured archive size and proposed retention. Preserve a 2 GiB Windows
+safety margin. Stop if either destination cannot fit the encrypted set at $0.
+
+Encrypt the archive to the owner's recovery public key before upload or
+copy. Verify the same ciphertext SHA-256 from both destinations. The owner
+retains the private key offline and separately from the backup copies. If a
+disposable CI restore target needs decryption, have the owner re-encrypt a
+one-off copy to the target's ephemeral public key through a private stream.
+The durable recovery key and any plaintext stay out of CI artifacts. Destroy
+the disposable target after verifying counts, object hashes and access
+controls. Record only the sanitized receipt. Hosted A7 is still open.
