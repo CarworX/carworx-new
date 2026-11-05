@@ -150,7 +150,7 @@ try {
   const port = server.address().port;
   const localEnv = {
     ...process.env,
-    LOCAL_AUTH_EMAIL_HOOK_URI: `http://${gateways[0]}:${port}/hook`,
+    LOCAL_AUTH_EMAIL_HOOK_URI: `http://host.docker.internal:${port}/hook`,
     LOCAL_AUTH_EMAIL_HOOK_SECRET: secret,
   };
   activeEnv = localEnv;
@@ -172,6 +172,30 @@ try {
   changed = true;
   phase = "hook_stack_startup";
   await supabase(["start"], localEnv);
+  phase = "hook_host_mapping";
+  try {
+    await command("docker", [
+      "exec",
+      "supabase_auth_carworx",
+      "getent",
+      "hosts",
+      "host.docker.internal",
+    ]);
+  } catch {
+    // Only this disposable task container is changed. No host OS/network files.
+    // GoTrue permits this development hostname over HTTP, but rejects bridge IPs.
+    await command("docker", [
+      "exec",
+      "--user",
+      "0",
+      "supabase_auth_carworx",
+      "sh",
+      "-c",
+      'printf "%s host.docker.internal\\n" "$1" >> /etc/hosts',
+      "k2-hook-host",
+      gateways[0],
+    ]);
+  }
   phase = "hook_stack_reset";
   await supabase(["db", "reset", "--local"], localEnv);
   phase = "hook_stack_status";

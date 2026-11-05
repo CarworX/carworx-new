@@ -17,6 +17,12 @@ export function classifyLocalFailure(error) {
   if (error?.code === "ENOENT") return "command_missing";
   if (/no space|ENOSPC/i.test(output)) return "local_capacity";
   if (/hook.*uri|invalid.*uri|parse.*url/i.test(output)) return "hook_uri";
+  if (
+    /only localhost.*supported with http|HTTPS functions are supported/i.test(
+      output,
+    )
+  )
+    return "hook_uri";
   if (/hook.*secret|base64|whsec/i.test(output)) return "hook_secret";
   if (/unhealthy|health.?check|not healthy/i.test(output))
     return "local_health";
@@ -66,6 +72,7 @@ export function emailFailureDetails(report, sha) {
     "hook_stack_stop",
     "hook_stack_reset",
     "hook_stack_status",
+    "hook_host_mapping",
     "cleanup",
   ];
   if (
