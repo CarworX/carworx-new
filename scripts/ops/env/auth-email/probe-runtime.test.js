@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import test from "node:test";
 import {
   StagingProbe,
+  observeHook,
   probeEndpoint,
   probeSignature,
 } from "./probe-runtime.js";
@@ -52,7 +53,7 @@ function fixture() {
       env,
     );
   };
-  return { call };
+  return { call, env };
 }
 
 test("staging ledger accepts only observed application negatives for the deployed version", async () => {
@@ -88,4 +89,38 @@ test("staging ledger accepts only observed application negatives for the deploye
     correlation_id: id,
   });
   assert.equal((await call({ op: "seal", id })).status, 409);
+});
+
+test("direct receipt can only be read after the signed hook boundary records denial", async () => {
+  const { call, env } = fixture();
+  const id = randomUUID();
+  const version = "a".repeat(40);
+  const flow = "unapproved_signup";
+  const event = {
+    recipient: "fixture@example.test",
+    id: randomUUID(),
+    eligible: false,
+  };
+  const read = { op: "read", flow, id, version };
+  assert.equal((await call({ op: "register", id, version, flow })).status, 200);
+  assert.equal((await call(read)).status, 409);
+  assert.equal(
+    (await call({ op: "event", id: randomUUID(), kind: "recipient_denied" }))
+      .status,
+    400,
+  );
+  await observeHook("hook_invocation", event, env);
+  assert.equal((await call({ op: "seal", id })).status, 409);
+  await observeHook("recipient_denied", event, env);
+  assert.equal((await call({ op: "seal", id })).status, 200);
+  assert.equal(
+    (await call({ ...read, flow: "unapproved_resend" })).status,
+    409,
+  );
+  assert.deepEqual(await (await call(read)).json(), {
+    status: "passed",
+    hook_calls: 1,
+    provider_calls: 0,
+    correlation_id: id,
+  });
 });
