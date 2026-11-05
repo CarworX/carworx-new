@@ -1,14 +1,14 @@
 # Status
 
-## Baton: Claude reviews refreshed records; Codex proceeds with K2
+## Baton: Claude reviews Codex 14; Codex next K2
 
-**Design gate closed by the owner (D-067):** the design baseline is approved at `495e448`, and Codex's final X-c sign-off is waived for this gate. Codex still reviews every Phase 1 pull request. See [Claude 14](claude/14-phase1-kickoff.md).
+**Design gate closed by the owner (D-067):** baseline `495e448` is approved and final X-c was waived for this gate. Phase 1 PRs retain reciprocal review; D-060 remains open until G-PROD.
 
-1. **Claude:** review the refreshed #21 head after its CI, then merge as reviewer under Q-021. Review the updated K2 inventory #23 and acknowledge the Auth email configuration clarification.
-2. **Codex:** next task is K2 implementation (configuration, manual owner-run staging workflow and recipient-control mechanism). The behavioral recipient contract is agreed with Claude; the concrete Auth delivery mechanism and actual restrictions remain unverified.
-3. **Claude:** T3/T5 is in progress in #24 and must consume the reviewed K1 integration/report contract. K3 local measurements and K4 local recovery can follow the accepted T4/T2 foundations, with resource preflight. Owner executes hosted deployment and supplies staging access/configuration privately.
+1. **Claude:** review Codex 14's records PR after its CI, then merge as reviewer under Q-021. Application findings R1-R4 are resolved; T3/T5 #25 is approved and merged.
+2. **Codex next:** K2 local/staging configuration, manual owner-run staging workflow and recipient-control mechanism, using the accepted Auth inputs. The behavioral recipient contract is agreed; its concrete direct-Auth delivery enforcement remains open. Claude owns application consumers.
+3. **Owner:** supplies private staging values/access and executes hosted configuration/deployment. Staging sign-in/email remains gated until both recipient controls are demonstrated. K3 local measurements and K4 local recovery can follow accepted T4/T2 with resource preflight.
 
-**Phase: 1 in progress (D-038).** Design #10, T1 #11, T2 #15, T4 #17 and K1 #13/#18/#22 are merged; current main baseline `888bc5d`. T3/T5 #24 is in progress. Phase 1 finishes only with recorded staging evidence for A1–A7. D-060's live design-system, real 200% zoom, screen-reader and physical-device/browser checks remain open until G-PROD. The Coming Soon page is scrapped (D-063).
+**Phase: 1 in progress (D-038).** Design #10, T1-T5 (#11/#15/#17/#25), records #21 and K1 #13/#18/#22/#27 are merged; main baseline `199d44804ea74844f3de36513582abd79e6846d3`. These are implementation approvals. A1-A7 staging evidence, real Google login/linking, hosted performance/recovery and D-060 owner checks remain open. Coming Soon is scrapped (D-063).
 
 ## Open items
 
@@ -36,7 +36,7 @@
 
 **Foundation code merged:** Codex approved T2 `95476d5` and merged #15 as `38f1852`; all 154 pgTAP assertions and 24 REST probes also passed on the workstation. Codex approved T4 `f6f82cb` after combined CI (78 unit tests + 154 RLS assertions), the local check/build and 3 focused menu browser checks; #17 merged as `888bc5d`. Claude approved and merged K1 Auth fixture #22 (`994d09d`, merge `8066700`). These are code-review results, not staging A1–A7 completion.
 
-**Current handoff:** [Codex 13](codex/13-foundation-closeout-and-k2.md) records final evidence, the Windows workaround, merged SHAs and next work. #21 now incorporates current main and needs fresh CI/Claude review. #19/#20 are verification-only and are closed without merging. K2 preflight #23 is approved as inventory; its updated project-access fact and Auth email clarification need review. Staging remains blocked on access, owner configuration and demonstrated recipient restrictions. Disabling confirmations or leaving custom SMTP unset is not proof that all Auth email is off.
+**Current handoff:** [Codex 14](codex/14-t3-t5-review-and-k1-diagnostics.md) records four resolved T3/T5 findings, K1's reviewed diagnostics repair, exact-head hosted results (143 unit / 168 RLS / 45 integration), independent local/browser evidence and K2 inputs. #25 is approved at `91e7e44` and merged as `199d448`; #27 is Claude-approved and merged as `0961c98`. #21 is merged; #23 is re-approved at `7911d48`. Superseded #24 and verification-only #26 are closed unmerged. Staging remains blocked on access, owner configuration and demonstrated application plus direct-Auth recipient restrictions. Confirmations off/custom SMTP unset do not establish that Auth mail is disabled.
 
 Detailed history: [HISTORY.md](HISTORY.md).
 
@@ -76,3 +76,6 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 29 | 2026-11-04 | Claude (T2) | Opened draft [PR #15](https://github.com/CarworX/carworx-new/pull/15): Supabase CLI 2.122.1, Phase 1 schema (`profiles`, `organisations`, `memberships`, `audit_log`, `private.platform_admins`) with RLS deny-by-default, admin = server-controlled list + `aal2` in RLS, append-only audit; 154 pgTAP assertions and `test:rls`; `contract.json` `rls: true` as a labelled K1-file commit. No local Supabase (image pulls blocked); real pgTAP run is K1 CI. Codex reviews. |
 | 30 | 2026-11-04 | Claude (T2) | K1 fixture blocked PR #15's CI (pgTAP stage skipped); Codex reviewed CHANGES @`b823b03` with no schema/RLS defect and accepted `rls: true`. After K1 repair #18 merged (`ec7d658`), merged main into T2 for fresh CI and Codex's re-review. |
 | 31 | 2026-11-05 | Codex | Final T2/T4 reviews and Q-021 merges; local 154 pgTAP/24 REST and 78 unit/3 browser checks passed. K1 Auth fixture #22 Claude-approved/merged; K2 inventory #23 published and behavioral contract agreed. Records #21 refreshed after main 888bc5d; staging acceptance remains open. |
+| 32 | 2026-11-05 | Claude (T3+T5) | Superseded #24 by a clean-history branch `claude/t3-auth-2` from main `99efccf`, after the test password literal in #24's history failed the secrets scan. Local `pnpm run check` passes; Gitleaks over the commit range is clean. CI and review pending. |
+
+| 33 | 2026-11-05 | Codex | Reproduced T3 TAP failure; four findings fixed by Claude and rechecked. K1 diagnostics #27 Claude-approved/merged; #25 approved @91e7e44 after green 143 unit/168 RLS/45 integration evidence, local refresh/boundary/browser checks, merged as 199d448. Codex 14 hands off to K2; staging gates remain open. |
