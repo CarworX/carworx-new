@@ -71,6 +71,7 @@ function verify(f) {
     f.reviews,
     f.contract,
     f.comparison,
+    f.phase1,
   );
 }
 
@@ -227,4 +228,67 @@ test("plain review comments and issue comments cannot supply an approval", () =>
     { commit_id: sha, state: "COMMENTED", body: "Looks good. Agent: claude" },
   ];
   assert.throws(() => verify(f));
+});
+
+test("D-071 verifies the exact current staging source without claiming reciprocal review", () => {
+  const f = fixture();
+  f.reviews = [];
+  f.run.run_attempt = 1;
+  f.phase1 = {
+    environment: "staging",
+    worker: "carworx-web-staging",
+    supabase_project_ref: "gdiyrdqfkthtcglgqnts",
+    phase1_self_check: {
+      decision: "D-071",
+      status: "passed",
+      source_sha: sha,
+      merge_sha: f.pr.merge_commit_sha,
+      pr: request.pr,
+      ci_run: request.run,
+      ci_attempt: 1,
+      checked_at: new Date(Date.now() - 60_000).toISOString(),
+      expires_at: new Date(Date.now() + 60_000).toISOString(),
+    },
+  };
+  assert.equal(verify(f).review_mode, "owner-delegated-phase1");
+  assert.equal(verify(f).reciprocal_review_record, undefined);
+  for (const mutate of [
+    (v) => {
+      v.phase1.worker = "production";
+    },
+    (v) => {
+      v.phase1.phase1_self_check = null;
+    },
+    (v) => {
+      v.phase1.phase1_self_check.source_sha = "c".repeat(40);
+    },
+    (v) => {
+      v.phase1.phase1_self_check.merge_sha = "c".repeat(40);
+    },
+    (v) => {
+      v.phase1.phase1_self_check.ci_run = 43;
+    },
+    (v) => {
+      v.run.run_attempt = 2;
+    },
+    (v) => {
+      v.phase1.phase1_self_check.expires_at = "2000-01-01T00:00:00Z";
+    },
+    (v) => {
+      v.phase1.phase1_self_check.expires_at = "2999-01-01T00:00:00Z";
+    },
+    (v) => {
+      v.reviews = [
+        {
+          state: "COMMENTED",
+          commit_id: sha,
+          body: `REVIEW: CHANGES @${sha}\nAgent: claude`,
+        },
+      ];
+    },
+  ]) {
+    const copy = structuredClone(f);
+    mutate(copy);
+    assert.throws(() => verify(copy));
+  }
 });
