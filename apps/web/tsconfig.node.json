@@ -3,7 +3,9 @@
   "include": [
     "vite.config.ts",
     "vitest.config.ts",
+    "vitest.integration.config.ts",
     "react-router.config.ts",
+    "integration/**/*.ts",
     "scripts/**/*.ts",
     "app/ui/contrast.ts",
     "app/ui/contrast-pairs.ts"
