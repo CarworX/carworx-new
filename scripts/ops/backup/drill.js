@@ -464,7 +464,6 @@ async function drill() {
   const source = stack("source");
   const target = stack("target");
   let active;
-  let failure;
   try {
     active = source;
     const origin = start(source);
@@ -675,15 +674,11 @@ async function drill() {
       hostFreeBytesAfter: freeBytes(),
       negativeChecks: 7,
     };
-  } catch (error) {
-    failure = error;
-    throw error;
   } finally {
     if (active) {
       try {
         stop(active);
-      } catch (error) {
-        if (!failure) throw error;
+      } catch {
         console.error(
           "Cleanup also failed for " + active.name + " under " + root,
         );

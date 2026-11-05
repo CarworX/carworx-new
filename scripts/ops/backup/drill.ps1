@@ -20,11 +20,11 @@ scratch=`$(mktemp -d)
 tar -xf "`$archive" -C "`$scratch"
 pg_dump=`$(find "`$HOME/.supabase/cache/stack" -type f -path '*/postgres/17.*/bin/pg_dump' -print -quit)
 test -n "`$pg_dump"
-"`$HOME/node-v24.22.2-linux-x64/bin/node" "`$scratch/scripts/ops/backup/drill.mjs" "`$scratch" "`$revision" "`$(dirname "`$pg_dump")"
+"`$HOME/node-v24.22.2-linux-x64/bin/node" "`$scratch/scripts/ops/backup/drill.js" "`$scratch" "`$revision" "`$(dirname "`$pg_dump")"
 "@
 $launcher = "$archive.sh"
 try {
-    git -C $repo archive --format=tar "--output=$archive" $revision -- supabase scripts/ops/backup/drill.mjs
+    git -C $repo archive --format=tar "--output=$archive" $revision -- supabase scripts/ops/backup/drill.js
     if ($LASTEXITCODE -ne 0) { throw 'Cannot package the K4 fixture source.' }
     [IO.File]::WriteAllText($launcher, ($launch -replace "`r`n", "`n") + "`n")
     & wsl.exe -d CarworX-Native -u carworx -- bash "$linuxArchive.sh" $linuxArchive $revision
