@@ -1,5 +1,31 @@
 import { requireCondition } from "./contract.js";
 
+const INFRA_REASONS = [
+  "hook_uri",
+  "hook_secret",
+  "local_health",
+  "local_port",
+  "local_capacity",
+  "command_timeout",
+  "command_missing",
+  "local_config",
+  "local_command",
+];
+export function classifyLocalFailure(error) {
+  const output = `${error?.stderr ?? ""}\n${error?.stdout ?? ""}`;
+  if (error?.killed) return "command_timeout";
+  if (error?.code === "ENOENT") return "command_missing";
+  if (/no space|ENOSPC/i.test(output)) return "local_capacity";
+  if (/hook.*uri|invalid.*uri|parse.*url/i.test(output)) return "hook_uri";
+  if (/hook.*secret|base64|whsec/i.test(output)) return "hook_secret";
+  if (/unhealthy|health.?check|not healthy/i.test(output))
+    return "local_health";
+  if (/port.*allocated|address already in use/i.test(output))
+    return "local_port";
+  if (/invalid config|unknown config|toml/i.test(output)) return "local_config";
+  return "local_command";
+}
+
 export const OPERATIONS_TEST_FILES = [
   "contract.test.js",
   "hosted.test.js",
@@ -64,6 +90,8 @@ export function emailFailureDetails(report, sha) {
     if (Number.isSafeInteger(value) && value >= 0 && value <= 100000)
       result[name] = value;
   }
+  if (INFRA_REASONS.includes(report.observed?.infra_reason))
+    result.infra_reason = report.observed.infra_reason;
   return result;
 }
 

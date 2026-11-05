@@ -5,13 +5,17 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { promisify } from "node:util";
 import { createAuthEmailHandler } from "./handler.js";
+import { classifyLocalFailure } from "../reports.js";
 
 const execute = promisify(execFile);
 const checks = [];
 const deliveries = [];
 let invoked = 0;
+let providerCalls = 0;
 let authStatus = 0;
 let hookStatus = 0;
+let infraReason = "";
+let activeEnv = process.env;
 let mode = "capture";
 let phase = "setup";
 let server;
@@ -37,6 +41,7 @@ const hookEnv = {
 };
 const handler = createAuthEmailHandler(
   async (message) => {
+    providerCalls++;
     if (mode === "provider_failure")
       throw new Error("synthetic provider failure");
     deliveries.push(message);
@@ -57,7 +62,8 @@ async function command(file, args, env = process.env) {
         maxBuffer: 8 * 1024 * 1024,
       })
     ).stdout;
-  } catch {
+  } catch (error) {
+    infraReason ||= classifyLocalFailure(error);
     throw new Error("local infrastructure command failed");
   }
 }
@@ -147,6 +153,7 @@ try {
     LOCAL_AUTH_EMAIL_HOOK_URI: `http://${gateways[0]}:${port}/hook`,
     LOCAL_AUTH_EMAIL_HOOK_SECRET: secret,
   };
+  activeEnv = localEnv;
   phase = "hook_stack_stop";
   await supabase(["stop", "--no-backup"]);
   writeFileSync(
@@ -156,7 +163,11 @@ try {
         /(\[auth.hook.send_email\]\s*)enabled = false/,
         "$1enabled = true",
       )
-      .replace('max_frequency = "60s"', 'max_frequency = "0s"'),
+      .replace('max_frequency = "60s"', 'max_frequency = "0s"')
+      .replace(
+        'uri = "env(LOCAL_AUTH_EMAIL_HOOK_URI)"',
+        `uri = "${localEnv.LOCAL_AUTH_EMAIL_HOOK_URI}"`,
+      ),
   );
   changed = true;
   phase = "hook_stack_startup";
@@ -206,10 +217,16 @@ try {
   const absent = async (name, action) =>
     check(name, async () => {
       const before = deliveries.length;
+      const beforeProvider = providerCalls;
       const calls = invoked;
       const response = await action();
       requireSafe(
         invoked > calls && deliveries.length === before && !response.ok,
+      );
+      requireSafe(
+        name === "provider_failure"
+          ? providerCalls > beforeProvider
+          : providerCalls === beforeProvider,
       );
     });
   const verifyLast = async (type) => {
@@ -297,7 +314,7 @@ try {
 } finally {
   if (changed) {
     try {
-      await supabase(["stop", "--no-backup"]);
+      await supabase(["stop", "--no-backup"], activeEnv);
     } catch {
       checks.push({ name: "cleanup", status: "failed" });
       process.exitCode = 1;
@@ -318,9 +335,10 @@ try {
     checks,
     observed: {
       hook_calls: invoked,
-      provider_calls: deliveries.length,
+      provider_calls: providerCalls,
       auth_status: authStatus,
       hook_status: hookStatus,
+      infra_reason: infraReason,
     },
   };
   if (

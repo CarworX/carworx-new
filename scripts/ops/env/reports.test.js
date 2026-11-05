@@ -5,9 +5,33 @@ import {
   OPERATIONS_TEST_FILES,
   validateOperationsFiles,
   emailFailureDetails,
+  classifyLocalFailure,
   validateEmailReport,
   validateNodeReport,
 } from "./reports.js";
+
+test("local infrastructure diagnostics map private command output to fixed labels", () => {
+  assert.equal(
+    classifyLocalFailure({
+      stderr: "Invalid hook uri with private configuration",
+    }),
+    "hook_uri",
+  );
+  assert.equal(
+    classifyLocalFailure({
+      stderr: "hook secret invalid with private configuration",
+    }),
+    "hook_secret",
+  );
+  assert.equal(
+    classifyLocalFailure({ killed: true, stderr: "private configuration" }),
+    "command_timeout",
+  );
+  assert.equal(
+    classifyLocalFailure({ stderr: "arbitrary private configuration" }),
+    "local_command",
+  );
+});
 
 test("failed email reports expose only fixed stage names and numeric observations", () => {
   const sha = "a".repeat(40);
