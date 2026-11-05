@@ -261,7 +261,20 @@ Append-only evidence record. Current state belongs in [STATUS.md](STATUS.md); do
 
 Owner approved the next K2 interfaces and waived the pre-build Claude agreement gate (D-068). Codex implemented app/hook recipient controls, disposable local Supabase boundary checks, readiness v2 and owner smoke contracts on codex/k2-environments (#23), based on main f871fe3. Codex 17 requests independent exact-head Claude review and replanning. Prior skeleton approval is historical only. No hosted configuration/deployment, private values, real mail or spend; promotion and A2 stay blocked pending required evidence. Workstation capacity precluded a new Docker stack; CI local-stack evidence is labelled separately. Publication/check references are recorded on PR #23.
 
+- 2026-11-05 17:17 UTC — Codex ran the K4 native WSL drill at 44ec4a1. Two tenants, four Auth identities, two private objects and 168 RLS assertions verified. The first committed run exported in 1.29 s and restored/verified in 36.26 s. Hosted A7 and Claude review remain open. Issue #4.
+
+## 2026-11-05 — phase1-master: T3+T5 merged; Claude's Phase 1 tasks complete
+
+- **CI diagnosis:** the combined suite failed with only "Required command failed". Verification-only #26 (closed unmerged) printed step names and exit codes. Startup and reset passed; `test:rls` failed on T3's new `30_` file, whose `select set_config(...)` rows broke the TAP stream. Fixed with `set local` (`fe34cd2`); validation was not relaxed. K1 #27 (Codex; Claude APPROVE @`b1e12ce`; merged `0961c98`) now records startup/reset/rls/integration/cleanup separately and reports only the failing stage label.
+- **Review:** Codex CHANGES @`59ff8fb` and @`fe34cd2` (form-attribute order, a bounded body read at 64 KB, multipart boundary case) were fixed in `d3308b6` with regressions. Codex APPROVE @`91e7e44` after run 41953684824 (artifact counts: unit 143, RLS 168 across 4 files, integration 45; startup/reset/cleanup passed). Merged as `199d448`; issues #7 and #9 closed.
+- **Scope:** the approval covers the local, synthetic Phase 1 implementation only. Still open: staging sign-in/email (off until K2's fail-closed recipient control for both delivery paths), real Google login and linking (owner guide 4; A3 not claimed on fixtures), owner hosted configuration, and D-060.
+- **Records:** Codex 12/13 records #21 merged as `99efccf` (Claude reviewer). K2 preflight #23 re-approved @`7911d48`, with its Auth email clarification acknowledged.
+
+## 2026-11-05 — phase1-master: K2 review and owner guide 11
+
+- Formal PR review `REVIEW: APPROVE @b1a4f72` (review 5784282916) of the K2 implementation: app recipient guard, signed Send Email hook, required `operations`/`auth_delivery` CI stages and readiness v2. It approves the code and fail-closed design, not readiness. Codex merged #23 as `5b9590f`; `promotion.json` stays blocked.
+- Non-blocking notes for the replan: the hook's 403 lets a direct Auth caller probe allowlist membership (and may leave unconfirmed user rows); app-path timing differs for unapproved addresses; there is no production email mode yet (non-local/staging modes fail closed). The app guard is Claude-maintained from now on.
+- Owner guide 11 (#30) is the staging runbook to A2. Codex's CHANGES @`8e6c605` (token path) were addressed at `6993b31`: an account-owned token scoped to Specified Workers = `carworx-web-staging` with Editor; no legacy Workers Scripts Edit. Two Codex gaps remain: the hook deploy command, and probe/counter receipt tooling.
 ## 2026-11-04 — DS mobile loading page
 
 - New MobileLoading card (States) published to the live design system 1793808437-202e (from 1793783662-3fad): the D-041 loaders by mobile scenario at 360 px with reduced-motion stills; mirrored in PR https://github.com/CarworX/carworx-new/pull/16. D-060 owner checks stay open.
-
