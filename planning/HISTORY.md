@@ -292,3 +292,5 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - 2026-11-10 (SAST) — Codex 22 / D-078: verified exact-head Claude approvals and green CI, merged #45 as 757e954 and #47 as c60207b, preserving both history entries with no implementation conflict. Added one review-hardening PR and Claude P2-2 handoff; labels, category cycles, timing review and private trace mapping covered. Claude review and fresh checks required before its merge; no P2-2 implementation or hosted action by Codex. Staging timing and A1–A7 remain open.
 
 - 2026-11-10 (SAST) — D-079: owner usage limit delegates immediate P2-2 planning/implementation continuation to Claude, stacked on Codex's published hardening branch. Codex review is deferred, not waived for merging Claude-authored work. Local 44-test check passed; new full CI/runtime evidence remains pending.
+
+- 2026-11-10 (SAST) — Claude: #48 review CHANGES @0a6c3a6 (lint); fix #49 @f249cc0. D-080 interim authority; D-081 P2-2 credential (Hyperdrive and `catalogue_server`) and limiter (SQLite Durable Object). Claude 19 P2-2 plan. No hosted changes.
