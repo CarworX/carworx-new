@@ -82,3 +82,13 @@ before Phase 2 staging/G-PROD. Search eligibility, rate-limiter free-tier proof,
 P2-4 publication completeness checks and real owner design checks remain open.
 
 Agent: codex
+
+### CI follow-up
+
+Initial CI failed during stack startup, before TAP execution. A second attempt
+also failed at source-start despite explicit ownership-transfer capability.
+Added fixed-label database diagnostics to K1/K4 so private service output remains
+unpublished while permission/syntax/role failures can be assigned correctly.
+The unseeded recovery path now constructs its fixtures transactionally. These
+changes do not turn missing runtime evidence into a pass. See the current PR
+checks and subsequent commits for the final result.

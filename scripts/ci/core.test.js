@@ -1,6 +1,23 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createHash } from "node:crypto";
+import { databaseDiagnostic } from "./database-diagnostic.js";
+
+test("database diagnostics expose only fixed labels from private service output", () => {
+  for (const [input, expected] of [
+    ["must be able to SET ROLE secret-role", "database-role-switch"],
+    ["must be owner of secret-table", "database-ownership"],
+    ["ERROR SQLSTATE 42501 secret", "database-permission"],
+    ["ERROR SQLSTATE 42601 secret", "database-syntax"],
+    ["SQLSTATE 42710 secret", "database-duplicate-object"],
+    ["SQLSTATE 42P01 secret", "database-missing-relation"],
+    ["token=secret malformed SQLSTATE SEC12", "unclassified"],
+  ]) {
+    assert.equal(databaseDiagnostic({ stdout: input }), expected);
+    assert.equal(databaseDiagnostic({ stderr: input }), expected);
+    assert.doesNotMatch(databaseDiagnostic({ stderr: input }), /secret|token/i);
+  }
+});
 import {
   isProseException,
   PROSE_DIGEST,
