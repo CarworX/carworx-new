@@ -212,7 +212,21 @@ export async function setMembership(
 
 /** Runs SQL as the database owner (private schema is not reachable over the API). */
 export function sql(statement: string): void {
-  const args = ["-X", "-q", "-v", "ON_ERROR_STOP=1", "-c", statement];
+  sqlRows(statement);
+}
+
+/** Like sql(), returning each output row (unaligned, tuples only). */
+export function sqlRows(statement: string): string[] {
+  const args = [
+    "-X",
+    "-q",
+    "-t",
+    "-A",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-c",
+    statement,
+  ];
   const host = spawnSync("psql", ["--version"], { encoding: "utf8" });
   let result;
   if (host.status === 0) {
@@ -241,6 +255,7 @@ export function sql(statement: string): void {
   }
   // The URL carries the local stack's password: never print it.
   if (result.status !== 0) throw new Error("psql statement failed");
+  return result.stdout.split("\n").filter((line) => line !== "");
 }
 
 export function makePlatformAdmin(userId: string): void {

@@ -52,6 +52,8 @@ export type Problem =
   | "claim_not_pending"
   | "claim_not_disputable"
   | "dispute_closed"
+  | "claim_superseded"
+  | "transfer_disputed"
   | "unavailable";
 
 export const PROBLEM_TEXT: Record<Problem, string> = {
@@ -72,6 +74,10 @@ export const PROBLEM_TEXT: Record<Problem, string> = {
   claim_not_pending: "This claim isn't waiting for a decision.",
   claim_not_disputable: "This claim can't be disputed now.",
   dispute_closed: "This dispute has already been resolved.",
+  claim_superseded:
+    "A later transfer has replaced this one, so it can't be disputed or reversed.",
+  transfer_disputed:
+    "This business's last transfer is under dispute. Resolve that dispute first.",
   unavailable: "Something went wrong on our side. Try again in a minute.",
 };
 
@@ -91,10 +97,10 @@ export function problemFrom(error: {
 
 function text(form: FormData, name: string, min: number, max: number) {
   const value = field(form, name).trim();
-  // eslint-disable-next-line no-control-regex -- reject control characters, as the database does
   if (
     value.length < min ||
     value.length > max ||
+    // eslint-disable-next-line no-control-regex -- reject control characters, as the database does
     /[\u0000-\u001f\u007f]/.test(value)
   )
     return null;

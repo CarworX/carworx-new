@@ -76,7 +76,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     .select("id, organisation_id, user_id, role, status, created_at")
     .eq("user_id", uid)
     .eq("status", "active")
-    .returns<Membership[]>();
+    .overrideTypes<Membership[], { merge: false }>();
   if (mine.error !== null) throwStatus(503, signedIn.headers);
   const orgIds = mine.data.map((m) => m.organisation_id);
   const controlled = mine.data
@@ -91,7 +91,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       .from("organisations")
       .select("id, name")
       .in("id", orgIds)
-      .returns<{ id: string; name: string }[]>(),
+      .overrideTypes<{ id: string; name: string }[], { merge: false }>(),
     db
       .from("listings")
       .select(
@@ -99,13 +99,13 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       )
       .in("organisation_id", orgIds)
       .order("created_at")
-      .returns<Listing[]>(),
+      .overrideTypes<Listing[], { merge: false }>(),
     db
       .from("memberships")
       .select("id, organisation_id, user_id, role, status, created_at")
       .in("organisation_id", owned)
       .order("created_at")
-      .returns<Membership[]>(),
+      .overrideTypes<Membership[], { merge: false }>(),
     db
       .from("listing_claims")
       .select(
@@ -113,7 +113,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       )
       .order("created_at", { ascending: false })
       .limit(50)
-      .returns<Claim[]>(),
+      .overrideTypes<Claim[], { merge: false }>(),
   ]);
   if (
     orgs.error !== null ||
@@ -130,7 +130,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       listings.data.map((l) => l.public_id),
     )
     .order("decided_at", { ascending: false })
-    .returns<Decision[]>();
+    .overrideTypes<Decision[], { merge: false }>();
   if (decisions.error !== null) throwStatus(503, signedIn.headers);
   const latest = new Map<string, Decision>();
   for (const d of decisions.data)

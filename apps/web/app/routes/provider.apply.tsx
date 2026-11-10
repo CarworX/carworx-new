@@ -31,23 +31,18 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
 export async function action({ request, context }: Route.ActionArgs) {
   const signedIn = await requireSignedIn(request, context.security);
-  const application = parseApplication(await request.formData());
-  if (application === null)
-    return data(
-      { problem: "invalid_input" as Problem },
-      { status: 400, headers: signedIn.headers },
-    );
-  const { error } = await signedIn.supabase.rpc("provider_apply", application);
-  if (error !== null) {
-    const problem = problemFrom(error);
-    return data(
+  const fail = (problem: Problem) =>
+    data(
       { problem },
       {
         status: problem === "unavailable" ? 503 : 400,
         headers: signedIn.headers,
       },
     );
-  }
+  const application = parseApplication(await request.formData());
+  if (application === null) return fail("invalid_input");
+  const { error } = await signedIn.supabase.rpc("provider_apply", application);
+  if (error !== null) return fail(problemFrom(error));
   return throwRedirect("/provider?applied=1", signedIn.headers);
 }
 
