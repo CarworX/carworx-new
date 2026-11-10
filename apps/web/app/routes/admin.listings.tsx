@@ -2,7 +2,8 @@ import { data } from "react-router";
 
 import { throwStatus } from "../auth/http.server";
 import { requireAdmin } from "../server/providers/admin.server";
-import { AdminShell } from "../ui/admin/AdminShell";
+import { PAGE_SIZE, parsePage } from "../server/providers/forms";
+import { AdminShell, Pager } from "../ui/admin/AdminShell";
 import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/admin.listings";
 
@@ -29,12 +30,14 @@ interface Row {
   created_at: string;
 }
 
-/** /admin/listings?status=…: oldest first, 50 at a time. Admin at aal2 only. */
+/** /admin/listings?status=…&page=…: oldest first, 50 a page. Admin at aal2 only. */
 export async function loader({ request, context }: Route.LoaderArgs) {
   const admin = await requireAdmin(request, context.security);
-  const asked = new URL(request.url).searchParams.get("status") ?? "submitted";
+  const url = new URL(request.url);
+  const asked = url.searchParams.get("status") ?? "submitted";
   const status = STATUSES.find((s) => s === asked);
-  if (status === undefined) throwStatus(404, admin.headers);
+  const page = parsePage(url.searchParams.get("page"));
+  if (status === undefined || page === null) throwStatus(404, admin.headers);
   const { data: rows, error } = await admin.supabase
     .from("listings")
     .select(
@@ -46,14 +49,22 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       nullsFirst: true,
     })
     .order("public_id")
-    .limit(50)
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
     .overrideTypes<Row[], { merge: false }>();
   if (error !== null) throwStatus(503, admin.headers);
-  return data({ status, rows }, { headers: admin.headers });
+  return data(
+    {
+      status,
+      page,
+      rows: rows.slice(0, PAGE_SIZE),
+      more: rows.length > PAGE_SIZE,
+    },
+    { headers: admin.headers },
+  );
 }
 
 export default function AdminListings({ loaderData }: Route.ComponentProps) {
-  const { status, rows } = loaderData;
+  const { status, rows, page, more } = loaderData;
   return (
     <AdminShell title={TITLES[status]}>
       {rows.length === 0 ? (
@@ -80,6 +91,11 @@ export default function AdminListings({ loaderData }: Route.ComponentProps) {
           ))}
         </ul>
       )}
+      <Pager
+        base={`/admin/listings?status=${status}`}
+        page={page}
+        more={more}
+      />
     </AdminShell>
   );
 }

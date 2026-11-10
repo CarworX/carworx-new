@@ -221,6 +221,34 @@ describe("review queue", () => {
   });
 });
 
+describe("paging", () => {
+  it("reaches every listing beyond the first 50", async () => {
+    const org = sqlRows(
+      "insert into public.organisations(name) values ('Paging Org (synthetic)') returning id",
+    )[0];
+    const ids =
+      sqlRows(`insert into public.listings(organisation_id, service_slug, display_name, description, metro, mode, status, provenance_kind, provenance_reference)
+      select '${org ?? ""}', 'mobile-repair', 'Paging ' || g, 'Synthetic paging fixture', 'Gauteng', 'mobile', 'suspended', 'admin_import', 'synthetic-paging'
+      from generate_series(1, 55) g returning public_id`);
+    expect(ids).toHaveLength(55);
+    const seen = new Set<string>();
+    for (let page = 1; page <= 20; page++) {
+      const reply = await admin.send(
+        `/admin/listings?status=suspended&page=${String(page)}`,
+      );
+      expect(reply.status).toBe(200);
+      for (const m of reply.body.matchAll(/data-row="([0-9a-f-]{36})"/g))
+        seen.add(m[1] ?? "");
+      if (!reply.body.includes("data-next")) break;
+    }
+    for (const id of ids) expect(seen.has(id)).toBe(true);
+    expect(
+      (await admin.send("/admin/listings?status=live&page=0")).status,
+    ).toBe(404);
+    expect((await admin.send("/admin/claims?page=x")).status).toBe(404);
+  });
+});
+
 describe("claims", () => {
   it("a disputed claim is upheld; a later claim transfers control and is reversed (A12)", async () => {
     const owner = await applyAs("p27-claim-owner", {

@@ -2,8 +2,8 @@ import { data } from "react-router";
 
 import { throwStatus } from "../auth/http.server";
 import { requireAdmin } from "../server/providers/admin.server";
-import { sast } from "../server/providers/forms";
-import { AdminShell } from "../ui/admin/AdminShell";
+import { PAGE_SIZE, parsePage, sast } from "../server/providers/forms";
+import { AdminShell, Pager } from "../ui/admin/AdminShell";
 import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/admin.claims";
 
@@ -19,22 +19,28 @@ interface Row {
   created_at: string;
 }
 
-/** /admin/claims: claims waiting for a decision and claims under dispute. */
+/** /admin/claims?page=…: claims waiting for a decision or under dispute, 50 a page. */
 export async function loader({ request, context }: Route.LoaderArgs) {
   const admin = await requireAdmin(request, context.security);
+  const page = parsePage(new URL(request.url).searchParams.get("page"));
+  if (page === null) throwStatus(404, admin.headers);
   const { data: rows, error } = await admin.supabase
     .from("listing_claims")
     .select("id, listing_public_id, status, evidence_kind, created_at")
     .in("status", ["submitted", "disputed"])
     .order("created_at")
-    .limit(50)
+    .order("id")
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
     .overrideTypes<Row[], { merge: false }>();
   if (error !== null) throwStatus(503, admin.headers);
-  return data({ rows }, { headers: admin.headers });
+  return data(
+    { rows: rows.slice(0, PAGE_SIZE), page, more: rows.length > PAGE_SIZE },
+    { headers: admin.headers },
+  );
 }
 
 export default function AdminClaims({ loaderData }: Route.ComponentProps) {
-  const { rows } = loaderData;
+  const { rows, page, more } = loaderData;
   return (
     <AdminShell title="Claims">
       {rows.length === 0 ? (
@@ -62,6 +68,7 @@ export default function AdminClaims({ loaderData }: Route.ComponentProps) {
           ))}
         </ul>
       )}
+      <Pager base="/admin/claims?" page={page} more={more} />
     </AdminShell>
   );
 }
