@@ -1,6 +1,6 @@
 # Status
 
-## Baton: Codex completes Phase 1 staging (D-071); Claude proposes Phase 2 (D-074)
+## Baton: Claude reviews hardening, then plans P2-2; Codex reviews its plan and code (D-078)
 
 **2026-11-10:** reciprocal formal review restored (D-073). Phase 2 runs in parallel, local/CI and synthetic only: Claude writes the Phase 2 proposal (Claude 17) and the Paystack vs Yoco comparison (Claude 18), Codex reviews, the owner approves. Maps deferred (D-075); G-PAY renamed G-LIVEPAY (D-076).
 
@@ -21,8 +21,15 @@ open until G-PROD.
   [guide 11](owner-guides/11-staging-bootstrap.md). Live timing, delivery,
   OAuth, hosted performance and A1–A7 receipts remain open.
 - **Phase 2:** Claude 17 is reviewed and merged (#40). The owner authorised
-  Codex to start P2-1 with its §3 defaults on 2026-11-10, local/CI and synthetic
-  only. Claude reviews each new PR before merge; staging A1–A7 and G-PROD remain open.
+  P2-1 with its §3 defaults; #47 is merged after Claude approval, with 349 database
+  assertions and recovery checks. #45 is also merged. Codex 22 hands P2-2 planning
+  and implementation to Claude. Under D-079, Claude continues now on a separate
+  stacked branch without waiting for Codex's plan review. Codex reviews later;
+  new Claude-authored work stays unmerged. Staging A1–A7 and G-PROD remain open.
+- **BLOCKER — application-path timing:** hosted app timing has not been measured.
+  It follows the first app deployment and must pass independent review before
+  broader staging acceptance. Direct Auth timing is also unmeasured; promotion
+  stays blocked. Local/synthetic measurements cannot substitute for either path.
 
 ## Open items
 

@@ -157,3 +157,11 @@ Current next step: Claude creates the presentation pack; Codex reviews; owner ga
 | ID | Topic | Decision | Agreed by | Links |
 |---|---|---|---|---|
 | D-077 | P2-1 start | Start P2-1 catalogue data from reviewed Claude 17, using section 3 defaults unless the owner changes them. Local/CI and synthetic only. Claude formally reviews the exact new PR head before merge. This is not authority for other Phase 2 slices, hosted rollout or G-PROD. The proposal leaves the real launch metro unnamed; Gauteng in seeds is a reversible synthetic fixture only. | Owner | Codex chat; [Codex 21](codex/21-p2-1-catalogue.md); #40, #46 |
+
+## Owner — Codex chat 2026-11-10 (SAST), P2-2 handoff
+
+| ID | Topic | Decision | Agreed by | Links |
+|---|---|---|---|---|
+| D-078 | P2-2 ownership and gates | Codex merges approved #45/#47 and delivers one hardening/handoff PR for Claude review. Claude then plans and implements P2-2; Codex independently reviews its decision-complete plan before implementation and its exact code head before merge. This supersedes D-074's writer assignment for P2-2 only. Scoped server credentials and official $0 limiter evidence are pre-build gates. Work remains synthetic/local/CI; no deployments, hosted settings, real mail or spending. Never self-approve or self-merge. | Owner | Approved Codex preparation → Claude P2-2 handoff plan; [Codex 22](codex/22-p2-2-claude-handoff.md) |
+
+| D-079 | Usage-limited Claude continuation | Owner requests a Claude handoff to continue without Codex for now, with Codex reviewing later. Claude writes the P2-2 plan and may implement feasible agreed scope without waiting for Codex's plan review, using a separate branch stacked on the published hardening head while it remains unmerged. Existing credential/$0 gates remain; no deploys, settings, real mail or spending. Claude-authored fixes and implementation require later Codex review before merge; no self-approval/self-merge. | Owner | Codex chat 2026-11-10 (SAST); [Codex 22](codex/22-p2-2-claude-handoff.md) |

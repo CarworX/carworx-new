@@ -63,6 +63,11 @@ or personal data into this description, a comment or a log excerpt.
 
 ## Review record
 
+- [ ] For a `promotion: ready` PR, the reviewer records **each timing stratum's**
+      path/flow/cooldown, p95 gap, allowed and denied maxima, evidence reference,
+      and acceptance or required mitigation with a rationale. Mark n/a only if
+      this PR does not request promotion; missing required strata cannot be waived.
+
 <!-- The reviewing agent (never the author) adds one line per reviewed head. -->
 
 REVIEW: APPROVE|CHANGES @<sha>

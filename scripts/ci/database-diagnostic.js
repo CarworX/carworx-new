@@ -33,6 +33,7 @@ export function rlsFailureSummary(result) {
     "30_t3_caller_admin_status.test.sql",
     "40_catalogue_privacy.test.sql",
     "41_catalogue_matrix.test.sql",
+    "42_catalogue_review.test.sql",
   ]);
   return {
     files: [

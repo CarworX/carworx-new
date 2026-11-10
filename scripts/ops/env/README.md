@@ -262,3 +262,32 @@ Local reports cannot satisfy hosted readiness. App measurements follow the first
 application deployment and remain required hardening evidence before broader
 staging acceptance. No hosted measurements have been collected in this PR;
 `promotion.json` remains blocked.
+
+### Private timing-run correlation manifest
+
+Run the operator command with two private paths:
+`CARWORX_TIMING_OPERATOR_ACK=approved-synthetic-fixtures node scripts/ops/env/auth-email/timing.js <private-config.json> <private-run-manifest.json>`.
+Create an owner-private directory outside every Git worktree first (POSIX mode
+0700, or a Windows ACL allowing only the current owner/SYSTEM/Administrators).
+The manifest must not exist. The collector verifies directory/file privacy,
+creates it exclusively (POSIX mode 0600), and flushes each record before proceeding.
+Windows ACL inspection uses the built-in PowerShell host with its own module path.
+Do not place the configuration, manifest or private diagnostics in Git/artifacts.
+
+Each stratum's public correlation UUID is assigned before any measurement and
+stored in this private file alongside a private run UUID and input-config digest.
+Request records contain the stratum UUID, fixture pair index/group, UTC start,
+duration and HTTP status; look up the pair in the retained private configuration.
+No addresses, bodies, credentials, cookies or response text enter the manifest.
+The public report contains neither its private run UUID nor its path. Creation,
+permission, write or completion failures stop collection and prevent a public
+report; partial manifests are marked failed where possible and are not evidence.
+Keep these owner-held files with the corresponding private traces through review.
+
+For a ready PR, the reviewer must record a table for every required stratum:
+path, flow, cooldown, p95 gap, allowed max, denied max, evidence reference,
+accept/mitigate decision and rationale. Inspect outliers against the private
+manifest rather than accepting the presence of quantiles as a verdict.
+**Application-path timing remains a named blocker for broader staging acceptance**
+after the first application deploy. Direct timing remains required before
+promotion. No hosted timing evidence has been collected by this change.
