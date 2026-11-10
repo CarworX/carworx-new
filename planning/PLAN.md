@@ -9,6 +9,8 @@
 | Owner approval | ☑ 2026-11-02: approved for **Phase 1 only** (§3), starting local-only (D-038). Every later phase, gate, spend and production release needs separate approval (§21) |
 | Sources | D-001–D-065 in [DECISIONS.md](DECISIONS.md), including later owner directions and the scoped Codex 09 planning agreements |
 
+> **Notes 2026-11-10 (D-074–D-076):** Phase 2 is being proposed in parallel with Phase 1 staging (local/CI, synthetic). The Phase 2 map (P2-8, Mapbox) is deferred until after G-PROD. The live-payments gate written here as **G-PAY is now named G-LIVEPAY** (it never meant Google Pay); payment providers under study are Paystack and Yoco only.
+
 **OWNER DECISION** = not decided yet. **GATE** = must be satisfied before the step it guards. **PROPOSED DEFAULT** = a technical or operating default both agents recommend; the owner can change it.
 
 ---

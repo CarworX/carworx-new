@@ -1,6 +1,8 @@
 # Status
 
-## Baton: Codex completes Phase 1 staging (D-071)
+## Baton: Codex completes Phase 1 staging (D-071); Claude proposes Phase 2 (D-074)
+
+**2026-11-10:** reciprocal formal review restored (D-073). Phase 2 runs in parallel, local/CI and synthetic only: Claude writes the Phase 2 proposal (Claude 17) and the Paystack vs Yoco comparison (Claude 18), Codex reviews, the owner approves. Maps deferred (D-075); G-PAY renamed G-LIVEPAY (D-076).
 
 **Phase 1 in progress.** Design #10, T1–T5, K1 and K2 #23 are merged. K4 #34
 passed the native WSL synthetic restore drill with 168 RLS assertions, two
@@ -93,3 +95,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 33 | 2026-11-05 | Codex | Reproduced T3 TAP failure; four findings fixed by Claude and rechecked. K1 diagnostics #27 Claude-approved/merged; #25 approved @91e7e44 after green 143 unit/168 RLS/45 integration evidence, local refresh/boundary/browser checks, merged as 199d448. Codex 14 hands off to K2; staging gates remain open. |
 | 34 | 2026-11-05 | Codex | Owner authorized K2 build before Claude review (D-068). Recipient app/hook controls, required local-stack CI coverage, readiness v2 and owner smoke contracts implemented in #23; Codex 17 requests exact-head review/replan. Hosted evidence and A2 remain open. |
 | 35 | 2026-11-05 | Claude (phase1-master) | T3+T5 #25 merged (`199d448`); issues #5–#9 closed, so T1–T5 are all merged. Merged as reviewer: Codex records #21 (`99efccf`) and #29 (`f871fe3`), K1 diagnostics #27 (`0961c98`). Formal PR review APPROVE of K2 @`b1a4f72` (merged `5b9590f`, promotion blocked). Wrote owner guide 11 (#30) for staging setup to A2. Baton to the owner and Codex. |
+| 36 | 2026-11-10 | Claude | Recorded owner directions D-073–D-076: reciprocal review restored (D-071 self-merges stand), Phase 2 in parallel with staging, maps after G-PROD, Paystack vs Yoco only and G-PAY renamed G-LIVEPAY. Next: post-merge security review of #31/#36/#33/#37/#32, Claude 17 Phase 2 proposal, Claude 18 payments comparison. |
