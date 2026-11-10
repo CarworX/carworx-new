@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { handleSearch, type SearchArgs, type SearchRow } from "./handler";
+import {
+  handleSearch,
+  pgRound,
+  type SearchArgs,
+  type SearchRow,
+} from "./handler";
 
 const KEY = "synthetic-cursor-key-".repeat(3);
 const BASE = "http://localhost:5173/api/search";
@@ -162,6 +167,35 @@ describe("GET /api/search handler", () => {
       },
     );
     expect(expired.status).toBe(400);
+  });
+
+  it("binds a mobile cursor to the database's 2 dp discovery point", async () => {
+    const first = await get("?lat=-33.90499&lng=18.4");
+    const body = first.body as unknown as {
+      fixed: { next: string };
+      mobile: { next: string };
+    };
+    const mobile = encodeURIComponent(body.mobile.next);
+    const fixed = encodeURIComponent(body.fixed.next);
+    // Both round to -33.905 at 3 dp, but to -33.90 vs -33.91 at 2 dp.
+    expect(
+      (await get(`?lat=-33.90501&lng=18.4&mobile_cursor=${mobile}`)).body,
+    ).toEqual({ error: "invalid_cursor" });
+    expect(
+      (await get(`?lat=-33.90501&lng=18.4&fixed_cursor=${fixed}`)).status,
+    ).toBe(200);
+    expect(
+      (await get(`?lat=-33.904&lng=18.4&mobile_cursor=${mobile}`)).status,
+    ).toBe(200);
+  });
+
+  it("rounds like Postgres numeric round, half away from zero", () => {
+    expect(pgRound(-33.90499, 2)).toBe("-33.90");
+    expect(pgRound(-33.90501, 2)).toBe("-33.91");
+    expect(pgRound(-33.905, 2)).toBe("-33.91");
+    expect(pgRound(18.4005, 3)).toBe("18.401");
+    expect(pgRound(28.0567, 3)).toBe("28.057");
+    expect(pgRound(-26.1, 3)).toBe("-26.100");
   });
 
   it("validates input strictly before touching the database", async () => {
