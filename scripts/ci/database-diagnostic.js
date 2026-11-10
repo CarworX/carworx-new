@@ -26,6 +26,14 @@ export function databaseDiagnostic(result) {
 
 export function rlsFailureSummary(result) {
   const text = `${result?.stderr ?? ""}\n${result?.stdout ?? ""}`;
+  const allowedFiles = new Set([
+    "00_catalog.test.sql",
+    "10_a4_matrix.test.sql",
+    "20_boundaries.test.sql",
+    "30_t3_caller_admin_status.test.sql",
+    "40_catalogue_privacy.test.sql",
+    "41_catalogue_matrix.test.sql",
+  ]);
   return {
     files: [
       ...new Set(
@@ -33,7 +41,9 @@ export function rlsFailureSummary(result) {
           (m) => m[1],
         ),
       ),
-    ].slice(0, 16),
+    ]
+      .filter((name) => allowedFiles.has(name))
+      .slice(0, 16),
     assertions: [
       ...new Set(
         [...text.matchAll(/\bnot ok\s+([0-9]{1,5})\b/g)].map((m) =>
