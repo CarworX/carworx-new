@@ -65,9 +65,25 @@ Checked 2026-11-10. The table distinguishes documented API capabilities from the
 - **Yoco's compatibility is unresolved.** It isn't named as a working backup until R1/R2 are confirmed, for example through Yoco's partnership team, and the live-key-only refund testing has an acceptable test plan.
 - **The owner choice stays open.** Questions to put to each provider are in §5.
 
-### Review note (Claude, 2026-11-10)
+### Independent check of §3 (Claude, 2026-11-10)
 
-Codex wrote §3, so it needs independent review. Claude couldn't re-read the cited pages because paystack.com returns 403 to this environment. The rows are internally consistent with D-048 (provider bears the fee: the subaccount can bear charges) and D-054 (flat platform amount, calculated on the server). They are recorded as **Codex-verified and not independently re-fetched**. The owner or Codex should keep saved copies of the cited pages with the G-LIVEPAY evidence.
+**Access limits.**
+- paystack.com returns **403** to this environment's direct requests, and the web-reading tool can't resolve the host. So the prose pages Codex cited could not be read.
+- Instead, Claude checked §3 against Paystack's own public repository of the code samples shown in those docs: [PaystackOSS/doc-code-snippets](https://github.com/PaystackOSS/doc-code-snippets), commit `d0e625c` (2026-11-02), under `src/doc/payments/`.
+- Samples prove the request and event shapes. They don't prove prose rules, pricing or commercial terms.
+
+| Req | Verdict | Evidence (path in that repo) |
+|---|---|---|
+| R1 | **Confirmed (API shape)**. Single split via `subaccount` on initialize. Multi-split via `POST /split` with `type`, `currency` and `subaccounts[{subaccount, share}]` | `split-payment/initialize`, `multi-split/create-split` |
+| R2 | **Confirmed (API shape)**. `transaction_charge` (flat, in subunits) on initialize. Calculating the R500 cap on the server is our inference, as §3 says | `split-payment/flat-fee` |
+| R3 | **Confirmed, with a correction**. `POST /subaccount` takes `business_name`, **`bank_code`**, `account_number` and `percentage_charge`. §3's "settlement bank" corresponds to `bank_code` in the sample | `split-payment/create-subaccount` |
+| R4 | **Partly confirmed**. `POST /refund` takes `transaction` and an optional `amount`. Events `refund.pending`, `processing`, `processed`, `failed` and `needs-attention` exist. **Not verified:** "defaults to full amount" and "cannot exceed it" (prose only) | `refunds/create-refund`, `refunds/events` |
+| R5 | **Partly confirmed**. Events `charge.dispute.create`, `remind` and `resolve`, plus an evidence upload-URL sample. **Not verified:** accept/decline mechanics (prose only) | `webhooks/events/charge-dispute-*`, `disputes/upload-url` |
+| R6 | **Confirmed, with detail added**. The `paystack-signature` header is `t=<unix>,v1=<kid>:<hex>`. It is HMAC-SHA512 over `t + "." + rawBody`, with a 300 s tolerance, using a **dedicated webhook signing secret (`whsec_…`) with key IDs for rotation**, not the API secret. Legacy `x-paystack-signature` is HMAC-SHA512 of the raw body with the secret key. For K2-style code: verify on the raw bytes, compare in constant time, and support several `v1` entries | `webhooks/verifying-signature`, `webhooks/verifying-transaction` (added in that repo's PR #141, merged 2026-11-02) |
+| R7 | **Not verified (access)**. The samples don't show test cards or sandbox refund behaviour | — |
+| R8 | **Not verified (access)**. ZA fees and payout timing are only on the pricing page | — |
+
+**Before G-LIVEPAY:** the owner keeps saved copies (PDF) of the pricing, refund, dispute and test-payment pages, so R4, R5, R7 and R8 can be checked against them, together with Paystack's written D-050 confirmation.
 
 ## 5. Questions
 
