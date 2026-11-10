@@ -136,6 +136,13 @@ inspect failures, preserve raw service output privately and publish only safe
 labels/counts. Do not weaken tests or turn missing reports into passing checks.
 
 The existing operations-test contract now explicitly requires timing.test.js.
+If CI needs fixes, branch `claude/catalogue-hardening-fixes` from this published
+head and open a PR targeting `codex/catalogue-review-hardening`. Base P2-2 on
+that fix branch and target it while the dependency is unmerged; otherwise base
+and target P2-2 directly on the Codex hardening branch. Do not overwrite the
+Codex-authored head with Claude-authored fixes. Retarget/retest in dependency
+order when Codex returns. The owner can copy the short prompt from this PR.
+
 The additive migration and new pgTAP file add 10 assertions (359 total expected).
 The new integration file adds three real-connection checks: competing parent
 updates with commit/rollback, and rejection of repeatable-read category writes.

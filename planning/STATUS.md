@@ -23,8 +23,9 @@ open until G-PROD.
 - **Phase 2:** Claude 17 is reviewed and merged (#40). The owner authorised
   P2-1 with its §3 defaults; #47 is merged after Claude approval, with 349 database
   assertions and recovery checks. #45 is also merged. Codex 22 hands P2-2 planning
-  and implementation to Claude after the hardening PR and plan review. Codex
-  independently reviews; staging A1–A7 and G-PROD remain open.
+  and implementation to Claude. Under D-079, Claude continues now on a separate
+  stacked branch without waiting for Codex's plan review. Codex reviews later;
+  new Claude-authored work stays unmerged. Staging A1–A7 and G-PROD remain open.
 - **BLOCKER — application-path timing:** hosted app timing has not been measured.
   It follows the first app deployment and must pass independent review before
   broader staging acceptance. Direct Auth timing is also unmeasured; promotion
