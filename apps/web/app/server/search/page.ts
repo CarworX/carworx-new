@@ -49,6 +49,9 @@ export type PageModel =
   | { kind: "bad_request" }
   | {
       kind: "results";
+      /** The searched point as rounded text, for the refine form. */
+      lat: string;
+      lng: string;
       near: string;
       category: string;
       radius: number;
@@ -106,8 +109,11 @@ export async function buildSearchPage(
   const areaText = (get("area") ?? "").trim();
   const latText = get("lat") ?? "";
   const lngText = get("lng") ?? "";
-  const hasPoint = latText !== "" && lngText !== "";
-  if (!hasPoint && areaText === "")
+  // Typed area text wins over a carried point: the results form carries the
+  // current point so refining keeps it, and typing a new area replaces it.
+  const byArea = areaText !== "";
+  const hasPoint = !byArea && latText !== "" && lngText !== "";
+  if (!hasPoint && !byArea)
     return { model: { kind: "start", category, radius } };
 
   const resolved = ensureSearchSession(request);
@@ -128,8 +134,9 @@ export async function buildSearchPage(
 
   let lat = latText;
   let lng = lngText;
-  let near = NEAR.test(get("near") ?? "") ? (get("near") ?? "") : "";
-  if (!hasPoint) {
+  let near =
+    hasPoint && NEAR.test(get("near") ?? "") ? (get("near") ?? "") : "";
+  if (byArea) {
     const area = normaliseArea(areaText);
     if (!area)
       return withCookie({
@@ -222,6 +229,8 @@ export async function buildSearchPage(
   };
   return withCookie({
     kind: "results",
+    lat,
+    lng,
     near,
     category,
     radius,

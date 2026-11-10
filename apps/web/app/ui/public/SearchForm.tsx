@@ -25,10 +25,17 @@ export function SearchForm({
   area = "",
   category = "",
   radius = 25,
+  point,
 }: {
   area?: string;
   category?: string;
   radius?: number;
+  /**
+   * The resolved search point on a results page. Carried as hidden fields
+   * (no JavaScript needed) so changing the service or distance refines the
+   * same search. Typing a new area replaces it (the server prefers area text).
+   */
+  point?: { lat: string; lng: string; near: string };
 }) {
   const form = useRef<HTMLFormElement>(null);
   const hydrated = useHydrated();
@@ -52,6 +59,8 @@ export function SearchForm({
         set("lat", round(position.coords.latitude));
         set("lng", round(position.coords.longitude));
         set("area", "");
+        const near = f.elements.namedItem("near");
+        if (near instanceof HTMLInputElement) near.disabled = true;
         f.submit();
       },
       () => {
@@ -79,11 +88,28 @@ export function SearchForm({
         defaultValue={area}
         autoComplete="address-level2"
         maxLength={80}
-        hint="Used only for this search. Not stored."
+        hint={
+          point
+            ? `Leave empty to keep searching near ${point.near || "your location"}. Not stored.`
+            : "Used only for this search. Not stored."
+        }
         {...(locationError ? { error: locationError } : {})}
       />
-      <input type="hidden" name="lat" defaultValue="" disabled={!js} />
-      <input type="hidden" name="lng" defaultValue="" disabled={!js} />
+      <input
+        type="hidden"
+        name="lat"
+        defaultValue={point?.lat ?? ""}
+        disabled={!js && !point}
+      />
+      <input
+        type="hidden"
+        name="lng"
+        defaultValue={point?.lng ?? ""}
+        disabled={!js && !point}
+      />
+      {point?.near ? (
+        <input type="hidden" name="near" defaultValue={point.near} />
+      ) : null}
       <div className="cx-field">
         <label htmlFor="search-category">Service</label>
         <select

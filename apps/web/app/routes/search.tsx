@@ -89,6 +89,9 @@ export default function SearchPage({ loaderData: m }: Route.ComponentProps) {
         <SearchForm
           {...formDefaults}
           {...("area" in m && m.kind !== "choose" ? { area: m.area } : {})}
+          {...(m.kind === "results"
+            ? { point: { lat: m.lat, lng: m.lng, near: m.near } }
+            : {})}
         />
       </div>
       <div className="mt-8 grid gap-4">

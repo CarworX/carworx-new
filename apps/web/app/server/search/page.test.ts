@@ -228,6 +228,41 @@ describe("search page model", () => {
     expect(p5.moreFixed).toBeNull();
   });
 
+  it("refining keeps the searched point; typed area text replaces it", async () => {
+    const calls: SearchArgs[] = [];
+    const geocodes: string[] = [];
+    const first = await buildSearchPage(
+      req("?area=Sandton"),
+      deps({}, calls, geocodes),
+    );
+    if (first.model.kind !== "results") throw new Error(first.model.kind);
+    expect([first.model.lat, first.model.lng]).toEqual(["-26.107", "28.057"]);
+
+    // The results form resubmits the point with an empty area box.
+    const refined = await buildSearchPage(
+      req(
+        `?area=&lat=${first.model.lat}&lng=${first.model.lng}&near=Sandton%2C+Gauteng&category=wash-and-detailing&radius=10`,
+      ),
+      deps({}, calls, geocodes),
+    );
+    if (refined.model.kind !== "results") throw new Error(refined.model.kind);
+    expect(refined.model.near).toBe("Sandton, Gauteng");
+    expect(geocodes).toEqual(["Sandton"]);
+    expect(calls.at(-1)).toMatchObject({
+      lat: -26.107,
+      lng: 28.057,
+      category: "wash-and-detailing",
+      radius: 10,
+    });
+
+    // A newly typed area wins over the carried point and is geocoded.
+    await buildSearchPage(
+      req("?area=Rosebank&lat=-26.107&lng=28.057&near=Sandton"),
+      deps({}, calls, geocodes),
+    );
+    expect(geocodes).toEqual(["Sandton", "Rosebank"]);
+  });
+
   it("offers choices for an ambiguous area and never searches yet", async () => {
     const calls: SearchArgs[] = [];
     const { model } = await buildSearchPage(

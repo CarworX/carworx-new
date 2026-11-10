@@ -134,6 +134,29 @@ describe("public pages without JavaScript", () => {
     expect(reply.body).not.toMatch(/26\.112233|28\.112233/);
   });
 
+  it("the results form refines the same point without JavaScript", async () => {
+    const reply = await browser().send(
+      "/search?lat=-26.2&lng=28.04&near=Johannesburg",
+    );
+    expect(reply.body).toMatch(
+      /<input type="hidden" name="lat" value="-26\.2"\/>/,
+    );
+    expect(reply.body).toMatch(
+      /<input type="hidden" name="lng" value="28\.04"\/>/,
+    );
+    expect(reply.body).toContain(
+      "Leave empty to keep searching near Johannesburg",
+    );
+    // What the form submits after the visitor changes only the service.
+    const refined = await browser().send(
+      "/search?area=&lat=-26.2&lng=28.04&near=Johannesburg&category=repairs-and-maintenance&radius=10",
+    );
+    expect(refined.status).toBe(200);
+    expect(refined.body).toContain("Repairs");
+    expect(refined.body).toContain("near Johannesburg");
+    expect(refined.body).toContain(`/p/${SEED_MOBILE}`);
+  });
+
   it("area search fails closed without a Mapbox token and spends nothing", async () => {
     const reply = await browser().send("/search?area=Sandton");
     expect(reply.status).toBe(200);
