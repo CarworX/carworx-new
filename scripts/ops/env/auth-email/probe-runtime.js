@@ -134,7 +134,7 @@ export async function probeEndpoint(request, env) {
   }
 }
 
-export async function observeHook(kind, { recipient, id, eligible }, env) {
+export async function observeHook(kind, { recipient, id }, env) {
   if (!env.STAGING_PROBE_EVENT_KEY || !env.STAGING_PROBES) return;
   const key = await recipientId(env.STAGING_PROBE_EVENT_KEY, recipient);
   const signature = await probeSignature(

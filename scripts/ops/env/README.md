@@ -201,3 +201,16 @@ The hook acknowledges valid signed unapproved recipient requests without
 attempting provider delivery. Invalid configuration, malformed payloads,
 unsupported actions and provider failures remain fail-closed. Hosted
 application timing and provider evidence require staging access.
+
+### Probe isolation follow-up (2026-11-10 UTC, issue #39)
+
+Hook observations are best effort until this request confirms an active probe
+registration. Ordinary signup/recovery delivery continues through a probe-store
+outage. Once confirmed, observation failures still fail the probe request; missing
+observations cannot produce a passing receipt. Each webhook has its own observer.
+
+Validation: pinned Node 24.22.2 in WSL, `node --test
+scripts/ops/env/auth-email/handler.test.js
+scripts/ops/env/auth-email/probe-runtime.test.js`: 16 passed, no skips/TODOs.
+The first PR #42 CI run caught an unused destructured parameter; it was removed.
+Fresh exact-head CI and Claude's formal review remain required before merge.
