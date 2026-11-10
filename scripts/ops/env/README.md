@@ -191,3 +191,9 @@ The hook acknowledges valid signed unapproved recipient requests without
 attempting provider delivery. Invalid configuration, malformed payloads,
 unsupported actions and provider failures remain fail-closed. Hosted
 application timing and provider evidence require staging access.
+
+Validation (2026-11-10 UTC, issue #39 / PR #43):
+`node --test scripts/ops/env/contract.test.js` passed all 12 tests, with no
+skips/TODOs. A complete historical D-071 record without independent approval is
+rejected; reciprocal exact-head approval remains accepted. Fresh PR CI and
+Claude's formal review are required before merge.
