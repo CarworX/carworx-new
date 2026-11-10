@@ -31,11 +31,12 @@ This notice covers carworx.app: searching for car-service providers, reading lis
 | A random search cookie and a scrambled form of your IP address | You search | To stop abuse (too many searches). The scrambled IP can't be read back without our secret key | (f) legitimate interest: keeping the service available and providers' locations safe | No; the site needs it to search |
 | Business details, contact person, service area, and for mobile businesses a **private base location and radius** | You apply to list a business | To review and publish the listing. **The base location is never shown publicly** | (b) contract with the provider | Yes, to be listed |
 | Verification evidence | You apply | To grant honest trust labels. Raw evidence is deleted after review (see section 7) | (b) and (f) | Only for the label it supports |
+| Your enquiry: your name, email address, the message, and the service and area you ask about | You send an enquiry to a provider (when the enquiry form launches) | To pass it to **the provider you chose**, so they can reply, and to handle any complaint | (b) pre-contract steps you asked for; (f) | Yes, to send an enquiry |
 | Your messages to us | You contact support | To answer you | (f), or (b) if about your account | No |
 | Marketing email permission | Only if you tick the box | To send news. The box is **never** ticked for you | (a) consent; s69(1)(a) | No |
 | Security logs, with addresses and coordinates removed | Every request | To keep the site working and safe | (f) | — |
 
-We **don't** collect ID numbers, card details, bank details or your exact home address during the free pilot. *Basis: PLAN §9.2 "No ID numbers in v1"; POPIA s10 (minimality).*
+We **don't** collect ID numbers, card details or bank details during the free pilot. We don't ask **customers** for a home or street address. **Mobile providers** do give us a private base location: if a provider uses their home, that is an exact home location, which is why we advise against it (section 5 and the terms of use, section 7). *Basis: PLAN §9.2 "No ID numbers in v1"; POPIA s10 (minimality).*
 
 ## 4. Cookies
 
@@ -49,7 +50,10 @@ No advertising or tracking cookies. *Basis: cookie names and lifetimes from `app
 
 ## 5. Who we share it with
 
-We share information only with companies that run parts of the service for us (operators), under their data processing terms, and only what each needs.
+We share information in two ways, and only what each recipient needs:
+
+- **With the provider you choose.** When you send an enquiry, we pass your name, email address and message to that provider so they can reply. The provider then uses it as its own responsible party, under its own obligations.
+- **With companies that run parts of the service for us (operators)**, under their data processing terms:
 
 | Operator | What it does | Where |
 |---|---|---|
@@ -119,6 +123,7 @@ We'll post any change here with a new version number and date, and email account
 
 ### Reviewer notes (remove before publishing)
 
+- **Enquiries:** the provider is a recipient (s18(1)(h)(i)), named in sections 3 and 5. The form itself is Bundle B (P2-5); keep this row in step with it.
 - **s18 checklist:** (a) section 3; (b) section 1; (c) section 3; (d), (e) section 3 "Must you give it?"; (f) none: no law requires the collection; (g) section 6; (h)(i) section 5; (h)(ii) section 3; (h)(iii), (iv), (v) sections 9 and 10.
 - **s69:** marketing needs an opt-in box, off by default (Claude 17 §3). Each marketing email must carry the sender's identity and an opt-out (s69(4)). ECTA s45(1) also requires an opt-out option. Marketing isn't planned for launch.
 - **Google (PLAN §9.1):** scopes `openid email profile` only; Google named as a sign-in provider. Done in sections 3 and 5.
