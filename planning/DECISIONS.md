@@ -151,3 +151,9 @@ Current next step: Claude creates the presentation pack; Codex reviews; owner ga
 | D-074 | Phase 2 start | Phase 2 starts **in parallel** with Phase 1 staging: local and CI only, synthetic data only. Claude writes the Phase 2 proposal (Claude 17); Codex reviews; the owner approves before any Phase 2 code. Codex builds the slices and Claude reviews them. G-PROD still requires Phase 1 (A1–A7 on staging) to be closed. | Owner | Claude chat 2026-11-10 |
 | D-075 | Maps | List-first search only for launch. P2-8 (Mapbox map) moves after G-PROD. | Owner | Claude chat 2026-11-10 |
 | D-076 | Payment providers; gate name | Only **Paystack** and **Yoco** are explored. Claude writes a comparison (Claude 18) from official docs now; Codex reviews; the owner picks one primary and one backup. No accounts or spend. The live-payments gate **G-PAY is renamed G-LIVEPAY** in new text, because "G-PAY" was being read as Google Pay, which is not used. Earlier records keep their wording. | Owner | Claude chat 2026-11-10 |
+
+## Owner — Codex chat 2026-11-10 (SAST)
+
+| ID | Topic | Decision | Agreed by | Links |
+|---|---|---|---|---|
+| D-077 | P2-1 start | Start P2-1 catalogue data from reviewed Claude 17, using section 3 defaults unless the owner changes them. Local/CI and synthetic only. Claude formally reviews the exact new PR head before merge. This is not authority for other Phase 2 slices, hosted rollout or G-PROD. The proposal leaves the real launch metro unnamed; Gauteng in seeds is a reversible synthetic fixture only. | Owner | Codex chat; [Codex 21](codex/21-p2-1-catalogue.md); #40, #46 |
