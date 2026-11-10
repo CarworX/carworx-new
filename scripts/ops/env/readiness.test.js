@@ -144,6 +144,7 @@ function fixture() {
               group,
               ms: 10,
               shape: "same",
+              correlation_id: `00000000-0000-4000-8000-00000000000${["signup", "resend", "recovery"].indexOf(flow) * 2 + ["fresh", "cooldown"].indexOf(cooldown)}`,
             })),
           ),
         ),

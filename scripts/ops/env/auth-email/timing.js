@@ -1,8 +1,9 @@
 // Operator-only measurement. Private fixture addresses, bodies and cookies never escape.
-import { randomUUID, createHash } from "node:crypto";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { requireCondition, stagingOrigin } from "../contract.js";
+import { createTimingTrace } from "./timing-trace.js";
 
 export function quantiles(values) {
   requireCondition(
@@ -56,6 +57,13 @@ export function summarizeTiming(samples, metadata) {
     );
     const a = quantiles(allowed.map((s) => s.ms)),
       d = quantiles(denied.map((s) => s.ms));
+    const correlation_id = rows[0].correlation_id;
+    requireCondition(
+      typeof correlation_id === "string" &&
+        /^[a-f0-9-]{36}$/.test(correlation_id) &&
+        rows.every((s) => s.correlation_id === correlation_id),
+      "Traceable stratum identity required",
+    );
     cases.push({
       path,
       flow,
@@ -64,7 +72,7 @@ export function summarizeTiming(samples, metadata) {
       denied: d,
       p95_gap_ms: Math.abs(a.p95_ms - d.p95_ms),
       response_shapes_match: rows.every((s) => s.shape === rows[0].shape),
-      correlation_id: randomUUID(),
+      correlation_id,
     });
   }
   requireCondition(cases.length > 0, "No timing samples");
@@ -150,7 +158,23 @@ function shape(value, key = "") {
   return value;
 }
 
-export async function collectTimings(config, send = fetch) {
+export async function collectTimings(config, send = fetch, trace) {
+  requireCondition(trace, "Private run trace required");
+  try {
+    return await collect(config, send, trace);
+  } catch (error) {
+    try {
+      trace.fail();
+    } catch {
+      /* Preserve the original failure; publish no report. */
+    }
+    throw error;
+  } finally {
+    trace.close();
+  }
+}
+
+async function collect(config, send, trace) {
   requireCondition(
     ["local", "staging"].includes(config.environment) &&
       /^[a-f0-9]{40}$/.test(config.source_sha),
@@ -177,7 +201,7 @@ export async function collectTimings(config, send = fetch) {
       signal: AbortSignal.timeout(10000),
     });
   const samples = [];
-  for (const c of config.cases) {
+  for (const [caseIndex, c] of config.cases.entries()) {
     requireCondition(
       ["direct", "app"].includes(c.path) &&
         ["signup", "resend", "recovery"].includes(c.flow) &&
@@ -192,6 +216,7 @@ export async function collectTimings(config, send = fetch) {
     );
     // Fixture preparation (account existence and cooldown) is operator controlled.
     // Alternate group order to avoid consistently measuring one cohort on warm connections.
+    const correlation_id = trace.begin(caseIndex, c.path, c.flow, c.cooldown);
     for (const [i, pair] of c.pairs.entries())
       for (const group of i % 2
         ? ["denied", "allowed"]
@@ -236,10 +261,12 @@ export async function collectTimings(config, send = fetch) {
             }),
           };
         }
+        const sample = trace.start(correlation_id, i, group);
         const start = performance.now();
         const response = await request(url, init);
         const text = await response.text();
         const ms = performance.now() - start;
+        trace.end(sample, ms, response.status);
         requireCondition(
           response.status === c.expected_status &&
             [200, 302, 429].includes(c.expected_status) &&
@@ -256,6 +283,7 @@ export async function collectTimings(config, send = fetch) {
           };
         }
         samples.push({
+          correlation_id,
           path: c.path,
           flow: c.flow,
           cooldown: c.cooldown,
@@ -267,7 +295,9 @@ export async function collectTimings(config, send = fetch) {
         });
       }
   }
-  return summarizeTiming(samples, config);
+  const report = summarizeTiming(samples, config);
+  trace.finish();
+  return report;
 }
 
 if (
@@ -279,9 +309,9 @@ if (
       process.env.CARWORX_TIMING_OPERATOR_ACK === "approved-synthetic-fixtures",
       "Operator acknowledgement required",
     );
-    const report = await collectTimings(
-      JSON.parse(readFileSync(process.argv[2], "utf8")),
-    );
+    const config = JSON.parse(readFileSync(process.argv[2], "utf8"));
+    const trace = createTimingTrace(process.argv[3], config);
+    const report = await collectTimings(config, fetch, trace);
     console.log(JSON.stringify(report));
   } catch {
     console.error(
