@@ -28,26 +28,28 @@ The only signal an attacker gets is **in or out**: "does provider X appear for p
    · · · · · · · · · ·
    · · · ● ● ● · · · ·          ● = provider appears
    · · ● ● ● ● ● · · ·          the disc's centre ≈ the base,
-   · · ● ● ● ● ● · · ·          to within about 1–2 km
+   · · ● ● ● ● ● · · ·          more precisely with every extra row
    · · · ● ● ● · · · ·
    · · · · · · · · · ·
 ```
 
 | Question | Honest answer |
 |---|---|
-| How many probes? | Finding the edge of a 25 km disc to the grid's 1 km precision takes a binary search of about 5 probes per edge; four edges give the centre. **About 20 to 40 searches.** |
+| How many probes? | A first estimate takes a binary search of about 5–6 probes per edge; four edges give a rough centre. **About 20 to 40 searches.** Each further row of probes adds more in/out boundary points |
 | Does the rate limit stop it? | **No.** 40 searches fit inside two minutes from one IP. The limit stops **bulk** mapping of every provider from one source, not a targeted look at one provider |
-| How precise is the result? | About **1–2 km** around the base. That narrows a home to a neighbourhood, not to a house |
+| How precise is the result? | **No floor is proven.** The grid rounds the *search point*, but the database compares it against the **exact** stored centre and radius. Combining in/out answers from many different grid rows can locate the centre **more precisely than the grid spacing**, possibly to a few hundred metres or better, given enough searches. **Assume a determined person can find the home** |
 | Who might do it? | A competitor, an ex-partner or someone with a grudge against a named provider. Mass scraping is slowed by the limits |
 | Can CarworX tell it's happening? | Not today: no monitoring looks for grid-shaped search patterns |
 
-**Conclusion:** the controls stop casual and bulk inference. A **determined person targeting one provider can locate the base to about 1–2 km.** This can't be fixed by rate limits, only by what the base point is.
+**Conclusion:** the controls stop casual and bulk inference. A **determined person targeting one provider can locate the base, and the precision improves with the number of searches.** Rounding and rate limits only slow this down. The only reliable fix is what the base point is (M1).
+
+**Not yet measured (action V-1):** an agent simulation, run locally against the real eligibility predicate, of how precision improves with the number of searches for each radius. It's for information only: the advice in M1 doesn't depend on its result, and no figure from it may be presented as a safe limit.
 
 ## 4. Mitigation proposed for approval
 
 | # | Mitigation | Strength | State |
 |---|---|---|---|
-| M1 | **At onboarding, tell mobile providers plainly** that the base can be narrowed to about 1–2 km, and **advise them to use a base point that isn't their home**, for example a public landmark or business address inside their area. Their radius then still covers their real area | Strongest. Removes the home from the data | **Wording in the terms (section 7)**; Bundle A's application form must show it and record that it was shown |
+| M1 | **At onboarding, tell mobile providers plainly** that **someone determined could work out where their base is**, and **advise them to use a base point that isn't their home**, for example a public landmark or business address inside their area. Their radius then still covers their real area | Strongest. Removes the home from the data | **Wording in the terms (section 7)**; Bundle A's application form must show it and record that it was shown |
 | M2 | Keep the controls in section 2, and keep tests A9–A11 required in CI | Medium | Built |
 | M3 | Never publish a mobile provider's suburb or anything derived from the base | Medium | Built (A10) |
 | M4 | **Later:** an admin report of search sources that sweep a grid around a single listing | Detection only | Not built. Proposed after launch |

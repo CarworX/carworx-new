@@ -63,7 +63,7 @@ If you apply to list a business, you also agree that:
 - we may publish the public parts of your listing (name, services, area, and for fixed premises the address);
 - we may grant or refuse a verification label and we record how we checked;
 - we may suspend or remove a listing that's misleading, unsafe or disputed, after telling you why unless the law or safety prevents it;
-- **for mobile businesses:** we keep your base location private and never show it, a distance to it, or an order based on it. But someone running many searches from different places could still narrow down roughly where your base is. We limit this (see the privacy notice), but **we can't rule it out**. If that's a risk for you, use a base point that isn't your home, such as a nearby public landmark inside your area.
+- **for mobile businesses:** we keep your base location private and never show it, a distance to it, or an order based on it. But someone running many searches from different places **could still work out where your base is, possibly quite precisely**. We slow this down, but **we can't prevent it**. **We strongly advise you not to use your home as your base point.** Use a nearby public landmark or business address inside your area instead.
 
 *Basis: PLAN §6.2: "Explain the limitation during provider onboarding"; [probing-risk.md](probing-risk.md); POPIA s18(1) (provider is told before collection).*
 
