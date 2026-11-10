@@ -1,6 +1,6 @@
 # Claude — 18: Paystack vs Yoco for CarworX payments (research, partial)
 
-**Date:** 2026-11-10. **Author:** Claude, under D-076. **Status:** PARTIAL RESEARCH, for Codex review.
+**Date:** 2026-11-10. **Author:** Claude, under D-076. **Status:** RESEARCH, for Codex review. Paystack §3 is by Codex.
 No accounts, sign-ups or spending. Every fact below cites an official page read on 2026-11-10. Anything a page doesn't state is marked **NOT DOCUMENTED**. Nothing is filled in from memory.
 
 ## 1. What CarworX needs (D-050, D-054)
@@ -55,13 +55,23 @@ Checked 2026-11-10. The table distinguishes documented API capabilities from the
 **D-050 / G-LIVEPAY remains open.** The reviewed split and refund documentation does not establish how both parties' shares are clawed back after settlement, who funds a refund or chargeback shortfall, or whether CarworX can recover the provider's liability from later payouts. Obtain Paystack's written confirmation of those marketplace arrangements before live activation. The API capabilities above support further evaluation, while those commercial mechanics remain unverified. [Split settlement model](https://paystack.com/docs/payments/split-payments/), [Refund lifecycle](https://paystack.com/docs/payments/refunds/), [Dispute handling](https://paystack.com/docs/payments/manage-disputes/)
 ## 4. Early read (not a recommendation yet)
 
-- **Yoco's public docs don't show a way to split one payment between a provider and CarworX.** Without that, CarworX could only charge the D-054 commission by invoicing providers separately, or by collecting everything and paying providers out. Both conflict with the v1 rule of no wallets or escrow, and with D-054's single-payment split.
-- **If Paystack's split and subaccount features are confirmed, Paystack fits D-054 as primary**, and Yoco becomes the backup or an in-person option. Ask Yoco directly (partnership form) whether a marketplace split exists outside the public docs.
-- **The owner decides** after §3 is complete.
+| | Paystack | Yoco |
+|---|---|---|
+| R1/R2 split with capped CarworX share | **Documented** (subaccount split plus flat `transaction_charge`; cap calculated on the server) | **Unresolved**: not in the public docs. It isn't ruled out, and it isn't established |
+| R4/R7 refunds testable in sandbox | Documented for test keys; A35 still needs executed evidence | **No**: refunds need live keys |
+| D-050 recovery after settlement | **Unverified**: needs Paystack's written confirmation | Unverified |
+
+- **Paystack is the only candidate whose public docs cover D-054's single-payment split.** It still needs the D-050 commercial confirmation (claw-back, shortfall funding, recovery from future payouts) before G-LIVEPAY.
+- **Yoco's compatibility is unresolved.** It isn't named as a working backup until R1/R2 are confirmed, for example through Yoco's partnership team, and the live-key-only refund testing has an acceptable test plan.
+- **The owner choice stays open.** Questions to put to each provider are in §5.
+
+### Review note (Claude, 2026-11-10)
+
+Codex wrote §3, so it needs independent review. Claude couldn't re-read the cited pages because paystack.com returns 403 to this environment. The rows are internally consistent with D-048 (provider bears the fee: the subaccount can bear charges) and D-054 (flat platform amount, calculated on the server). They are recorded as **Codex-verified and not independently re-fetched**. The owner or Codex should keep saved copies of the cited pages with the G-LIVEPAY evidence.
 
 ## 5. Questions
 
-- **For Codex:** can you complete §3 with citations?
+- **For Codex:** §3 is completed (thank you). Please confirm §4's wording.
 - **For the owner:** may we send Yoco's partnership team the question "Do you support split payouts for a marketplace?" You would send it; agents do no outreach.
 
 Agent: claude
