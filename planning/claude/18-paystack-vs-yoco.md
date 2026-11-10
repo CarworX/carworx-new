@@ -77,13 +77,27 @@ Checked 2026-11-10. The table distinguishes documented API capabilities from the
 | R1 | **Confirmed (API shape)**. Single split via `subaccount` on initialize. Multi-split via `POST /split` with `type`, `currency` and `subaccounts[{subaccount, share}]` | `split-payment/initialize`, `multi-split/create-split` |
 | R2 | **Confirmed (API shape)**. `transaction_charge` (flat, in subunits) on initialize. Calculating the R500 cap on the server is our inference, as §3 says | `split-payment/flat-fee` |
 | R3 | **Confirmed, with a correction**. `POST /subaccount` takes `business_name`, **`bank_code`**, `account_number` and `percentage_charge`. §3's "settlement bank" corresponds to `bank_code` in the sample | `split-payment/create-subaccount` |
-| R4 | **Partly confirmed**. `POST /refund` takes `transaction` and an optional `amount`. Events `refund.pending`, `processing`, `processed`, `failed` and `needs-attention` exist. **Not verified:** "defaults to full amount" and "cannot exceed it" (prose only) | `refunds/create-refund`, `refunds/events` |
-| R5 | **Partly confirmed**. Events `charge.dispute.create`, `remind` and `resolve`, plus an evidence upload-URL sample. **Not verified:** accept/decline mechanics (prose only) | `webhooks/events/charge-dispute-*`, `disputes/upload-url` |
+| R4 | **Confirmed**. Partial or full refunds. With no `amount` it's treated as a full refund, and the amount "cannot be more than the original transaction amount". Your own refund `reference` (8–64 characters) is idempotent: a repeat returns **409**. Statuses are pending, processing, needs-attention, failed and processed. On `failed`, "your account now reflects the credited amount" | Owner PDFs: Refund API, Refunds guide; plus `refunds/create-refund` |
+| R5 | **Confirmed**. List pending disputes, upload evidence (signed URL valid for 30 min; jpg, jpeg or pdf), add evidence for fraud claims, and resolve as `merchant-accepted` (full or partial amount) or `declined`. `charge.dispute.remind` arrives **every 4 hours**. **Disputes must be handled within 16 hours, or Paystack accepts them automatically and refunds "from your Paystack Balance"** | Owner PDF: Manage Disputes; plus `webhooks/events/charge-dispute-*` |
 | R6 | **Confirmed, with detail added**. The `paystack-signature` header is `t=<unix>,v1=<kid>:<hex>`. It is HMAC-SHA512 over `t + "." + rawBody`, with a 300 s tolerance, using a **dedicated webhook signing secret (`whsec_…`) with key IDs for rotation**, not the API secret. Legacy `x-paystack-signature` is HMAC-SHA512 of the raw body with the secret key. For K2-style code: verify on the raw bytes, compare in constant time, and support several `v1` entries | `webhooks/verifying-signature`, `webhooks/verifying-transaction` (added in that repo's PR #141, merged 2026-11-02) |
-| R7 | **Not verified (access)**. The samples don't show test cards or sandbox refund behaviour | — |
-| R8 | **Not verified (access)**. ZA fees and payout timing are only on the pricing page | — |
+| R7 | **Confirmed**. Test cards for success, PIN, OTP and declines. Dedicated test cards and EFT accounts produce `failed` and `needs-attention` refund outcomes. Test and live are separate environments, and test refunds are listed with the test key. Not shown: split-specific test behaviour, so A35 still needs executed evidence | Owner PDFs: Test Payments, Refunds guide |
+| R8 | **Confirmed**. Local: **2.9% + ZAR 1 excluding VAT**, ZAR 1 waived under ZAR 10. Capitec Pay and Ozow EFT: **2%, no flat fee**. International: **3.1% + ZAR 1 excluding VAT**, settled in Rand. Transfers to bank accounts: **ZAR 3 each, failed or successful**. Payout: **2 working days** after payment | Owner PDF: paystack.com/za/pricing |
 
-**Before G-LIVEPAY:** the owner keeps saved copies (PDF) of the pricing, refund, dispute and test-payment pages, so R4, R5, R7 and R8 can be checked against them, together with Paystack's written D-050 confirmation.
+**Owner-saved pages (2026-11-10, 13:53–13:56 SAST).** The owner printed the five pages to PDF, and Claude read them. The originals stay with the owner and aren't committed, to keep large binaries out of Git. SHA-256:
+
+| Page | SHA-256 |
+|---|---|
+| paystack.com/za/pricing | `38b1b70ed5eff6ee835eb7dddac92a19b815f21a5be2c30a27f17e6f100e81eb` |
+| docs/api/refund | `1c9994f711aacf3171473d6181f1dfc1a17699148002a94b6576a11c6c517965` |
+| docs/payments/refunds | `b2a222a2a9a4702bdde7b5f68b16a5c3a5256bff75a732f70222d00be5b26d10` |
+| docs/payments/test-payments | `9a4cb5fcfc99b7d4df7b0ef073b36f18bd82384fb715fb85ea21726c28e12ced` |
+| docs/payments/manage-disputes | `65cc3c599c378b6bbb5c7735da6214101a45021bfe3f73af8dbe9a48911a3e43` |
+
+**What this means for D-050 (new, important).**
+- Unanswered disputes are auto-accepted after 16 hours and refunded from **CarworX's Paystack Balance**, the main account. So CarworX would carry a provider's chargeback up front. Phase 3 needs a dispute queue that alerts within minutes (`charge.dispute.create` and `remind`), with an on-call owner.
+- None of the five pages says how a refund or dispute is split between the subaccount and the main account. That, and recovery from a provider's future payouts, still needs **Paystack's written confirmation before G-LIVEPAY**.
+
+**Not read directly:** the split-payments, multi-split, subaccount and webhooks prose pages. R1–R3 and R6 rest on Paystack's code-sample repository.
 
 ## 5. Questions
 
