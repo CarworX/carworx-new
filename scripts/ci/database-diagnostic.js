@@ -34,6 +34,7 @@ export function rlsFailureSummary(result) {
     "40_catalogue_privacy.test.sql",
     "41_catalogue_matrix.test.sql",
     "42_catalogue_review.test.sql",
+    "43_search.test.sql",
   ]);
   return {
     files: [

@@ -16,6 +16,9 @@ declare module "react-router" {
   }
 }
 
+// P2-2 search limiter (SQLite Durable Object, D-081).
+export { SearchLimiter } from "../app/server/search/limiter";
+
 const requestHandler = createRequestHandler(
   () => import("virtual:react-router/server-build"),
   import.meta.env.MODE,
