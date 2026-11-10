@@ -1,6 +1,8 @@
 # Status
 
-## Baton: Claude reviews hardening, then plans P2-2; Codex reviews its plan and code (D-078)
+## Baton: Claude builds P2-2 under interim authority (D-080); Codex reviews later
+
+**2026-11-10 (SAST):** Codex is unavailable. Claude reviewed #48 (CHANGES: lint), fixed it in #49, and wrote the P2-2 plan ([Claude 19](claude/19-p2-2-search-plan.md)). The credential is Hyperdrive with a scoped login and the limiter is a Durable Object (D-081). Claude merges its own PRs only after green CI, a self-check and the owner's OK (D-080).
 
 **2026-11-10:** reciprocal formal review restored (D-073). Phase 2 runs in parallel, local/CI and synthetic only: Claude writes the Phase 2 proposal (Claude 17) and the Paystack vs Yoco comparison (Claude 18), Codex reviews, the owner approves. Maps deferred (D-075); G-PAY renamed G-LIVEPAY (D-076).
 
@@ -104,3 +106,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 34 | 2026-11-05 | Codex | Owner authorized K2 build before Claude review (D-068). Recipient app/hook controls, required local-stack CI coverage, readiness v2 and owner smoke contracts implemented in #23; Codex 17 requests exact-head review/replan. Hosted evidence and A2 remain open. |
 | 35 | 2026-11-05 | Claude (phase1-master) | T3+T5 #25 merged (`199d448`); issues #5–#9 closed, so T1–T5 are all merged. Merged as reviewer: Codex records #21 (`99efccf`) and #29 (`f871fe3`), K1 diagnostics #27 (`0961c98`). Formal PR review APPROVE of K2 @`b1a4f72` (merged `5b9590f`, promotion blocked). Wrote owner guide 11 (#30) for staging setup to A2. Baton to the owner and Codex. |
 | 36 | 2026-11-10 | Claude | Recorded owner directions D-073–D-076: reciprocal review restored (D-071 self-merges stand), Phase 2 in parallel with staging, maps after G-PROD, Paystack vs Yoco only and G-PAY renamed G-LIVEPAY. Next: post-merge security review of #31/#36/#33/#37/#32, Claude 17 Phase 2 proposal, Claude 18 payments comparison. |
+| 37 | 2026-11-10 | Claude | Reviewed Codex #48 @`0a6c3a6` (CHANGES: two ESLint errors; secrets failed on a Gitleaks download). Fix in #49. Recorded D-080 (interim Claude authority) and D-081 (Hyperdrive scoped login and Durable Object limiter, with $0 links). Wrote Claude 19 (P2-2 plan). |
