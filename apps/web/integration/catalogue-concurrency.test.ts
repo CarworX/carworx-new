@@ -42,7 +42,9 @@ function session() {
   });
   const done = new Promise<number | null>((resolve, reject) => {
     child.once("close", resolve);
-    child.once("error", () => reject(Error("Private database process failed")));
+    child.once("error", () => {
+      reject(Error("Private database process failed"));
+    });
   });
   return { child, done, output: () => output, errors: () => errors };
 }
@@ -96,7 +98,7 @@ for (const commit of [true, false])
     }
   });
 
-it("rejects category writes under a stale repeatable-read snapshot", async () => {
+it("rejects category writes under a stale repeatable-read snapshot", () => {
   const c = connection();
   const r = spawnSync(c.command, c.args, {
     input:
