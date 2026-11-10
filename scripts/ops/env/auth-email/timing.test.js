@@ -42,6 +42,14 @@ test("nearest-rank quantiles preserve the tail and reject inadequate samples", (
   assert.throws(() => quantiles(Array(20).fill(NaN)));
 });
 test("complete timing strata bind deployed versions without publishing raw private samples", () => {
+  for (const override of [
+    { hook_version: { email: "private@example.test" } },
+    { configuration_revision: "private@example.test" },
+    { source_sha: "private@example.test" },
+  ])
+    assert.throws(() =>
+      summarizeTiming(samples(), { ...metadata, ...override }),
+    );
   const report = summarizeTiming(samples(), {
     ...metadata,
     password: "private",

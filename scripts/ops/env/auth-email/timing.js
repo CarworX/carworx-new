@@ -21,6 +21,17 @@ export function quantiles(values) {
 }
 
 export function summarizeTiming(samples, metadata) {
+  const opaque = (value) =>
+    typeof value === "string" && /^[A-Za-z0-9_-]{8,128}$/.test(value);
+  requireCondition(
+    ["local", "staging"].includes(metadata.environment) &&
+      typeof metadata.source_sha === "string" &&
+      /^[a-f0-9]{40}$/.test(metadata.source_sha) &&
+      opaque(metadata.hook_version) &&
+      opaque(metadata.configuration_revision) &&
+      (metadata.app_version === undefined || opaque(metadata.app_version)),
+    "Non-secret timing metadata identifiers required",
+  );
   const cases = [];
   for (const key of new Set(
     samples.map((s) => `${s.path}/${s.flow}/${s.cooldown}`),
