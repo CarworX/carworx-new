@@ -133,8 +133,10 @@ test("unavailable observation cannot fail ordinary mail but cannot provide a rec
     id: randomUUID(),
     eligible: true,
   };
+  let lookups = 0;
   env.STAGING_PROBES.get = () => ({
     fetch: async () => {
+      lookups += 1;
       throw Error("outage");
     },
   });
@@ -142,6 +144,7 @@ test("unavailable observation cannot fail ordinary mail but cannot provide a rec
   await observer("hook_invocation", event, env);
   await observer("provider_attempt", event, env);
   await observer("provider_success", event, env);
+  assert.equal(lookups, 1);
   assert.equal((await call({ op: "seal", id: randomUUID() })).status, 409);
 });
 

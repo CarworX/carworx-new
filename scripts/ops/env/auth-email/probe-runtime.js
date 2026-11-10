@@ -152,11 +152,12 @@ export async function observeHook(kind, { recipient, id }, env) {
 // usable probe evidence. Once a registration is confirmed, observations must
 // succeed so a probe cannot produce a passing receipt with missing events.
 export function createHookObserver() {
-  let active = false;
+  let active;
   return async (kind, event, env) => {
+    if (active === false) return;
     try {
       const observed = await observeHook(kind, event, env);
-      active ||= observed?.active === true;
+      active ??= observed?.active === true;
       if (
         active &&
         kind === "hook_invocation" &&
@@ -172,6 +173,7 @@ export function createHookObserver() {
       }
     } catch (error) {
       if (active) throw error;
+      active = false;
     }
   };
 }
