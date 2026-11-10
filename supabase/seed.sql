@@ -35,16 +35,20 @@ insert into public.memberships (organisation_id, user_id, role, status) values
 insert into private.platform_admins (user_id) values
   ('5eed0000-0000-4000-8000-000000000004');
 
--- P2-1 defaults from Claude 17 section 3. Gauteng is a reversible synthetic
+-- Categories follow the design's service keys (D-083, replacing the Claude 17
+-- section 3 list): four bookable services; Fines stays its own guidance area (P2-6).
+-- P2-1 fixtures: Gauteng is a reversible synthetic
 -- fixture metro, not an owner-confirmed launch region or provider supply.
-insert into public.categories(slug,name) values
- ('wash-and-valet','Wash and valet'), ('mechanical-service','Mechanical service'),
- ('tyres','Tyres'), ('panel-and-paint','Panel and paint'),
- ('auto-electrical','Auto electrical'), ('mobile-mechanic','Mobile mechanic');
+insert into public.categories(slug,name,parent_slug) values
+ ('wash-and-detailing','Wash & Detailing',null), ('repairs-and-maintenance','Repairs & Maintenance',null),
+ ('glass-repair-and-replacement','Glass Repair & Replacement',null), ('tyres-and-wheel-alignment','Tyres & Wheel Alignment',null),
+ ('mechanical-service','Mechanical service','repairs-and-maintenance'), ('panel-and-paint','Panel and paint','repairs-and-maintenance'),
+ ('auto-electrical','Auto electrical','repairs-and-maintenance'), ('mobile-mechanic','Mobile mechanic','repairs-and-maintenance');
 insert into public.services(slug,category_slug,name) values
- ('wash','wash-and-valet','Synthetic wash'), ('service','mechanical-service','Synthetic service'),
- ('tyres','tyres','Synthetic tyres'), ('paint','panel-and-paint','Synthetic paint'),
- ('electrical','auto-electrical','Synthetic electrical'), ('mobile-repair','mobile-mechanic','Synthetic mobile repair');
+ ('wash','wash-and-detailing','Synthetic wash'), ('service','mechanical-service','Synthetic service'),
+ ('tyres','tyres-and-wheel-alignment','Synthetic tyres'), ('paint','panel-and-paint','Synthetic paint'),
+ ('electrical','auto-electrical','Synthetic electrical'), ('mobile-repair','mobile-mechanic','Synthetic mobile repair'),
+ ('glass','glass-repair-and-replacement','Synthetic glass repair');
 insert into public.coordinate_sources(id,organisation_id,source_kind,licence_note) values
  ('ca7a0000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','provider_supplied','Synthetic permanent fixture; no geocoding service'),
  ('ca7a0000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-0000000000b2','manual_verified','Synthetic permanent fixture; no geocoding service');

@@ -42,14 +42,16 @@ insert into private.platform_admins (user_id) values
 
 -- P2-1 defaults from Claude 17 section 3. Gauteng is a reversible synthetic
 -- fixture metro, not an owner-confirmed launch region or provider supply.
-insert into public.categories(slug,name) values
- ('wash-and-valet','Wash and valet'), ('mechanical-service','Mechanical service'),
- ('tyres','Tyres'), ('panel-and-paint','Panel and paint'),
- ('auto-electrical','Auto electrical'), ('mobile-mechanic','Mobile mechanic');
+insert into public.categories(slug,name,parent_slug) values
+ ('wash-and-detailing','Wash & Detailing',null), ('repairs-and-maintenance','Repairs & Maintenance',null),
+ ('glass-repair-and-replacement','Glass Repair & Replacement',null), ('tyres-and-wheel-alignment','Tyres & Wheel Alignment',null),
+ ('mechanical-service','Mechanical service','repairs-and-maintenance'), ('panel-and-paint','Panel and paint','repairs-and-maintenance'),
+ ('auto-electrical','Auto electrical','repairs-and-maintenance'), ('mobile-mechanic','Mobile mechanic','repairs-and-maintenance');
 insert into public.services(slug,category_slug,name) values
- ('wash','wash-and-valet','Synthetic wash'), ('service','mechanical-service','Synthetic service'),
- ('tyres','tyres','Synthetic tyres'), ('paint','panel-and-paint','Synthetic paint'),
- ('electrical','auto-electrical','Synthetic electrical'), ('mobile-repair','mobile-mechanic','Synthetic mobile repair');
+ ('wash','wash-and-detailing','Synthetic wash'), ('service','mechanical-service','Synthetic service'),
+ ('tyres','tyres-and-wheel-alignment','Synthetic tyres'), ('paint','panel-and-paint','Synthetic paint'),
+ ('electrical','auto-electrical','Synthetic electrical'), ('mobile-repair','mobile-mechanic','Synthetic mobile repair'),
+ ('glass','glass-repair-and-replacement','Synthetic glass repair');
 insert into public.coordinate_sources(id,organisation_id,source_kind,licence_note) values
  ('ca7a0000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','provider_supplied','Synthetic permanent fixture; no geocoding service'),
  ('ca7a0000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-0000000000b2','manual_verified','Synthetic permanent fixture; no geocoding service');
@@ -84,7 +86,7 @@ select ok(not has_table_privilege('listing_eligibility','public.branches','selec
 select ok(has_column_privilege('listing_eligibility','public.service_areas','centre_latitude','select') and has_column_privilege('listing_eligibility','public.service_areas','radius_km','select'),'separate eligibility role can read private geometry');
 select is_empty($$select tablename from pg_tables where schemaname='public' and tablename in ('categories','services','branches','listings','service_areas','verifications','coordinate_sources') and has_any_column_privilege('catalogue_server',format('public.%I',tablename),'select')$$,'server role has no base-data grants');
 select ok(not pg_has_role('catalogue_server','listing_projection','member') and not pg_has_role('catalogue_server','listing_eligibility','member') and not pg_has_role('authenticator','catalogue_server','member'),'no capability role switching or server activation');
-select is((select count(*)::integer from public.categories),6,'six Claude 17 default categories seeded');
+select is((select count(*)::integer from public.categories),8,'design categories seeded: four bookable services plus four repair subcategories (D-083)');
 select is((select count(*)::integer from public.listings where metro='Gauteng'),3,'one synthetic metro only (not owner launch confirmation)');
 
 do $$ begin

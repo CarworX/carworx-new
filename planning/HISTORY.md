@@ -294,3 +294,5 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - 2026-11-10 (SAST) — D-079: owner usage limit delegates immediate P2-2 planning/implementation continuation to Claude, stacked on Codex's published hardening branch. Codex review is deferred, not waived for merging Claude-authored work. Local 44-test check passed; new full CI/runtime evidence remains pending.
 
 - 2026-11-10 (SAST) — Claude: #48 review CHANGES @0a6c3a6 (lint); fix #49 @f249cc0. D-080 interim authority; D-081 P2-2 credential (Hyperdrive and `catalogue_server`) and limiter (SQLite Durable Object). Claude 19 P2-2 plan. No hosted changes.
+
+- 2026-11-10 (SAST) — Claude: #49, #48 and #51 merged. D-082 (Mapbox with fail-closed quotas, no spending cap documented by Mapbox) and D-083 (design categories). P2-3 pages and category-aware search. No hosted changes.
