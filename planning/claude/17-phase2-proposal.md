@@ -61,17 +61,45 @@ PLAN §6.2 forbids ranking mobile providers by distance to their private base. S
 - **Known limit:** counts are approximate and per Cloudflare location, so this is a brake, not a strict cap. Probing defence also relies on input rounding (about 1 km) and the bounded radius set.
 - **Free-tier check (Codex, before P2-2 is built):** confirm from Cloudflare's official limits and pricing pages that the binding is available on Workers Free at $0. If it isn't, use a Durable Object counter with SQLite storage, the same class of free-plan resource K2's probe ledger already uses. Either way, record the pinned source in the P2-2 PR.
 
-### 2.3 Projection boundary (P2-1)
+### 2.3 Privilege and call boundary (P2-1, P2-2)
 
-- **Base tables** (`listings`, `branches`, `service_areas`, `coordinate_sources`, `verifications`) have RLS enabled and **no `anon` policy**. Members and admins use the existing `private.has_org_role` and `private.is_platform_admin` helpers.
-- **`listing_public`** is a view in `public`, owned by a dedicated `NOLOGIN` role `listing_projection`. That role holds `SELECT` only on the allowed columns of the base tables, plus an RLS policy `to listing_projection using (status = 'live')` (the role has no `BYPASSRLS` and owns no base table, so RLS still applies to it). The view is `security_invoker = false` and `security_barrier = true`. `anon` and `authenticated` get `SELECT` on the view only.
-- **Search** runs in `private.search_listings(...)`, a `SECURITY DEFINER` function owned by `listing_projection` with a fixed `search_path`. It returns only projection columns. `EXECUTE` is revoked from `public`, `anon` and `authenticated`, and granted only to the server role the Worker uses for this call. That role's key is a server-only Worker secret, never sent to the browser. **Codex to propose** whether this is `service_role` (simplest) or a narrower custom role (preferred if Supabase supports it cleanly). This keeps "no anonymous RPC".
-- **pgTAP:**
-  - the exact column set of `listing_public`;
-  - `anon` has no privilege on any base table or on `private.*`;
-  - the view owner isn't a superuser and can't read `service_areas` centre columns;
-  - only `live` rows are visible;
-  - the function's `EXECUTE` grants are correct.
+There are three roles, each with one job, so that no single role can both see private geometry and return free-form rows. Each is `NOLOGIN`, owns no base table and has no `BYPASSRLS`:
+
+```
+Worker (server only) ──RPC──▶ api.search_listings(...)       wrapper; EXECUTE: server role only
+                                   │ calls (SECURITY DEFINER, owner listing_projection)
+                                   ├─▶ listing_public view    public columns, live rows only
+                                   └─▶ private.mobile_eligible_ids(point, limit)
+                                          SECURITY DEFINER, owner listing_eligibility
+                                          reads service_areas geometry → returns SETOF uuid (public_id) only
+```
+
+| Role | May read | May not read | Owns |
+|---|---|---|---|
+| `listing_projection` | The allowed public columns of `listings`, `branches`, `categories`, `services` and `verifications` (column grants plus an RLS policy `to listing_projection using (status = 'live')`) | Any `service_areas` column; `coordinate_sources`; private IDs | The `listing_public` view (`security_invoker = false`, `security_barrier = true`) and `api.search_listings` |
+| `listing_eligibility` | `service_areas` (centre, radius, `listing_id`) and `listings.public_id` and `status` | Everything else | `private.mobile_eligible_ids`. It returns **only** `public_id` values for live mobile listings whose radius contains the rounded (about 1 km) point. No geometry, distance, order hint or count beyond the bounded limit. Its `search_path` is fixed |
+| server role (pre-build gate: `service_role` or a narrower custom role) | — | — | Nothing. It only has `EXECUTE` on `api.search_listings` |
+
+**The rules that make this hold:**
+- **Grants:** `EXECUTE` on `private.mobile_eligible_ids` goes to `listing_projection` only. It is revoked from `public`, `anon`, `authenticated` and the server role.
+- **The wrapper:** `api.search_listings` is the only callable entry point. Its `EXECUTE` is revoked from `public`, `anon` and `authenticated`. It validates and bounds every input (radius in {5, 10, 25, 50}, rounded point, page size ≤ 20, signed cursor). It returns projection columns plus the fixed-premises straight-line distance, which is computed from branch pins, never from mobile bases.
+- **How the Worker reaches it:** through PostgREST RPC on the `api` schema only. `private` is **never** added to the exposed schemas. The server role's key is a Worker secret that never reaches the browser.
+- **Anonymous users:** `anon` and `authenticated` have `SELECT` on `listing_public` for listing pages, and nothing else in Phase 2 catalogue data.
+
+**pgTAP:**
+- **Eligibility succeeds:** points inside, outside and on the boundary of a synthetic radius give the expected `public_id` set, including rounding at the edge (A9).
+- **Geometry stays private:**
+  - `listing_projection` gets `permission denied` on every `service_areas` column;
+  - `private.mobile_eligible_ids` returns only `uuid`;
+  - no function's result type exposes geometry;
+  - `listing_eligibility` can't read projection-only tables.
+- **Calls are closed off:**
+  - `anon`, `authenticated` and the server role can't execute `private.*`;
+  - `anon` and `authenticated` can't execute `api.search_listings`;
+  - `private` isn't in the PostgREST exposed schemas (config check).
+- **The view is exact:** the `listing_public` column set is exact, only `live` rows show, and no owner is a superuser.
+
+**Pre-build gates (recorded in the P2-1 and P2-2 PRs):** the server-role choice, and the $0 rate-limiter check (§2.2).
 
 **Order (arrows mean "after"; ∥ means in parallel):**
 ```
@@ -126,7 +154,7 @@ Why this order: the data comes first because everything reads it. Search and pag
 
 ## 7. Questions
 
-**For Codex:** the open points are the free-tier check (§2.2) and the role choice for `private.search_listings` (§2.3). The three earlier questions are answered in §2.1–§2.3, and Turnstile stays in P2-5.
+**For Codex:** the open points are the free-tier check (§2.2) and the server-role choice (§2.3); both are explicit pre-build gates. The three earlier questions are answered in §2.1–§2.3, and Turnstile stays in P2-5.
 
 **For the owner:** the four §3 defaults (region, categories, labels, claim rule) and the §5 prerequisites.
 
