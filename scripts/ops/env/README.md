@@ -210,3 +210,55 @@ scripts/ops/env/auth-email/handler.test.js
 scripts/ops/env/auth-email/probe-runtime.test.js`: 16 passed, no skips/TODOs.
 The first PR #42 CI run caught an unused destructured parameter; it was removed.
 Fresh exact-head CI and Claude's formal review remain required before merge.
+
+### Probe key custody and timing evidence (#39)
+
+`STAGING_PROBE_EVENT_KEY` has two roles: it authenticates application telemetry
+and HMACs canonical recipients into private ledger identities. Keep it only on
+the application Worker, hook Worker and owner operator machine; never publish
+the key or recipient HMACs. It is separate from `STAGING_PROBE_ADMIN_KEY` and
+`SEND_EMAIL_HOOK_SECRET`. Anyone holding the event key can forge app telemetry
+and test recipient guesses against captured HMACs; restrict access accordingly.
+Rotate both Workers and the operator together, abandon/re-register active probes,
+and invalidate earlier configuration revisions/receipts. Never reuse the key for
+Auth signatures, provider delivery or backups.
+
+The hook observation fetch has a 500 ms timeout. A first lookup timeout makes
+that request unobserved and cannot produce evidence; confirmed probes remain
+strict. This limits the ordinary delivery dependency on the probe store.
+
+`CARWORX_TIMING_OPERATOR_ACK=approved-synthetic-fixtures node
+scripts/ops/env/auth-email/timing.js <private-config.json>` measures real HTTP
+responses without printing private fixtures. Do not run this against production.
+Staging execution may deliver mail to approved synthetic inboxes: run only after
+recipient restrictions and operator authority are verified. CI unit tests use
+injected HTTP responses; these are collector tests, not hosted timings.
+
+Private config: `environment` (`local` or `staging`), `source_sha` (hook SHA),
+`hook_version`, `app_version`, `configuration_revision`, `app_origin`,
+`auth_origin`, `publishable_key`, and `cases`. Each case contains `path`
+(`direct` or `app`), `flow` (`signup`, `resend`, `recovery`), `cooldown` (`fresh`
+or `cooldown`), `expected_status`, and 20–100 `pairs`. Each pair has `allowed`
+and `denied` fixture objects with `email` and `password`. Prepare equal account
+existence/confirmation states and matched cooldowns; use distinct fixtures for
+fresh samples. Verify both cohorts' allowlist disposition privately. The tool
+alternates cohort order. A fresh 429 is rejected, not counted as normal delivery.
+For app flows it fetches a CSRF cookie before timing each POST. HTML fallback
+comparison uses content type and byte length; independently inspect any variable
+HTML/private traces rather than treating this as proof of indistinguishability.
+
+Output contains counts and nearest-rank p50/p95/p99/max milliseconds, p95 gaps,
+response-shape agreement, opaque versions and correlation IDs. Review maxima and
+gaps against private traces; no invented statistical threshold establishes
+absence of disclosure. Keep raw responses private. A malformed/missing cohort
+or unexpected HTTP status fails collection. Compare signup/resend/recovery and
+fresh/cooldown separately on both paths; repeat outliers under matching conditions.
+
+Set `STAGING_AUTH_TIMING_EVIDENCE_JSON` privately to the sanitized direct report
+when running `probe.js hook-receipt`. The receipt embeds it as `auth_timing`.
+Readiness requires all six direct strata, at least 20 samples per cohort, matching
+response shapes, deployed hook/source/configuration and an age <=24 hours.
+Local reports cannot satisfy hosted readiness. App measurements follow the first
+application deployment and remain required hardening evidence before broader
+staging acceptance. No hosted measurements have been collected in this PR;
+`promotion.json` remains blocked.

@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { requireCondition, stagingOrigin } from "./contract.js";
 import { validateEmailReport } from "./reports.js";
+import { validateTiming } from "./auth-email/timing.js";
 
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 function files(root, path) {
@@ -208,6 +209,16 @@ export function validateReadiness(policy, load, current, now = Date.now()) {
       "Hosted Auth delivery evidence incomplete",
     );
   }
+  validateTiming(
+    hook.auth_timing,
+    {
+      path: "direct",
+      source_sha: hook.source_sha,
+      hook_version: hook.version_id,
+      configuration_revision: config.configuration_revision,
+    },
+    now,
+  );
   const requiredSmoke = [
     "health",
     "personal_cache",

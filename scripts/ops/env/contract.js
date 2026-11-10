@@ -2,6 +2,26 @@ export function requireCondition(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+// Agent trailers are an agreed same-account convention, not cryptographic identity.
+// Ignore examples in fenced code and quotations; the last standalone trailer wins.
+export function authorAgent(body = "") {
+  let fence;
+  let agent;
+  for (const line of body.split(/\r?\n/)) {
+    const marker = /^ {0,3}(`{3,}|~{3,})/.exec(line)?.[1];
+    if (marker) {
+      if (!fence) fence = marker;
+      else if (marker[0] === fence[0] && marker.length >= fence.length)
+        fence = undefined;
+      continue;
+    }
+    if (fence) continue;
+    const match = /^ {0,3}Agent:[ \t]*(claude|codex)[ \t]*$/i.exec(line);
+    if (match) agent = match[1].toLowerCase();
+  }
+  return agent;
+}
+
 export function validateRequest({ sha, pr, run }) {
   requireCondition(
     /^[a-f0-9]{40}$/.test(sha),
@@ -69,9 +89,7 @@ export function validateEvidence(
       contract.integration === true,
     "Phase 1 RLS and Auth suites must be required",
   );
-  const author = /Agent:\s*(claude|codex)\b/i
-    .exec(pr.body ?? "")?.[1]
-    ?.toLowerCase();
+  const author = authorAgent(pr.body);
   const reviewer =
     author === "claude" ? "codex" : author === "codex" ? "claude" : undefined;
   const latestReview = reviews
@@ -79,7 +97,7 @@ export function validateEvidence(
       (r) =>
         r.commit_id === request.sha &&
         ["COMMENTED", "APPROVED", "CHANGES_REQUESTED"].includes(r.state) &&
-        new RegExp(`Agent:\\s*${reviewer}\\b`, "i").test(r.body ?? ""),
+        authorAgent(r.body) === reviewer,
     )
     .at(-1);
   const approves =

@@ -6,6 +6,7 @@ import { stagingOrigin, requireCondition } from "../contract.js";
 import { validateNegativeReceipt } from "../smoke.js";
 import { canonicalEmail } from "../../../../apps/web/app/server/security/recipient-policy.ts";
 import { probeSignature, recipientId } from "./probe-runtime.js";
+import { validateTiming } from "./timing.js";
 
 const env = process.env;
 const [command, flow, id] = process.argv.slice(2);
@@ -219,9 +220,19 @@ async function hookReceipt(path) {
       }),
     ),
   );
+  const auth_timing = JSON.parse(
+    env.STAGING_AUTH_TIMING_EVIDENCE_JSON ?? "null",
+  );
+  validateTiming(auth_timing, {
+    path: "direct",
+    source_sha: env.STAGING_HOOK_SOURCE_SHA,
+    hook_version: env.STAGING_HOOK_VERSION_ID,
+    configuration_revision: revisions.configuration_revision,
+  });
   return {
     version: 1,
     kind: "hosted_hook",
+    auth_timing,
     status: "passed",
     verified_at: new Date().toISOString(),
     source_sha: env.STAGING_HOOK_SOURCE_SHA,

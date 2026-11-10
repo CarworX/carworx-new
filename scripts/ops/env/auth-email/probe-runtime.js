@@ -67,6 +67,7 @@ async function sendProbe(env, recipient, message) {
     {
       method: "POST",
       body: JSON.stringify(message),
+      signal: AbortSignal.timeout(500),
     },
   );
   if (!response.ok) throw Error("Probe observation rejected");

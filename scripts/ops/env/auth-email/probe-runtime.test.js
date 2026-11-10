@@ -193,3 +193,36 @@ test("controlled faults remain fail closed only on the registered request", asyn
   const { env: ordinary } = fixture();
   await createHookObserver()("hook_invocation", event, ordinary);
 });
+
+test("probe fetch aborts a stalled lookup without blocking ordinary mail", async () => {
+  const { env } = fixture();
+  let aborted = false;
+  const alive = setTimeout(() => {}, 2000);
+  env.STAGING_PROBES.get = () => ({
+    fetch: (_url, { signal }) =>
+      new Promise((_resolve, reject) => {
+        signal.addEventListener(
+          "abort",
+          () => {
+            aborted = true;
+            reject(signal.reason);
+          },
+          { once: true },
+        );
+      }),
+  });
+  try {
+    await createHookObserver()(
+      "hook_invocation",
+      {
+        recipient: "fixture@example.test",
+        id: randomUUID(),
+        eligible: true,
+      },
+      env,
+    );
+    assert.equal(aborted, true);
+  } finally {
+    clearTimeout(alive);
+  }
+});
