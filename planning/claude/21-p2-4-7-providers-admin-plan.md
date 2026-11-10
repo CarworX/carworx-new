@@ -24,7 +24,7 @@ Nothing published changes: `listing_public`, its columns and its owner stay exac
 |---|---|---|
 | `listings` (existing) | + `submitted_at timestamptz` | Queue order. **`UPDATE(status)` is revoked from `authenticated`**, so status changes only through the functions in §4 |
 | `listing_decisions` (new) | `listing_public_id`, `organisation_id`, `decision` (`approved`, `rejected`, `suspended`, `reinstated`), `review_method`, `labels text[]`, `reason`, `decided_by`, `decided_at` | Append-only (trigger rejects update, delete, truncate) |
-| `listing_claims` (new) | `listing_public_id`, `organisation_id`, `claimant_id`, `evidence_kind` (`business_email`, `document`), `email_domain`, `document_reference`, `status`, `review_method`, `review_note`, `approved_at`, `revoked_membership_ids uuid[]` | One open claim per listing and claimant |
+| `listing_claims` (new) | `listing_public_id`, `organisation_id`, `claimant_id`, `evidence_kind` (`business_email`, `document`), `email_domain`, `document_reference`, `status`, `review_method`, `review_note`, `approved_at`, `displaced_user_ids`, `displaced_roles` (immutable snapshot of who a transfer displaced) | One open claim per listing and claimant |
 | `claim_disputes` (new) | `claim_id`, `raised_by`, `reason`, `status` (`open`, `upheld`, `dismissed`), `resolved_by`, `resolution_note` | One open dispute per claim |
 
 **Review methods (D-023):** `phone_call`, `video_call`, `document_check`, `registry_check`, `site_visit`. Approval needs one; the label grant records it.
@@ -45,7 +45,7 @@ Claim:    submitted ──approve──▶ approved          submitted ──rej
 ```
 
 - **Apply** creates the organisation, the applicant's `owner` membership, a `provider_supplied` coordinate source, the branch (fixed) or the **private** service area (mobile), and the listing in `submitted`. One pending application per applicant.
-- **Transfer of control** (claim approved): the claimant becomes an active `owner`; every other active membership of that organisation is revoked, and their IDs are kept on the claim so that an upheld dispute can restore them. Nothing transfers before an admin approves.
+- **Transfer of control** (claim approved): the claimant becomes an active `owner`; every other active membership of that organisation is revoked, and who they were (user and role) is snapshotted on the claim, out of reach of membership RLS, so that an upheld dispute restores them exactly. Ownership changes lock the organisation; a later transfer supersedes an earlier one, and no new transfer is approved while one is disputed. Nothing transfers before an admin approves.
 - **Disputes** are raised by an active owner or manager of the listing's organisation (against a pending claim) or by someone the transfer displaced (against an approved claim). A pending claim can't be approved while a dispute is open.
 - Any other transition is refused with `P0001` and a fixed message key; bad input is `22023`; not allowed is `42501`.
 
