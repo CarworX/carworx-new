@@ -1,0 +1,228 @@
+-- P2-4 + P2-7 (Claude 21): application, review, suspension, claim, transfer
+-- and dispute state machines; admin functions need a listed admin at aal2;
+-- status is never directly writable; decisions are append-only; audit details
+-- carry no reasons. Runs in one transaction and is rolled back. SYNTHETIC.
+--
+-- Actors: Pia applicant/owner, Cal business-email claimant (claimco.test),
+-- Dee document claimant, Gus free-mail user, Max unrelated, Ada admin.
+begin;
+create extension if not exists pgtap with schema extensions;
+set local search_path = public, extensions;
+grant execute on all functions in schema extensions to anon, authenticated;
+
+insert into auth.users (id, email, email_confirmed_at) values
+  ('b4000000-0000-4000-8000-000000000001', 'pia.applicant@example.test', now()),
+  ('b4000000-0000-4000-8000-000000000002', 'cal.claimant@claimco.test', now()),
+  ('b4000000-0000-4000-8000-000000000003', 'dee.document@example.test', now()),
+  ('b4000000-0000-4000-8000-000000000004', 'gus.freemail@gmail.com', now()),
+  ('b4000000-0000-4000-8000-000000000005', 'max.unrelated@example.test', now()),
+  ('b4000000-0000-4000-8000-000000000006', 'ada.admin@example.test', now()),
+  ('b4000000-0000-4000-8000-000000000007', 'una.unconfirmed@unconfirmed.test', null);
+insert into private.platform_admins (user_id) values ('b4000000-0000-4000-8000-000000000006');
+
+select plan(80);
+
+-- ===== Application ==========================================================
+set local role anon;
+set local request.jwt.claims = '{"role":"anon"}';
+select throws_ok($$select public.provider_apply('Pia Motors','service','fixed','Gauteng','Synthetic fixed applicant','1 Synthetic Road',-26.1,28.0,null)$$,
+  '42501', null, 'anon cannot apply');
+
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok((select set_config('t.fixed', public.provider_apply('Pia Motors (synthetic)','service','fixed','Gauteng','Synthetic fixed applicant','1 Synthetic Road, Exampleville',-26.1,28.0,null)::text, true)) is not null,
+  'signed-in aal1 person applies (fixed premises)');
+select throws_ok($$select public.provider_apply('Pia Two','wash','fixed','Gauteng','Synthetic second application','2 Synthetic Road',-26.1,28.0,null)$$,
+  'P0001', 'application_pending', 'one pending application per applicant');
+select throws_ok($$update public.listings set status = 'live' where public_id = current_setting('t.fixed')::uuid$$,
+  '42501', null, 'applicant cannot write status directly');
+select is((select count(*)::int from public.listings where public_id = current_setting('t.fixed')::uuid), 1,
+  'applicant sees their own submitted listing');
+select is((select count(*)::int from public.listing_public where public_id = current_setting('t.fixed')::uuid), 0,
+  'submitted listing is not public');
+
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000005","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.provider_apply('Max','service','fixed','Gauteng','Synthetic outside SA','1 Road',-33.9,10.0,null)$$, '22023', null, 'pin outside South Africa rejected');
+select throws_ok($$select public.provider_apply('Max','service','fixed','Gauteng','Synthetic fixed radius','1 Road',-26.1,28.0,10)$$, '22023', null, 'fixed premises with a radius rejected');
+select throws_ok($$select public.provider_apply('Max','mobile-repair','mobile','Gauteng','Synthetic no radius',null,-26.1,28.0,null)$$, '22023', null, 'mobile without a radius rejected');
+select throws_ok($$select public.provider_apply('Max','mobile-repair','mobile','Gauteng','Synthetic huge radius',null,-26.1,28.0,101)$$, '22023', null, 'mobile radius above 100 km rejected');
+select throws_ok($$select public.provider_apply('Max','no-such-service','fixed','Gauteng','Synthetic bad service','1 Road',-26.1,28.0,null)$$, '22023', null, 'unknown service rejected');
+select throws_ok($$select public.provider_apply(E'Max\x01','service','fixed','Gauteng','Synthetic control char','1 Road',-26.1,28.0,null)$$, '22023', null, 'control characters rejected');
+
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok((select set_config('t.mobile', public.provider_apply('Gus Mobile (synthetic)','mobile-repair','mobile','Gauteng','Synthetic mobile applicant',null,-26.05,28.05,20)::text, true)) is not null,
+  'signed-in person applies (mobile, private base)');
+
+reset role;
+select is((select status from public.listings where public_id = current_setting('t.fixed')::uuid), 'submitted', 'application lands in submitted');
+select is((select provenance_kind from public.listings where public_id = current_setting('t.fixed')::uuid), 'provider_application', 'provenance is provider_application');
+select is((select m.role from public.memberships m join public.listings l on l.organisation_id = m.organisation_id
+  where l.public_id = current_setting('t.fixed')::uuid and m.user_id = 'b4000000-0000-4000-8000-000000000001'), 'owner', 'applicant owns the new organisation');
+select is((select count(*)::int from public.service_areas where listing_public_id = current_setting('t.mobile')::uuid), 1, 'mobile base stored only in private service_areas');
+select is((select source_kind from public.coordinate_sources c join public.listings l on l.organisation_id = c.organisation_id
+  where l.public_id = current_setting('t.mobile')::uuid), 'provider_supplied', 'pin provenance is provider_supplied');
+
+-- ===== Admin review needs a listed admin at aal2 ============================
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.admin_decide_application(current_setting('t.fixed')::uuid,'approve','phone_call','{}',null,null)$$,
+  '42501', null, 'listed admin at aal1 cannot decide');
+select is((select count(*)::int from public.listing_decisions), 0, 'aal1 admin reads no decisions');
+
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal2"}';
+set local role authenticated;
+select throws_ok($$select public.admin_decide_application(current_setting('t.fixed')::uuid,'approve','phone_call','{}',null,null)$$,
+  '42501', null, 'non-admin at aal2 cannot decide');
+select throws_ok($$select public.admin_set_suspension(current_setting('t.fixed')::uuid,true,'Synthetic reason')$$,
+  '42501', null, 'non-admin cannot suspend');
+
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal2"}';
+set local role authenticated;
+select throws_ok($$update public.listings set status = 'live' where public_id = current_setting('t.fixed')::uuid$$,
+  '42501', null, 'admin cannot write status directly either');
+select throws_ok($$select public.admin_decide_application(current_setting('t.fixed')::uuid,'approve',null,'{}',null,null)$$, '22023', null, 'approval needs a review method');
+select throws_ok($$select public.admin_decide_application(current_setting('t.fixed')::uuid,'approve','phone_call','{identity_checked}',null,null)$$, '22023', null, 'labels need an evidence reference');
+select throws_ok($$select public.admin_decide_application(current_setting('t.fixed')::uuid,'approve','phone_call','{certified}','ref-1',null)$$, '22023', null, 'unknown label rejected');
+select throws_ok($$select public.admin_decide_application(current_setting('t.mobile')::uuid,'approve','site_visit','{premises_visited}','ref-1',null)$$, '22023', null, 'premises label refused for a mobile provider');
+select throws_ok($$select public.admin_decide_application(current_setting('t.mobile')::uuid,'reject',null,null,null,null)$$, '22023', null, 'rejection needs a reason');
+select lives_ok($$select public.admin_decide_application(current_setting('t.fixed')::uuid,'approve','site_visit','{premises_visited,identity_checked}','synthetic-evidence-1',null)$$, 'aal2 admin approves with method and labels');
+select throws_ok($$select public.admin_decide_application(current_setting('t.fixed')::uuid,'approve','site_visit','{}',null,null)$$, 'P0001', 'not_submitted', 'a live listing cannot be approved again');
+select lives_ok($$select public.admin_decide_application(current_setting('t.mobile')::uuid,'reject',null,null,null,'Synthetic rejection reason: details unclear')$$, 'aal2 admin rejects with a reason');
+
+reset role;
+set local role anon;
+set local request.jwt.claims = '{"role":"anon"}';
+select is((select verification_labels from public.listing_public where public_id = current_setting('t.fixed')::uuid),
+  array['Identity checked','Premises visited'], 'approved listing is live with the granted labels');
+select is((select count(*)::int from public.listing_public where public_id = current_setting('t.mobile')::uuid), 0, 'rejected listing is not public');
+
+reset role;
+select is((select status from public.listings where public_id = current_setting('t.mobile')::uuid), 'draft', 'rejection returns the listing to draft');
+select is((select review_method from public.listing_decisions where listing_public_id = current_setting('t.fixed')::uuid and decision = 'approved'), 'site_visit', 'review method recorded with the decision');
+select is((select verified_by from public.verifications where listing_public_id = current_setting('t.fixed')::uuid and method = 'identity_checked'),
+  'b4000000-0000-4000-8000-000000000006'::uuid, 'label records the reviewing admin');
+
+-- ===== Resubmission =========================================================
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000005","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.provider_resubmit(current_setting('t.mobile')::uuid,'Max takeover','Synthetic description here')$$, '42501', null, 'stranger cannot resubmit');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select is((select reason from public.listing_decisions where listing_public_id = current_setting('t.mobile')::uuid), 'Synthetic rejection reason: details unclear', 'provider reads the rejection reason');
+select lives_ok($$select public.provider_resubmit(current_setting('t.mobile')::uuid,'Gus Mobile (synthetic)','Synthetic mobile applicant, clearer details')$$, 'owner resubmits after rejection');
+select throws_ok($$select public.provider_resubmit(current_setting('t.mobile')::uuid,'Gus Mobile','Synthetic again and again')$$, 'P0001', 'not_draft', 'cannot resubmit a submitted listing');
+
+-- ===== Suspension ===========================================================
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal2"}';
+set local role authenticated;
+select throws_ok($$select public.admin_set_suspension(current_setting('t.fixed')::uuid,true,null)$$, '22023', null, 'suspension needs a reason');
+select throws_ok($$select public.admin_set_suspension(current_setting('t.mobile')::uuid,true,'Synthetic reason')$$, 'P0001', 'not_live', 'only a live listing can be suspended');
+select lives_ok($$select public.admin_set_suspension(current_setting('t.fixed')::uuid,true,'Synthetic suspension reason')$$, 'admin suspends a live listing');
+select is((select count(*)::int from public.listing_public where public_id = current_setting('t.fixed')::uuid), 0, 'suspended listing disappears from the public projection');
+select throws_ok($$select public.admin_set_suspension(current_setting('t.fixed')::uuid,true,'Synthetic reason')$$, 'P0001', 'not_live', 'cannot suspend twice');
+select lives_ok($$select public.admin_set_suspension(current_setting('t.fixed')::uuid,false,'Synthetic reinstatement')$$, 'admin reinstates');
+select throws_ok($$select public.admin_set_suspension(current_setting('t.fixed')::uuid,false,'Synthetic reason')$$, 'P0001', 'not_suspended', 'cannot reinstate a live listing');
+select is((select count(*)::int from public.listing_public where public_id = current_setting('t.fixed')::uuid), 1, 'reinstated listing is public again');
+
+-- ===== Claims ===============================================================
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.claim_listing(current_setting('t.fixed')::uuid,'business_email',null)$$, 'P0001', 'free_mail_domain', 'free-mail address is not business-domain evidence');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000007","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.claim_listing(current_setting('t.fixed')::uuid,'business_email',null)$$, 'P0001', 'email_unconfirmed', 'unconfirmed email is not evidence');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.claim_listing(current_setting('t.fixed')::uuid,'document','Synthetic ref')$$, 'P0001', 'already_member', 'a member cannot claim their own listing');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.claim_listing(current_setting('t.mobile')::uuid,'document','Synthetic ref')$$, 'P0001', 'not_claimable', 'only live listings can be claimed');
+select ok((select set_config('t.cal', public.claim_listing(current_setting('t.fixed')::uuid,'business_email',null)::text, true)) is not null, 'business-domain claim accepted');
+select throws_ok($$select public.claim_listing(current_setting('t.fixed')::uuid,'document','Synthetic ref')$$, 'P0001', 'claim_pending', 'one open claim per claimant and listing');
+select is((select email_domain from public.listing_claims where id = current_setting('t.cal')::uuid), 'claimco.test', 'claim records the verified email domain');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.claim_listing(current_setting('t.fixed')::uuid,'document',null)$$, '22023', null, 'document claim needs a reference');
+select ok((select set_config('t.dee', public.claim_listing(current_setting('t.fixed')::uuid,'document','Synthetic utility bill ref 42')::text, true)) is not null, 'document claim accepted (typed reference only)');
+select is((select count(*)::int from public.listing_claims), 1, 'a claimant sees only their own claims');
+
+-- ===== Dispute of a pending claim ===========================================
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.dispute_claim(current_setting('t.cal')::uuid,'Synthetic: disputing my own claim')$$, '42501', null, 'claimant cannot dispute their own claim');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000005","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.dispute_claim(current_setting('t.cal')::uuid,'Synthetic: unrelated dispute')$$, '42501', null, 'an unrelated person cannot dispute');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select is((select count(*)::int from public.listing_claims), 2, 'the controlling owner sees claims on their organisation');
+select ok((select set_config('t.d1', public.dispute_claim(current_setting('t.cal')::uuid,'Synthetic: this is my business, not theirs')::text, true)) is not null, 'owner disputes a pending claim');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal2"}';
+set local role authenticated;
+select throws_ok($$select public.admin_decide_claim(current_setting('t.cal')::uuid,'approve','phone_call',null)$$, 'P0001', 'claim_not_pending', 'a disputed claim cannot be approved');
+select lives_ok($$select public.admin_resolve_dispute(current_setting('t.d1')::uuid,'uphold','Synthetic: owner evidence stronger')$$, 'admin upholds the dispute');
+select is((select status from public.listing_claims where id = current_setting('t.cal')::uuid), 'rejected', 'upheld dispute rejects the pending claim');
+select throws_ok($$select public.admin_resolve_dispute(current_setting('t.d1')::uuid,'dismiss','Synthetic again')$$, 'P0001', 'dispute_closed', 'a closed dispute cannot be resolved again');
+
+-- ===== Transfer of control, then dispute by the displaced owner =============
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.admin_decide_claim(current_setting('t.dee')::uuid,'approve','document_check',null)$$, '42501', null, 'aal1 admin cannot approve a claim');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal2"}';
+set local role authenticated;
+select lives_ok($$select public.admin_decide_claim(current_setting('t.dee')::uuid,'approve','document_check','Synthetic document reviewed')$$, 'aal2 admin approves the document claim');
+reset role;
+select is((select m.status from public.memberships m join public.listings l on l.organisation_id = m.organisation_id
+  where l.public_id = current_setting('t.fixed')::uuid and m.user_id = 'b4000000-0000-4000-8000-000000000001'), 'revoked', 'transfer revokes the former owner');
+select is((select m.role || '/' || m.status from public.memberships m join public.listings l on l.organisation_id = m.organisation_id
+  where l.public_id = current_setting('t.fixed')::uuid and m.user_id = 'b4000000-0000-4000-8000-000000000003'), 'owner/active', 'claimant becomes the active owner');
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select is((select count(*)::int from public.listings where public_id = current_setting('t.fixed')::uuid), 0, 'former owner loses access on the next query');
+select ok((select set_config('t.d2', public.dispute_claim(current_setting('t.dee')::uuid,'Synthetic: transfer was wrong, I still run it')::text, true)) is not null, 'displaced owner disputes the approved claim');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal2"}';
+set local role authenticated;
+select lives_ok($$select public.admin_resolve_dispute(current_setting('t.d2')::uuid,'uphold','Synthetic: transfer reversed')$$, 'admin upholds and reverses the transfer');
+reset role;
+select is((select status from public.listing_claims where id = current_setting('t.dee')::uuid), 'reversed', 'claim is reversed');
+select is((select string_agg(m.user_id::text || ':' || m.status, ',' order by m.user_id) from public.memberships m join public.listings l on l.organisation_id = m.organisation_id
+  where l.public_id = current_setting('t.fixed')::uuid),
+  'b4000000-0000-4000-8000-000000000001:active,b4000000-0000-4000-8000-000000000003:revoked', 'reversal restores the former owner and revokes the claimant');
+
+-- ===== Append-only decisions, audit redaction, catalogue shape ==============
+select throws_ok($$update public.listing_decisions set reason = 'Synthetic rewrite'$$, '42501', null, 'decisions cannot be rewritten, even by the owner role');
+select throws_ok($$delete from public.listing_decisions$$, '42501', null, 'decisions cannot be deleted');
+select ok((select count(*) from public.audit_log where target_table = 'listing_decisions' and details->>'decision' = 'approved') >= 1, 'approvals are audited');
+select is_empty($$select details from public.audit_log where details::text ~* '(synthetic rejection|synthetic suspension|claimco|utility bill|-26\.|28\.0)'$$,
+  'audit details carry no reasons, notes, domains, references or coordinates');
+select is_empty($$
+  select p.oid::regprocedure::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+  where n.nspname = 'public' and p.proname in ('provider_apply','provider_resubmit','claim_listing','dispute_claim',
+    'admin_decide_application','admin_set_suspension','admin_decide_claim','admin_resolve_dispute')
+    and (p.prosecdef or p.prorettype not in ('uuid'::regtype, 'void'::regtype)
+      or has_function_privilege('anon', p.oid, 'execute') or not has_function_privilege('authenticated', p.oid, 'execute'))
+$$, 'RPC wrappers are invoker-only, return only uuid/void, and are callable by authenticated only');
+
+select * from finish();
+rollback;
