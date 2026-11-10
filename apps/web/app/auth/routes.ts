@@ -23,5 +23,4 @@ export const authRoutes: RouteConfigEntry[] = [
   route("admin/listings/:publicId", "routes/admin.listings.$publicId.tsx"),
   route("admin/claims", "routes/admin.claims.tsx"),
   route("admin/claims/:id", "routes/admin.claims.$id.tsx"),
-  route("admin/audit", "routes/admin.audit.tsx"),
 ];

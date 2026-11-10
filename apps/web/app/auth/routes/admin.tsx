@@ -60,9 +60,6 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
           <li>
             <a href="/admin/claims">Claims and disputes</a>
           </li>
-          <li>
-            <a href="/admin/audit">Audit log</a>
-          </li>
         </ul>
       </nav>
     </AuthPage>

@@ -7,7 +7,6 @@ const LINKS = [
   { href: "/admin/listings?status=live", label: "Live" },
   { href: "/admin/listings?status=suspended", label: "Suspended" },
   { href: "/admin/claims", label: "Claims" },
-  { href: "/admin/audit", label: "Audit log" },
 ] as const;
 
 /** The admin frame: the public shell plus an admin sub-navigation. */
