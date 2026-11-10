@@ -7,6 +7,7 @@
 import { findCategory } from "../../catalogue/taxonomy";
 import type { AreaCandidate, GeocodeResult } from "../geo/geocode";
 import { normaliseArea } from "../geo/geocode";
+import { signMapPins } from "../geo/staticMap";
 import {
   pgRound,
   ensureSearchSession,
@@ -21,6 +22,8 @@ import type { LimitResult } from "./limiter";
 export interface PageDeps extends SearchDeps {
   quota: () => Promise<LimitResult>;
   geocode: (area: string) => Promise<GeocodeResult>;
+  /** True only when the Mapbox server token is configured (D-084). */
+  mapEnabled?: boolean;
 }
 
 export interface Choice {
@@ -51,6 +54,10 @@ export type PageModel =
       radiusLinks: { radius: number; href: string; current: boolean }[];
       moreFixed: string | null;
       moreMobile: string | null;
+      /** Link that reloads this page with the map (map=1); null if no map. */
+      showMap: string | null;
+      /** Same-origin image of the signed FIXED pins, only when asked for. */
+      mapImage: string | null;
     };
 
 export interface PageResult {
@@ -70,6 +77,7 @@ function searchHref(p: {
   radius: number;
   fixed_cursor?: string;
   mobile_cursor?: string;
+  map?: boolean;
 }): string {
   const q = new URLSearchParams({ lat: p.lat, lng: p.lng });
   if (p.near) q.set("near", p.near);
@@ -77,6 +85,7 @@ function searchHref(p: {
   q.set("radius", String(p.radius));
   if (p.fixed_cursor) q.set("fixed_cursor", p.fixed_cursor);
   if (p.mobile_cursor) q.set("mobile_cursor", p.mobile_cursor);
+  if (p.map) q.set("map", "1");
   return `/search?${q.toString()}`;
 }
 
@@ -186,6 +195,28 @@ export async function buildSearchPage(
         : { kind: "unavailable" },
     );
   const base = { lat, lng, near, category };
+  const pins = (outcome.body.fixed?.items ?? []).flatMap((f) =>
+    f.public_latitude !== null && f.public_longitude !== null
+      ? [{ lat: f.public_latitude, lng: f.public_longitude }]
+      : [],
+  );
+  const mapOn =
+    deps.mapEnabled === true &&
+    typeof deps.cursorKey === "string" &&
+    deps.cursorKey.length >= 32 &&
+    pins.length > 0;
+  const signed =
+    mapOn && get("map") === "1" && deps.cursorKey
+      ? await signMapPins(deps.cursorKey, pins)
+      : null;
+  const here = {
+    ...base,
+    radius,
+    ...(get("fixed_cursor") ? { fixed_cursor: get("fixed_cursor") ?? "" } : {}),
+    ...(get("mobile_cursor")
+      ? { mobile_cursor: get("mobile_cursor") ?? "" }
+      : {}),
+  };
   return withCookie({
     kind: "results",
     near,
@@ -203,5 +234,7 @@ export async function buildSearchPage(
     moreMobile: outcome.body.mobile?.next
       ? searchHref({ ...base, radius, mobile_cursor: outcome.body.mobile.next })
       : null,
+    showMap: mapOn && !signed ? searchHref({ ...here, map: true }) : null,
+    mapImage: signed ? `/search/map?m=${encodeURIComponent(signed)}` : null,
   });
 }

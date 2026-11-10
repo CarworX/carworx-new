@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { GeocodeResult } from "../geo/geocode";
+import { readMapPins } from "../geo/staticMap";
 import type { SearchArgs, SearchRow } from "./handler";
 import type { LimitResult } from "./limiter";
 import { buildSearchPage, type PageDeps } from "./page";
@@ -122,6 +123,37 @@ describe("search page model", () => {
       );
       expect(next.model.kind).toBe("results");
     }
+  });
+
+  it("offers the map only when configured, and draws only fixed premises", async () => {
+    const off = await buildSearchPage(req("?lat=-26.1&lng=28.0"), deps());
+    if (off.model.kind !== "results") throw new Error(off.model.kind);
+    expect(off.model.showMap).toBeNull();
+    expect(off.model.mapImage).toBeNull();
+
+    const on = await buildSearchPage(
+      req("?lat=-26.1&lng=28.0"),
+      deps({ mapEnabled: true }),
+    );
+    if (on.model.kind !== "results") throw new Error(on.model.kind);
+    expect(on.model.mapImage).toBeNull();
+    expect(on.model.showMap).toMatch(
+      /^\/search\?lat=-26\.1&lng=28\.0&.*map=1$/,
+    );
+
+    const shown = await buildSearchPage(
+      req((on.model.showMap ?? "").slice("/search".length)),
+      deps({ mapEnabled: true }),
+    );
+    if (shown.model.kind !== "results") throw new Error(shown.model.kind);
+    expect(shown.model.showMap).toBeNull();
+    const m = new URL(`http://x${shown.model.mapImage ?? ""}`).searchParams.get(
+      "m",
+    );
+    const pins = await readMapPins(KEY, m ?? "");
+    // Only fixed rows carry coordinates; mobile rows are never pinned.
+    expect(pins).toHaveLength(20);
+    expect(pins?.every((p) => p.lat === -33.9 && p.lng === 18.4)).toBe(true);
   });
 
   it("offers choices for an ambiguous area and never searches yet", async () => {

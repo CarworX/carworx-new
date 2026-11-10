@@ -134,9 +134,20 @@ describe("public pages without JavaScript", () => {
     expect(reply.headers.get("Cache-Control")).toBe("private, no-store");
   });
 
-  it("the map session refuses without a public token", async () => {
-    const reply = await browser().send("/api/map-session");
-    expect(reply.status).toBe(503);
-    expect(reply.headers.get("Cache-Control")).toBe("private, no-store");
+  it("the map is opt-in, server-fetched and fails closed", async () => {
+    const plain = await browser().send("/search?lat=-26.2&lng=28.04");
+    expect(plain.body).not.toContain("Show workshops on a map");
+    const mapped = browser({
+      MAPBOX_SERVER_TOKEN: "sk.synthetic-server-token-0123456789",
+    });
+    const offered = await mapped.send("/search?lat=-26.2&lng=28.04");
+    expect(offered.body).toContain("Show workshops on a map");
+    expect(offered.body).not.toContain("/search/map?m=");
+    expect(offered.body).not.toContain("sk.synthetic");
+    expect(offered.body).not.toContain("api.mapbox.com");
+    const noToken = await browser().send("/search/map?m=junk");
+    expect(noToken.status).toBe(503);
+    expect(noToken.headers.get("Cache-Control")).toBe("private, no-store");
+    expect((await mapped.send("/search/map?m=junk")).status).toBe(404);
   });
 });

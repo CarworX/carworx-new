@@ -14,13 +14,13 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const CONTEXT = "carworx-search-cursor-v1.";
 const encoder = new TextEncoder();
 
-function b64url(bytes: Uint8Array): string {
+export function b64url(bytes: Uint8Array): string {
   let text = "";
   for (const byte of bytes) text += String.fromCharCode(byte);
   return btoa(text).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-function fromB64url(text: string): Uint8Array<ArrayBuffer> | null {
+export function fromB64url(text: string): Uint8Array<ArrayBuffer> | null {
   if (!/^[A-Za-z0-9_-]{1,2048}$/.test(text)) return null;
   try {
     const raw = atob(text.replace(/-/g, "+").replace(/_/g, "/"));
@@ -32,7 +32,7 @@ function fromB64url(text: string): Uint8Array<ArrayBuffer> | null {
   }
 }
 
-async function hmacKey(secret: string): Promise<CryptoKey> {
+export async function hmacKey(secret: string): Promise<CryptoKey> {
   if (secret.length < 32) throw new Error("Search cursor key unavailable");
   return crypto.subtle.importKey(
     "raw",

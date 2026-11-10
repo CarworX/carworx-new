@@ -12,7 +12,7 @@
 | `/c/:category` | Live listings in a design category, including its subcategories, paged by public ID | Reads `listing_public` with the anon key; 404 for unknown categories |
 | `/p/:publicId` | Listing detail: labels, description, and the address only for fixed premises | Mobile shows "serves an area … approximate"; pending listings are 404 |
 | `/fines` | Placeholder note (P2-6 brings guidance and official referrals) | No ID field |
-| `/api/map-session` | The URL-restricted `pk.` token, after the visitor limit and the daily map quota | 503 if the token, binding or quota is missing |
+| `/search/map?m=` | A server-fetched Static Images PNG of the signed fixed-premise pins, after the visitor limit and the daily map quota (D-084) | 503 if the token, key, binding or quota is missing; 404 for a bad signature |
 
 **Caching:** every public page is `no-store` today, because the T5 boundary issues a CSRF cookie on each page. That's the safer default, and it can be revisited before launch.
 
@@ -26,7 +26,7 @@ The new migration `20261110190000_p2_3_category_search.sql` makes search categor
 ## Mapbox (D-082)
 
 - **Geocoding:** server-only, temporary, v6 forward. Bounded area text, ZA only, at most five candidates. Never stored or logged.
-- **Map:** loads GL JS 3.33.0 only when the visitor clicks. Fixed pins only.
+- **Map (D-084):** a "Show workshops on a map" link reloads the results with `map=1` and a same-origin image. No JavaScript, no browser token, fixed pins only.
 - **Quotas:** global daily caps of 3,000 geocodes and 1,500 map loads, through the existing SQLite Durable Object, failing closed. The visitor's IP and session limits run **before** any Mapbox call.
 - **Why the guard:** Mapbox documents no spending cap, and overages bill automatically.
 
@@ -41,7 +41,7 @@ The new migration `20261110190000_p2_3_category_search.sql` makes search categor
 
 ## Your prerequisites (hosted; none needed for CI)
 
-1. Mapbox: a server geocoding token (secret) and a `pk.` token restricted to the staging and production origins.
+1. Mapbox: one server token as the Worker secret `MAPBOX_SERVER_TOKEN` (geocoding and `styles:tiles` scopes). No public token is needed (D-084).
 2. Usage notifications below the free tier.
 3. The P2-2 Hyperdrive and secrets (Claude 19 §9).
 

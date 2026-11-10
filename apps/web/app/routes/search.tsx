@@ -11,7 +11,6 @@ import { buildSearchPage, type PageModel } from "../server/search/page";
 import { ButtonLink, TextLink } from "../ui/Button";
 import { EmptyState, StatusNote } from "../ui/Note";
 import { ListingResult } from "../ui/public/ListingResult";
-import { MapPanel } from "../ui/public/MapPanel";
 import { PublicShell } from "../ui/public/PublicShell";
 import { SearchForm } from "../ui/public/SearchForm";
 import type { Route } from "./+types/search";
@@ -21,7 +20,7 @@ interface SearchEnv {
   SEARCH_LIMITER?: LimiterNamespace;
   SEARCH_LIMITER_SALT?: string;
   SEARCH_CURSOR_KEY?: string;
-  MAPBOX_GEOCODING_TOKEN?: string;
+  MAPBOX_SERVER_TOKEN?: string;
 }
 
 const STATUS: Partial<Record<PageModel["kind"], number>> = {
@@ -48,7 +47,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       ),
     search,
     quota: () => checkQuota(env.SEARCH_LIMITER, "geocode"),
-    geocode: (area) => geocodeArea(area, env.MAPBOX_GEOCODING_TOKEN),
+    geocode: (area) => geocodeArea(area, env.MAPBOX_SERVER_TOKEN),
+    mapEnabled:
+      typeof env.MAPBOX_SERVER_TOKEN === "string" &&
+      env.MAPBOX_SERVER_TOKEN.length >= 20,
   });
   const headers = new Headers({ "Cache-Control": "private, no-store" });
   if (cookie) headers.append("Set-Cookie", cookie);
@@ -199,19 +201,24 @@ function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
           <p className="type-body-sm text-quiet">
             Sorted by straight-line distance.
           </p>
-          <MapPanel
-            points={fixed
-              .filter(
-                (f) =>
-                  f.public_latitude !== null && f.public_longitude !== null,
-              )
-              .map((f) => ({
-                id: f.public_id,
-                name: f.display_name,
-                lat: f.public_latitude ?? 0,
-                lng: f.public_longitude ?? 0,
-              }))}
-          />
+          {m.mapImage ? (
+            <figure className="grid gap-2">
+              <img
+                src={m.mapImage}
+                width={640}
+                height={360}
+                className="h-auto w-full rounded-2xl"
+                alt="Map of the workshops listed below. Mobile providers are not shown on the map."
+              />
+              <figcaption className="type-caption text-quiet">
+                Map shows workshops only. The list has every result.
+              </figcaption>
+            </figure>
+          ) : m.showMap ? (
+            <div>
+              <TextLink href={m.showMap}>Show workshops on a map</TextLink>
+            </div>
+          ) : null}
           {fixed.map((f) => (
             <ListingResult
               key={f.public_id}
