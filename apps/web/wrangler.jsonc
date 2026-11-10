@@ -6,7 +6,6 @@
   "workers_dev": false,
   "preview_urls": false,
   "vars": { "CARWORX_ENV": "local" },
-  // P2-2 search limiter (D-081). SQLite-backed: available on Workers Free.
   "durable_objects": {
     "bindings": [{ "name": "SEARCH_LIMITER", "class_name": "SearchLimiter" }],
   },
