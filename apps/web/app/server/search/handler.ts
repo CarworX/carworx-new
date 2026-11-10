@@ -71,6 +71,12 @@ export interface SearchDeps {
   session?: { session: string; cookie: string | undefined };
   /** A limit decision already made for this request; skips a second count. */
   checked?: LimitResult;
+  /**
+   * Always return both groups, a group without a cursor from its first page.
+   * The /search page uses this so a "more" link for one group keeps the
+   * other on screen at its current position (alternating pagination).
+   */
+  bothGroups?: boolean;
   cursorKey: string | undefined;
   limits: (ip: string, session: string) => Promise<LimitResult>;
   search: ((args: SearchArgs) => Promise<SearchRow[]>) | undefined;
@@ -356,9 +362,11 @@ export async function runSearch(
   if ((q.fixedCursor && !fixedAfter) || (q.mobileCursor && !mobileAfter))
     return { status: 400, error: "invalid_cursor", cookie };
 
-  // No cursor: first page of both groups. A cursor continues only its group.
-  const wantFixed = q.fixedCursor !== null || q.mobileCursor === null;
-  const wantMobile = q.mobileCursor !== null || q.fixedCursor === null;
+  // No cursor: first page of both groups. A cursor continues only its group,
+  // unless the caller asks for both (the page keeps both on screen).
+  const both = deps.bothGroups === true;
+  const wantFixed = both || q.fixedCursor !== null || q.mobileCursor === null;
+  const wantMobile = both || q.mobileCursor !== null || q.fixedCursor === null;
   try {
     const ready = { ...deps, search, cursorKey };
     const [fixedPage, mobilePage] = await Promise.all([

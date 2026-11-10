@@ -156,6 +156,78 @@ describe("search page model", () => {
     expect(pins?.every((p) => p.lat === -33.9 && p.lng === 18.4)).toBe(true);
   });
 
+  it("alternating 'more' links keep both groups in place, with no gaps or repeats", async () => {
+    // Keyset fake over 45 fixed (3 per 0.1 km bucket) and 45 mobile rows.
+    const all = {
+      fixed: Array.from({ length: 45 }, (_, i) => ({
+        ...row(i + 1, "fixed"),
+        distance_bucket: Math.floor((i + 1) / 3),
+      })),
+      mobile: Array.from({ length: 45 }, (_, i) => row(i + 1, "mobile")),
+    };
+    const keyset = (args: SearchArgs) => {
+      const rows = all[args.group].filter((r) => {
+        if (args.afterId === null) return true;
+        if (args.group === "mobile") return r.public_id > args.afterId;
+        const b = r.distance_bucket ?? 0;
+        const after = args.afterBucket ?? 0;
+        return b > after || (b === after && r.public_id > args.afterId);
+      });
+      return Promise.resolve(rows.slice(0, args.limit));
+    };
+    const visit = async (href: string) => {
+      const { model } = await buildSearchPage(
+        req(href.slice("/search".length)),
+        deps({ search: keyset }),
+      );
+      if (model.kind !== "results") throw new Error(model.kind);
+      return model;
+    };
+    const ids = (m: Awaited<ReturnType<typeof visit>>) => ({
+      fixed: (m.body.fixed?.items ?? []).map((i) => i.public_id),
+      mobile: (m.body.mobile?.items ?? []).map((i) => i.public_id),
+    });
+    const page = (group: "fixed" | "mobile", n: number) =>
+      all[group].slice((n - 1) * 20, n * 20).map((r) => r.public_id);
+
+    const p1 = await visit("/search?lat=-26.1&lng=28.0");
+    expect(ids(p1)).toEqual({
+      fixed: page("fixed", 1),
+      mobile: page("mobile", 1),
+    });
+
+    // More workshops: fixed advances, mobile stays on its first page.
+    const p2 = await visit(p1.moreFixed ?? "");
+    expect(ids(p2)).toEqual({
+      fixed: page("fixed", 2),
+      mobile: page("mobile", 1),
+    });
+
+    // Then more mobile: mobile advances, fixed stays on page 2.
+    const p3 = await visit(p2.moreMobile ?? "");
+    expect(ids(p3)).toEqual({
+      fixed: page("fixed", 2),
+      mobile: page("mobile", 2),
+    });
+
+    // Then more workshops again: fixed page 3 (the last), mobile stays on 2.
+    const p4 = await visit(p3.moreFixed ?? "");
+    expect(ids(p4)).toEqual({
+      fixed: page("fixed", 3),
+      mobile: page("mobile", 2),
+    });
+    expect(p4.moreFixed).toBeNull();
+
+    // And the last mobile page, with fixed still on page 3.
+    const p5 = await visit(p4.moreMobile ?? "");
+    expect(ids(p5)).toEqual({
+      fixed: page("fixed", 3),
+      mobile: page("mobile", 3),
+    });
+    expect(p5.moreMobile).toBeNull();
+    expect(p5.moreFixed).toBeNull();
+  });
+
   it("offers choices for an ambiguous area and never searches yet", async () => {
     const calls: SearchArgs[] = [];
     const { model } = await buildSearchPage(

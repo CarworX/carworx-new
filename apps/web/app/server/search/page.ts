@@ -2,7 +2,9 @@
  * The /search page model (P2-3). One rate-limit decision per request, then:
  * area text -> daily geocode quota -> temporary geocode (never stored) ->
  * the shared P2-2 core. "More" links carry only rounded coordinates, the
- * visitor's own area label and the signed cursor; they never re-geocode.
+ * visitor's own area label and the signed cursors; they never re-geocode.
+ * Both groups stay on screen: a "more" link advances one group and carries
+ * the other group's current cursor, so the visitor can alternate.
  */
 import { findCategory } from "../../catalogue/taxonomy";
 import type { AreaCandidate, GeocodeResult } from "../geo/geocode";
@@ -187,6 +189,7 @@ export async function buildSearchPage(
     ...deps,
     session: resolved,
     checked,
+    bothGroups: true,
   });
   if (outcome.status !== 200)
     return withCookie(
@@ -195,6 +198,8 @@ export async function buildSearchPage(
         : { kind: "unavailable" },
     );
   const base = { lat, lng, near, category };
+  const currentFixed = get("fixed_cursor");
+  const currentMobile = get("mobile_cursor");
   const pins = (outcome.body.fixed?.items ?? []).flatMap((f) =>
     f.public_latitude !== null && f.public_longitude !== null
       ? [{ lat: f.public_latitude, lng: f.public_longitude }]
@@ -212,10 +217,8 @@ export async function buildSearchPage(
   const here = {
     ...base,
     radius,
-    ...(get("fixed_cursor") ? { fixed_cursor: get("fixed_cursor") ?? "" } : {}),
-    ...(get("mobile_cursor")
-      ? { mobile_cursor: get("mobile_cursor") ?? "" }
-      : {}),
+    ...(currentFixed ? { fixed_cursor: currentFixed } : {}),
+    ...(currentMobile ? { mobile_cursor: currentMobile } : {}),
   };
   return withCookie({
     kind: "results",
@@ -228,11 +231,22 @@ export async function buildSearchPage(
       href: searchHref({ ...base, radius: r }),
       current: r === radius,
     })),
+    // Each "more" link advances one group and keeps the other where it is.
     moreFixed: outcome.body.fixed?.next
-      ? searchHref({ ...base, radius, fixed_cursor: outcome.body.fixed.next })
+      ? searchHref({
+          ...base,
+          radius,
+          fixed_cursor: outcome.body.fixed.next,
+          ...(currentMobile ? { mobile_cursor: currentMobile } : {}),
+        })
       : null,
     moreMobile: outcome.body.mobile?.next
-      ? searchHref({ ...base, radius, mobile_cursor: outcome.body.mobile.next })
+      ? searchHref({
+          ...base,
+          radius,
+          mobile_cursor: outcome.body.mobile.next,
+          ...(currentFixed ? { fixed_cursor: currentFixed } : {}),
+        })
       : null,
     showMap: mapOn && !signed ? searchHref({ ...here, map: true }) : null,
     mapImage: signed ? `/search/map?m=${encodeURIComponent(signed)}` : null,

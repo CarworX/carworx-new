@@ -298,3 +298,5 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - 2026-11-10 (SAST) — Claude: #49, #48 and #51 merged. D-082 (Mapbox with fail-closed quotas, no spending cap documented by Mapbox) and D-083 (design categories). P2-3 pages and category-aware search. No hosted changes.
 
 - 2026-11-10 (SAST) — Claude: #52 bot finding fixed (each group's cursor is bound to its own database rounding) and #52 merged under D-080 as 622e938. #53 retargeted to main. D-084: the map becomes a server-fetched Static Images PNG, because a reusable `pk.` token could bypass the $0 map quota (#53 bot P1). No hosted changes.
+
+- 2026-11-10 (SAST) — Claude: #53 alternating pagination fixed. The /search page keeps both groups on screen, and each "more" link carries the other group's current cursor. A regression test walks fixed 1→2, mobile 1→2, fixed 2→3 and mobile 2→3 with no gaps or repeats, and it fails without the fix. The JSON API contract is unchanged.
