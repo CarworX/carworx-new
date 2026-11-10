@@ -209,9 +209,9 @@ describe("review queue", () => {
     });
     expect(suspended.status).toBe(302);
     expect((await new Browser().send(`/p/${publicId}`)).status).toBe(404);
-    expect(
-      (await admin.send("/admin/listings?status=suspended")).body,
-    ).toContain(publicId);
+    expect((await admin.send(`/admin/listings/${publicId}`)).body).toContain(
+      'data-listing-status="suspended"',
+    );
     const back = await admin.send(`/admin/listings/${publicId}`, {
       form: { intent: "reinstate", reason: "Synthetic: complaint resolved" },
     });
