@@ -95,3 +95,30 @@ test("timeHandshake times a loopback TCP connect and reports a refused port", as
   await new Promise((resolve) => server.close(resolve));
   assert.equal(await timeHandshake({ host: "127.0.0.1", port }, false), null);
 });
+
+test("measureAll alternates targets in every round", async () => {
+  const { measureAll } = await import("./measure.js");
+  const order = [];
+  const time = async (target, secure) => {
+    order.push(target.name + (secure ? ":tls" : ":tcp"));
+    return 10;
+  };
+  const results = await measureAll(
+    [{ name: "a" }, { name: "b" }],
+    2,
+    time,
+    async () => {},
+  );
+  assert.deepEqual(order, [
+    "a:tcp",
+    "a:tls",
+    "b:tcp",
+    "b:tls",
+    "a:tcp",
+    "a:tls",
+    "b:tcp",
+    "b:tls",
+  ]);
+  assert.equal(results[0].tcp.count, 2);
+  assert.equal(results[1].tls.p50_ms, 10);
+});

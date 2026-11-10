@@ -19,7 +19,7 @@ Pages are rendered at the South African edge, so the visitor's own trip is short
 |---|---|---|
 | Targets | `ec2.eu-west-2.amazonaws.com:443` (London) and `ec2.eu-central-1.amazonaws.com:443` (Frankfurt) | Public AWS regional endpoints in the same regions Supabase uses ([Regions](https://supabase.com/docs/guides/platform/regions), read 2026-11-10). Not a CarworX resource |
 | Measure | TCP connect time (about one round trip) and the TLS handshake time | Closest no-account proxy for a database round trip |
-| Samples | 30 per target, alternating, 200 ms apart | Enough for a stable median and p95 |
+| Samples | 30 per target, taken **round-robin** (London, Frankfurt, London, …), 200 ms apart | Enough for a stable median and p95 |
 | Where | Once from a **Johannesburg** connection and once from a **Cape Town** connection | PLAN §4 |
 | Proof of city | The script records Cloudflare's edge code (`JNB`, `CPT`) from Cloudflare's public trace page. **It drops the IP address** that the page also shows | The receipt shows the city without personal data |
 | Time | Each run at a normal busy time, for example 12:00–14:00 SAST on a weekday, and a second run in the evening | Shows congestion, not just a quiet line |

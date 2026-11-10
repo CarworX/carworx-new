@@ -160,21 +160,30 @@ export function timeHandshake(target, secure) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function measureTarget(target, samples) {
-  const tcp = [];
-  const tls = [];
+// Round-robin: every round takes one TCP and one TLS sample from each target
+// in turn, so all targets are measured over the same time window and a
+// change in the local line's congestion affects them equally.
+export async function measureAll(
+  targets,
+  samples,
+  time = timeHandshake,
+  pause = sleep,
+) {
+  const raw = targets.map(() => ({ tcp: [], tls: [] }));
   for (let i = 0; i < samples; i += 1) {
-    tcp.push(await timeHandshake(target, false));
-    await sleep(GAP_MS);
-    tls.push(await timeHandshake(target, true));
-    await sleep(GAP_MS);
+    for (const [index, target] of targets.entries()) {
+      raw[index].tcp.push(await time(target, false));
+      await pause(GAP_MS);
+      raw[index].tls.push(await time(target, true));
+      await pause(GAP_MS);
+    }
   }
-  return {
+  return targets.map((target, index) => ({
     name: target.name,
     host: target.host,
-    tcp: summarise(tcp),
-    tls: summarise(tls),
-  };
+    tcp: summarise(raw[index].tcp),
+    tls: summarise(raw[index].tls),
+  }));
 }
 
 async function edge() {
@@ -191,9 +200,7 @@ async function edge() {
 export async function main(argv) {
   const options = parseArgs(argv);
   const targets = [...DEFAULT_TARGETS, ...options.targets];
-  const results = [];
-  for (const target of targets)
-    results.push(await measureTarget(target, options.samples));
+  const results = await measureAll(targets, options.samples);
   const byName = Object.fromEntries(results.map((r) => [r.name, r]));
   const report = {
     version: 1,
