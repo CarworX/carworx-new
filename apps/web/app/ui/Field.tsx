@@ -126,3 +126,35 @@ export function ConsentCheckbox({
     </label>
   );
 }
+
+/**
+ * One option in a group of radios or checkboxes, drawn with the Studio box
+ * (a round box for radios). Never pre-ticked: use ConsentCheckbox for consent.
+ */
+export function Choice({
+  type = "checkbox",
+  name,
+  value,
+  required,
+  children,
+}: {
+  type?: "checkbox" | "radio";
+  name: string;
+  value: string;
+  required?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <label className="cx-check">
+      <input type={type} name={name} value={value} required={required} />
+      <span
+        className="cx-box"
+        aria-hidden="true"
+        {...(type === "radio" ? { style: { borderRadius: "999px" } } : {})}
+      >
+        <Icon name="check" size="sm" />
+      </span>
+      <span>{children}</span>
+    </label>
+  );
+}

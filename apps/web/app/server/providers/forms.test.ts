@@ -171,3 +171,11 @@ describe("parseId", () => {
     expect(parseId(form({ id: "1 or 1=1" }), "id")).toBeNull();
   });
 });
+
+describe("sast", () => {
+  it("shows UTC+2", async () => {
+    const { sast } = await import("./forms");
+    expect(sast("2026-11-10T22:15:00Z")).toBe("2026-11-11 00:15 SAST");
+    expect(sast("not a date")).toBe("");
+  });
+});

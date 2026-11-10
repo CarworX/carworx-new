@@ -18,4 +18,10 @@ export const authRoutes: RouteConfigEntry[] = [
   route("provider", "routes/provider.tsx"),
   route("provider/apply", "routes/provider.apply.tsx"),
   route("provider/claim/:publicId", "routes/provider.claim.$publicId.tsx"),
+  // P2-7 (Claude 21): admin tools, listed admin at aal2 only.
+  route("admin/listings", "routes/admin.listings.tsx"),
+  route("admin/listings/:publicId", "routes/admin.listings.$publicId.tsx"),
+  route("admin/claims", "routes/admin.claims.tsx"),
+  route("admin/claims/:id", "routes/admin.claims.$id.tsx"),
+  route("admin/audit", "routes/admin.audit.tsx"),
 ];

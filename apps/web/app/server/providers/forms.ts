@@ -251,3 +251,10 @@ export function parseDecision(form: FormData): Decision | null {
     p_reason: null,
   };
 }
+
+/** A timestamp as SAST (UTC+2, no daylight saving), e.g. "2026-11-10 22:15 SAST". */
+export function sast(iso: string): string {
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return "";
+  return `${new Date(t + 2 * 3600_000).toISOString().slice(0, 16).replace("T", " ")} SAST`;
+}

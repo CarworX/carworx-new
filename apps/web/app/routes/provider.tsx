@@ -241,6 +241,9 @@ export default function Provider({
 }: Route.ComponentProps) {
   const { orgs, against, displaced, mineClaims, csrf, uid, notice } =
     loaderData;
+  const names: Record<string, string> = Object.fromEntries(
+    orgs.flatMap((o) => o.listings.map((l) => [l.public_id, l.display_name])),
+  );
   return (
     <PublicShell signedIn>
       <h1 className="type-display-lg">Your business</h1>
@@ -278,7 +281,7 @@ export default function Provider({
           {org.listings.map((l) => (
             <article
               key={l.public_id}
-              className="cx-card mt-4 grid gap-3 p-4"
+              className="rounded-2xl bg-[var(--surface)] mt-4 grid gap-3 p-4"
               data-listing={l.public_id}
               data-status={l.status}
             >
@@ -385,13 +388,17 @@ export default function Provider({
           {[...against, ...displaced].map((c) => (
             <article
               key={c.id}
-              className="cx-card mt-4 grid gap-3 p-4"
+              className="rounded-2xl bg-[var(--surface)] mt-4 grid gap-3 p-4"
               data-claim={c.id}
               data-claim-status={c.status}
             >
               <p className="type-body">
                 Someone asked to manage{" "}
-                <b>listing {c.listing_public_id.slice(0, 8)}</b> (
+                <b>
+                  {names[c.listing_public_id] ??
+                    `listing ${c.listing_public_id.slice(0, 8)}`}
+                </b>{" "}
+                (
                 {c.evidence_kind === "business_email"
                   ? `business email at ${c.email_domain ?? ""}`
                   : "document for an admin to review"}
