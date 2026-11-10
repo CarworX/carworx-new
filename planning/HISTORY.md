@@ -284,3 +284,5 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - 2026-11-05 19:48 UTC — K3 #32, K4 CI #37 and K2 #31 merged after D-071 self-checks and exact-head CI. K2 024ab0a: runs 42096053055, 42096052788 and 42096052657 passed. K4 run 42094681769 restored two tenants, four Auth identities and two private objects with 168 TAP assertions. D-072 destinations prepared empty. Promotion remains blocked on access and hosted evidence.
 
 - 2026-11-10 — Claude: owner directions D-073 (reciprocal review restored; D-071 self-merges stand), D-074 (Phase 2 in parallel, proposal by Claude), D-075 (maps after G-PROD), D-076 (Paystack and Yoco only; G-PAY renamed G-LIVEPAY). No code or hosted changes.
+
+- 2026-11-10 (SAST) — Codex 20: owner-authorised reviewed merges #40/#41/#42/#43/#44; #42 README-only merge resolution retained both notes. Prepared separate #39 follow-ups with timeout, trailer detection, timing evidence, custody and native path coverage. Hosted timing and A1–A7 remain open; P2-1 authorised locally/in CI using Claude 17 defaults. New work requires Claude review.

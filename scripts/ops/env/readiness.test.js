@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { evidenceReader, validateReadiness } from "./readiness.js";
 import { EMAIL_CHECKS } from "./reports.js";
+import { summarizeTiming } from "./auth-email/timing.js";
 
 const now = Date.parse("2026-11-05T12:00:00Z");
 const sha = "a".repeat(40);
@@ -131,6 +132,31 @@ function fixture() {
       ),
     },
   };
+  proof.hosted_hook.auth_timing = {
+    ...summarizeTiming(
+      ["signup", "resend", "recovery"].flatMap((flow) =>
+        ["fresh", "cooldown"].flatMap((cooldown) =>
+          ["allowed", "denied"].flatMap((group) =>
+            Array.from({ length: 20 }, () => ({
+              path: "direct",
+              flow,
+              cooldown,
+              group,
+              ms: 10,
+              shape: "same",
+            })),
+          ),
+        ),
+      ),
+      {
+        environment: "staging",
+        source_sha: proof.hosted_hook.source_sha,
+        hook_version: proof.hosted_hook.version_id,
+        configuration_revision: configuration.configuration_revision,
+      },
+    ),
+    verified_at: new Date(now).toISOString(),
+  };
   return {
     policy,
     proof,
@@ -153,6 +179,12 @@ test("flipping ready/deleting blocker text never substitutes for evidence", () =
   const f = fixture();
   f.policy.evidence = {};
   assert.throws(f.verify);
+});
+
+test("hosted direct Auth timing is required before promotion", () => {
+  const f = fixture();
+  delete f.proof.hosted_hook.auth_timing;
+  assert.throws(f.verify, /timing evidence/);
 });
 test("policy, code, credentials, scope and hosted delivery drift fail readiness", () => {
   for (const change of [

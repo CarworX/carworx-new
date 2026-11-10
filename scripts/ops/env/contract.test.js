@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  authorAgent,
   validateBuild,
   validateEvidence,
   validatePolicy,
@@ -12,6 +13,22 @@ import { readFileSync } from "node:fs";
 const sha = "a".repeat(40);
 const request = { sha, pr: 23, run: 42 };
 const repository = "CarworX/carworx-new";
+test("standalone final Agent trailer ignores quotations and code examples", () => {
+  assert.equal(
+    authorAgent(
+      "Example Agent: claude\n> Agent: claude\n```\nAgent: claude\n```\nAgent: codex\n\n---\nfooter",
+    ),
+    "codex",
+  );
+  assert.equal(authorAgent("Agent: claude\nAgent: codex"), "codex");
+  assert.equal(authorAgent("```md\nAgent: claude\n```"), undefined);
+  assert.equal(authorAgent("Agent: codex extra"), undefined);
+  const f = fixture();
+  f.pr.body = "Example Agent: claude\n> Agent: claude\nAgent: codex";
+  assert.equal(verify(f).reciprocal_review_record, "claude");
+  f.reviews[0].body = `REVIEW: APPROVE @${sha}\n> Agent: claude\nAgent: codex`;
+  assert.throws(() => verify(f));
+});
 test("source config keeps local and staging separate without public previews", () => {
   const config = JSON.parse(
     // This committed fixture has no comments; Prettier adds JSONC trailing commas.

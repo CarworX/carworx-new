@@ -6,6 +6,7 @@ on:
       - "scripts/ops/native/**"
       - "scripts/ops/env/auth-email/direct-auth.js"
       - "apps/web/integration/**"
+      - "apps/web/app/auth/**"
       - "supabase/config.toml"
       - "supabase/templates/**"
       - ".github/workflows/native-auth.yml"

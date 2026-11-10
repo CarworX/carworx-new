@@ -20,8 +20,9 @@ open until G-PROD.
   the scoped token, hook, bindings and approved inboxes against
   [guide 11](owner-guides/11-staging-bootstrap.md). Live timing, delivery,
   OAuth, hosted performance and A1–A7 receipts remain open.
-- **Phase 2:** proposal after Phase 1 closeout. Implementation requires separate
-  owner approval.
+- **Phase 2:** Claude 17 is reviewed and merged (#40). The owner authorised
+  Codex to start P2-1 with its §3 defaults on 2026-11-10, local/CI and synthetic
+  only. Claude reviews each new PR before merge; staging A1–A7 and G-PROD remain open.
 
 ## Open items
 
