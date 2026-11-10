@@ -106,3 +106,13 @@ fixture output row, and added declarative public/private ID separation and a
 mobile-only composite foreign key for service areas. Catalogue coverage is now
 181 new assertions, 349 total with Phase 1. Full exact-head results still decide
 readiness for independent review; no skipped or missing test is accepted.
+
+Verified recovery evidence: head df6904018633b576444d8e1817ffe7ced61ccb33,
+[run 42820973158](https://github.com/CarworX/carworx-new/actions/runs/42820973158),
+passed all 349 pgTAP assertions, restored two tenant records/four Auth identities
+and two private objects, and passed seven negative checks. The artifact is the
+sanitized k4-summary.json only. Catalogue fixture writes roll back after testing;
+this still does not extend K4's retained backup payload to catalogue tables.
+K1 on that head found one formatting miss in the diagnostic test; it is corrected
+and all changed JavaScript passes Prettier locally. Fresh final-head CI and
+Claude review remain required before merge.

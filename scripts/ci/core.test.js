@@ -7,7 +7,10 @@ import {
 } from "./database-diagnostic.js";
 
 test("database diagnostics expose only fixed labels from private service output", () => {
-  assert.deepEqual(rlsFailureSummary({stdout:"FAIL 00_secret.test.sql"}).files, []);
+  assert.deepEqual(
+    rlsFailureSummary({ stdout: "FAIL 00_secret.test.sql" }).files,
+    [],
+  );
   assert.deepEqual(
     rlsFailureSummary({
       stdout:
