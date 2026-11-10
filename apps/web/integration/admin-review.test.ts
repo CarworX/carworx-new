@@ -20,6 +20,7 @@ const ADMIN_PATHS = [
   "/admin/listings",
   "/admin/listings?status=live",
   "/admin/claims",
+  "/admin/audit",
   "/admin/listings/ca7c1000-0000-4000-8000-000000000001",
 ];
 
@@ -344,5 +345,24 @@ describe("claims", () => {
         `select status from public.memberships where id = '${membership}'`,
       ),
     ).toEqual(["revoked"]);
+  });
+});
+
+describe("audit view", () => {
+  it("lists decisions newest first, filters by table and never shows reasons", async () => {
+    const all = await admin.send("/admin/audit");
+    expect(all.status).toBe(200);
+    expect(all.body).toContain('data-audit="insert listing_decisions"');
+    const decisions = await admin.send("/admin/audit?table=listing_decisions");
+    expect(decisions.body).toContain("decision: approved");
+    expect(decisions.body).not.toContain('data-audit="insert listings"');
+    for (const reason of [
+      "Synthetic: complaint",
+      "Synthetic: add a phone",
+      "Synthetic lease",
+    ])
+      expect(all.body).not.toContain(reason);
+    expect((await admin.send("/admin/audit?table=secrets")).status).toBe(404);
+    expect((await admin.send("/admin/audit?before=1;drop")).status).toBe(404);
   });
 });
