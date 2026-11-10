@@ -57,12 +57,18 @@ create table public.listing_claims (
   decided_by uuid references auth.users(id),
   decided_at timestamptz,
   approved_at timestamptz,
-  revoked_membership_ids uuid[] not null default '{}',
+  -- Immutable snapshot of who a transfer displaced, by user and role. Kept on
+  -- the claim (not as membership IDs), so the new owner can't erase or edit
+  -- it through membership RLS before a dispute is resolved.
+  displaced_user_ids uuid[] not null default '{}',
+  displaced_roles text[] not null default '{}',
   created_at timestamptz not null default now(),
   foreign key(listing_public_id, organisation_id) references public.listings(public_id, organisation_id) on delete cascade,
   check ((evidence_kind = 'business_email') = (email_domain is not null)),
   check ((evidence_kind = 'document') = (document_reference is not null)),
-  check (approved_at is null or review_method is not null)
+  check (approved_at is null or review_method is not null),
+  check (cardinality(displaced_user_ids) = cardinality(displaced_roles)),
+  check (displaced_roles <@ array['owner','manager','staff'])
 );
 comment on table public.listing_claims is 'Claims on a listing. Control transfers only after admin review (Claude 17 section 3). Document evidence is a typed reference only: nothing is uploaded.';
 create unique index listing_claims_one_open on public.listing_claims(listing_public_id, claimant_id) where status in ('submitted','disputed');
@@ -103,10 +109,9 @@ create policy listing_claims_claimant_select on public.listing_claims for select
 create policy listing_claims_controller_select on public.listing_claims for select to authenticated
   using ((select private.has_org_role(organisation_id, array['owner','manager'])));
 -- Someone displaced by an approved transfer can still see that claim, so they
--- can dispute it (their own revoked membership row is already self-readable).
+-- can dispute it, whatever the new owner does to their membership row.
 create policy listing_claims_displaced_select on public.listing_claims for select to authenticated
-  using (exists (select from public.memberships m
-    where m.id = any (listing_claims.revoked_membership_ids) and m.user_id = (select auth.uid())));
+  using ((select auth.uid()) = any (displaced_user_ids));
 create policy claim_disputes_party_select on public.claim_disputes for select to authenticated
   using (raised_by = (select auth.uid())
     or exists (select from public.listing_claims c where c.id = claim_disputes.claim_id and c.claimant_id = (select auth.uid())));
@@ -307,8 +312,7 @@ begin
   if not found or v_c.claimant_id = v_uid then raise exception 'not_allowed' using errcode = '42501'; end if;
   if not (
     (v_c.status = 'submitted' and private.has_org_role(v_c.organisation_id, array['owner','manager']))
-    or (v_c.status = 'approved' and exists (select from public.memberships m
-         where m.id = any (v_c.revoked_membership_ids) and m.user_id = v_uid))
+    or (v_c.status = 'approved' and v_uid = any (v_c.displaced_user_ids))
   ) then
     if v_c.status in ('submitted','approved') then raise exception 'not_allowed' using errcode = '42501'; end if;
     raise exception 'claim_not_disputable' using errcode = 'P0001';
@@ -379,7 +383,7 @@ end $$;
 
 create function private.admin_decide_claim(p_claim uuid, p_decision text, p_method text, p_note text) returns void
 language plpgsql volatile security definer set search_path = '' as $$
-declare v_admin uuid := private.require_admin(); v_c public.listing_claims; v_note text; v_revoked uuid[];
+declare v_admin uuid := private.require_admin(); v_c public.listing_claims; v_note text; v_users uuid[]; v_roles text[];
 begin
   if p_decision is null or p_decision not in ('approve','reject') then perform private.bad_input(); end if;
   select * into v_c from public.listing_claims where id = p_claim for update;
@@ -401,18 +405,20 @@ begin
              and o.status = 'disputed' and o.approved_at is not null) then
     raise exception 'transfer_disputed' using errcode = 'P0001';
   end if;
-  -- Transfer of control: everyone else loses access; their IDs are kept so an
-  -- upheld dispute can restore them.
+  -- Transfer of control: everyone else loses access; who they were and their
+  -- roles are snapshotted on the claim so an upheld dispute can restore them.
   perform from public.memberships where organisation_id = v_c.organisation_id for update;
   with revoked as (
     update public.memberships set status = 'revoked'
     where organisation_id = v_c.organisation_id and status = 'active' and user_id <> v_c.claimant_id
-    returning id
-  ) select coalesce(array_agg(id), '{}') into v_revoked from revoked;
+    returning user_id, role
+  ) select coalesce(array_agg(user_id order by user_id), '{}'), coalesce(array_agg(role order by user_id), '{}')
+    into v_users, v_roles from revoked;
   insert into public.memberships(organisation_id, user_id, role, status) values (v_c.organisation_id, v_c.claimant_id, 'owner', 'active')
     on conflict (organisation_id, user_id) do update set role = 'owner', status = 'active';
   update public.listing_claims set status = 'approved', review_method = p_method, review_note = v_note,
-    decided_by = v_admin, decided_at = now(), approved_at = clock_timestamp(), revoked_membership_ids = v_revoked
+    decided_by = v_admin, decided_at = now(), approved_at = clock_timestamp(),
+    displaced_user_ids = v_users, displaced_roles = v_roles
     where id = p_claim;
 end $$;
 
@@ -434,8 +440,15 @@ begin
       -- anyone they granted access to) is revoked, then the displaced return.
       perform from public.memberships where organisation_id = v_c.organisation_id for update;
       update public.memberships set status = 'revoked'
-        where organisation_id = v_c.organisation_id and status = 'active' and not (id = any (v_c.revoked_membership_ids));
-      update public.memberships set status = 'active' where id = any (v_c.revoked_membership_ids);
+        where organisation_id = v_c.organisation_id and status = 'active'
+          and not (user_id = any (v_c.displaced_user_ids));
+      -- Re-create from the snapshot: rows the claimant deleted come back, and
+      -- roles they changed are reset.
+      insert into public.memberships(organisation_id, user_id, role, status)
+        select v_c.organisation_id, u, r, 'active'
+        from unnest(v_c.displaced_user_ids, v_c.displaced_roles) as t(u, r)
+        where exists (select from auth.users au where au.id = u)
+      on conflict (organisation_id, user_id) do update set role = excluded.role, status = 'active';
     end if;
     update public.listing_claims set status = case when v_c.approved_at is not null then 'reversed' else 'rejected' end,
       decided_by = v_admin, decided_at = now() where id = v_c.id;

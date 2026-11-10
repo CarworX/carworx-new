@@ -24,7 +24,7 @@ insert into public.services(slug,category_slug,name) values
   ('p24-fixed','p24-cat','P2-4 fixed service (synthetic)'), ('p24-mobile','p24-cat','P2-4 mobile service (synthetic)');
 insert into private.platform_admins (user_id) values ('b4000000-0000-4000-8000-000000000006');
 
-select plan(93);
+select plan(97);
 
 -- ===== Application ==========================================================
 set local role anon;
@@ -212,6 +212,15 @@ set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000003","r
 set local role authenticated;
 select lives_ok($$insert into public.memberships(organisation_id, user_id, role, status) values (current_setting('t.org')::uuid, 'b4000000-0000-4000-8000-000000000005', 'owner', 'active')$$,
   'while in control, the claimant grants another account owner access');
+select lives_ok($$delete from public.memberships where organisation_id = current_setting('t.org')::uuid and user_id = 'b4000000-0000-4000-8000-000000000001'$$,
+  'while in control, the claimant deletes the displaced owner''s membership row');
+reset role;
+select is((select count(*)::int from public.memberships where organisation_id = current_setting('t.org')::uuid and user_id = 'b4000000-0000-4000-8000-000000000001'), 0,
+  'fixture: the displaced owner''s row is gone');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select is((select count(*)::int from public.listing_claims where id = current_setting('t.dee')::uuid), 1, 'the displaced owner still sees the claim after the row is deleted');
 reset role;
 set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal2"}';
 set local role authenticated;
@@ -222,6 +231,8 @@ select is((select string_agg(m.user_id::text || ':' || m.status, ',' order by m.
   where l.public_id = current_setting('t.fixed')::uuid),
   'b4000000-0000-4000-8000-000000000001:active,b4000000-0000-4000-8000-000000000003:revoked,b4000000-0000-4000-8000-000000000005:revoked',
   'reversal restores the snapshot: former owner back, claimant and everyone they added revoked');
+select is((select role from public.memberships where organisation_id = current_setting('t.org')::uuid and user_id = 'b4000000-0000-4000-8000-000000000001'), 'owner',
+  'the restored former owner gets their original role back');
 
 -- ===== Later transfers supersede earlier ones ===============================
 reset role;
