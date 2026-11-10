@@ -8,6 +8,7 @@ import { findCategory } from "../../catalogue/taxonomy";
 import type { AreaCandidate, GeocodeResult } from "../geo/geocode";
 import { normaliseArea } from "../geo/geocode";
 import {
+  pgRound,
   ensureSearchSession,
   runSearch,
   RADII,
@@ -58,7 +59,7 @@ export interface PageResult {
   cookie?: string;
 }
 
-const round3 = (n: number) => n.toFixed(3);
+const round3 = (n: number) => pgRound(n, 3);
 const NEAR = /^[\p{L}\p{N} .,'’()-]{1,120}$/u;
 
 function searchHref(p: {

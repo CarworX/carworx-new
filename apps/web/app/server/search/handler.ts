@@ -150,13 +150,35 @@ function parse(params: URLSearchParams): Query | null {
   };
 }
 
-/** Canonical form the cursors are bound to (same rounding as the fixed query). */
+/**
+ * Round like Postgres `round(float8::numeric, dp)`: the float is first read as
+ * 15 significant digits, then rounded half away from zero in decimal. Inputs
+ * are bounded to South Africa, so no exponent form appears.
+ */
+export function pgRound(x: number, dp: number): string {
+  const [int = "0", frac = ""] = Math.abs(x).toPrecision(15).split(".");
+  const digits = (frac + "0".repeat(dp + 1)).slice(0, dp + 1);
+  let n = BigInt(int + digits.slice(0, dp));
+  if (Number(digits[dp]) >= 5) n += 1n;
+  const text = n.toString().padStart(dp + 1, "0");
+  const out = dp ? `${text.slice(0, -dp)}.${text.slice(-dp)}` : text;
+  return x < 0 && n !== 0n ? `-${out}` : out;
+}
+
+/**
+ * Canonical form a group's cursors are bound to: the point exactly as the
+ * database rounds it for that group (fixed 3 dp, mobile discovery grid 2 dp),
+ * so a cursor never carries over to a different rounded search point.
+ */
 export function canonicalQuery(
   q: Pick<Query, "lat" | "lng" | "service" | "category" | "radius" | "limit">,
+  group: SearchGroup,
 ): string {
+  const dp = group === "fixed" ? 3 : 2;
   return [
-    q.lat.toFixed(3),
-    q.lng.toFixed(3),
+    group,
+    pgRound(q.lat, dp),
+    pgRound(q.lng, dp),
     q.service ?? "",
     q.category ?? "",
     String(q.radius),
@@ -229,7 +251,7 @@ async function page(
       ? await signCursor(
           deps.cursorKey,
           group,
-          canonicalQuery(q),
+          canonicalQuery(q, group),
           group === "fixed"
             ? { bucket: last.distance_bucket ?? 0, id: last.public_id }
             : { id: last.public_id },
@@ -313,12 +335,23 @@ export async function runSearch(
   if (!search || !cursorKey || cursorKey.length < 32)
     return { status: 503, error: "search_unavailable", cookie };
 
-  const canonical = canonicalQuery(q);
   const fixedAfter = q.fixedCursor
-    ? await readCursor(cursorKey, "fixed", canonical, q.fixedCursor, now)
+    ? await readCursor(
+        cursorKey,
+        "fixed",
+        canonicalQuery(q, "fixed"),
+        q.fixedCursor,
+        now,
+      )
     : null;
   const mobileAfter = q.mobileCursor
-    ? await readCursor(cursorKey, "mobile", canonical, q.mobileCursor, now)
+    ? await readCursor(
+        cursorKey,
+        "mobile",
+        canonicalQuery(q, "mobile"),
+        q.mobileCursor,
+        now,
+      )
     : null;
   if ((q.fixedCursor && !fixedAfter) || (q.mobileCursor && !mobileAfter))
     return { status: 400, error: "invalid_cursor", cookie };

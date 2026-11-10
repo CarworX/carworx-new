@@ -111,6 +111,19 @@ describe("search page model", () => {
     expect(geocodes).toEqual(["Sandton"]);
   });
 
+  it("'more' links from an off-grid point continue both groups", async () => {
+    const first = await buildSearchPage(req("?lat=-33.90499&lng=18.4"), deps());
+    if (first.model.kind !== "results") throw new Error(first.model.kind);
+    for (const href of [first.model.moreFixed, first.model.moreMobile]) {
+      if (!href) throw new Error("no more link");
+      const next = await buildSearchPage(
+        req(href.slice("/search".length)),
+        deps(),
+      );
+      expect(next.model.kind).toBe("results");
+    }
+  });
+
   it("offers choices for an ambiguous area and never searches yet", async () => {
     const calls: SearchArgs[] = [];
     const { model } = await buildSearchPage(
