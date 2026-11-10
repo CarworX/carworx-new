@@ -23,7 +23,7 @@ Pages are rendered at the South African edge, so the visitor's own trip is short
 | Where | Once from a **Johannesburg** connection and once from a **Cape Town** connection | PLAN §4 |
 | Proof of city | The script records Cloudflare's edge code (`JNB`, `CPT`) from Cloudflare's public trace page. **It drops the IP address** that the page also shows | The receipt shows the city without personal data |
 | Time | Each run at a normal busy time, for example 12:00–14:00 SAST on a weekday, and a second run in the evening | Shows congestion, not just a quiet line |
-| Verdict rule | A region "wins" only if its TCP median is at least **10 ms** lower in **both** cities | Small gaps are noise; then other factors decide (section 4) |
+| Verdict rule | A region "wins" only if its TCP median is at least **10 ms** lower in **both** cities, and each target failed **at most 10%** of samples with **at least 5** successes. Otherwise the run says `no-result` | Small gaps are noise; then other factors decide (section 4) |
 
 **Limits, stated honestly:** this measures network round trips, not the full page. It doesn't include Hyperdrive's own overhead or query time, which are the same for both regions. The Cape Town run needs someone on a Cape Town connection; a mobile hotspot while travelling is fine.
 
@@ -49,7 +49,7 @@ You need Node 24 (already used for this repo) and a checkout of `main`.
 |---|---|
 | One region wins in both cities (section 2 rule) | Choose it, unless the section 72 assessment rules it out |
 | "within-margin" in either city | Latency doesn't decide. Prefer **Frankfurt**, to match staging (the same region gives the same timings in tests), unless the section 72 assessment prefers London |
-| The script can't reach a target (`failed` equals `count`) | Re-run on another connection; don't decide on a failed run |
+| `tcp_verdict` is `no-result`: a target failed more than 10% of its samples, or had fewer than 5 successes | Re-run on another connection; don't decide on that run |
 
 The owner records the choice in DECISIONS (a new D- entry) with the receipt files' SHA-256. The section 72 assessment then names the region.
 

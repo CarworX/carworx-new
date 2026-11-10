@@ -21,7 +21,15 @@ Read 2026-11-10.
 
 ## 2. The no-cost backup route
 
-The same route as the K4 drill ([restore-drill.md](restore-drill.md)), pointed at production.
+The same **design** as the K4 drill ([restore-drill.md](restore-drill.md)), but **it needs a new tool first.**
+
+> **Prerequisite BK-1: a hosted exporter doesn't exist yet.** `scripts/ops/backup/drill.js` (at `b899190`) only works on the disposable synthetic stacks it creates. It exports a **hard-coded list of Phase 1 tables** and copies two fixture objects from its own `k4-private` bucket. It doesn't cover the Phase 2 catalogue tables, Bundle A's tables or any other Storage object, and it can't be pointed at a hosted project. So a reviewed exporter must be built and verified before this route counts as a backup:
+> - it discovers **every** table in the backed-up schemas and **every** Storage bucket and object, instead of a fixed list;
+> - it fails if a table or object is missing from the manifest;
+> - it connects with a **read-only** login, never the owner's database password;
+> - it's proven by the section 4 drill (counts and hashes for every table and object).
+>
+> Until BK-1 passes, production has **no backup**, and G-PROD stays blocked on this item.
 
 ```
 production project ──pg_dump (schemas, data, roles inventory)──┐
@@ -36,7 +44,7 @@ production project ──pg_dump (schemas, data, roles inventory)──┐
 
 | Item | Proposed default | Why |
 |---|---|---|
-| What | `public`, `private`, `auth`, `storage`, `supabase_migrations` schemas; the role and membership inventory; Storage object bytes; a manifest with counts and hashes | The same scope K4 proved locally |
+| What | **Every** table in the `public`, `private`, `auth`, `storage` and `supabase_migrations` schemas; the role and membership inventory; **every** Storage object's bytes; a manifest with counts and hashes | Wider than K4's fixed list (BK-1) |
 | How often | Daily, plus one **before every migration** | 24-hour recovery point, as K4 proposed |
 | Kept | 7 daily and 4 weekly sets | K4 proposal; must match the retention schedule (legal PR) |
 | Encryption | Encrypt **before** upload, to a public key the owner holds. The private key stays offline | D-072 |
@@ -73,7 +81,7 @@ PLAN §3 says A7 is repeated after material schema changes. Phase 2 added catalo
 | Step | What | Evidence |
 |---|---|---|
 | 1 | Freeze the schema: the last Phase 2 migration is merged | Migration count and latest file name |
-| 2 | Run the K4 synthetic drill in CI on that `main` commit (`recovery.yml`) | Green run link, the TAP assertion count (it must cover the new tables) |
+| 2 | Run the **BK-1 exporter's** synthetic drill in CI on that `main` commit. The existing K4 drill alone isn't enough: it only covers Phase 1 tables | Green run link; the manifest lists every Phase 2 table |
 | 3 | Seed **staging** with synthetic data across every Phase 2 table, plus two private Storage objects | Seed receipt |
 | 4 | Export staging through the route in section 2, encrypt and copy to both destinations | Ciphertext SHA-256 from **both** copies matches |
 | 5 | Restore into an isolated target (local native stack, or a third free project only while another is paused) | Counts and hashes match; object bytes match |

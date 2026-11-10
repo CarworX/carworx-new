@@ -8,6 +8,7 @@ import {
   percentile,
   sastTimestamp,
   summarise,
+  usable,
 } from "./measure.js";
 
 test("parseTrace keeps the edge and country and drops the IP", () => {
@@ -41,11 +42,22 @@ test("summarise counts failures and rounds", () => {
 });
 
 test("compare needs a clear margin", () => {
-  const at = (p50) => ({ p50_ms: p50 });
+  const at = (p50) => ({ count: 30, failed: 0, p50_ms: p50 });
   assert.equal(compare(at(150), at(175)), "london-faster");
   assert.equal(compare(at(175), at(150)), "frankfurt-faster");
   assert.equal(compare(at(150), at(155)), "within-margin");
   assert.equal(compare(at(null), at(150)), "no-result");
+});
+
+test("compare refuses a target with too many failed samples", () => {
+  const flaky = { count: 30, failed: 29, p50_ms: 100 };
+  const steady = { count: 30, failed: 0, p50_ms: 120 };
+  assert.equal(usable(flaky), false);
+  assert.equal(compare(flaky, steady), "no-result");
+  assert.equal(compare(steady, flaky), "no-result");
+  assert.equal(usable({ count: 30, failed: 3, p50_ms: 100 }), true);
+  assert.equal(usable({ count: 30, failed: 4, p50_ms: 100 }), false);
+  assert.equal(usable({ count: 5, failed: 0, p50_ms: 100 }), true);
 });
 
 test("parseArgs validates bounds and targets", () => {

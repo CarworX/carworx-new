@@ -105,9 +105,25 @@ export function summarise(samples) {
   };
 }
 
-// "London is faster" only when its median wins by at least `margin` ms.
+// A target's result counts only if almost every sample succeeded: at most
+// 10% failures and at least 5 successes. Otherwise a few lucky samples could
+// decide the region.
+export const MAX_FAILURE_RATE = 0.1;
+export const MIN_SUCCESSES = 5;
+
+export function usable(summary) {
+  const successes = summary.count - summary.failed;
+  return (
+    summary.p50_ms !== null &&
+    successes >= MIN_SUCCESSES &&
+    summary.failed <= summary.count * MAX_FAILURE_RATE
+  );
+}
+
+// "London is faster" only when its median wins by at least `margin` ms and
+// both targets have a usable result.
 export function compare(london, frankfurt, margin = 10) {
-  if (london.p50_ms === null || frankfurt.p50_ms === null) return "no-result";
+  if (!usable(london) || !usable(frankfurt)) return "no-result";
   const gap = round(frankfurt.p50_ms - london.p50_ms);
   if (gap >= margin) return "london-faster";
   if (gap <= -margin) return "frankfurt-faster";
