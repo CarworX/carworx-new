@@ -186,6 +186,15 @@ begin
   return v;
 end $$;
 
+-- A later approved transfer on the same organisation supersedes an earlier
+-- one: the earlier claim can no longer be disputed or reversed.
+create function private.transfer_superseded(p_claim public.listing_claims) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select exists (select from public.listing_claims o
+    where o.organisation_id = p_claim.organisation_id and o.id <> p_claim.id
+      and o.approved_at > p_claim.approved_at and o.status in ('approved','disputed'))
+$$;
+
 -- ---------------------------------------------------------------------------
 -- Provider functions (signed in, aal1 is enough)
 -- ---------------------------------------------------------------------------
@@ -304,6 +313,9 @@ begin
     if v_c.status in ('submitted','approved') then raise exception 'not_allowed' using errcode = '42501'; end if;
     raise exception 'claim_not_disputable' using errcode = 'P0001';
   end if;
+  if v_c.status = 'approved' and private.transfer_superseded(v_c) then
+    raise exception 'claim_superseded' using errcode = 'P0001';
+  end if;
   v_reason := private.clean_text(p_reason, 10, 1000);
   insert into public.claim_disputes(claim_id, organisation_id, raised_by, reason)
     values (p_claim, v_c.organisation_id, v_uid, v_reason) returning id into v_id;
@@ -382,6 +394,13 @@ begin
     perform private.bad_input();
   end if;
   if p_note is not null then v_note := private.clean_text(p_note, 5, 500); end if;
+  -- Ownership changes are serialised per organisation, and never stack on a
+  -- transfer that is still under dispute.
+  perform from public.organisations where id = v_c.organisation_id for update;
+  if exists (select from public.listing_claims o where o.organisation_id = v_c.organisation_id
+             and o.status = 'disputed' and o.approved_at is not null) then
+    raise exception 'transfer_disputed' using errcode = 'P0001';
+  end if;
   -- Transfer of control: everyone else loses access; their IDs are kept so an
   -- upheld dispute can restore them.
   perform from public.memberships where organisation_id = v_c.organisation_id for update;
@@ -393,7 +412,7 @@ begin
   insert into public.memberships(organisation_id, user_id, role, status) values (v_c.organisation_id, v_c.claimant_id, 'owner', 'active')
     on conflict (organisation_id, user_id) do update set role = 'owner', status = 'active';
   update public.listing_claims set status = 'approved', review_method = p_method, review_note = v_note,
-    decided_by = v_admin, decided_at = now(), approved_at = now(), revoked_membership_ids = v_revoked
+    decided_by = v_admin, decided_at = now(), approved_at = clock_timestamp(), revoked_membership_ids = v_revoked
     where id = p_claim;
 end $$;
 
@@ -409,8 +428,13 @@ begin
   select * into v_c from public.listing_claims where id = v_d.claim_id for update;
   if p_outcome = 'uphold' then
     if v_c.approved_at is not null then
+      perform from public.organisations where id = v_c.organisation_id for update;
+      if private.transfer_superseded(v_c) then raise exception 'claim_superseded' using errcode = 'P0001'; end if;
+      -- Restore the snapshot exactly: everyone active now (the claimant and
+      -- anyone they granted access to) is revoked, then the displaced return.
       perform from public.memberships where organisation_id = v_c.organisation_id for update;
-      update public.memberships set status = 'revoked' where organisation_id = v_c.organisation_id and user_id = v_c.claimant_id;
+      update public.memberships set status = 'revoked'
+        where organisation_id = v_c.organisation_id and status = 'active' and not (id = any (v_c.revoked_membership_ids));
       update public.memberships set status = 'active' where id = any (v_c.revoked_membership_ids);
     end if;
     update public.listing_claims set status = case when v_c.approved_at is not null then 'reversed' else 'rejected' end,
@@ -426,6 +450,7 @@ end $$;
 -- ---------------------------------------------------------------------------
 -- Grants on private functions: authenticated only (helpers: nobody).
 -- ---------------------------------------------------------------------------
+revoke all on function private.transfer_superseded(public.listing_claims) from public, anon, authenticated, service_role;
 revoke all on function private.require_admin(), private.bad_input(), private.is_free_mail_domain(text),
   private.clean_text(text, integer, integer) from public, anon, authenticated, service_role;
 revoke all on function

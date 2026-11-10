@@ -29,12 +29,16 @@ insert into auth.users (id, email, email_confirmed_at) values
   ('b5000000-0000-4000-8000-000000000001','olga.owner@example.test',now()), ('b5000000-0000-4000-8000-000000000002','sid.staff@example.test',now()),
   ('b5000000-0000-4000-8000-000000000003','oren.other@example.test',now()), ('b5000000-0000-4000-8000-000000000004','cleo.claimant@example.test',now()),
   ('b5000000-0000-4000-8000-000000000005','ada.admin@example.test',now());
+-- Own catalogue fixtures: recovery CI (K4) runs without the seed.
+insert into public.categories(slug,name) values ('p24-cat','P2-4 test category (synthetic)');
+insert into public.services(slug,category_slug,name) values
+  ('p24-fixed','p24-cat','P2-4 fixed service (synthetic)'), ('p24-mobile','p24-cat','P2-4 mobile service (synthetic)');
 insert into private.platform_admins(user_id) values ('b5000000-0000-4000-8000-000000000005');
 insert into public.organisations(id,name) values ('b5100000-0000-4000-8000-00000000000a','Org X Motors (synthetic)'), ('b5100000-0000-4000-8000-00000000000b','Org Y Wash (synthetic)');
 insert into public.memberships(organisation_id,user_id,role,status) values
   ('b5100000-0000-4000-8000-00000000000a','b5000000-0000-4000-8000-000000000001','owner','active'), ('b5100000-0000-4000-8000-00000000000a','b5000000-0000-4000-8000-000000000002','staff','active'), ('b5100000-0000-4000-8000-00000000000b','b5000000-0000-4000-8000-000000000003','owner','active');
 insert into public.listings(public_id,organisation_id,service_slug,display_name,description,metro,mode,status,provenance_kind,provenance_reference)
-  values ('b5200000-0000-4000-8000-000000000001','b5100000-0000-4000-8000-00000000000a','mobile-repair','Synthetic matrix listing','Synthetic matrix description','Gauteng','mobile','live','provider_application','synthetic-matrix');
+  values ('b5200000-0000-4000-8000-000000000001','b5100000-0000-4000-8000-00000000000a','p24-mobile','Synthetic matrix listing','Synthetic matrix description','Gauteng','mobile','live','provider_application','synthetic-matrix');
 insert into public.listing_decisions(id,listing_public_id,organisation_id,decision,review_method,decided_by)
   values ('b5300000-0000-4000-8000-000000000001','b5200000-0000-4000-8000-000000000001','b5100000-0000-4000-8000-00000000000a','approved','phone_call','b5000000-0000-4000-8000-000000000005');
 insert into public.listing_claims(id,listing_public_id,organisation_id,claimant_id,evidence_kind,document_reference,status)
