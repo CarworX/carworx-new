@@ -4,8 +4,9 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { Webhook } from "standardwebhooks";
 import { createAuthEmailHandler } from "./handler.js";
 import { deliverResend } from "./index.js";
+import { createHookObserver } from "./probe-runtime.js";
 
-function fixture() {
+function fixture(observer) {
   const secret = randomBytes(32).toString("base64");
   const env = {
     SEND_EMAIL_HOOK_SECRET: `v1,whsec_${secret}`,
@@ -14,9 +15,12 @@ function fixture() {
     APP_ORIGIN: "https://staging.example.test",
   };
   const deliveries = [];
-  const handle = createAuthEmailHandler(async (...args) => {
-    deliveries.push(args);
-  });
+  const handle = createAuthEmailHandler(
+    async (...args) => {
+      deliveries.push(args);
+    },
+    { observe: observer },
+  );
   const request = (
     payload = {
       user: { email: "approved@example.test" },
@@ -289,5 +293,38 @@ test("provider timeout aborts a stalled request with one attempt and no fallback
   } finally {
     clearTimeout(alive);
     globalThis.fetch = original;
+  }
+});
+
+test("probe storage outages do not prevent ordinary signed signup and recovery delivery", async () => {
+  for (const action of ["signup", "recovery"]) {
+    for (const outage of [
+      async () => {
+        throw Error("synthetic storage outage");
+      },
+      async () => new Response(null, { status: 503 }),
+    ]) {
+      const f = fixture(createHookObserver());
+      const env = {
+        ...f.env,
+        STAGING_PROBE_EVENT_KEY: "synthetic-probe-key".repeat(3),
+        STAGING_PROBES: {
+          idFromName: () => "fixture",
+          get: () => ({ fetch: outage }),
+        },
+      };
+      const response = await f.handle(
+        f.request({
+          user: { email: "approved@example.test" },
+          email_data: {
+            email_action_type: action,
+            token_hash: randomBytes(32).toString("hex"),
+          },
+        }),
+        env,
+      );
+      assert.equal(response.status, 200);
+      assert.equal(f.deliveries.length, 1);
+    }
   }
 });
