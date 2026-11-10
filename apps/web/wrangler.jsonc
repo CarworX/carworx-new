@@ -6,6 +6,13 @@
   "workers_dev": false,
   "preview_urls": false,
   "vars": { "CARWORX_ENV": "local" },
+  "durable_objects": {
+    "bindings": [{ "name": "SEARCH_LIMITER", "class_name": "SearchLimiter" }],
+  },
+  "migrations": [
+    { "tag": "search-limiter-v1", "new_sqlite_classes": ["SearchLimiter"] },
+  ],
+
   "env": {
     "staging": {
       "name": "carworx-web-staging",
@@ -13,6 +20,11 @@
       "preview_urls": false,
       "version_metadata": { "binding": "STAGING_WORKER_VERSION" },
       "vars": { "CARWORX_ENV": "staging", "CARWORX_DEV_PAGES": "1" },
+      "durable_objects": {
+        "bindings": [
+          { "name": "SEARCH_LIMITER", "class_name": "SearchLimiter" },
+        ],
+      },
     },
   },
 }
