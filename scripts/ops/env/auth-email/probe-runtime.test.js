@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import test from "node:test";
 import {
   StagingProbe,
+  createHookObserver,
   observeHook,
   probeEndpoint,
   probeSignature,
@@ -123,4 +124,72 @@ test("direct receipt can only be read after the signed hook boundary records den
     provider_calls: 0,
     correlation_id: id,
   });
+});
+
+test("unavailable observation cannot fail ordinary mail but cannot provide a receipt", async () => {
+  const { env, call } = fixture();
+  const event = {
+    recipient: "fixture@example.test",
+    id: randomUUID(),
+    eligible: true,
+  };
+  let lookups = 0;
+  env.STAGING_PROBES.get = () => ({
+    fetch: async () => {
+      lookups += 1;
+      throw Error("outage");
+    },
+  });
+  const observer = createHookObserver();
+  await observer("hook_invocation", event, env);
+  await observer("provider_attempt", event, env);
+  await observer("provider_success", event, env);
+  assert.equal(lookups, 1);
+  assert.equal((await call({ op: "seal", id: randomUUID() })).status, 409);
+});
+
+test("confirmed registered probes fail closed on later observation failure", async () => {
+  const { env, call } = fixture();
+  const id = randomUUID();
+  await call({
+    op: "register",
+    id,
+    version: "a".repeat(40),
+    flow: "approved_recovery",
+  });
+  const event = {
+    recipient: "fixture@example.test",
+    id: randomUUID(),
+    eligible: true,
+  };
+  const observer = createHookObserver();
+  await observer("hook_invocation", event, env);
+  const get = env.STAGING_PROBES.get;
+  env.STAGING_PROBES.get = () => ({
+    fetch: async () => new Response(null, { status: 503 }),
+  });
+  await assert.rejects(observer("provider_attempt", event, env));
+  env.STAGING_PROBES.get = get;
+  assert.equal((await call({ op: "seal", id })).status, 409);
+});
+
+test("controlled faults remain fail closed only on the registered request", async () => {
+  const { env, call } = fixture();
+  const event = {
+    recipient: "fixture@example.test",
+    id: randomUUID(),
+    eligible: true,
+  };
+  await call({
+    op: "register",
+    id: randomUUID(),
+    version: "a".repeat(40),
+    flow: "hook_failure_no_fallback",
+  });
+  await assert.rejects(
+    createHookObserver()("hook_invocation", event, env),
+    /Controlled/,
+  );
+  const { env: ordinary } = fixture();
+  await createHookObserver()("hook_invocation", event, ordinary);
 });

@@ -134,7 +134,7 @@ export async function probeEndpoint(request, env) {
   }
 }
 
-export async function observeHook(kind, { recipient, id, eligible }, env) {
+export async function observeHook(kind, { recipient, id }, env) {
   if (!env.STAGING_PROBE_EVENT_KEY || !env.STAGING_PROBES) return;
   const key = await recipientId(env.STAGING_PROBE_EVENT_KEY, recipient);
   const signature = await probeSignature(
@@ -145,20 +145,38 @@ export async function observeHook(kind, { recipient, id, eligible }, env) {
     .slice(0, 32)
     .replace(/^(........)(....)(....)(....)(............)$/, "$1-$2-$3-$4-$5");
   const response = await sendProbe(env, key, { op: "event", id: event, kind });
-  if (
-    kind === "hook_invocation" &&
-    eligible &&
-    (await response.json()).inject_failure
-  ) {
-    await sendProbe(env, key, {
-      op: "event",
-      id: crypto.randomUUID(),
-      kind: "hook_failure",
-    });
-    throw Error("Controlled staging probe fault");
-  }
+  return response.json();
 }
 
+// One observer per webhook request. An unavailable initial lookup supplies no
+// usable probe evidence. Once a registration is confirmed, observations must
+// succeed so a probe cannot produce a passing receipt with missing events.
+export function createHookObserver() {
+  let active;
+  return async (kind, event, env) => {
+    if (active === false) return;
+    try {
+      const observed = await observeHook(kind, event, env);
+      active ??= observed?.active === true;
+      if (
+        active &&
+        kind === "hook_invocation" &&
+        event.eligible &&
+        observed.inject_failure
+      ) {
+        await observeHook(
+          "hook_failure",
+          { ...event, id: crypto.randomUUID() },
+          env,
+        );
+        throw Error("Controlled staging probe fault");
+      }
+    } catch (error) {
+      if (active) throw error;
+      active = false;
+    }
+  };
+}
 const positive = ["approved_confirmation", "approved_recovery"];
 const negative = [
   "unapproved_signup",
@@ -227,6 +245,7 @@ export class StagingProbe {
           );
           await storage.put("probe", updated);
           return {
+            active: true,
             inject_failure: current.flow === "hook_failure_no_fallback",
           };
         }
