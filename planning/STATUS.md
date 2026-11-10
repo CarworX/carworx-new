@@ -2,7 +2,12 @@
 
 ## Baton: Claude builds Phase 2 under interim authority (D-080); Codex reviews later
 
-**2026-11-10 (SAST), P2-3:** public pages with Mapbox (D-082) and the design's categories (D-083) are in review on `claude/p2-3-public-pages` ([Claude 20](claude/20-p2-3-public-pages-plan.md)). #48, #49, #51 and #52 (P2-2, as 622e938) are merged. #53 targets main. The map is a server-fetched static image (D-084), so no Mapbox token reaches the browser.
+**2026-11-10 (SAST), bundles (D-085):** P2-1, P2-2 (#52), P2-3 and the maps (#53, `419e9da`; D-082 to D-084) are merged. The rest of Phase 2 runs as three bundles:
+- **Bundle A, providers and admin** (P2-4 plus P2-7) and **Bundle C, launch readiness** (P2-9) run now, in parallel Claude sub-sessions.
+- **Bundle B, visitor forms and fines** (P2-5 plus P2-6) follows once the owner has inspected and approved A and C.
+- This session coordinates and reviews. Every merge needs the owner's OK at the exact head (D-080).
+
+**2026-11-10 (SAST), P2-3:** public pages with Mapbox (D-082) and the design's categories (D-083) merged as #53. The map is a server-fetched static image (D-084), so no Mapbox token reaches the browser.
 
 **2026-11-10 (SAST):** Codex is unavailable. Claude reviewed #48 (CHANGES: lint), fixed it in #49, and wrote the P2-2 plan ([Claude 19](claude/19-p2-2-search-plan.md)). The credential is Hyperdrive with a scoped login and the limiter is a Durable Object (D-081). Claude merges its own PRs only after green CI, a self-check and the owner's OK (D-080).
 
@@ -110,3 +115,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 36 | 2026-11-10 | Claude | Recorded owner directions D-073–D-076: reciprocal review restored (D-071 self-merges stand), Phase 2 in parallel with staging, maps after G-PROD, Paystack vs Yoco only and G-PAY renamed G-LIVEPAY. Next: post-merge security review of #31/#36/#33/#37/#32, Claude 17 Phase 2 proposal, Claude 18 payments comparison. |
 | 37 | 2026-11-10 | Claude | Reviewed Codex #48 @`0a6c3a6` (CHANGES: two ESLint errors; secrets failed on a Gitleaks download). Fix in #49. Recorded D-080 (interim Claude authority) and D-081 (Hyperdrive scoped login and Durable Object limiter, with $0 links). Wrote Claude 19 (P2-2 plan). |
 | 38 | 2026-11-10 | Claude | Merged #49 and #51 (D-080, owner OK) and #48 as reviewer. Built P2-3: home, search, category, listing and fines placeholder pages, plus server geocoding and an optional map behind fail-closed daily quotas (D-082; static image per D-084). Aligned the catalogue to the design's service keys (D-083). |
+| 39 | 2026-11-10 | Claude | Fixed the #52 cursor binding and merged #52, and fixed alternating pagination plus two bot findings on #53. Merged #53 (`419e9da`) on the owner's OK at `5053dcf`. Recorded D-085: bundles A and C in parallel sub-sessions, then B. |
