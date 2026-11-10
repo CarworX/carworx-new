@@ -27,7 +27,11 @@ select ok((select relrowsecurity from pg_class where oid = 'private.platform_adm
 select is_empty($$
   select policyname from pg_policies
   where schemaname in ('public', 'private') and roles <> '{authenticated}'::name[]
-$$, 'every policy is scoped to authenticated only (none to public or anon)');
+    and not (schemaname = 'public'
+      and tablename in ('categories','services','branches','listings','service_areas','verifications')
+      and roles in ('{listing_projection}'::name[], '{listing_eligibility}'::name[])
+      and policyname in ('catalogue_projection','catalogue_eligibility'))
+$$, 'policies use authenticated or the explicit P2 catalogue capability roles');
 
 select is_empty($$
   select policyname from pg_policies
@@ -77,7 +81,8 @@ select is_empty($$
   select table_schema || '.' || table_name || ':' || privilege_type
   from information_schema.role_table_grants
   where grantee = 'anon' and table_schema in ('public', 'private')
-$$, 'anon has no table privileges in public or private');
+    and not (table_schema = 'public' and table_name = 'listing_public' and privilege_type = 'SELECT')
+$$, 'anon can only SELECT the exact public catalogue projection');
 
 select is_empty($$
   select table_name || ':' || privilege_type

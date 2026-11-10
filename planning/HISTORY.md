@@ -286,3 +286,5 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - 2026-11-10 — Claude: owner directions D-073 (reciprocal review restored; D-071 self-merges stand), D-074 (Phase 2 in parallel, proposal by Claude), D-075 (maps after G-PROD), D-076 (Paystack and Yoco only; G-PAY renamed G-LIVEPAY). No code or hosted changes.
 
 - 2026-11-10 (SAST) — Codex 20: owner-authorised reviewed merges #40/#41/#42/#43/#44; #42 README-only merge resolution retained both notes. Prepared separate #39 follow-ups with timeout, trailer detection, timing evidence, custody and native path coverage. Hosted timing and A1–A7 remain open; P2-1 authorised locally/in CI using Claude 17 defaults. New work requires Claude review.
+
+- 2026-11-10 (SAST) — Codex 21: owner authorised P2-1 from Claude 17 using its defaults. Added synthetic catalogue migration, exact public projection, separate capability roles, tenant/admin RLS, audit and 178 new pgTAP assertions. No search RPC or hosted changes. Full CI and Claude exact-head review required; K4 catalogue coverage remains a later release prerequisite.

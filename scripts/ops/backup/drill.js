@@ -14,6 +14,10 @@ import {
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { validateTap } from "../../ci/core.js";
+import {
+  databaseDiagnostic,
+  rlsFailureSummary,
+} from "../../ci/database-diagnostic.js";
 
 process.umask(0o077);
 const [repo, revision, pgBin, mode] = process.argv.slice(2);
@@ -87,6 +91,10 @@ function run(stage, command, args, options = {}) {
   });
   writeFileSync(join(root, stage + ".log"), result.stderr ?? "");
   if (result.status !== 0) {
+    const database = databaseDiagnostic(result);
+    console.error(
+      `Safe RLS metadata: ${JSON.stringify(rlsFailureSummary(result))}`,
+    );
     diagnostic = /no space|ENOSPC/i.test(result.stderr ?? "")
       ? "capacity"
       : /address already in use|port.*allocat/i.test(result.stderr ?? "")
@@ -98,6 +106,7 @@ function run(stage, command, args, options = {}) {
             : /supabase|postgres/i.test(result.stderr ?? "")
               ? "stack-command"
               : "command";
+    if (database !== "unclassified") diagnostic = database;
     throw Error(stage + " failed (private log in " + root + ")");
   }
   return result.stdout;

@@ -34,3 +34,27 @@ insert into public.memberships (organisation_id, user_id, role, status) values
 
 insert into private.platform_admins (user_id) values
   ('5eed0000-0000-4000-8000-000000000004');
+
+-- P2-1 defaults from Claude 17 section 3. Gauteng is a reversible synthetic
+-- fixture metro, not an owner-confirmed launch region or provider supply.
+insert into public.categories(slug,name) values
+ ('wash-and-valet','Wash and valet'), ('mechanical-service','Mechanical service'),
+ ('tyres','Tyres'), ('panel-and-paint','Panel and paint'),
+ ('auto-electrical','Auto electrical'), ('mobile-mechanic','Mobile mechanic');
+insert into public.services(slug,category_slug,name) values
+ ('wash','wash-and-valet','Synthetic wash'), ('service','mechanical-service','Synthetic service'),
+ ('tyres','tyres','Synthetic tyres'), ('paint','panel-and-paint','Synthetic paint'),
+ ('electrical','auto-electrical','Synthetic electrical'), ('mobile-repair','mobile-mechanic','Synthetic mobile repair');
+insert into public.coordinate_sources(id,organisation_id,source_kind,licence_note) values
+ ('ca7a0000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','provider_supplied','Synthetic permanent fixture; no geocoding service'),
+ ('ca7a0000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-0000000000b2','manual_verified','Synthetic permanent fixture; no geocoding service');
+insert into public.branches(id,public_id,organisation_id,name,public_address,public_latitude,public_longitude,coordinate_source_id) values
+ ('ca7b0000-0000-4000-8000-000000000001','ca7b1000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','Synthetic workshop','1 Synthetic Street, Exampleville',-26.2,28.04,'ca7a0000-0000-4000-8000-000000000001');
+insert into public.listings(id,public_id,organisation_id,service_slug,branch_public_id,display_name,description,metro,mode,status,provenance_kind,provenance_reference) values
+ ('ca7c0000-0000-4000-8000-000000000001','ca7c1000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','service','ca7b1000-0000-4000-8000-000000000001','Synthetic fixed provider','Synthetic catalogue fixture; not a real provider','Gauteng','fixed','live','admin_import','synthetic-seed-fixed'),
+ ('ca7c0000-0000-4000-8000-000000000002','ca7c1000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-0000000000a1','mobile-repair',null,'Synthetic mobile provider','Synthetic catalogue fixture; not a real provider','Gauteng','mobile','live','provider_application','synthetic-seed-mobile'),
+ ('ca7c0000-0000-4000-8000-000000000003','ca7c1000-0000-4000-8000-000000000003','5eed0000-0000-4000-8000-0000000000b2','mobile-repair',null,'Synthetic pending provider','Synthetic unapproved fixture','Gauteng','mobile','submitted','provider_application','synthetic-seed-pending');
+insert into public.service_areas(id,listing_public_id,organisation_id,centre_latitude,centre_longitude,radius_km,coordinate_source_id) values
+ ('ca7d0000-0000-4000-8000-000000000001','ca7c1000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-0000000000a1',-26.112233,28.112233,25,'ca7a0000-0000-4000-8000-000000000001');
+insert into public.verifications(id,organisation_id,listing_public_id,method,verified_by,evidence_reference) values
+ ('ca7e0000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','ca7c1000-0000-4000-8000-000000000002','identity_checked','5eed0000-0000-4000-8000-000000000004','synthetic-evidence-owner-held');
