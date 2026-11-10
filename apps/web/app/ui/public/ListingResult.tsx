@@ -15,13 +15,26 @@ export interface ListingSummary {
   distance_km?: number | null;
 }
 
-/** One listing in a list. Mobile providers never show a distance or place. */
-export function ListingResult({ listing }: { listing: ListingSummary }) {
+/**
+ * One listing in a list. Mobile providers never show a distance or place,
+ * only their public service region. "Serves your area" is claimed only when
+ * the card came from the location search (`matched`); browsing lists are not
+ * filtered by the visitor's location, so they must not imply coverage.
+ */
+export function ListingResult({
+  listing,
+  matched = false,
+}: {
+  listing: ListingSummary;
+  matched?: boolean;
+}) {
   const key = topCategoryOf(listing.category_slug)?.key ?? "repairs";
   const thumb = SERVICES.find((s) => s.key === key)?.object ?? "";
   const where =
     listing.mode === "mobile"
-      ? "Comes to you · serves your area (approximate)"
+      ? matched
+        ? `Comes to you · ${listing.metro} · serves your area (approximate)`
+        : `Comes to you · ${listing.metro}`
       : listing.distance_km !== undefined && listing.distance_km !== null
         ? `${listing.metro} · ${listing.distance_km.toFixed(1)} km straight-line`
         : listing.metro;

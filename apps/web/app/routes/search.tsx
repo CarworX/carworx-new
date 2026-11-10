@@ -223,6 +223,7 @@ function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
             <ListingResult
               key={f.public_id}
               listing={{ ...f, mode: "fixed" }}
+              matched
             />
           ))}
           {m.moreFixed ? (
@@ -245,6 +246,7 @@ function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
             <ListingResult
               key={p.public_id}
               listing={{ ...p, mode: "mobile" }}
+              matched
             />
           ))}
           {m.moreMobile ? (

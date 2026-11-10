@@ -101,6 +101,9 @@ describe("public pages without JavaScript", () => {
     expect(reply.body).toContain(`/p/${SEED_FIXED}`);
     expect(reply.body).toContain(`/p/${SEED_MOBILE}`);
     expect(reply.body).not.toContain(SEED_PENDING);
+    // Browsing is not location-filtered: show the region, claim no coverage.
+    expect(reply.body).toContain("Comes to you · Gauteng");
+    expect(reply.body).not.toContain("serves your area (approximate)");
     expect((await browser().send("/c/not-a-category")).status).toBe(404);
   });
 
@@ -124,6 +127,10 @@ describe("public pages without JavaScript", () => {
     expect(reply.body).toContain("Providers who come to you");
     expect(reply.body).toContain(`/p/${SEED_FIXED}`);
     expect(reply.body).toContain(`/p/${SEED_MOBILE}`);
+    // Only results that passed the location search claim coverage.
+    expect(reply.body).toContain(
+      "Comes to you · Gauteng · serves your area (approximate)",
+    );
     expect(reply.body).not.toMatch(/26\.112233|28\.112233/);
   });
 
