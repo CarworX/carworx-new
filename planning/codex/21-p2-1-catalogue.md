@@ -92,3 +92,10 @@ unpublished while permission/syntax/role failures can be assigned correctly.
 The unseeded recovery path now constructs its fixtures transactionally. These
 changes do not turn missing runtime evidence into a pass. See the current PR
 checks and subsequent commits for the final result.
+
+The diagnostic run at e092d5d reported `database-ownership` during source-start.
+After ownership transfer, the migration had dropped its temporary owner
+capability before finishing ACL/comment operations. Those operations now run
+with the temporary capability, then SET/INHERIT are disabled. postgres retains
+only explicit SELECT on the public view for dump/introspection. Final capability
+roles remain NOLOGIN/NOBYPASSRLS with no private IDs granted to the view owner.

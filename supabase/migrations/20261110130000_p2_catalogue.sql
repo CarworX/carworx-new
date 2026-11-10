@@ -164,13 +164,15 @@ where l.status = 'live';
 grant create on schema public to listing_projection;
 -- Hosted/local postgres is CREATEROLE rather than a superuser. PG17's automatic
 -- creator membership does not necessarily include SET, required for ownership transfer.
-grant listing_projection to postgres with set true, inherit false;
+grant listing_projection to postgres with set true, inherit true;
 alter view public.listing_public owner to listing_projection;
 revoke create on schema public from listing_projection;
-grant listing_projection to postgres with set false, inherit false;
 revoke all on public.listing_public from public, anon, authenticated, service_role;
-grant select on public.listing_public to anon, authenticated;
+grant select on public.listing_public to anon, authenticated, postgres;
 comment on view public.listing_public is 'Exact public catalogue projection; no organisation/private row IDs, provenance, private centres, radius or base-derived distance. Free-text publication requires admin review.';
+-- Finish owner-only ACL/comment work before dropping the temporary capability.
+-- postgres retains SELECT on the public surface for dump/introspection tools.
+grant listing_projection to postgres with set false, inherit false;
 
 create function private.write_catalogue_audit() returns trigger language plpgsql security definer set search_path = '' as $$
 declare rec jsonb; begin
