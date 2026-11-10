@@ -11,9 +11,12 @@ const NAV = [
 /** The public page frame: Studio canvas, nav pill, one main landmark. */
 export function PublicShell({
   current,
+  signedIn = false,
   children,
 }: {
   current?: string;
+  /** Signed-in pages link to the account instead of sign-in. */
+  signedIn?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -22,7 +25,13 @@ export function PublicShell({
         <NavBar
           items={NAV}
           {...(current ? { current } : {})}
-          action={<QuietLink href="/auth/sign-in">Sign in</QuietLink>}
+          action={
+            signedIn ? (
+              <QuietLink href="/account">Account</QuietLink>
+            ) : (
+              <QuietLink href="/auth/sign-in">Sign in</QuietLink>
+            )
+          }
           sheetActions={
             <ButtonLink href="/" block arrow>
               Find a service near you

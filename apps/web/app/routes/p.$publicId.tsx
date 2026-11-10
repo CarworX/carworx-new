@@ -78,6 +78,11 @@ export default function ListingPage({ loaderData }: Route.ComponentProps) {
           </StatusNote>
         )}
       </div>
+      <p className="mt-6">
+        <TextLink href={`/provider/claim/${listing.public_id}`}>
+          Is this your business? Claim this listing
+        </TextLink>
+      </p>
       <div className="mt-6">
         <StatusNote title="Enquiries open soon.">
           You'll be able to send this provider a message from this page.
