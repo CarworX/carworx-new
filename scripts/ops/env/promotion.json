@@ -26,7 +26,7 @@
     "application_recipient_negative"
   ],
   "blockers": [
-    "Exact-head review or a D-071 self-check and combined-head CI are required",
+    "Exact-head reciprocal review and combined-head CI are required",
     "Owner target, binding names, private configuration revisions and Worker-scoped token policy are unverified",
     "Owner must deploy/enable the reviewed hook and supply positive/negative hosted delivery evidence"
   ]

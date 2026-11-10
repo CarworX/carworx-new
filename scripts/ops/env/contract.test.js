@@ -230,7 +230,7 @@ test("plain review comments and issue comments cannot supply an approval", () =>
   assert.throws(() => verify(f));
 });
 
-test("D-071 verifies the exact current staging source without claiming reciprocal review", () => {
+test("D-073 rejects a complete D-071 record without independent approval", () => {
   const f = fixture();
   f.reviews = [];
   f.run.run_attempt = 1;
@@ -250,8 +250,7 @@ test("D-071 verifies the exact current staging source without claiming reciproca
       expires_at: new Date(Date.now() + 60_000).toISOString(),
     },
   };
-  assert.equal(verify(f).review_mode, "owner-delegated-phase1");
-  assert.equal(verify(f).reciprocal_review_record, undefined);
+  assert.throws(() => verify(f), /reciprocal review/);
   for (const mutate of [
     (v) => {
       v.phase1.worker = "production";

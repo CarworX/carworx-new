@@ -25,7 +25,6 @@ export function validateEvidence(
   reviews,
   contract,
   comparison,
-  phase1,
 ) {
   requireCondition(
     pr.merged_at &&
@@ -90,36 +89,7 @@ export function validateEvidence(
     new RegExp(String.raw`REVIEW:\s*APPROVE\s*@${request.sha}\b`, "i").test(
       latestReview.body ?? "",
     );
-  const opposingReview =
-    latestReview?.state === "CHANGES_REQUESTED" ||
-    /REVIEW:\s*CHANGES\b/i.test(latestReview?.body ?? "");
-  const record = phase1?.phase1_self_check;
-  const checked = Date.parse(record?.checked_at);
-  const expires = Date.parse(record?.expires_at);
-  const now = Date.now();
-  const delegated =
-    !opposingReview &&
-    author === "codex" &&
-    repository === "CarworX/carworx-new" &&
-    phase1?.environment === "staging" &&
-    phase1.worker === "carworx-web-staging" &&
-    phase1.supabase_project_ref === "gdiyrdqfkthtcglgqnts" &&
-    record?.decision === "D-071" &&
-    record.status === "passed" &&
-    record.source_sha === request.sha &&
-    record.merge_sha === pr.merge_commit_sha &&
-    record.pr === request.pr &&
-    record.ci_run === request.run &&
-    Number.isInteger(record.ci_attempt) &&
-    record.ci_attempt > 0 &&
-    record.ci_attempt === run.run_attempt &&
-    checked <= now &&
-    now < expires &&
-    expires - checked <= 7 * 24 * 60 * 60 * 1000;
-  requireCondition(
-    approves || delegated,
-    "Exact-head reciprocal review or D-071 staging self-check required",
-  );
+  requireCondition(approves, "Exact-head reciprocal review record required");
   return {
     reviewed_sha: request.sha,
     main_merge_sha: pr.merge_commit_sha,
@@ -127,13 +97,8 @@ export function validateEvidence(
     ci_run: request.run,
     required_suites: { rls: true, integration: true },
     jobs: "passed",
-    review_mode: approves ? "reciprocal" : "owner-delegated-phase1",
-    ...(approves
-      ? { reciprocal_review_record: reviewer }
-      : {
-          owner_decision: record.decision,
-          self_checked_at: record.checked_at,
-        }),
+    review_mode: "reciprocal",
+    reciprocal_review_record: reviewer,
   };
 }
 
