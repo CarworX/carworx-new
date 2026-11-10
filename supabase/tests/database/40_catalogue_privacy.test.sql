@@ -70,7 +70,7 @@ end $fixtures$;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 grant execute on all functions in schema extensions to anon, authenticated;
-select plan(38);
+select plan(41);
 
 select is((select array_agg(column_name::text order by ordinal_position) from information_schema.columns where table_schema='public' and table_name='listing_public'),
   array['public_id','display_name','description','metro','mode','service_slug','service_name','category_slug','category_name','public_address','public_latitude','public_longitude','verification_labels']::text[], 'exact public column set');
@@ -87,7 +87,9 @@ select ok(not pg_has_role('catalogue_server','listing_projection','member') and 
 select is((select count(*)::integer from public.categories),6,'six Claude 17 default categories seeded');
 select is((select count(*)::integer from public.listings where metro='Gauteng'),3,'one synthetic metro only (not owner launch confirmation)');
 
-select set_config('tests.mobile_json',(select row_to_json(p)::text from public.listing_public p where mode='mobile'),true);
+do $$ begin
+  perform set_config('tests.mobile_json',(select row_to_json(p)::text from public.listing_public p where mode='mobile'),true);
+end $$;
 set local role anon;
 select is((select count(*)::integer from public.listing_public),2,'anonymous sees only two live synthetic listings');
 select is((select verification_labels from public.listing_public where mode='mobile'),array['Identity checked']::text[],'method-based verification label only');
@@ -114,6 +116,9 @@ select throws_ok($$update public.service_areas set radius_km=0$$,'23514',null,'z
 select throws_ok($$update public.service_areas set centre_latitude='NaN'::float8$$,'23514',null,'non-finite coordinate rejected');
 select throws_ok($$insert into public.listings(organisation_id,service_slug,branch_public_id,display_name,description,metro,mode,provenance_kind,provenance_reference) values ('5eed0000-0000-4000-8000-0000000000b2','service','ca7b1000-0000-4000-8000-000000000001','Synthetic','Synthetic','Gauteng','fixed','admin_import','Synthetic')$$,'23503',null,'branch cannot cross organisation boundary');
 select throws_ok($$update public.listings set mode='mobile' where mode='fixed'$$,'23514',null,'mobile cannot inherit a fixed-premises pin');
+select throws_ok($$update public.listings set public_id=id$$,'23514',null,'public listing ID cannot equal the private row ID');
+select throws_ok($$update public.branches set public_id=id$$,'23514',null,'public branch ID cannot equal the private row ID');
+select throws_ok($$insert into public.service_areas(listing_public_id,organisation_id,centre_latitude,centre_longitude,radius_km,coordinate_source_id) values ('ca7c1000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1',-26,28,10,'ca7a0000-0000-4000-8000-000000000001')$$,'23503',null,'service area cannot attach to a fixed listing');
 
 set local role authenticated;
 set local request.jwt.claims='{"sub":"5eed0000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal1"}';

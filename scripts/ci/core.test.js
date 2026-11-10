@@ -1,9 +1,23 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createHash } from "node:crypto";
-import { databaseDiagnostic } from "./database-diagnostic.js";
+import {
+  databaseDiagnostic,
+  rlsFailureSummary,
+} from "./database-diagnostic.js";
 
 test("database diagnostics expose only fixed labels from private service output", () => {
+  assert.deepEqual(
+    rlsFailureSummary({
+      stdout:
+        "FAIL 40_catalogue_privacy.test.sql\nnot ok 3 - secret SQL text\nnot ok 3\naccess_token=secret",
+    }),
+    {
+      files: ["40_catalogue_privacy.test.sql"],
+      assertions: [3],
+      diagnostic: "unclassified",
+    },
+  );
   for (const [input, expected] of [
     ["must be able to SET ROLE secret-role", "database-role-switch"],
     ["must be owner of secret-table", "database-ownership"],

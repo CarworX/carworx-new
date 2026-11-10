@@ -49,6 +49,7 @@ create table public.branches (
   public_longitude double precision not null check (public_longitude between -180 and 180),
   coordinate_source_id uuid not null,
   unique(public_id, organisation_id),
+  check (public_id <> id),
   foreign key(coordinate_source_id, organisation_id) references public.coordinate_sources(id, organisation_id)
 );
 create index branches_org_idx on public.branches(organisation_id);
@@ -68,6 +69,8 @@ create table public.listings (
   provenance_reference text not null check (length(provenance_reference) between 1 and 500),
   created_at timestamptz not null default now(),
   unique(public_id, organisation_id),
+  unique(public_id, organisation_id, mode),
+  check (public_id <> id),
   foreign key(branch_public_id, organisation_id) references public.branches(public_id, organisation_id),
   check ((mode = 'fixed' and branch_public_id is not null) or (mode = 'mobile' and branch_public_id is null))
 );
@@ -77,12 +80,13 @@ create index listings_live_service_idx on public.listings(service_slug, public_i
 create table public.service_areas (
   id uuid primary key default gen_random_uuid(),
   listing_public_id uuid not null unique,
+  listing_mode text not null default 'mobile' check (listing_mode = 'mobile'),
   organisation_id uuid not null references public.organisations(id),
   centre_latitude double precision not null check (centre_latitude between -90 and 90),
   centre_longitude double precision not null check (centre_longitude between -180 and 180),
   radius_km double precision not null check (radius_km > 0 and radius_km <= 250),
   coordinate_source_id uuid not null,
-  foreign key(listing_public_id, organisation_id) references public.listings(public_id, organisation_id) on delete cascade,
+  foreign key(listing_public_id, organisation_id, listing_mode) references public.listings(public_id, organisation_id, mode) on delete cascade,
   foreign key(coordinate_source_id, organisation_id) references public.coordinate_sources(id, organisation_id)
 );
 create index service_areas_org_idx on public.service_areas(organisation_id);

@@ -7,6 +7,8 @@ export function databaseDiagnostic(result) {
     return "database-role-create";
   if (/infinite recursion detected in policy/i.test(text))
     return "database-policy-recursion";
+  if (/function .* does not exist/i.test(text))
+    return "database-missing-function";
   if (/must be (?:able to SET ROLE|member of role)/i.test(text))
     return "database-role-switch";
   if (/must be owner of/i.test(text)) return "database-ownership";
@@ -20,4 +22,25 @@ export function databaseDiagnostic(result) {
   if (/SQLSTATE[\s:=(]+42710\b/i.test(text)) return "database-duplicate-object";
   if (/SQLSTATE[\s:=(]+42P01\b/i.test(text)) return "database-missing-relation";
   return "unclassified";
+}
+
+export function rlsFailureSummary(result) {
+  const text = `${result?.stderr ?? ""}\n${result?.stdout ?? ""}`;
+  return {
+    files: [
+      ...new Set(
+        [...text.matchAll(/\bFAIL\s+([0-9]{2}_[a-z0-9_]+\.test\.sql)\b/g)].map(
+          (m) => m[1],
+        ),
+      ),
+    ].slice(0, 16),
+    assertions: [
+      ...new Set(
+        [...text.matchAll(/\bnot ok\s+([0-9]{1,5})\b/g)].map((m) =>
+          Number(m[1]),
+        ),
+      ),
+    ].slice(0, 64),
+    diagnostic: databaseDiagnostic(result),
+  };
 }

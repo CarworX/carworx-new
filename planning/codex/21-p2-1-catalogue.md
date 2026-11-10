@@ -66,7 +66,7 @@ rollback against hosted data. Prefer a forward migration once data is retained.
   = 140 pgTAP assertions. Writes are rolled back in subtransactions; FK-protected
   deletion is distinguished from permission denial. Seed fixtures are verified when present; recovery tests construct the same
   transaction-local fixtures when seeding is disabled.
-- 38 catalogue assertions cover exact columns, grants, view owner, mobile JSON
+- 41 catalogue assertions cover exact columns, grants, view owner, mobile JSON
   invariance under base/radius changes, revocation, labels, audit redaction,
   tenant FKs, coordinate checks, forged metadata, aal1 denial and immutable IDs.
 - The existing 23-assertion catalogue guard now allows only the named capability
@@ -99,3 +99,10 @@ capability before finishing ACL/comment operations. Those operations now run
 with the temporary capability, then SET/INHERIT are disabled. postgres retains
 only explicit SELECT on the public view for dump/introspection. Final capability
 roles remain NOLOGIN/NOBYPASSRLS with no private IDs granted to the view owner.
+
+The ownership-order fix passed startup and advanced recovery to RLS. Added safe
+file/assertion-index diagnostics for remaining failures, removed a non-TAP
+fixture output row, and added declarative public/private ID separation and a
+mobile-only composite foreign key for service areas. Catalogue coverage is now
+181 new assertions, 349 total with Phase 1. Full exact-head results still decide
+readiness for independent review; no skipped or missing test is accepted.

@@ -1,7 +1,10 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { databaseDiagnostic } from "./database-diagnostic.js";
+import {
+  databaseDiagnostic,
+  rlsFailureSummary,
+} from "./database-diagnostic.js";
 
 export function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -30,6 +33,9 @@ export function command(program, args, options = {}) {
   });
   if (result.error || result.status !== 0) {
     console.error(`Command diagnostic: ${databaseDiagnostic(result)}`);
+    console.error(
+      `Safe RLS metadata: ${JSON.stringify(rlsFailureSummary(result))}`,
+    );
   }
   invariant(!result.error && result.status === 0, "Required command failed");
   return result;
