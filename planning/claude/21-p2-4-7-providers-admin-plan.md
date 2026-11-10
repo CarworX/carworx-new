@@ -73,7 +73,7 @@ Same shape as T3: a `SECURITY INVOKER` wrapper in `public` (the only schema Post
 
 ## 5. Audit
 
-`private.write_catalogue_audit` gains details for `listings` (`old_status`, `status`). The three new tables get triggers that log `status`/`decision` and the acting user. `/admin/audit` reads `audit_log` through RLS (admin `aal2`), 50 rows a page, keyset on `id`, optional table filter.
+`private.write_catalogue_audit` is unchanged (its details stay empty, as P2-1 tests require); each status change is audited through its `listing_decisions` row. The three new tables get triggers that log `status`/`decision` and the acting user. `/admin/audit` reads `audit_log` through RLS (admin `aal2`), 50 rows a page, keyset on `id`, optional table filter.
 
 ## 6. Tests
 
