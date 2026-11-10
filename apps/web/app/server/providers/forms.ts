@@ -258,3 +258,14 @@ export function sast(iso: string): string {
   if (Number.isNaN(t)) return "";
   return `${new Date(t + 2 * 3600_000).toISOString().slice(0, 16).replace("T", " ")} SAST`;
 }
+
+/** Admin lists show 50 rows a page. */
+export const PAGE_SIZE = 50;
+
+/** A 1-based page number, at most 1,000; missing means 1, anything else null. */
+export function parsePage(raw: string | null): number | null {
+  if (raw === null) return 1;
+  if (!/^[1-9]\d{0,3}$/.test(raw)) return null;
+  const page = Number(raw);
+  return page <= 1000 ? page : null;
+}

@@ -32,3 +32,35 @@ export function AdminShell({
     </PublicShell>
   );
 }
+
+/** Previous / next links for an admin list. `base` already holds any query. */
+export function Pager({
+  base,
+  page,
+  more,
+}: {
+  base: string;
+  page: number;
+  more: boolean;
+}) {
+  const join = base.endsWith("?") ? "" : "&";
+  if (page === 1 && !more) return null;
+  return (
+    <nav aria-label="Pages" className="mt-4 flex gap-4" data-pager={page}>
+      {page > 1 ? (
+        <a className="cx-tlink" href={`${base}${join}page=${String(page - 1)}`}>
+          Previous
+        </a>
+      ) : null}
+      {more ? (
+        <a
+          className="cx-tlink"
+          href={`${base}${join}page=${String(page + 1)}`}
+          data-next
+        >
+          Next
+        </a>
+      ) : null}
+    </nav>
+  );
+}

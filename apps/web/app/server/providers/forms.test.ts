@@ -179,3 +179,14 @@ describe("sast", () => {
     expect(sast("not a date")).toBe("");
   });
 });
+
+describe("parsePage", () => {
+  it("accepts 1 to 1,000 and defaults to 1", async () => {
+    const { parsePage } = await import("./forms");
+    expect(parsePage(null)).toBe(1);
+    expect(parsePage("2")).toBe(2);
+    expect(parsePage("1000")).toBe(1000);
+    for (const bad of ["0", "1001", "-1", "1.5", "2;drop", ""])
+      expect(parsePage(bad)).toBeNull();
+  });
+});
