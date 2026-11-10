@@ -66,7 +66,7 @@ Same shape as T3: a `SECURITY INVOKER` wrapper in `public` (the only schema Post
 | Table | Admin `aal2` | Organisation member | Claimant / disputer | Anyone else |
 |---|---|---|---|---|
 | `listing_decisions` | read | read (own organisation) | — | nothing |
-| `listing_claims` | read | owner/manager read (claims on their organisation) | read own | nothing |
+| `listing_claims` | read | owner/manager read (claims on their organisation) | read own; a member the transfer displaced reads that claim | nothing |
 | `claim_disputes` | read | — | raiser and claimant read | nothing |
 
 **A10:** no admin or provider page renders a mobile base, a radius centre or a radius. The admin page says "Comes to customers (service area kept private)". The audit details store status changes and decisions only, never reasons, addresses or coordinates (PLAN §9.1 log redaction).
