@@ -102,6 +102,11 @@ create policy listing_claims_claimant_select on public.listing_claims for select
   using (claimant_id = (select auth.uid()));
 create policy listing_claims_controller_select on public.listing_claims for select to authenticated
   using ((select private.has_org_role(organisation_id, array['owner','manager'])));
+-- Someone displaced by an approved transfer can still see that claim, so they
+-- can dispute it (their own revoked membership row is already self-readable).
+create policy listing_claims_displaced_select on public.listing_claims for select to authenticated
+  using (exists (select from public.memberships m
+    where m.id = any (listing_claims.revoked_membership_ids) and m.user_id = (select auth.uid())));
 create policy claim_disputes_party_select on public.claim_disputes for select to authenticated
   using (raised_by = (select auth.uid())
     or exists (select from public.listing_claims c where c.id = claim_disputes.claim_id and c.claimant_id = (select auth.uid())));

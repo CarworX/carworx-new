@@ -20,7 +20,7 @@ insert into auth.users (id, email, email_confirmed_at) values
   ('b4000000-0000-4000-8000-000000000007', 'una.unconfirmed@unconfirmed.test', null);
 insert into private.platform_admins (user_id) values ('b4000000-0000-4000-8000-000000000006');
 
-select plan(80);
+select plan(81);
 
 -- ===== Application ==========================================================
 set local role anon;
@@ -199,6 +199,7 @@ select is((select m.role || '/' || m.status from public.memberships m join publi
 set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
 select is((select count(*)::int from public.listings where public_id = current_setting('t.fixed')::uuid), 0, 'former owner loses access on the next query');
+select is((select count(*)::int from public.listing_claims where id = current_setting('t.dee')::uuid), 1, 'displaced owner can still see the claim that displaced them');
 select ok((select set_config('t.d2', public.dispute_claim(current_setting('t.dee')::uuid,'Synthetic: transfer was wrong, I still run it')::text, true)) is not null, 'displaced owner disputes the approved claim');
 reset role;
 set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal2"}';
