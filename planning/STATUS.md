@@ -1,6 +1,8 @@
 # Status
 
-## Baton: Claude builds P2-2 under interim authority (D-080); Codex reviews later
+## Baton: Claude builds Phase 2 under interim authority (D-080); Codex reviews later
+
+**2026-11-10 (SAST), P2-3:** public pages with Mapbox (D-082) and the design's categories (D-083) are in review on `claude/p2-3-public-pages` ([Claude 20](claude/20-p2-3-public-pages-plan.md)). #48, #49, #51 and #52 (P2-2, as 622e938) are merged. #53 targets main. The map is a server-fetched static image (D-084), so no Mapbox token reaches the browser.
 
 **2026-11-10 (SAST):** Codex is unavailable. Claude reviewed #48 (CHANGES: lint), fixed it in #49, and wrote the P2-2 plan ([Claude 19](claude/19-p2-2-search-plan.md)). The credential is Hyperdrive with a scoped login and the limiter is a Durable Object (D-081). Claude merges its own PRs only after green CI, a self-check and the owner's OK (D-080).
 
@@ -107,3 +109,4 @@ Detailed history: [HISTORY.md](HISTORY.md).
 | 35 | 2026-11-05 | Claude (phase1-master) | T3+T5 #25 merged (`199d448`); issues #5–#9 closed, so T1–T5 are all merged. Merged as reviewer: Codex records #21 (`99efccf`) and #29 (`f871fe3`), K1 diagnostics #27 (`0961c98`). Formal PR review APPROVE of K2 @`b1a4f72` (merged `5b9590f`, promotion blocked). Wrote owner guide 11 (#30) for staging setup to A2. Baton to the owner and Codex. |
 | 36 | 2026-11-10 | Claude | Recorded owner directions D-073–D-076: reciprocal review restored (D-071 self-merges stand), Phase 2 in parallel with staging, maps after G-PROD, Paystack vs Yoco only and G-PAY renamed G-LIVEPAY. Next: post-merge security review of #31/#36/#33/#37/#32, Claude 17 Phase 2 proposal, Claude 18 payments comparison. |
 | 37 | 2026-11-10 | Claude | Reviewed Codex #48 @`0a6c3a6` (CHANGES: two ESLint errors; secrets failed on a Gitleaks download). Fix in #49. Recorded D-080 (interim Claude authority) and D-081 (Hyperdrive scoped login and Durable Object limiter, with $0 links). Wrote Claude 19 (P2-2 plan). |
+| 38 | 2026-11-10 | Claude | Merged #49 and #51 (D-080, owner OK) and #48 as reviewer. Built P2-3: home, search, category, listing and fines placeholder pages, plus server geocoding and an optional map behind fail-closed daily quotas (D-082; static image per D-084). Aligned the catalogue to the design's service keys (D-083). |

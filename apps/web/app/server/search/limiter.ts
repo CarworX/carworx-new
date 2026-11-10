@@ -13,6 +13,15 @@ export interface Window {
 }
 export const IP_WINDOW: Window = { limit: 30, windowMs: 60_000 };
 export const SESSION_WINDOW: Window = { limit: 60, windowMs: 600_000 };
+/**
+ * Global daily quotas that keep Mapbox inside its free tier (D-082). Mapbox
+ * has no spending cap and bills overages automatically, so these fail closed.
+ * Free tiers read 2026-11-10 (https://www.mapbox.com/pricing): 100,000
+ * temporary geocoding requests and 50,000 GL JS map loads per month.
+ * 31 x 3,000 = 93,000 and 31 x 1,500 = 46,500 stay below them.
+ */
+export const GEOCODE_DAILY: Window = { limit: 3_000, windowMs: 86_400_000 };
+export const MAP_DAILY: Window = { limit: 1_500, windowMs: 86_400_000 };
 export const LIMITER_TIMEOUT_MS = 300;
 
 export interface Counter {
@@ -63,7 +72,7 @@ export class SearchLimiter {
   async fetch(request: Request): Promise<Response> {
     try {
       const body = await request.json<Partial<Window>>();
-      const window = [IP_WINDOW, SESSION_WINDOW].find(
+      const window = [IP_WINDOW, SESSION_WINDOW, GEOCODE_DAILY, MAP_DAILY].find(
         (w) => w.limit === body.limit && w.windowMs === body.windowMs,
       );
       if (!window) return Response.json({}, { status: 400 });
@@ -170,6 +179,23 @@ export async function checkSearchLimits(
         retryAfterSeconds: Math.max(...limited.map((r) => r.retryAfterSeconds)),
       };
     return { kind: "allowed" };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
+/** One global counter per quota name. Any failure is "unavailable". */
+export async function checkQuota(
+  namespace: LimiterNamespace | undefined,
+  name: "geocode" | "map",
+): Promise<LimitResult> {
+  if (!namespace) return { kind: "unavailable" };
+  try {
+    return await ask(
+      namespace,
+      `quota:${name}`,
+      name === "geocode" ? GEOCODE_DAILY : MAP_DAILY,
+    );
   } catch {
     return { kind: "unavailable" };
   }

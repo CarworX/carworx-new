@@ -1,0 +1,263 @@
+/**
+ * The /search page model (P2-3). One rate-limit decision per request, then:
+ * area text -> daily geocode quota -> temporary geocode (never stored) ->
+ * the shared P2-2 core. "More" links carry only rounded coordinates, the
+ * visitor's own area label and the signed cursors; they never re-geocode.
+ * Both groups stay on screen: a "more" link advances one group and carries
+ * the other group's current cursor, so the visitor can alternate.
+ */
+import { findCategory } from "../../catalogue/taxonomy";
+import type { AreaCandidate, GeocodeResult } from "../geo/geocode";
+import { normaliseArea } from "../geo/geocode";
+import { signMapPins } from "../geo/staticMap";
+import {
+  pgRound,
+  ensureSearchSession,
+  runSearch,
+  RADII,
+  DEFAULT_RADIUS,
+  type SearchBody,
+  type SearchDeps,
+} from "./handler";
+import type { LimitResult } from "./limiter";
+
+export interface PageDeps extends SearchDeps {
+  quota: () => Promise<LimitResult>;
+  geocode: (area: string) => Promise<GeocodeResult>;
+  /** True only when the Mapbox server token is configured (D-084). */
+  mapEnabled?: boolean;
+}
+
+export interface Choice {
+  label: string;
+  href: string;
+}
+
+export type PageModel =
+  | { kind: "start"; category: string; radius: number }
+  | { kind: "invalid_area"; area: string; category: string; radius: number }
+  | { kind: "no_area"; area: string; category: string; radius: number }
+  | {
+      kind: "area_unavailable";
+      area: string;
+      category: string;
+      radius: number;
+    }
+  | { kind: "choose"; area: string; choices: Choice[] }
+  | { kind: "rate_limited"; retryAfterSeconds: number }
+  | { kind: "unavailable" }
+  | { kind: "bad_request" }
+  | {
+      kind: "results";
+      /** The searched point as rounded text, for the refine form. */
+      lat: string;
+      lng: string;
+      near: string;
+      category: string;
+      radius: number;
+      body: SearchBody;
+      radiusLinks: { radius: number; href: string; current: boolean }[];
+      moreFixed: string | null;
+      moreMobile: string | null;
+      /** Link that reloads this page with the map (map=1); null if no map. */
+      showMap: string | null;
+      /** Same-origin image of the signed FIXED pins, only when asked for. */
+      mapImage: string | null;
+    };
+
+export interface PageResult {
+  model: PageModel;
+  /** A new search-session cookie to set, if one was issued. */
+  cookie?: string;
+}
+
+const round3 = (n: number) => pgRound(n, 3);
+const NEAR = /^[\p{L}\p{N} .,'’()-]{1,120}$/u;
+
+function searchHref(p: {
+  lat: string;
+  lng: string;
+  near: string;
+  category: string;
+  radius: number;
+  fixed_cursor?: string;
+  mobile_cursor?: string;
+  map?: boolean;
+}): string {
+  const q = new URLSearchParams({ lat: p.lat, lng: p.lng });
+  if (p.near) q.set("near", p.near);
+  if (p.category) q.set("category", p.category);
+  q.set("radius", String(p.radius));
+  if (p.fixed_cursor) q.set("fixed_cursor", p.fixed_cursor);
+  if (p.mobile_cursor) q.set("mobile_cursor", p.mobile_cursor);
+  if (p.map) q.set("map", "1");
+  return `/search?${q.toString()}`;
+}
+
+export async function buildSearchPage(
+  request: Request,
+  deps: PageDeps,
+): Promise<PageResult> {
+  const url = new URL(request.url);
+  const get = (k: string) => url.searchParams.get(k);
+  const categoryParam = get("category") ?? "";
+  const category = findCategory(categoryParam) ? categoryParam : "";
+  const radiusParam = Number(get("radius") ?? DEFAULT_RADIUS);
+  const radius = (RADII as readonly number[]).includes(radiusParam)
+    ? radiusParam
+    : DEFAULT_RADIUS;
+  const areaText = (get("area") ?? "").trim();
+  const latText = get("lat") ?? "";
+  const lngText = get("lng") ?? "";
+  // Typed area text wins over a carried point: the results form carries the
+  // current point so refining keeps it, and typing a new area replaces it.
+  const byArea = areaText !== "";
+  const hasPoint = !byArea && latText !== "" && lngText !== "";
+  if (!hasPoint && !byArea)
+    return { model: { kind: "start", category, radius } };
+
+  const resolved = ensureSearchSession(request);
+  const cookie = resolved.cookie;
+  const checked = await deps.limits(
+    request.headers.get("CF-Connecting-IP") ?? "unknown",
+    resolved.session,
+  );
+  const withCookie = (model: PageModel): PageResult =>
+    cookie === undefined ? { model } : { model, cookie };
+  if (checked.kind === "unavailable")
+    return withCookie({ kind: "unavailable" });
+  if (checked.kind === "limited")
+    return withCookie({
+      kind: "rate_limited",
+      retryAfterSeconds: checked.retryAfterSeconds,
+    });
+
+  let lat = latText;
+  let lng = lngText;
+  let near =
+    hasPoint && NEAR.test(get("near") ?? "") ? (get("near") ?? "") : "";
+  if (byArea) {
+    const area = normaliseArea(areaText);
+    if (!area)
+      return withCookie({
+        kind: "invalid_area",
+        area: areaText.slice(0, 80),
+        category,
+        radius,
+      });
+    const quota = await deps.quota();
+    if (quota.kind !== "allowed")
+      return withCookie({
+        kind: "area_unavailable",
+        area,
+        category,
+        radius,
+      });
+    const found = await deps.geocode(area);
+    if (found.kind === "unavailable" || found.kind === "invalid")
+      return withCookie({
+        kind: "area_unavailable",
+        area,
+        category,
+        radius,
+      });
+    const candidates: AreaCandidate[] = found.candidates;
+    if (candidates.length === 0)
+      return withCookie({ kind: "no_area", area, category, radius });
+    if (candidates.length > 1)
+      return withCookie({
+        kind: "choose",
+        area,
+        choices: candidates.map((c) => ({
+          label: c.label,
+          href: searchHref({
+            lat: round3(c.lat),
+            lng: round3(c.lng),
+            near: c.label,
+            category,
+            radius,
+          }),
+        })),
+      });
+    const only = candidates[0];
+    if (!only) return withCookie({ kind: "unavailable" });
+    lat = round3(only.lat);
+    lng = round3(only.lng);
+    near = only.label;
+  }
+
+  const params = new URLSearchParams({ lat, lng, radius: String(radius) });
+  if (category) params.set("category", category);
+  for (const key of ["fixed_cursor", "mobile_cursor"]) {
+    const v = get(key);
+    if (v) params.set(key, v);
+  }
+  const outcome = await runSearch(request, params, {
+    ...deps,
+    session: resolved,
+    checked,
+    bothGroups: true,
+  });
+  if (outcome.status !== 200)
+    return withCookie(
+      outcome.status === 400
+        ? { kind: "bad_request" }
+        : { kind: "unavailable" },
+    );
+  const base = { lat, lng, near, category };
+  const currentFixed = get("fixed_cursor");
+  const currentMobile = get("mobile_cursor");
+  const pins = (outcome.body.fixed?.items ?? []).flatMap((f) =>
+    f.public_latitude !== null && f.public_longitude !== null
+      ? [{ lat: f.public_latitude, lng: f.public_longitude }]
+      : [],
+  );
+  const mapOn =
+    deps.mapEnabled === true &&
+    typeof deps.cursorKey === "string" &&
+    deps.cursorKey.length >= 32 &&
+    pins.length > 0;
+  const signed =
+    mapOn && get("map") === "1" && deps.cursorKey
+      ? await signMapPins(deps.cursorKey, pins)
+      : null;
+  const here = {
+    ...base,
+    radius,
+    ...(currentFixed ? { fixed_cursor: currentFixed } : {}),
+    ...(currentMobile ? { mobile_cursor: currentMobile } : {}),
+  };
+  return withCookie({
+    kind: "results",
+    lat,
+    lng,
+    near,
+    category,
+    radius,
+    body: outcome.body,
+    radiusLinks: RADII.map((r) => ({
+      radius: r,
+      href: searchHref({ ...base, radius: r }),
+      current: r === radius,
+    })),
+    // Each "more" link advances one group and keeps the other where it is.
+    moreFixed: outcome.body.fixed?.next
+      ? searchHref({
+          ...base,
+          radius,
+          fixed_cursor: outcome.body.fixed.next,
+          ...(currentMobile ? { mobile_cursor: currentMobile } : {}),
+        })
+      : null,
+    moreMobile: outcome.body.mobile?.next
+      ? searchHref({
+          ...base,
+          radius,
+          mobile_cursor: outcome.body.mobile.next,
+          ...(currentFixed ? { fixed_cursor: currentFixed } : {}),
+        })
+      : null,
+    showMap: mapOn && !signed ? searchHref({ ...here, map: true }) : null,
+    mapImage: signed ? `/search/map?m=${encodeURIComponent(signed)}` : null,
+  });
+}

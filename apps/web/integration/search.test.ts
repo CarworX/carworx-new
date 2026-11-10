@@ -10,7 +10,7 @@ import { Browser, sql, stack, workerEnv } from "./harness";
 
 /** The same single bound call the Worker's db module makes. */
 const SEARCH_SQL =
-  "select * from api.search_listings($1, $2, $3, $4, $5, $6, $7, $8)";
+  "select * from api.search_listings($1, $2, $3, $4, $5, $6, $7, $8, $9)";
 interface Row {
   public_id: string;
   mode: string;
@@ -22,6 +22,7 @@ interface Args {
   lat: number;
   lng: number;
   service: string;
+  category: string | null;
   radius: number;
   group: "fixed" | "mobile";
   afterBucket: number | null;
@@ -37,6 +38,7 @@ function createCatalogueSearch(connectionString: string) {
         a.lat,
         a.lng,
         a.service,
+        a.category,
         a.radius,
         a.group,
         a.afterBucket,
@@ -140,6 +142,7 @@ const base = {
   lat: -33.9,
   lng: 18.4,
   service: "srch-int",
+  category: null,
   radius: 25,
   afterBucket: null,
   afterId: null,

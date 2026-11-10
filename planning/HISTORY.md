@@ -294,3 +294,11 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - 2026-11-10 (SAST) — D-079: owner usage limit delegates immediate P2-2 planning/implementation continuation to Claude, stacked on Codex's published hardening branch. Codex review is deferred, not waived for merging Claude-authored work. Local 44-test check passed; new full CI/runtime evidence remains pending.
 
 - 2026-11-10 (SAST) — Claude: #48 review CHANGES @0a6c3a6 (lint); fix #49 @f249cc0. D-080 interim authority; D-081 P2-2 credential (Hyperdrive and `catalogue_server`) and limiter (SQLite Durable Object). Claude 19 P2-2 plan. No hosted changes.
+
+- 2026-11-10 (SAST) — Claude: #49, #48 and #51 merged. D-082 (Mapbox with fail-closed quotas, no spending cap documented by Mapbox) and D-083 (design categories). P2-3 pages and category-aware search. No hosted changes.
+
+- 2026-11-10 (SAST) — Claude: #52 bot finding fixed (each group's cursor is bound to its own database rounding) and #52 merged under D-080 as 622e938. #53 retargeted to main. D-084: the map becomes a server-fetched Static Images PNG, because a reusable `pk.` token could bypass the $0 map quota (#53 bot P1). No hosted changes.
+
+- 2026-11-10 (SAST) — Claude: #53 alternating pagination fixed. The /search page keeps both groups on screen, and each "more" link carries the other group's current cursor. A regression test walks fixed 1→2, mobile 1→2, fixed 2→3 and mobile 2→3 with no gaps or repeats, and it fails without the fix. The JSON API contract is unchanged.
+
+- 2026-11-10 (SAST) — Claude: #53 Codex bot findings fixed. (1) Mobile cards claim "serves your area" only on location-search results; browsing shows the public region. (2) The results form carries the searched point as hidden fields, so changing the service or distance refines the same search without JavaScript, and typed area text replaces the point.

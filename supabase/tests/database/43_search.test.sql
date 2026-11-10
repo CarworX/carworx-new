@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
-select plan(48);
+select plan(53);
 
 -- Fixture ----------------------------------------------------------------------
 insert into public.organisations(id, name) values ('5ea0c000-0000-4000-8000-0000000000a1', 'Search fixture (synthetic)');
@@ -47,21 +47,21 @@ select l.public_id, l.organisation_id,
 from public.listings l where l.organisation_id = '5ea0c000-0000-4000-8000-0000000000a1' and l.mode = 'mobile';
 
 -- Structure and grants ------------------------------------------------------------
-select is(pg_get_userbyid((select proowner from pg_proc where oid = 'private.mobile_eligible_ids(double precision,double precision,text,uuid,integer)'::regprocedure))::text,
+select is(pg_get_userbyid((select proowner from pg_proc where oid = 'private.mobile_eligible_ids(double precision,double precision,text[],uuid,integer)'::regprocedure))::text,
   'listing_eligibility', 'eligibility helper owned by listing_eligibility');
-select is(pg_get_userbyid((select proowner from pg_proc where oid = 'api.search_listings(double precision,double precision,text,integer,text,integer,uuid,integer)'::regprocedure))::text,
+select is(pg_get_userbyid((select proowner from pg_proc where oid = 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)'::regprocedure))::text,
   'listing_projection', 'wrapper owned by listing_projection');
 select is_empty($$select p.oid::regprocedure::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
   where n.nspname in ('api','private') and p.proname in ('search_listings','mobile_eligible_ids')
   and not (p.prosecdef and p.provolatile = 's' and p.proconfig @> array['search_path=""'])$$,
   'both functions are STABLE SECURITY DEFINER with an empty search_path (A17: no writes)');
-select ok(not has_function_privilege('anon', 'api.search_listings(double precision,double precision,text,integer,text,integer,uuid,integer)', 'execute'), 'anon cannot execute wrapper');
-select ok(not has_function_privilege('authenticated', 'api.search_listings(double precision,double precision,text,integer,text,integer,uuid,integer)', 'execute'), 'authenticated cannot execute wrapper');
-select ok(not has_function_privilege('service_role', 'api.search_listings(double precision,double precision,text,integer,text,integer,uuid,integer)', 'execute'), 'service_role cannot execute wrapper');
-select ok(has_function_privilege('catalogue_server', 'api.search_listings(double precision,double precision,text,integer,text,integer,uuid,integer)', 'execute'), 'catalogue_server can execute wrapper');
-select ok(not has_function_privilege('catalogue_server', 'private.mobile_eligible_ids(double precision,double precision,text,uuid,integer)', 'execute')
-  and not has_function_privilege('anon', 'private.mobile_eligible_ids(double precision,double precision,text,uuid,integer)', 'execute')
-  and not has_function_privilege('authenticated', 'private.mobile_eligible_ids(double precision,double precision,text,uuid,integer)', 'execute'),
+select ok(not has_function_privilege('anon', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'anon cannot execute wrapper');
+select ok(not has_function_privilege('authenticated', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'authenticated cannot execute wrapper');
+select ok(not has_function_privilege('service_role', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'service_role cannot execute wrapper');
+select ok(has_function_privilege('catalogue_server', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'catalogue_server can execute wrapper');
+select ok(not has_function_privilege('catalogue_server', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid,integer)', 'execute')
+  and not has_function_privilege('anon', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid,integer)', 'execute')
+  and not has_function_privilege('authenticated', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid,integer)', 'execute'),
   'only the projection owner can execute the eligibility helper');
 select ok(not has_schema_privilege('anon', 'api', 'usage') and not has_schema_privilege('authenticated', 'api', 'usage')
   and not has_schema_privilege('catalogue_server', 'private', 'usage'), 'no client usage on api; server has no usage on private');
@@ -83,11 +83,11 @@ grant catalogue_server to postgres with set true, inherit false;
 
 -- Helper for the remaining assertions: call as catalogue_server.
 create function pg_temp.s(p_group text, p_service text, p_radius integer, p_bucket integer, p_after uuid, p_limit integer,
-  p_lat double precision default -33.9, p_lng double precision default 18.4)
+  p_lat double precision default -33.9, p_lng double precision default 18.4, p_category text default null)
 returns setof jsonb language plpgsql as $$
 begin
   set local role catalogue_server;
-  return query select to_jsonb(r) from api.search_listings(p_lat, p_lng, p_service, p_radius, p_group, p_bucket, p_after, p_limit) r;
+  return query select to_jsonb(r) from api.search_listings(p_lat, p_lng, p_service, p_category, p_radius, p_group, p_bucket, p_after, p_limit) r;
   reset role;
 end $$;
 
@@ -188,6 +188,20 @@ begin
 end $$;
 select throws_ok($$select pg_temp.as_server('select * from public.listing_public')$$, '42501', null, 'server role cannot read the projection directly');
 select throws_ok($$select pg_temp.as_server('select centre_latitude from public.service_areas')$$, '42501', null, 'server role cannot read private geometry');
+
+-- P2-3 category filter (D-083): a category covers its subcategories' services
+insert into public.categories(slug, name, parent_slug) values ('srch-sub', 'Search subcategory', 'srch-cat');
+update public.services set category_slug = 'srch-sub' where slug = 'srch-mobile';
+select is((select count(*)::integer from pg_temp.s('mobile', null, 25, null, null, 21, -33.9, 18.4, 'srch-cat')), 21,
+  'top-level category includes subcategory services (mobile)');
+select ok(exists(select from pg_temp.s('fixed', null, 25, null, null, 21, -33.9, 18.4, 'srch-cat') j where j->>'service_slug' = 'srch-fixed'),
+  'top-level category includes its own services (fixed)');
+select is((select count(*)::integer from pg_temp.s('fixed', null, 25, null, null, 21, -33.9, 18.4, 'srch-sub')), 0,
+  'subcategory excludes sibling and parent services');
+select is((select count(*)::integer from pg_temp.s('mobile', null, 25, null, null, 21, -33.9, 18.4, 'no-such-category')), 0,
+  'unknown category returns nothing');
+select throws_ok($$select * from pg_temp.s('fixed', 'srch-fixed', 25, null, null, 20, -33.9, 18.4, 'srch-cat')$$, '22023', null,
+  'service and category together rejected');
 
 select * from finish();
 rollback;

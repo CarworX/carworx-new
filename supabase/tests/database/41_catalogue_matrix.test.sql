@@ -44,14 +44,16 @@ insert into private.platform_admins (user_id) values
 
 -- P2-1 defaults from Claude 17 section 3. Gauteng is a reversible synthetic
 -- fixture metro, not an owner-confirmed launch region or provider supply.
-insert into public.categories(slug,name) values
- ('wash-and-valet','Wash and valet'), ('mechanical-service','Mechanical service'),
- ('tyres','Tyres'), ('panel-and-paint','Panel and paint'),
- ('auto-electrical','Auto electrical'), ('mobile-mechanic','Mobile mechanic');
+insert into public.categories(slug,name,parent_slug) values
+ ('wash-and-detailing','Wash & Detailing',null), ('repairs-and-maintenance','Repairs & Maintenance',null),
+ ('glass-repair-and-replacement','Glass Repair & Replacement',null), ('tyres-and-wheel-alignment','Tyres & Wheel Alignment',null),
+ ('mechanical-service','Mechanical service','repairs-and-maintenance'), ('panel-and-paint','Panel and paint','repairs-and-maintenance'),
+ ('auto-electrical','Auto electrical','repairs-and-maintenance'), ('mobile-mechanic','Mobile mechanic','repairs-and-maintenance');
 insert into public.services(slug,category_slug,name) values
- ('wash','wash-and-valet','Synthetic wash'), ('service','mechanical-service','Synthetic service'),
- ('tyres','tyres','Synthetic tyres'), ('paint','panel-and-paint','Synthetic paint'),
- ('electrical','auto-electrical','Synthetic electrical'), ('mobile-repair','mobile-mechanic','Synthetic mobile repair');
+ ('wash','wash-and-detailing','Synthetic wash'), ('service','mechanical-service','Synthetic service'),
+ ('tyres','tyres-and-wheel-alignment','Synthetic tyres'), ('paint','panel-and-paint','Synthetic paint'),
+ ('electrical','auto-electrical','Synthetic electrical'), ('mobile-repair','mobile-mechanic','Synthetic mobile repair'),
+ ('glass','glass-repair-and-replacement','Synthetic glass repair');
 insert into public.coordinate_sources(id,organisation_id,source_kind,licence_note) values
  ('ca7a0000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','provider_supplied','Synthetic permanent fixture; no geocoding service'),
  ('ca7a0000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-0000000000b2','manual_verified','Synthetic permanent fixture; no geocoding service');
@@ -95,12 +97,12 @@ insert into public.memberships(organisation_id,user_id,role,status) values ('5ee
 reset role;
 set local role anon;
 set local request.jwt.claims = '{"sub":"","role":"anon","aal":null}';
-select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-valet'$sql$),-1,'anonymous categories select');
+select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-detailing'$sql$),-1,'anonymous categories select');
 select is(tests.catalogue_effect($sql$insert into public.categories(slug,name) values ('matrix-new','Synthetic matrix')$sql$),-1,'anonymous categories insert');
-select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-valet'$sql$),-1,'anonymous categories update');
-select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-valet'$sql$),-1,'anonymous categories delete');
+select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-detailing'$sql$),-1,'anonymous categories update');
+select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-detailing'$sql$),-1,'anonymous categories delete');
 select is(tests.catalogue_effect($sql$select * from public.services where slug='service'$sql$),-1,'anonymous services select');
-select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-valet','Synthetic matrix')$sql$),-1,'anonymous services insert');
+select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-detailing','Synthetic matrix')$sql$),-1,'anonymous services insert');
 select is(tests.catalogue_effect($sql$update public.services set name='Synthetic changed' where slug='service'$sql$),-1,'anonymous services update');
 select is(tests.catalogue_effect($sql$delete from public.services where slug='service'$sql$),-1,'anonymous services delete');
 select is(tests.catalogue_effect($sql$select * from public.coordinate_sources where id='ca7a0000-0000-4000-8000-000000000001'$sql$),-1,'anonymous coordinate_sources select');
@@ -127,12 +129,12 @@ select is(tests.catalogue_effect($sql$delete from public.verifications where id=
 reset role;
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"5eed9999-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
-select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-valet'$sql$),0,'self categories select');
+select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-detailing'$sql$),0,'self categories select');
 select is(tests.catalogue_effect($sql$insert into public.categories(slug,name) values ('matrix-new','Synthetic matrix')$sql$),-1,'self categories insert');
-select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-valet'$sql$),0,'self categories update');
-select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-valet'$sql$),0,'self categories delete');
+select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-detailing'$sql$),0,'self categories update');
+select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-detailing'$sql$),0,'self categories delete');
 select is(tests.catalogue_effect($sql$select * from public.services where slug='service'$sql$),0,'self services select');
-select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-valet','Synthetic matrix')$sql$),-1,'self services insert');
+select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-detailing','Synthetic matrix')$sql$),-1,'self services insert');
 select is(tests.catalogue_effect($sql$update public.services set name='Synthetic changed' where slug='service'$sql$),0,'self services update');
 select is(tests.catalogue_effect($sql$delete from public.services where slug='service'$sql$),0,'self services delete');
 select is(tests.catalogue_effect($sql$select * from public.coordinate_sources where id='ca7a0000-0000-4000-8000-000000000001'$sql$),0,'self coordinate_sources select');
@@ -159,12 +161,12 @@ select is(tests.catalogue_effect($sql$delete from public.verifications where id=
 reset role;
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"5eed0000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal1"}';
-select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-valet'$sql$),0,'member categories select');
+select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-detailing'$sql$),0,'member categories select');
 select is(tests.catalogue_effect($sql$insert into public.categories(slug,name) values ('matrix-new','Synthetic matrix')$sql$),-1,'member categories insert');
-select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-valet'$sql$),0,'member categories update');
-select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-valet'$sql$),0,'member categories delete');
+select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-detailing'$sql$),0,'member categories update');
+select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-detailing'$sql$),0,'member categories delete');
 select is(tests.catalogue_effect($sql$select * from public.services where slug='service'$sql$),0,'member services select');
-select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-valet','Synthetic matrix')$sql$),-1,'member services insert');
+select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-detailing','Synthetic matrix')$sql$),-1,'member services insert');
 select is(tests.catalogue_effect($sql$update public.services set name='Synthetic changed' where slug='service'$sql$),0,'member services update');
 select is(tests.catalogue_effect($sql$delete from public.services where slug='service'$sql$),0,'member services delete');
 select is(tests.catalogue_effect($sql$select * from public.coordinate_sources where id='ca7a0000-0000-4000-8000-000000000001'$sql$),1,'member coordinate_sources select');
@@ -191,12 +193,12 @@ select is(tests.catalogue_effect($sql$delete from public.verifications where id=
 reset role;
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"5eed0000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal1"}';
-select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-valet'$sql$),0,'other categories select');
+select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-detailing'$sql$),0,'other categories select');
 select is(tests.catalogue_effect($sql$insert into public.categories(slug,name) values ('matrix-new','Synthetic matrix')$sql$),-1,'other categories insert');
-select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-valet'$sql$),0,'other categories update');
-select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-valet'$sql$),0,'other categories delete');
+select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-detailing'$sql$),0,'other categories update');
+select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-detailing'$sql$),0,'other categories delete');
 select is(tests.catalogue_effect($sql$select * from public.services where slug='service'$sql$),0,'other services select');
-select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-valet','Synthetic matrix')$sql$),-1,'other services insert');
+select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-detailing','Synthetic matrix')$sql$),-1,'other services insert');
 select is(tests.catalogue_effect($sql$update public.services set name='Synthetic changed' where slug='service'$sql$),0,'other services update');
 select is(tests.catalogue_effect($sql$delete from public.services where slug='service'$sql$),0,'other services delete');
 select is(tests.catalogue_effect($sql$select * from public.coordinate_sources where id='ca7a0000-0000-4000-8000-000000000001'$sql$),0,'other coordinate_sources select');
@@ -223,12 +225,12 @@ select is(tests.catalogue_effect($sql$delete from public.verifications where id=
 reset role;
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"5eed0000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal2"}';
-select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-valet'$sql$),1,'admin categories select');
+select is(tests.catalogue_effect($sql$select * from public.categories where slug='wash-and-detailing'$sql$),1,'admin categories select');
 select is(tests.catalogue_effect($sql$insert into public.categories(slug,name) values ('matrix-new','Synthetic matrix')$sql$),1,'admin categories insert');
-select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-valet'$sql$),1,'admin categories update');
-select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-valet'$sql$),-2,'admin categories delete');
+select is(tests.catalogue_effect($sql$update public.categories set name='Synthetic changed' where slug='wash-and-detailing'$sql$),1,'admin categories update');
+select is(tests.catalogue_effect($sql$delete from public.categories where slug='wash-and-detailing'$sql$),-2,'admin categories delete');
 select is(tests.catalogue_effect($sql$select * from public.services where slug='service'$sql$),1,'admin services select');
-select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-valet','Synthetic matrix')$sql$),1,'admin services insert');
+select is(tests.catalogue_effect($sql$insert into public.services(slug,category_slug,name) values ('matrix-new','wash-and-detailing','Synthetic matrix')$sql$),1,'admin services insert');
 select is(tests.catalogue_effect($sql$update public.services set name='Synthetic changed' where slug='service'$sql$),1,'admin services update');
 select is(tests.catalogue_effect($sql$delete from public.services where slug='service'$sql$),-2,'admin services delete');
 select is(tests.catalogue_effect($sql$select * from public.coordinate_sources where id='ca7a0000-0000-4000-8000-000000000001'$sql$),1,'admin coordinate_sources select');

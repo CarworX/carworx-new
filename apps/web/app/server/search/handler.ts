@@ -32,6 +32,7 @@ const ALLOWED = new Set([
   "lat",
   "lng",
   "service",
+  "category",
   "radius",
   "limit",
   "fixed_cursor",
@@ -42,6 +43,7 @@ export interface SearchArgs {
   lat: number;
   lng: number;
   service: string | null;
+  category: string | null;
   radius: number;
   group: SearchGroup;
   afterBucket: number | null;
@@ -65,6 +67,16 @@ export interface SearchRow {
   distance_bucket: number | null;
 }
 export interface SearchDeps {
+  /** A session already resolved by the caller (the /search page). */
+  session?: { session: string; cookie: string | undefined };
+  /** A limit decision already made for this request; skips a second count. */
+  checked?: LimitResult;
+  /**
+   * Always return both groups, a group without a cursor from its first page.
+   * The /search page uses this so a "more" link for one group keeps the
+   * other on screen at its current position (alternating pagination).
+   */
+  bothGroups?: boolean;
   cursorKey: string | undefined;
   limits: (ip: string, session: string) => Promise<LimitResult>;
   search: ((args: SearchArgs) => Promise<SearchRow[]>) | undefined;
@@ -75,6 +87,7 @@ interface Query {
   lat: number;
   lng: number;
   service: string | null;
+  category: string | null;
   radius: number;
   limit: number;
   fixedCursor: string | null;
@@ -96,13 +109,13 @@ function json(
   return new Response(JSON.stringify(body), { status, headers });
 }
 
-function parse(url: URL): Query | null {
+function parse(params: URLSearchParams): Query | null {
   const seen = new Set<string>();
-  for (const key of url.searchParams.keys()) {
+  for (const key of params.keys()) {
     if (!ALLOWED.has(key) || seen.has(key)) return null;
     seen.add(key);
   }
-  const get = (k: string) => url.searchParams.get(k);
+  const get = (k: string) => params.get(k);
   const latText = get("lat"),
     lngText = get("lng");
   if (!latText || !lngText || !DECIMAL.test(latText) || !DECIMAL.test(lngText))
@@ -112,6 +125,9 @@ function parse(url: URL): Query | null {
   if (!(lat >= -35 && lat <= -22 && lng >= 16 && lng <= 33)) return null;
   const service = get("service");
   if (service !== null && !SLUG.test(service)) return null;
+  const category = get("category");
+  if (category !== null && (!SLUG.test(category) || service !== null))
+    return null;
   const radiusText = get("radius");
   const radius = radiusText === null ? DEFAULT_RADIUS : Number(radiusText);
   if (
@@ -132,6 +148,7 @@ function parse(url: URL): Query | null {
     lat,
     lng,
     service,
+    category,
     radius,
     limit,
     fixedCursor: get("fixed_cursor"),
@@ -160,7 +177,7 @@ export function pgRound(x: number, dp: number): string {
  * so a cursor never carries over to a different rounded search point.
  */
 export function canonicalQuery(
-  q: Pick<Query, "lat" | "lng" | "service" | "radius" | "limit">,
+  q: Pick<Query, "lat" | "lng" | "service" | "category" | "radius" | "limit">,
   group: SearchGroup,
 ): string {
   const dp = group === "fixed" ? 3 : 2;
@@ -169,13 +186,14 @@ export function canonicalQuery(
     pgRound(q.lat, dp),
     pgRound(q.lng, dp),
     q.service ?? "",
+    q.category ?? "",
     String(q.radius),
     String(q.limit),
   ].join("|");
 }
 
-function publicItem(row: SearchRow, group: SearchGroup) {
-  const base = {
+function baseItem(row: SearchRow) {
+  return {
     public_id: row.public_id,
     display_name: row.display_name,
     description: row.description,
@@ -186,15 +204,29 @@ function publicItem(row: SearchRow, group: SearchGroup) {
     category_name: row.category_name,
     verification_labels: row.verification_labels,
   };
-  if (group === "mobile") return { ...base, coverage: "approximate" as const };
+}
+export type MobileItem = ReturnType<typeof baseItem> & {
+  coverage: "approximate";
+};
+export type FixedItem = ReturnType<typeof baseItem> & {
+  public_address: string | null;
+  public_latitude: number | null;
+  public_longitude: number | null;
+  distance_km: number;
+  distance_kind: "straight-line";
+};
+function fixedItem(row: SearchRow): FixedItem {
   return {
-    ...base,
+    ...baseItem(row),
     public_address: row.public_address,
     public_latitude: row.public_latitude,
     public_longitude: row.public_longitude,
     distance_km: (row.distance_bucket ?? 0) / 10,
-    distance_kind: "straight-line" as const,
+    distance_kind: "straight-line",
   };
+}
+function mobileItem(row: SearchRow): MobileItem {
+  return { ...baseItem(row), coverage: "approximate" };
 }
 
 async function page(
@@ -211,6 +243,7 @@ async function page(
     lat: q.lat,
     lng: q.lng,
     service: q.service,
+    category: q.category,
     radius: q.radius,
     group,
     afterBucket: after && "bucket" in after ? after.bucket : null,
@@ -231,43 +264,82 @@ async function page(
           now,
         )
       : null;
-  return { items: visible.map((r) => publicItem(r, group)), next };
+  return { visible, next };
 }
 
-export async function handleSearch(
-  request: Request,
-  deps: SearchDeps,
-): Promise<Response> {
-  const now = (deps.now ?? Date.now)();
+/** The opaque search-session cookie the limiter keys on (never stored raw). */
+export function ensureSearchSession(request: Request): {
+  session: string;
+  cookie: string | undefined;
+} {
   const existing = readCookie(request, SEARCH_COOKIE);
-  let session = existing;
-  let cookie: string | undefined;
-  if (!session || !SESSION.test(session)) {
-    const bytes = crypto.getRandomValues(new Uint8Array(16));
-    session = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join(
-      "",
-    );
-    cookie = serializeAppCookie(SEARCH_COOKIE, session, { maxAge: 86_400 });
-  }
-  const limit = await deps.limits(
-    request.headers.get("CF-Connecting-IP") ?? "unknown",
+  if (existing && SESSION.test(existing))
+    return { session: existing, cookie: undefined };
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  const session = Array.from(bytes, (b) =>
+    b.toString(16).padStart(2, "0"),
+  ).join("");
+  return {
     session,
-  );
-  if (limit.kind === "unavailable")
-    return json(503, { error: "search_unavailable" }, {}, cookie);
-  if (limit.kind === "limited")
-    return json(
-      429,
-      { error: "rate_limited" },
-      { "Retry-After": String(limit.retryAfterSeconds) },
-      cookie,
-    );
+    cookie: serializeAppCookie(SEARCH_COOKIE, session, { maxAge: 86_400 }),
+  };
+}
 
-  const q = parse(new URL(request.url));
-  if (!q) return json(400, { error: "invalid_query" }, {}, cookie);
+export interface SearchItemGroup<T> {
+  items: T[];
+  next: string | null;
+}
+export interface SearchBody {
+  fixed: SearchItemGroup<FixedItem> | null;
+  mobile: SearchItemGroup<MobileItem> | null;
+  radius_km: number;
+  widened: false;
+}
+export type SearchOutcome =
+  | { status: 200; body: SearchBody; cookie?: string }
+  | {
+      status: 400 | 429 | 503;
+      error:
+        | "invalid_query"
+        | "invalid_cursor"
+        | "rate_limited"
+        | "search_unavailable";
+      retryAfterSeconds?: number;
+      cookie?: string;
+    };
+
+/**
+ * The search core, shared by GET /api/search and the /search page. Order:
+ * rate limit (every request counts) -> parse -> cursors -> bounded wrapper.
+ */
+export async function runSearch(
+  request: Request,
+  params: URLSearchParams,
+  deps: SearchDeps,
+): Promise<SearchOutcome> {
+  const now = (deps.now ?? Date.now)();
+  const { session, cookie } = deps.session ?? ensureSearchSession(request);
+  const limit =
+    deps.checked ??
+    (await deps.limits(
+      request.headers.get("CF-Connecting-IP") ?? "unknown",
+      session,
+    ));
+  if (limit.kind === "unavailable")
+    return { status: 503, error: "search_unavailable", cookie };
+  if (limit.kind === "limited")
+    return {
+      status: 429,
+      error: "rate_limited",
+      retryAfterSeconds: limit.retryAfterSeconds,
+      cookie,
+    };
+
+  const q = parse(params);
+  if (!q) return { status: 400, error: "invalid_query", cookie };
   const { search, cursorKey } = deps;
   if (!search || !cursorKey || cursorKey.length < 32)
-    return json(503, { error: "search_unavailable" }, {}, cookie);
+    return { status: 503, error: "search_unavailable", cookie };
 
   const fixedAfter = q.fixedCursor
     ? await readCursor(
@@ -288,25 +360,53 @@ export async function handleSearch(
       )
     : null;
   if ((q.fixedCursor && !fixedAfter) || (q.mobileCursor && !mobileAfter))
-    return json(400, { error: "invalid_cursor" }, {}, cookie);
+    return { status: 400, error: "invalid_cursor", cookie };
 
-  // No cursor: first page of both groups. A cursor continues only its group.
-  const wantFixed = q.fixedCursor !== null || q.mobileCursor === null;
-  const wantMobile = q.mobileCursor !== null || q.fixedCursor === null;
+  // No cursor: first page of both groups. A cursor continues only its group,
+  // unless the caller asks for both (the page keeps both on screen).
+  const both = deps.bothGroups === true;
+  const wantFixed = both || q.fixedCursor !== null || q.mobileCursor === null;
+  const wantMobile = both || q.mobileCursor !== null || q.fixedCursor === null;
   try {
     const ready = { ...deps, search, cursorKey };
-    const [fixed, mobile] = await Promise.all([
+    const [fixedPage, mobilePage] = await Promise.all([
       wantFixed ? page(ready, q, "fixed", fixedAfter, now) : null,
       wantMobile ? page(ready, q, "mobile", mobileAfter, now) : null,
     ]);
-    return json(
-      200,
-      { fixed, mobile, radius_km: q.radius, widened: false },
-      {},
+    const fixed = fixedPage
+      ? { items: fixedPage.visible.map(fixedItem), next: fixedPage.next }
+      : null;
+    const mobile = mobilePage
+      ? { items: mobilePage.visible.map(mobileItem), next: mobilePage.next }
+      : null;
+    return {
+      status: 200,
+      body: { fixed, mobile, radius_km: q.radius, widened: false },
       cookie,
-    );
+    };
   } catch {
     console.error("search-db-unavailable");
-    return json(503, { error: "search_unavailable" }, {}, cookie);
+    return { status: 503, error: "search_unavailable", cookie };
   }
+}
+
+export async function handleSearch(
+  request: Request,
+  deps: SearchDeps,
+): Promise<Response> {
+  const outcome = await runSearch(
+    request,
+    new URL(request.url).searchParams,
+    deps,
+  );
+  if (outcome.status === 200)
+    return json(200, outcome.body, {}, outcome.cookie);
+  return json(
+    outcome.status,
+    { error: outcome.error },
+    outcome.retryAfterSeconds === undefined
+      ? {}
+      : { "Retry-After": String(outcome.retryAfterSeconds) },
+    outcome.cookie,
+  );
 }
