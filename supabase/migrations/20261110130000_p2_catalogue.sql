@@ -162,8 +162,12 @@ left join public.branches b on b.public_id = l.branch_public_id
 where l.status = 'live';
 -- PostgreSQL requires CREATE on the containing schema to transfer ownership.
 grant create on schema public to listing_projection;
+-- Hosted/local postgres is CREATEROLE rather than a superuser. PG17's automatic
+-- creator membership does not necessarily include SET, required for ownership transfer.
+grant listing_projection to postgres with set true, inherit false;
 alter view public.listing_public owner to listing_projection;
 revoke create on schema public from listing_projection;
+grant listing_projection to postgres with set false, inherit false;
 revoke all on public.listing_public from public, anon, authenticated, service_role;
 grant select on public.listing_public to anon, authenticated;
 comment on view public.listing_public is 'Exact public catalogue projection; no organisation/private row IDs, provenance, private centres, radius or base-derived distance. Free-text publication requires admin review.';

@@ -64,8 +64,8 @@ rollback against hosted data. Prefer a forward migration once data is retained.
 
 - Extended A4: seven tables × anonymous/self/member/other/admin × four operations
   = 140 pgTAP assertions. Writes are rolled back in subtransactions; FK-protected
-  deletion is distinguished from permission denial. Existing seed fixtures are
-  intentionally verified as part of the catalogue contract.
+  deletion is distinguished from permission denial. Seed fixtures are verified when present; recovery tests construct the same
+  transaction-local fixtures when seeding is disabled.
 - 38 catalogue assertions cover exact columns, grants, view owner, mobile JSON
   invariance under base/radius changes, revocation, labels, audit redaction,
   tenant FKs, coordinate checks, forged metadata, aal1 denial and immutable IDs.
