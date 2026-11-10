@@ -31,12 +31,12 @@ This notice covers carworx.app: searching for car-service providers, reading lis
 | A random search cookie and a scrambled form of your IP address | You search | To stop abuse (too many searches). The scrambled IP can't be read back without our secret key | (f) legitimate interest: keeping the service available and providers' locations safe | No; the site needs it to search |
 | Business details, contact person, service area, and for mobile businesses a **private base location and radius** | You apply to list a business | To review and publish the listing. **The base location is never shown publicly** | (b) contract with the provider | Yes, to be listed |
 | Verification evidence | You apply | To grant honest trust labels. Raw evidence is deleted after review (see section 7) | (b) and (f) | Only for the label it supports |
-| Your enquiry: your name, email address, the message, and the service and area you ask about | You send an enquiry to a provider (when the enquiry form launches) | To pass it to **the provider you chose**, so they can reply, and to handle any complaint | (b) pre-contract steps you asked for; (f) | Yes, to send an enquiry |
+| Your enquiry: your name, email address, the message, and the service and area you ask about | You send an enquiry to a provider (when the enquiry form launches) | To pass it to **the provider you chose**, so they can reply, and to handle any complaint | (b) actions towards a contract you asked for; (f) | Yes, to send an enquiry |
 | Your messages to us | You contact support | To answer you | (f), or (b) if about your account | No |
 | Marketing email permission | Only if you tick the box | To send news. The box is **never** ticked for you | (a) consent; s69(1)(a) | No |
 | Security logs, with addresses and coordinates removed | Every request | To keep the site working and safe | (f) | — |
 
-We **don't** collect ID numbers, card details or bank details during the free pilot. We don't ask **customers** for a home or street address. **Mobile providers** do give us a private base location: if a provider uses their home, that is an exact home location, which is why we advise against it (section 5 and the terms of use, section 7). *Basis: PLAN §9.2 "No ID numbers in v1"; POPIA s10 (minimality).*
+We **don't** collect ID numbers, card details or bank details during the free pilot. We don't ask **customers** for a home or street address. **Mobile providers** do give us a private base location: if a provider uses their home, that is an exact home location, which is why we advise against it (terms of use, section 7). *Basis: PLAN §9.2 "No ID numbers in v1"; POPIA s10 (minimality).*
 
 ## 4. Cookies
 
