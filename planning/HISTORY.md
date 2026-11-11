@@ -307,3 +307,8 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 
 - 2026-11-11 UTC — Codex 23: corrected guide 13 for the 2025 regulation 4 amendments; legal re-review of bad1cdb resolves ECTA repeal and regulations findings, with section 72 conditional-evidence classification still open. See codex/23-legal-recheck.md.
 - 2026-11-11 (SAST) — Claude: D-087, the owner's email stays private. Rule added to AGENTS.md and CLAUDE.md, plus a commit-email CI check. The repo goes public for now (owner) to restore Actions minutes.
+- 2026-11-11 (SAST) — Claude: D-086, cutting Actions minutes. Drafts skip CI, and docs-only PRs run docs.yml (Gitleaks plus format) instead of K1. K1 is unchanged.
+
+- 2026-11-11 (SAST) — Claude: #64 narrowed after Codex CHANGES. The docs-only path filter was dropped because GitHub's 3,000-file diff limit could let K1 be skipped. Drafts still skip CI, and K1 runs on every ready PR.
+
+- 2026-11-11 (SAST) — Claude: perf.yml browser install retries three times, then falls back to installing Chromium without OS packages. Ubuntu mirror DNS failures on runners had blocked perf on #57–#64. Budgets unchanged.
