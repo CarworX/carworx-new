@@ -22,7 +22,8 @@ jobs:
   native-auth:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # Drafts don't run CI (saves Actions minutes); the run starts at ready_for_review.
+    if: github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft
     env:
       K1_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       CI: "true"
