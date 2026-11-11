@@ -1,6 +1,7 @@
 import { data, redirect } from "react-router";
 
 import { CsrfField } from "../auth/ui";
+import { supportContactEmail } from "../server/forms/contact";
 import { parseSupport, TOPICS } from "../server/forms/parse";
 import { formAction, formHeaders } from "../server/forms/route.server";
 import { siteKeyFor, type FormsEnv } from "../server/forms/submit";
@@ -24,6 +25,10 @@ export function loader({ request, context }: Route.LoaderArgs) {
       siteKey: siteKeyFor(
         context.cloudflare.env as FormsEnv,
         context.security.config,
+      ),
+      contactEmail: supportContactEmail(
+        (context.cloudflare.env as { SUPPORT_CONTACT_EMAIL?: unknown })
+          .SUPPORT_CONTACT_EMAIL,
       ),
       sent: new URL(request.url).searchParams.get("sent") === "1",
     },
@@ -54,6 +59,26 @@ export default function Support({
     <PublicShell>
       <h1 className="type-display-lg">Contact support</h1>
       <div className="mt-6 grid max-w-[65ch] gap-4">
+        <section id="support-contact" data-support-contact>
+          <h2 className="type-title-lg">Email support</h2>
+          {loaderData.contactEmail ? (
+            <p className="type-body">
+              For support or a privacy request, email{" "}
+              <a
+                className="cx-tlink"
+                href={`mailto:${loaderData.contactEmail}`}
+              >
+                {loaderData.contactEmail}
+              </a>
+              . This contact works without JavaScript or the spam check. Don't
+              include ID numbers, passwords or bank details.
+            </p>
+          ) : (
+            <p className="type-body" data-support-contact-unavailable>
+              Email support is not available yet.
+            </p>
+          )}
+        </section>
         {loaderData.sent ? (
           <StatusNote tone="ok" title="Message received.">
             A CarworX admin will read it and reply to your email.

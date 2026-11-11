@@ -399,6 +399,38 @@ describe("demand capture (A13)", () => {
 });
 
 describe("support case", () => {
+  it("renders the public contact outside the form even without Turnstile configuration", async () => {
+    for (const keys of [
+      {},
+      { TURNSTILE_SITE_KEY: undefined, TURNSTILE_SECRET_KEY: undefined },
+    ]) {
+      const reply = await browser({
+        SUPPORT_CONTACT_EMAIL: "synthetic-support@example.test",
+        ...keys,
+      }).send("/support");
+      expect(reply.status).toBe(200);
+      expect(reply.body).toContain(
+        'href="mailto:synthetic-support@example.test"',
+      );
+      const contact = reply.body.indexOf("data-support-contact");
+      const form = reply.body.indexOf('data-form="support"');
+      expect(contact).toBeGreaterThan(0);
+      if (form !== -1) expect(contact).toBeLessThan(form);
+      expect(reply.headers.get("Cache-Control")).toBe("private, no-store");
+    }
+  });
+  it("does not invent or render an unsafe contact address", async () => {
+    for (const value of [
+      undefined,
+      "support@example.test?bcc=someone@example.test",
+    ]) {
+      const reply = await browser({ SUPPORT_CONTACT_EMAIL: value }).send(
+        "/support",
+      );
+      expect(reply.body).toContain("data-support-contact-unavailable");
+      expect(reply.body).not.toContain('href="mailto:');
+    }
+  });
   it("stores an open case", async () => {
     const address = email("support");
     cleanUp(address);
