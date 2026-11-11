@@ -27,7 +27,8 @@ jobs:
     name: perf-${{ github.event.pull_request.head.sha || inputs.source_sha }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || github.event.pull_request.head.repo.full_name == github.repository
+    # Drafts don't run CI (saves Actions minutes); the run starts at ready_for_review.
+    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft)
     env:
       TESTED_SHA: ${{ github.event.pull_request.head.sha || inputs.source_sha }}
       CI: "true"
