@@ -60,7 +60,7 @@ export default function Support({
       <h1 className="type-display-lg">Contact support</h1>
       <div className="mt-6 grid max-w-[65ch] gap-4">
         <section id="support-contact" data-support-contact>
-          <h2 className="type-title-lg">Email support</h2>
+          <h2 className="type-heading">Email support</h2>
           {loaderData.contactEmail ? (
             <p className="type-body">
               For support or a privacy request, email{" "}
