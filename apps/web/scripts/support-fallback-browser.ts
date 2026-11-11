@@ -69,7 +69,7 @@ const server = createServer((request, response) => {
 await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
 const bound = server.address();
 assert(bound && typeof bound !== "string");
-origin = `http://127.0.0.1:${bound.port}`;
+origin = `http://127.0.0.1:${String(bound.port)}`;
 const browser = await chromium.launch({
   args: process.env.GITHUB_ACTIONS === "true" ? ["--no-sandbox"] : [],
 });
