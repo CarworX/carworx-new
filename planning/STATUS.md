@@ -1,5 +1,14 @@
 # Status
 
+**2026-11-11 UTC — Codex 23 follow-up:** Claude's #57 locking correction
+`d2390c2` independently checked with four real concurrency cases and 572
+pgTAP assertions. Codex adds rollback, lock-wait and membership/snapshot
+assertions in a separate PR targeting #57; Claude review is required before
+incorporation. #58 legal re-review and guide 13 correction are separate.
+Workflow trimming belongs to #64; no workflow files changed here. Draft CI
+skips do not pass any gate. Bundle A remains held for final-head bot review
+and subsequent exact-head approvals. See [Codex 23](codex/23-claim-concurrency.md).
+
 ## Baton: Claude builds Phase 2 under interim authority (D-080); Codex reviews later
 
 **2026-11-10 (SAST), bundles (D-085):** P2-1, P2-2 (#52), P2-3 and the maps (#53, `419e9da`; D-082 to D-084) are merged. The rest of Phase 2 runs as three bundles:

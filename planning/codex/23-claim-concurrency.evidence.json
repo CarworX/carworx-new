@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-11-11",
+  "base_sha": "d2390c242e65f3bdb46890a0792a80d1a2162df9",
+  "node": "24.22.2",
+  "supabase_cli": "2.122.1",
+  "vitest": "5.1.0",
+  "scope": "native database only; private harness adapter; synthetic records",
+  "test_sha256": "91043b5b5dc130e9c0b11d8e890b498b0947f3789d85893a39aa1a681c27d69f",
+  "fixed": {
+    "failed": 0,
+    "passed": 4,
+    "executed": 4,
+    "todo": 0,
+    "skipped": 0
+  },
+  "counterfactual": {
+    "failed": 4,
+    "executed": 4,
+    "source_sha": "d1f6b930171b124eb491f7cd5b65d62e4456af73"
+  },
+  "rls": {
+    "files": 10,
+    "skipped": 0,
+    "failed": 0,
+    "assertions": 572,
+    "todo": 0
+  },
+  "services_stopped": true,
+  "ci": "deferred; not passing evidence"
+}
