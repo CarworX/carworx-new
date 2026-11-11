@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  claimCursor,
   parseApplication,
+  parseClaimCursor,
   parseClaim,
   parseDecision,
   parseDescription,
@@ -99,6 +101,33 @@ describe("parseDescription", () => {
         form({ ...fixed, description: "Synthetic workshop\r\nOpen weekdays" }),
       )?.p_description,
     ).toBe("Synthetic workshop\nOpen weekdays");
+  });
+});
+
+describe("parseClaimCursor", () => {
+  const id = "0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20";
+  it("round-trips a PostgREST timestamp and id", () => {
+    const at = "2026-01-01T12:00:00.123456+00:00";
+    expect(parseClaimCursor(claimCursor({ created_at: at, id }))).toEqual({
+      at,
+      id,
+    });
+  });
+
+  it("no cursor is the first page", () => {
+    expect(parseClaimCursor(null)).toBeNull();
+  });
+
+  it.each([
+    "",
+    "not-a-cursor",
+    `2026-01-01T12:00:00Z_${id}x`,
+    `2026-13-45T12:00:00Z_${id}`,
+    `2026-01-01T12:00:00Z,id.gt.0_${id}`,
+    `2026-01-01T12:00:00Z_${id.toUpperCase()}`,
+    `"2026-01-01T12:00:00Z"_${id}`,
+  ])("rejects %j", (value) => {
+    expect(parseClaimCursor(value)).toBe("invalid");
   });
 });
 

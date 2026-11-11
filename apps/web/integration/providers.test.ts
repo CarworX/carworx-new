@@ -279,6 +279,101 @@ describe("claims, disputes and former staff", () => {
     expect(page.body).not.toContain('data-claim-status="rejected"');
   });
 
+  it("claims are paged past the server's row cap: each once, ties kept, disputes still reachable", async () => {
+    const owner = await createConfirmedUser("paged-owner");
+    const ownerBrowser = await signIn(owner.email);
+    await apply(ownerBrowser, {
+      ...fixed,
+      businessName: "Paged Motors (synthetic)",
+    });
+    const [publicId = ""] = listingIds(
+      (await ownerBrowser.send("/provider")).body,
+    );
+    setLive(publicId);
+    // 1,105 pending claims on the owner's business (more than PostgREST's
+    // max_rows of 1,000); 300 of them share one created_at to test ties.
+    const pending = sqlRows(`
+      with u as (insert into auth.users(id, email, email_confirmed_at)
+        select gen_random_uuid(), 'paged-' || g || '-' || substr(md5(random()::text), 1, 8) || '@example.test', now()
+        from generate_series(1, 1105) g returning id),
+      n as (select id, row_number() over () as g from u)
+      insert into public.listing_claims(listing_public_id, organisation_id, claimant_id, evidence_kind, document_reference, created_at)
+      select l.public_id, l.organisation_id, n.id, 'document', 'Synthetic paged ref',
+        case when n.g <= 300 then timestamptz '2026-01-01 12:00:00.123456+00' else now() - n.g * interval '1 minute' end
+      from public.listings l, n where l.public_id = '${publicId}' returning id`);
+    expect(pending).toHaveLength(1105);
+    // The oldest of all: a transfer that displaced this owner from another
+    // business. It is still disputable and sits far beyond the first page.
+    const [displaced = ""] = sqlRows(`
+      with o as (insert into public.organisations(name) values ('Paged Other Motors (synthetic)') returning id),
+      c as (insert into auth.users(id, email, email_confirmed_at)
+        values (gen_random_uuid(), 'paged-taker-' || substr(md5(random()::text), 1, 8) || '@example.test', now()) returning id),
+      l as (insert into public.listings(organisation_id, service_slug, display_name, description, metro, mode, status, provenance_kind, provenance_reference)
+        select o.id, s.slug, 'Paged other listing (synthetic)', 'Synthetic other listing', 'Gauteng', 'mobile', 'live', 'admin_import', 'synthetic-paged-other'
+        from o, (select slug from public.services order by slug limit 1) s returning public_id, organisation_id),
+      m as (insert into public.memberships(organisation_id, user_id, role, status)
+        select o.id, c.id, 'owner', 'active' from o, c union all select o.id, '${owner.id}', 'owner', 'revoked' from o returning id)
+      insert into public.listing_claims(listing_public_id, organisation_id, claimant_id, evidence_kind, document_reference, status, review_method,
+          decided_at, approved_at, displaced_user_ids, displaced_roles, created_at)
+      select l.public_id, l.organisation_id, c.id, 'document', 'Synthetic taker ref', 'approved', 'document_check',
+        now(), clock_timestamp(), array['${owner.id}'::uuid], array['owner'], timestamptz '2025-01-01 00:00:00+00'
+      from l, c returning id`);
+    // Another tenant's claim: never shown to this owner.
+    const [other = ""] = sqlRows(`
+      with o as (insert into public.organisations(name) values ('Paged Stranger Motors (synthetic)') returning id),
+      c as (insert into auth.users(id, email, email_confirmed_at)
+        values (gen_random_uuid(), 'paged-stranger-' || substr(md5(random()::text), 1, 8) || '@example.test', now()) returning id),
+      l as (insert into public.listings(organisation_id, service_slug, display_name, description, metro, mode, status, provenance_kind, provenance_reference)
+        select o.id, s.slug, 'Paged stranger listing (synthetic)', 'Synthetic stranger listing', 'Gauteng', 'mobile', 'live', 'admin_import', 'synthetic-paged-stranger'
+        from o, (select slug from public.services order by slug limit 1) s returning public_id, organisation_id)
+      insert into public.listing_claims(listing_public_id, organisation_id, claimant_id, evidence_kind, document_reference)
+      select l.public_id, l.organisation_id, c.id, 'document', 'Synthetic stranger ref' from l, c returning id`);
+
+    const seen: string[] = [];
+    let path: string | null = "/provider";
+    let displacedPage: string | null = null;
+    for (let pages = 0; path !== null; pages++) {
+      expect(pages).toBeLessThan(40);
+      const page = await ownerBrowser.send(path);
+      expect(page.status).toBe(200);
+      const ids = [...page.body.matchAll(/data-claim="([0-9a-f-]{36})"/g)].map(
+        (m) => m[1] ?? "",
+      );
+      expect(ids.length).toBeLessThanOrEqual(50);
+      seen.push(...ids);
+      if (ids.includes(displaced)) displacedPage = page.body;
+      const tag = /<a\b[^>]*\bdata-claims-older\b[^>]*>/.exec(page.body)?.[0];
+      const next =
+        tag === undefined ? undefined : /href="([^"]+)"/.exec(tag)?.[1];
+      path = next === undefined ? null : next.replaceAll("&amp;", "&");
+    }
+    expect(new Set(seen).size).toBe(seen.length);
+    expect(new Set(seen)).toEqual(new Set([...pending, displaced]));
+    expect(seen).not.toContain(other);
+    expect(seen.at(-1)).toBe(displaced);
+    expect(displacedPage).toMatch(
+      new RegExp(`data-claim="${displaced}"[\\s\\S]*?Dispute this claim`),
+    );
+
+    const disputed = await ownerBrowser.send("/provider", {
+      form: {
+        intent: "dispute",
+        claim: displaced,
+        reason: "Synthetic: I still run this business",
+      },
+    });
+    expect(disputed.status).toBe(302);
+    expect(
+      sqlRows(
+        `select status from public.listing_claims where id = '${displaced}'`,
+      ),
+    ).toEqual(["disputed"]);
+
+    expect(
+      (await ownerBrowser.send("/provider?claims=not-a-cursor")).status,
+    ).toBe(404);
+  });
+
   it("an owner revokes former staff; access ends on their next request", async () => {
     const owner = await createConfirmedUser("staff-owner");
     const ownerBrowser = await signIn(owner.email);
