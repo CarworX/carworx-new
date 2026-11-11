@@ -13,6 +13,7 @@ import {
   parseReason,
   PROBLEM_TEXT,
   problemFrom,
+  sast,
   type Problem,
 } from "../server/providers/forms";
 import { Button, ButtonLink } from "../ui/Button";
@@ -74,6 +75,15 @@ const STATUS_COPY: Record<Listing["status"], string> = {
  * JWT, so RLS decides what appears, and a revoked membership disappears on
  * the next request. Never selects or shows a mobile base or radius (A10).
  */
+interface Enquiry {
+  id: string;
+  listing_public_id: string;
+  sender_name: string;
+  sender_email: string;
+  message: string;
+  created_at: string;
+}
+
 export async function loader({ request, context }: Route.LoaderArgs) {
   const signedIn = await requireSignedIn(request, context.security);
   const db = signedIn.supabase;
@@ -161,6 +171,19 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     .order("decided_at", { ascending: false })
     .overrideTypes<Decision[], { merge: false }>();
   if (decisions.error !== null) throwStatus(503, signedIn.headers);
+  // P2-5: enquiries visitors sent to my listings. RLS limits these to owners
+  // and managers; the newest 50 are shown, and they're kept 12 months.
+  const enquiries = await db
+    .from("enquiries")
+    .select(
+      "id, listing_public_id, sender_name, sender_email, message, created_at",
+    )
+    .in("organisation_id", controlled)
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(50)
+    .overrideTypes<Enquiry[], { merge: false }>();
+  if (enquiries.error !== null) throwStatus(503, signedIn.headers);
   const latest = new Map<string, Decision>();
   for (const d of decisions.data)
     if (!latest.has(d.listing_public_id)) latest.set(d.listing_public_id, d);
@@ -191,6 +214,12 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           !controlled.includes(c.organisation_id) && c.status === "approved",
       ),
       mineClaims: own.data,
+      enquiries: enquiries.data.map((e) => ({
+        ...e,
+        listing:
+          listings.data.find((l) => l.public_id === e.listing_public_id)
+            ?.display_name ?? "",
+      })),
       olderClaims:
         actionable.data.length > CLAIMS_PAGE && last !== undefined
           ? claimCursor(last)
@@ -480,6 +509,38 @@ export default function Provider({
               </Link>
             ) : null}
           </nav>
+        </section>
+      ) : null}
+
+      {loaderData.enquiries.length > 0 ? (
+        <section className="mt-10" data-enquiries>
+          <h2 className="type-title">Enquiries</h2>
+          <p className="type-body-sm text-quiet mt-1">
+            Messages visitors sent from your listings. Reply by email. CarworX
+            deletes them after 12 months.
+          </p>
+          <ul className="mt-3 grid gap-3">
+            {loaderData.enquiries.map((e) => (
+              <li
+                key={e.id}
+                className="rounded-2xl bg-[var(--surface)] p-4"
+                data-enquiry={e.id}
+              >
+                <p className="type-body">
+                  <b>{e.sender_name}</b> ·{" "}
+                  <a className="cx-tlink" href={`mailto:${e.sender_email}`}>
+                    {e.sender_email}
+                  </a>
+                </p>
+                <p className="type-caption">
+                  {e.listing} · {sast(e.created_at)}
+                </p>
+                <p className="type-body mt-2 whitespace-pre-line">
+                  {e.message}
+                </p>
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
 

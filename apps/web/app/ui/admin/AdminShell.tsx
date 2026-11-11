@@ -7,6 +7,8 @@ const LINKS = [
   { href: "/admin/listings?status=live", label: "Live" },
   { href: "/admin/listings?status=suspended", label: "Suspended" },
   { href: "/admin/claims", label: "Claims" },
+  { href: "/admin/demand", label: "Demand" },
+  { href: "/admin/support", label: "Support" },
   { href: "/admin/audit", label: "Audit log" },
 ] as const;
 

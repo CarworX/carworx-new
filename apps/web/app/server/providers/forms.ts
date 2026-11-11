@@ -54,6 +54,7 @@ export type Problem =
   | "dispute_closed"
   | "claim_superseded"
   | "transfer_disputed"
+  | "case_not_open"
   | "unavailable";
 
 export const PROBLEM_TEXT: Record<Problem, string> = {
@@ -76,6 +77,7 @@ export const PROBLEM_TEXT: Record<Problem, string> = {
   dispute_closed: "This dispute has already been resolved.",
   claim_superseded:
     "A later transfer has replaced this one, so it can't be disputed or reversed.",
+  case_not_open: "This support case is already closed.",
   transfer_disputed:
     "This business's last transfer is under dispute. Resolve that dispute first.",
   unavailable: "Something went wrong on our side. Try again in a minute.",

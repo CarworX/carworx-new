@@ -4,6 +4,9 @@ export const ROUTES = [
   "/auth/sign-up",
   "/auth/forgot-password",
   "/_dev/components",
+  // P2-5 + P2-6 (Claude 22, A15). Forms render closed without Turnstile keys.
+  "/fines",
+  "/support",
 ];
 export function evaluate(reports) {
   if (!Array.isArray(reports) || reports.length !== 5)
