@@ -306,3 +306,7 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - 2026-11-10 (SAST) — Claude: #53 merged as 419e9da on the owner's OK at 5053dcf. D-085: the rest of Phase 2 runs as bundles A (P2-4 plus P2-7) and C (P2-9) in parallel Claude sub-sessions, then B (P2-5 plus P2-6) after owner inspection. No hosted changes.
 
 - 2026-11-11 (SAST) — Claude: D-086, cutting Actions minutes. Drafts skip CI, and docs-only PRs run docs.yml (Gitleaks plus format) instead of K1. K1 is unchanged.
+- 2026-11-11 UTC — Codex 23: corrected guide 13 for the 2025 regulation 4 amendments; legal re-review of bad1cdb resolves ECTA repeal and regulations findings, with section 72 conditional-evidence classification still open. See codex/23-legal-recheck.md.
+- 2026-11-11 (SAST) — Claude: D-087, the owner's email stays private. Rule added to AGENTS.md and CLAUDE.md, plus a commit-email CI check. The repo goes public for now (owner) to restore Actions minutes.
+
+- 2026-11-11 UTC — Codex takeover: restored unconditional ready-PR K1 triggers, removed duplicate docs workflow, preserved both histories; independent review and CI remain required.
