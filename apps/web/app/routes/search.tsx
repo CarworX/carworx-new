@@ -187,13 +187,21 @@ function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
         <EmptyState
           title="No providers found here yet."
           action={
-            <ButtonLink href="/" variant="secondary">
-              Try another area
-            </ButtonLink>
+            <div className="flex flex-wrap justify-center gap-2">
+              <ButtonLink
+                href={`/demand?category=${encodeURIComponent(m.category)}`}
+                variant="primary"
+              >
+                Tell me when one joins
+              </ButtonLink>
+              <ButtonLink href="/" variant="secondary">
+                Try another area
+              </ButtonLink>
+            </div>
           }
         >
-          We're adding providers area by area. Soon you'll be able to tell us
-          you need one here.
+          We're adding providers area by area. This doesn't mean there are none
+          near you, only that none are listed with us yet.
         </EmptyState>
       ) : null}
       {m.body.fixed !== null && fixed.length > 0 ? (

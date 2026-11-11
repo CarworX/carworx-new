@@ -41,6 +41,9 @@ export function PublicShell({
         <main id="main" className="mt-10">
           {children}
         </main>
+        <footer className="type-caption text-quiet mt-16">
+          <a href="/support">Contact support</a>
+        </footer>
       </div>
     </div>
   );
