@@ -304,3 +304,5 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - 2026-11-10 (SAST) — Claude: #53 Codex bot findings fixed. (1) Mobile cards claim "serves your area" only on location-search results; browsing shows the public region. (2) The results form carries the searched point as hidden fields, so changing the service or distance refines the same search without JavaScript, and typed area text replaces the point.
 
 - 2026-11-10 (SAST) — Claude: #53 merged as 419e9da on the owner's OK at 5053dcf. D-085: the rest of Phase 2 runs as bundles A (P2-4 plus P2-7) and C (P2-9) in parallel Claude sub-sessions, then B (P2-5 plus P2-6) after owner inspection. No hosted changes.
+
+- 2026-11-11 UTC — Codex 23: independently exercised Claude's d2390c2 claim lock fix; four concurrency cases and 572 pgTAP assertions passed. Added rollback/lock-wait and membership/snapshot checks for Claude review; CI/bot gates remain open. See codex/23-claim-concurrency.md.

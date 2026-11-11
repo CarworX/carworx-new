@@ -119,6 +119,10 @@ function fixture() {
       values ('${claimB}', '${listing}', '${org}', '${claimantB}', 'document', 'Synthetic ref B');
   `);
   return {
+    org,
+    owner,
+    claimantA,
+    claimantB,
     claimA,
     claimB,
     dispute: as(
@@ -135,48 +139,73 @@ function fixture() {
 }
 
 for (const first of ["dispute", "approval"] as const)
-  it(`never commits both a dispute of claim A and an approval of claim B (${first} first)`, async () => {
-    const f = fixture();
-    const application = `claim-race-${randomUUID()}`;
-    const [firstSql, secondSql] =
-      first === "dispute" ? [f.dispute, f.approve] : [f.approve, f.dispute];
-    const one = session(),
-      two = session();
-    try {
-      one.child.stdin.write(`begin; ${firstSql}\n\\echo FIRST_HELD\n`);
-      await until(() => one.output().includes("FIRST_HELD"));
-      two.child.stdin.end(
-        `set application_name='${application}'; begin; ${secondSql} commit;\n`,
-      );
-      // Either it waits on the first session's lock (correct), or it was
-      // never blocked and has already finished (the race).
-      let finished = false;
-      void two.done.then(() => {
-        finished = true;
-      });
-      await until(() => finished || waitingOnLock(application));
-      one.child.stdin.end("commit;\n");
-      expect(await one.done).toBe(0);
-      expect(await two.done).not.toBe(0);
-      expect(two.errors()).toContain(
-        first === "dispute" ? "transfer_disputed" : "claim_superseded",
-      );
-      const states = rows(
-        `select status from public.listing_claims where id in ('${f.claimA}', '${f.claimB}') order by id = '${f.claimB}'`,
-      );
-      expect(states).toEqual(
-        first === "dispute"
-          ? ["disputed", "submitted"]
-          : ["approved", "approved"],
-      );
-      expect(
-        rows(
-          `select count(*) from public.claim_disputes where claim_id = '${f.claimA}'`,
-        ),
-      ).toEqual([first === "dispute" ? "1" : "0"]);
-    } finally {
-      one.child.kill();
-      two.child.kill();
-      await Promise.allSettled([one.done, two.done]);
-    }
-  });
+  for (const commit of [true, false])
+    it(`serializes claim decisions (${first} first, ${commit ? "commit" : "rollback"})`, async () => {
+      const f = fixture();
+      const application = `claim-race-${randomUUID()}`;
+      const [firstSql, secondSql] =
+        first === "dispute" ? [f.dispute, f.approve] : [f.approve, f.dispute];
+      const one = session(),
+        two = session();
+      try {
+        one.child.stdin.write(
+          `set statement_timeout='15s'; begin; ${firstSql}\n\\echo FIRST_HELD\n`,
+        );
+        await until(() => one.output().includes("FIRST_HELD"));
+        two.child.stdin.end(
+          `set statement_timeout='15s'; set application_name='${application}'; begin; ${secondSql} commit;\n`,
+        );
+        // Either it waits on the first session's lock (correct), or it was
+        // never blocked and has already finished (the race).
+        let finished = false;
+        void two.done.then(() => {
+          finished = true;
+        });
+        await until(() => finished || waitingOnLock(application));
+        const blocked = waitingOnLock(application);
+        one.child.stdin.end(`${commit ? "commit" : "rollback"};\n`);
+        expect(await one.done).toBe(0);
+        const status = await two.done;
+        expect(blocked).toBe(true);
+        if (commit) {
+          expect(status).not.toBe(0);
+          expect(two.errors()).toContain(
+            first === "dispute" ? "transfer_disputed" : "claim_superseded",
+          );
+        } else expect(status).toBe(0);
+        const disputed = commit ? first === "dispute" : first === "approval";
+        const states = rows(
+          `select status from public.listing_claims where id in ('${f.claimA}', '${f.claimB}') order by id = '${f.claimB}'`,
+        );
+        expect(states).toEqual(
+          disputed ? ["disputed", "submitted"] : ["approved", "approved"],
+        );
+        expect(
+          rows(
+            `select count(*) from public.claim_disputes where claim_id = '${f.claimA}'`,
+          ),
+        ).toEqual([disputed ? "1" : "0"]);
+        // No partial transfer survives either a rejected or rolled-back approval.
+        expect(
+          rows(`select user_id::text || ':' || role || ':' || status
+        from public.memberships where organisation_id='${f.org}' order by user_id`),
+        ).toEqual(
+          (disputed
+            ? [`${f.owner}:owner:revoked`, `${f.claimantA}:owner:active`]
+            : [
+                `${f.owner}:owner:revoked`,
+                `${f.claimantA}:owner:revoked`,
+                `${f.claimantB}:owner:active`,
+              ]
+          ).sort(),
+        );
+        expect(
+          rows(`select cardinality(displaced_user_ids)::text || ':' || cardinality(displaced_roles)::text
+        from public.listing_claims where id='${f.claimB}'`),
+        ).toEqual([disputed ? "0:0" : "1:1"]);
+      } finally {
+        one.child.kill();
+        two.child.kill();
+        await Promise.allSettled([one.done, two.done]);
+      }
+    });
