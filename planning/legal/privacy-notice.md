@@ -69,7 +69,7 @@ We don't sell personal information. *Basis: POPIA s18(1)(h)(i) (recipients); s20
 
 ## 6. Information sent outside South Africa
 
-Our database and most of our operators are outside South Africa. We send information abroad only as POPIA section 72 allows:
+Our database and most of our operators are outside South Africa. We send information abroad only as POPIA section 72 allows. [Reviewer: each ground below is a **candidate** that clears only when its prerequisites in the s72 assessment are met; see the CONDITIONAL rows there.]
 
 - **Your account, your listing and enquiries you send:** the transfer is needed to perform our agreement with you, or the steps you asked us to take (s72(1)(c)).
 - **Sign in with Google:** you choose it, after we've told you here that Google is abroad (s72(1)(b)).
