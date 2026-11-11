@@ -60,9 +60,13 @@ async function provider(label: string) {
       values ('${listing}', '${org}', 'mobile-repair', 'Forms ${label} listing', 'Synthetic description', 'Gauteng', 'mobile', 'live', 'provider_application', 'synthetic-forms');`);
   onTestFinished(() => {
     sql(`
-      with gone as (delete from public.enquiries where listing_public_id = '${listing}' returning consent_id)
-        delete from public.consents where id in (select consent_id from gone);
-      delete from public.listings where public_id = '${listing}';`);
+      do $$ declare consent_ids uuid[]; begin
+        select array_agg(consent_id) into consent_ids from public.enquiries
+          where listing_public_id = '${listing}';
+        delete from public.enquiries where listing_public_id = '${listing}';
+        delete from public.consents where id = any(consent_ids);
+        delete from public.listings where public_id = '${listing}';
+      end $$;`);
   });
   return { owner, staff, org, listing };
 }
