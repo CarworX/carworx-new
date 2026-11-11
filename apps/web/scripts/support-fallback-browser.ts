@@ -97,8 +97,9 @@ try {
             )
           : undefined;
       const result = await page.goto(origin + "/support");
-      assert.equal(result?.status(), 200);
-      assert.equal(result?.headers()["cache-control"], "private, no-store");
+      assert(result);
+      assert.equal(result.status(), 200);
+      assert.equal(result.headers()["cache-control"], "private, no-store");
       if (blocked) await blocked;
       if (mode === "missing_contact") {
         assert(
@@ -124,7 +125,11 @@ try {
   process.exitCode = 1;
 } finally {
   await browser.close();
-  await new Promise<void>((resolve) => server.close(() => resolve()));
+  await new Promise<void>((resolve) =>
+    server.close(() => {
+      resolve();
+    }),
+  );
   const report = {
     version: 1,
     status: passed === 4 ? "passed" : "failed",
