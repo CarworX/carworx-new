@@ -48,11 +48,27 @@ function setLive(publicId: string) {
 describe("provider applications", () => {
   it("needs a signed-in person", async () => {
     const anon = new Browser();
-    for (const path of ["/provider", "/provider/apply"]) {
+    for (const path of [
+      "/provider",
+      "/provider/apply",
+      "/provider/claim/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
+    ]) {
       const reply = await anon.send(path);
       expect(reply.status).toBe(302);
-      expect(reply.location).toMatch(/^\/auth\/sign-in\?returnTo=/);
+      // Sign-in brings the person back to the page they asked for.
+      expect(reply.location).toBe(
+        `/auth/sign-in?returnTo=${encodeURIComponent(path)}`,
+      );
     }
+  });
+
+  it("the account page links to the provider dashboard and application", async () => {
+    const user = await createConfirmedUser("provider-entry");
+    const browser = await signIn(user.email);
+    const page = await browser.send("/account");
+    expect(page.status).toBe(200);
+    expect(page.body).toContain('href="/provider"');
+    expect(page.body).toContain('href="/provider/apply"');
   });
 
   it("every service offered on the form exists in the catalogue", () => {
