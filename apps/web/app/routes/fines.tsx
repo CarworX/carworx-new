@@ -24,6 +24,14 @@ export const headers: Route.HeadersFunction = () => ({
  */
 export const OFFICIAL_LINKS = [
   {
+    href: "https://rtmc.co.za/",
+    name: "Road Traffic Management Corporation (RTMC)",
+    runBy:
+      "The site identifies its operator as the Road Traffic Management Corporation.",
+    use: "Official RTMC information and services; this is not a complete fines search.",
+    checked: "2026-11-11",
+  },
+  {
     href: "https://www.rtia.co.za/",
     name: "Road Traffic Infringement Agency (RTIA)",
     runBy:
