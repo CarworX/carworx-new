@@ -61,6 +61,11 @@ export default function Account({ loaderData }: Route.ComponentProps) {
           ))}
         </ul>
       )}
+      <h2>Your business listings</h2>
+      <p>
+        <Link to="/provider">See your listings, decisions and claims</Link> or{" "}
+        <Link to="/provider/apply">apply to list a business</Link>.
+      </p>
       <Form method="post" action="/auth/sign-out">
         <CsrfField token={loaderData.csrf} />
         <button type="submit">Sign out</button>

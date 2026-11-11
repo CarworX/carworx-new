@@ -14,4 +14,8 @@ export const authRoutes: RouteConfigEntry[] = [
   route("account", "auth/routes/account.tsx"),
   route("org/:orgId", "auth/routes/org.tsx"),
   route("admin", "auth/routes/admin.tsx"),
+  // P2-4 (Claude 21): signed-in provider pages.
+  route("provider", "routes/provider.tsx"),
+  route("provider/apply", "routes/provider.apply.tsx"),
+  route("provider/claim/:publicId", "routes/provider.claim.$publicId.tsx"),
 ];
