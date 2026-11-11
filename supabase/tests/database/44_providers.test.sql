@@ -24,7 +24,7 @@ insert into public.services(slug,category_slug,name) values
   ('p24-fixed','p24-cat','P2-4 fixed service (synthetic)'), ('p24-mobile','p24-cat','P2-4 mobile service (synthetic)');
 insert into private.platform_admins (user_id) values ('b4000000-0000-4000-8000-000000000006');
 
-select plan(97);
+select plan(101);
 
 -- ===== Application ==========================================================
 set local role anon;
@@ -274,6 +274,29 @@ reset role;
 select is((select string_agg(m.user_id::text || ':' || m.status, ',' order by m.user_id) from public.memberships m
   where m.organisation_id = current_setting('t.org')::uuid and m.status = 'active'),
   'b4000000-0000-4000-8000-000000000002:active', 'only the previous controller (Cal) is active again');
+
+-- ===== One claimant, two of the organisation's listings ====================
+-- Max's claim on the fixed listing is pending; Max claims a second listing of
+-- the same organisation. Only the first approval transfers control.
+insert into public.listings(public_id, organisation_id, service_slug, display_name, description, metro, mode, status, provenance_kind, provenance_reference)
+  values ('b4000000-0000-4000-8000-0000000000a2', current_setting('t.org')::uuid, 'p24-mobile', 'Second listing (synthetic)', 'Synthetic second listing',
+    'Gauteng', 'mobile', 'live', 'admin_import', 'synthetic-p24-second');
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000005","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok((select set_config('t.max2', public.claim_listing('b4000000-0000-4000-8000-0000000000a2','document','Synthetic lease ref 10')::text, true)) is not null,
+  'the same claimant claims a second listing of the organisation');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000006","role":"authenticated","aal":"aal2"}';
+set local role authenticated;
+select lives_ok($$select public.admin_decide_claim(current_setting('t.max')::uuid,'approve','document_check',null)$$, 'the first claim transfers control to Max');
+select throws_ok($$select public.admin_decide_claim(current_setting('t.max2')::uuid,'approve','document_check',null)$$, 'P0001', 'already_member',
+  'a second claim by someone who already belongs is refused, so the first transfer stays disputable');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(public.dispute_claim(current_setting('t.max')::uuid,'Synthetic: Max should not control this') is not null,
+  'the displaced controller can still dispute the first transfer');
+reset role;
 
 -- ===== Append-only decisions, audit redaction, catalogue shape ==============
 select throws_ok($$update public.listing_decisions set reason = 'Synthetic rewrite'$$, '42501', null, 'decisions cannot be rewritten, even by the owner role');
