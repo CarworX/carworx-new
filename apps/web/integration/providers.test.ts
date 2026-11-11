@@ -216,6 +216,37 @@ describe("claims, disputes and former staff", () => {
     ).toEqual(["owner"]);
   });
 
+  it("claim history never hides a claim that can still be disputed", async () => {
+    const owner = await createConfirmedUser("history-owner");
+    const ownerBrowser = await signIn(owner.email);
+    await apply(ownerBrowser, {
+      ...fixed,
+      businessName: "History Motors (synthetic)",
+    });
+    const [publicId = ""] = listingIds(
+      (await ownerBrowser.send("/provider")).body,
+    );
+    setLive(publicId);
+    // One older pending claim, then 55 newer rejected ones by other people.
+    const pending = sqlRows(`
+      with u as (insert into auth.users(id, email, email_confirmed_at)
+        values (gen_random_uuid(), 'history-pending-' || substr(md5(random()::text), 1, 8) || '@example.test', now()) returning id)
+      insert into public.listing_claims(listing_public_id, organisation_id, claimant_id, evidence_kind, document_reference, created_at)
+      select l.public_id, l.organisation_id, u.id, 'document', 'Synthetic older ref', now() - interval '1 day'
+      from public.listings l, u where l.public_id = '${publicId}' returning id`)[0];
+    sqlRows(`
+      with u as (insert into auth.users(id, email, email_confirmed_at)
+        select gen_random_uuid(), 'history-' || g || '-' || substr(md5(random()::text), 1, 8) || '@example.test', now()
+        from generate_series(1, 55) g returning id)
+      insert into public.listing_claims(listing_public_id, organisation_id, claimant_id, evidence_kind, document_reference, status, review_note)
+      select l.public_id, l.organisation_id, u.id, 'document', 'Synthetic newer ref', 'rejected', 'Synthetic: not the owner'
+      from public.listings l, u where l.public_id = '${publicId}' returning id`);
+    const page = await ownerBrowser.send("/provider");
+    expect(page.body).toContain(`data-claim="${pending ?? ""}"`);
+    expect(page.body).toContain("Dispute this claim");
+    expect(page.body).not.toContain('data-claim-status="rejected"');
+  });
+
   it("an owner revokes former staff; access ends on their next request", async () => {
     const owner = await createConfirmedUser("staff-owner");
     const ownerBrowser = await signIn(owner.email);
