@@ -71,7 +71,7 @@ const bound = server.address();
 assert(bound && typeof bound !== "string");
 origin = `http://127.0.0.1:${String(bound.port)}`;
 const browser = await chromium.launch({
-  args: process.env.GITHUB_ACTIONS === "true" ? ["--no-sandbox"] : [],
+  args: process.env["GITHUB_ACTIONS"] === "true" ? ["--no-sandbox"] : [],
 });
 let passed = 0;
 try {
@@ -136,9 +136,9 @@ try {
     tests: 4,
     passed,
   };
-  if (process.env.SUPPORT_FALLBACK_REPORT)
+  if (process.env["SUPPORT_FALLBACK_REPORT"])
     writeFileSync(
-      process.env.SUPPORT_FALLBACK_REPORT,
+      process.env["SUPPORT_FALLBACK_REPORT"],
       JSON.stringify(report) + "\n",
     );
   console.log(JSON.stringify(report));
