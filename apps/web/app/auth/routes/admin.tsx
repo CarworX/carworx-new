@@ -52,6 +52,16 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
           {loaderData.auditEntries}
         </dd>
       </dl>
+      <nav aria-label="Admin tools">
+        <ul>
+          <li>
+            <a href="/admin/listings?status=submitted">Review queue</a>
+          </li>
+          <li>
+            <a href="/admin/claims">Claims and disputes</a>
+          </li>
+        </ul>
+      </nav>
     </AuthPage>
   );
 }

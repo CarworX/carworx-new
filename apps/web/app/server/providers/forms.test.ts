@@ -229,3 +229,22 @@ describe("parseId", () => {
     expect(parseId(form({ id: "1 or 1=1" }), "id")).toBeNull();
   });
 });
+
+describe("sast", () => {
+  it("shows UTC+2", async () => {
+    const { sast } = await import("./forms");
+    expect(sast("2026-11-10T22:15:00Z")).toBe("2026-11-11 00:15 SAST");
+    expect(sast("not a date")).toBe("");
+  });
+});
+
+describe("parsePage", () => {
+  it("accepts 1 to 1,000 and defaults to 1", async () => {
+    const { parsePage } = await import("./forms");
+    expect(parsePage(null)).toBe(1);
+    expect(parsePage("2")).toBe(2);
+    expect(parsePage("1000")).toBe(1000);
+    for (const bad of ["0", "1001", "-1", "1.5", "2;drop", ""])
+      expect(parsePage(bad)).toBeNull();
+  });
+});

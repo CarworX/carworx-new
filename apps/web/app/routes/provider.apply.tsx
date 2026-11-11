@@ -11,7 +11,7 @@ import {
   type Problem,
 } from "../server/providers/forms";
 import { Button } from "../ui/Button";
-import { ConsentCheckbox, TextField } from "../ui/Field";
+import { ConsentCheckbox, TextField, Choice } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
 import { PublicShell } from "../ui/public/PublicShell";
 import type { Route } from "./+types/provider.apply";
@@ -85,14 +85,12 @@ export default function Apply({
         </div>
         <fieldset className="cx-field">
           <legend>How do you work?</legend>
-          <label className="cx-check">
-            <input type="radio" name="mode" value="fixed" required />
-            <span>Customers come to my workshop</span>
-          </label>
-          <label className="cx-check">
-            <input type="radio" name="mode" value="mobile" />
-            <span>I go to customers (mobile)</span>
-          </label>
+          <Choice type="radio" name="mode" value="fixed" required>
+            Customers come to my workshop
+          </Choice>
+          <Choice type="radio" name="mode" value="mobile">
+            I go to customers (mobile)
+          </Choice>
         </fieldset>
         <TextField
           label="Area or metro"
@@ -120,7 +118,7 @@ export default function Apply({
           maxLength={300}
           hint="Shown on your listing. Leave empty if you're mobile."
         />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-4">
           <TextField
             label="Latitude"
             name="latitude"

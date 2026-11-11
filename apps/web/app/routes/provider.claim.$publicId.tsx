@@ -11,7 +11,7 @@ import {
   type Problem,
 } from "../server/providers/forms";
 import { Button } from "../ui/Button";
-import { TextField } from "../ui/Field";
+import { TextField, Choice } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
 import { PublicShell } from "../ui/public/PublicShell";
 import type { Route } from "./+types/provider.claim.$publicId";
@@ -100,22 +100,13 @@ export default function Claim({
         <CsrfField token={loaderData.csrf} />
         <fieldset className="cx-field">
           <legend>How can we check it's yours?</legend>
-          <label className="cx-check">
-            <input
-              type="radio"
-              name="evidence"
-              value="business_email"
-              required
-            />
-            <span>
-              My sign-in email is at the business's own domain (
-              {loaderData.domain || "your domain"})
-            </span>
-          </label>
-          <label className="cx-check">
-            <input type="radio" name="evidence" value="document" />
-            <span>I'll show an admin a document</span>
-          </label>
+          <Choice type="radio" name="evidence" value="business_email" required>
+            My sign-in email is at the business's own domain (
+            {loaderData.domain || "your domain"})
+          </Choice>
+          <Choice type="radio" name="evidence" value="document">
+            I'll show an admin a document
+          </Choice>
         </fieldset>
         <TextField
           label="Document reference (documents only)"

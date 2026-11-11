@@ -72,7 +72,7 @@ export class Browser {
     path: string,
     init: {
       method?: string;
-      form?: Record<string, string>;
+      form?: Record<string, string | string[]>;
       headers?: Record<string, string>;
       origin?: string | null;
       csrf?: boolean;
@@ -85,7 +85,10 @@ export class Browser {
       headers.set("Cookie", this.cookieHeader());
     let body: string | undefined;
     if (init.form !== undefined) {
-      const form = new URLSearchParams(init.form);
+      const form = new URLSearchParams();
+      for (const [key, value] of Object.entries(init.form))
+        for (const item of Array.isArray(value) ? value : [value])
+          form.append(key, item);
       if (init.csrf !== false && !form.has("csrf"))
         form.set("csrf", this.csrf());
       body = form.toString();
