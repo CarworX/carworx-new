@@ -12,6 +12,8 @@ const ALLOWED = [
   /^\/account(?:[/?#]|$)/,
   /^\/admin(?:[/?#]|$)/,
   /^\/org\/[^/?#]+(?:[?#]|$)/,
+  /^\/provider(?:\/apply)?(?:[?#]|$)/,
+  /^\/provider\/claim\/[0-9a-f-]{36}(?:[?#]|$)/i,
 ];
 
 export function safeReturnTo(

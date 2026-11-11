@@ -24,7 +24,7 @@ insert into public.services(slug,category_slug,name) values
   ('p24-fixed','p24-cat','P2-4 fixed service (synthetic)'), ('p24-mobile','p24-cat','P2-4 mobile service (synthetic)');
 insert into private.platform_admins (user_id) values ('b4000000-0000-4000-8000-000000000006');
 
-select plan(103);
+select plan(105);
 
 -- ===== Application ==========================================================
 set local role anon;
@@ -305,6 +305,34 @@ set local role authenticated;
 select ok(public.dispute_claim(current_setting('t.max')::uuid,'Synthetic: Max should not control this') is not null,
   'the displaced controller can still dispute the first transfer');
 reset role;
+
+-- ===== A repeat claim cannot block a dispute of an approved transfer =======
+-- Dee (claimant) took control from Pia, then left; Dee claims again while the
+-- transfer is still disputable. Pia's dispute must still go through.
+savepoint repeat_claim;
+insert into public.organisations(id, name) values ('b4000000-0000-4000-8000-0000000000b1', 'Repeat Claim Motors (synthetic)');
+insert into public.listings(public_id, organisation_id, service_slug, display_name, description, metro, mode, status, provenance_kind, provenance_reference)
+  values ('b4000000-0000-4000-8000-0000000000b2', 'b4000000-0000-4000-8000-0000000000b1', 'p24-mobile', 'Repeat claim listing (synthetic)', 'Synthetic repeat claim',
+    'Gauteng', 'mobile', 'live', 'admin_import', 'synthetic-p24-repeat');
+insert into public.memberships(organisation_id, user_id, role, status) values
+  ('b4000000-0000-4000-8000-0000000000b1', 'b4000000-0000-4000-8000-000000000003', 'owner', 'revoked'),
+  ('b4000000-0000-4000-8000-0000000000b1', 'b4000000-0000-4000-8000-000000000001', 'owner', 'revoked');
+insert into public.listing_claims(id, listing_public_id, organisation_id, claimant_id, evidence_kind, document_reference, status, review_method,
+    decided_by, decided_at, approved_at, displaced_user_ids, displaced_roles)
+  values ('b4000000-0000-4000-8000-0000000000b3', 'b4000000-0000-4000-8000-0000000000b2', 'b4000000-0000-4000-8000-0000000000b1',
+    'b4000000-0000-4000-8000-000000000003', 'document', 'Synthetic ref', 'approved', 'document_check',
+    'b4000000-0000-4000-8000-000000000006', now(), clock_timestamp(), array['b4000000-0000-4000-8000-000000000001'::uuid], array['owner']);
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(public.claim_listing('b4000000-0000-4000-8000-0000000000b2','document','Synthetic repeat ref') is not null,
+  'the former claimant claims the same listing again');
+reset role;
+set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(public.dispute_claim('b4000000-0000-4000-8000-0000000000b3','Synthetic: the transfer was wrong') is not null,
+  'the displaced owner can still dispute the approved transfer');
+reset role;
+rollback to savepoint repeat_claim;
 
 -- ===== Append-only decisions, audit redaction, catalogue shape ==============
 select throws_ok($$update public.listing_decisions set reason = 'Synthetic rewrite'$$, '42501', null, 'decisions cannot be rewritten, even by the owner role');
