@@ -44,6 +44,33 @@ No row is cleared today. **Applying a candidate ground isn't the same as proving
 | T5 | **Email provider** for sign-in mail (gap P-4) | Account holders' email address and message | Resend, for example: "All account data … is stored in the United States regardless of the sending region" | Candidate: **(c)**: confirmation and reset emails are needed to run the account | **CONDITIONAL.** Prerequisites: (1) gap P-4 picks the provider; (2) a necessity note covers sending through that provider abroad. Any other mail needs a new ground |
 | T6 | **Backups** (owner destinations, D-044) | Full encrypted exports of everything above | The owner's chosen places (OQ-B1). Unknown; may be outside South Africa | If the destination is **inside** South Africa (for example the owner's own computer), there is no s72 transfer. If **outside**, a ground is needed, most likely **(a)** via the storage provider's terms | **UNASSESSED** until OQ-B1 names the destinations. Encryption to an owner-held key is a strong **safeguard** (section 4) but **not** a ground |
 
+### T1b enquiry-field necessity note (2026-11-11)
+
+The visitor specifically asks CarworX to deliver an enquiry to the selected
+provider. The proposed pre-contractual purpose is limited to that request:
+
+| Field | Necessity for the requested enquiry |
+|---|---|
+| Listing public ID and organisation snapshot | Route the enquiry to the selected provider and enforce tenant access; these are business references, not personal ID numbers |
+| Sender name | Identify the person making the enquiry to that provider |
+| Sender email | Let the selected provider reply; no account or marketing subscription is created |
+| Message | Communicate the visitor's question; limit to the bounded message and warn against identity, bank or password information |
+| Consent reference, version and timestamps | Demonstrate the unticked sharing choice and apply the retention schedule; do not include additional identity or location data |
+
+No precise search point, private mobile base, ID/licence number, bank detail,
+attachment or Turnstile token belongs in the enquiry record. Turnstile is a
+separate operator flow and is not justified by this row.
+
+The configured Supabase database is abroad, so using that backend for this
+purpose entails a foreign transfer. That architectural choice alone does not
+prove statutory necessity. Before production the owner must approve the
+actual destination, the field-level purpose and the assessment of feasible
+South African alternatives, and the implemented enquiry form must show the
+transfer notice before submission. T1b remains CONDITIONAL until that evidence
+is recorded; this note neither clears the transfer nor supplies a vendor DPA.
+Support requests are a separate purpose: their pre-send notice does not extend
+the enquiry ground to support, demand capture or unrelated processing.
+
 ## 3. The region choice
 
 Both candidate regions are in Europe; neither is in South Africa (Supabase lists no African region on its regions page). From a POPIA view the two are **equivalent**: both are outside South Africa, and the same grounds and the same Supabase DPA apply to either. So the latency run decides ([latency-region.md](../runbooks/latency-region.md)). If latency is a tie, matching staging (Frankfurt) is preferred.
