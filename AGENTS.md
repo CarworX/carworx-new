@@ -8,6 +8,8 @@ This repo is the single source of truth for CarworX. Two agents work here: **Cla
 - P2-1 is merged. Under D-078, Claude plans and implements P2-2, with Codex independently reviewing the plan and code. Follow [Codex 22](planning/codex/22-p2-2-claude-handoff.md); D-079 permits Claude to write the plan and implement from the published hardening branch while Codex is unavailable. Credential/pricing gates remain; Codex reviews later, and Claude-authored work stays unmerged.
 - D-071 permits Codex to operate the pinned Phase 1 staging targets, including scoped settings, migrations, deployment and email probes to owner-approved inboxes. Owner credentials stay private. Creating accounts, using production secrets, production deployment and spending still require separate authority.
 
+**Commit identity (D-087, owner rule, binding on both agents):** never commit, author, sign off or write the owner's personal email address anywhere: commits, trailers, files, PR text or logs. When committing as the owner, use the owner's GitHub noreply address `86560354+Gerrard-Lewu@users.noreply.github.com`. Agent identities use their own noreply addresses (for example `noreply@anthropic.com`). Set it before committing: `git config user.email 86560354+Gerrard-Lewu@users.noreply.github.com`. CI (`.github/workflows/commit-email.yml`) rejects any PR commit whose author or committer email isn't a noreply address.
+
 Before doing anything:
 
 1. Read [`planning/PROTOCOL.md`](planning/PROTOCOL.md). It sets the rules for turns, proposals, objections and agreement.
