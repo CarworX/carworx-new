@@ -113,6 +113,13 @@ export default function Support({
                 Don't include ID numbers, passwords or bank details.
               </span>
             </div>
+            <p className="hint" data-support-transfer-notice>
+              Your email address, topic and message are stored on servers
+              outside South Africa so CarworX can handle your request. Only
+              authorised admins can read your case. We keep it for three years
+              after it closes. Do not include ID numbers, passwords or bank
+              details.
+            </p>
             <HumanCheck siteKey={loaderData.siteKey} action="support" />
             <div>
               <Button type="submit" variant="primary">

@@ -405,6 +405,11 @@ describe("support case", () => {
     const b = browser();
     const page = await b.send("/support");
     expect(page.body).toContain('data-form="support"');
+    expect(page.body).toContain("data-support-transfer-notice");
+    expect(page.body).toMatch(/servers outside\s+South Africa/);
+    expect(page.body.indexOf("data-support-transfer-notice")).toBeLessThan(
+      page.body.indexOf("Send message"),
+    );
     const reply = await b.send("/support", {
       form: {
         email: address,
