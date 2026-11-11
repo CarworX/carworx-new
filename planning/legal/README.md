@@ -1,6 +1,6 @@
 # Legal drafts for the free site (D-045, G-PROD)
 
-> **Draft for owner approval.** Written by Claude on 2026-11-10 (SAST). **Not legal advice** (D-045: no attorney; the owner accepts that risk). Codex reviews later. Nothing here is published until the owner approves it.
+> **Draft for owner approval.** Written by Claude on 2026-11-10 (SAST). **Not legal advice** (D-045: no attorney; the owner accepts that risk). Codex's D-045 cross-check (2026-11-11) asked for three corrections at `84d6a5a`; they are made in the revision after it. Nothing here is published until the owner approves it.
 
 | # | Draft | Closes (G-PROD) | Owner action |
 |---|---|---|---|
@@ -19,7 +19,7 @@
 
 ## Primary sources read
 
-All read on **2026-11-10**. Gazette scans of older Acts don't show later amendments; where that matters, an owner question says so.
+Read on **2026-11-10**, except the rows marked 2026-11-11, which were added after Codex's D-045 cross-check. Gazette scans of older Acts don't show later amendments; where that matters, an owner question says so.
 
 | Short name | Text | URL |
 |---|---|---|
@@ -32,7 +32,11 @@ All read on **2026-11-10**. Gazette scans of older Acts don't show later amendme
 | Regulator update | Information Regulator media briefing, November 2025 (amended POPIA Regulations in force 17 April 2025) | <https://inforegulator.org.za/wp-content/uploads/2025/11/MEDIA-STATEMENT_INFORMATION-REGULATORS-LATEST-UPDATE-Journalist-ver.pdf> |
 | CPA | Consumer Protection Act 68 of 2008, Government Gazette 32186 | <https://www.gov.za/sites/default/files/32186_467.pdf> |
 | ECTA | Electronic Communications and Transactions Act 25 of 2002, Government Gazette 23708, 2 August 2002 | <https://www.gov.za/sites/default/files/gcis_document/201409/a25-02.pdf> |
-| ECTA amendment note | gov.za page for ECTA: "Amended by Cybercrimes Act 19 of 2020" and "Amended by Consumer Protection Act 68 of 2008"; consolidated text on SAFLII "[Updated to 1 December 2021]" (not read) | <https://www.gov.za/documents/electronic-communications-and-transactions-act> |
+| ECTA amendments | Checked 2026-11-11 against two amending Acts: **POPIA s110 and its Schedule** ("The repeal of sections 45, 50 and 51" of Act 25 of 2002; s110 in force 30 June 2021) and **CPA Schedule 1 Part B** (amends only ECTA s1 and s49: complaints go to the National Consumer Commission). The drafts cite ECTA s43 and s48 only, which neither Act changes. **Not read:** the Cybercrimes Act 19 of 2020 Schedule (gov.za and the DoJ copy were unreachable on 2026-11-11); see OQ-L5 | POPIA text above; CPA text above |
+| POPIA commencement | Proclamation R.21 of 2020, GG 43461, 22 June 2020: ss2–38, 55–109, 111 and 114(1)–(3) from 1 July 2020; **ss110 and 114(4) from 30 June 2021** | <https://inforegulator.org.za/wp-content/uploads/2020/07/20200622-gg43461-rg11136-pr21-POPIAsections.pdf> |
+| Regulations 2018 | Regulations relating to the Protection of Personal Information, GN R.1383, GG 42110, 14 December 2018 (base text for regulation 4) | <https://www.justice.gov.za/legislation/notices/2018/20181214-gg42110-rg10897-gon1383-POPIregister.pdf> |
+| Regulations 2025 amendment | GN 6126, GG 52523, 17 April 2025: amended Regulations published "for implementation with immediate effect" | <https://www.justice.gov.za/legislation/notices/2025/20250417-gg52523gon6126-POPIA-Regulations-Amendment.pdf> |
+| Regulations 2025 text | The amended final text the notice links to | <https://inforegulator.org.za/wp-content/uploads/2025/04/POPIA-2021-Regulations-FINAL-21-Jan-2025.pdf> |
 | TAA | Tax Administration Act 28 of 2011, Government Gazette 35491, 4 July 2012 | <https://www.gov.za/sites/default/files/gcis_document/201409/a282011.pdf> |
 | Prescription Act | Prescription Act 68 of 1969 (Department of Justice consolidated text) | <https://justice.gov.za/legislation/acts/1969-068.pdf> |
 
@@ -44,8 +48,29 @@ Vendor facts used in the section 72 assessment and the privacy notice, also read
 |---|---|---|---|
 | **OQ-L1** | **Who is the responsible party before the company is registered (D-049)?** POPIA defines a private body as including "a natural person who carries or has carried on any trade, business or profession" (s1, "private body"). Until CIPC registration that's probably you personally, trading as CarworX, with your cofounders. The eServices form asks for an organisation's "registered name, registration number". Please confirm how you'll register. | Names the responsible party in the notice and on the Information Officer registration | 1, 2, 6, guide 13 |
 | **OQ-L2** | The business **physical address, phone and email** to publish. ECTA s43(1)(b), (c) and (g) require them on the website for anything offered by electronic transaction; POPIA s18(1)(b) requires the "name and address of the responsible party" | Can't publish without them | 1, 2 |
-| **OQ-L3** | **The amended POPIA Regulations (in force 17 April 2025)** weren't available as text from the sources read. The Regulator says they add duties on objections and direct marketing. Agents should read the gazetted text before the notice is published. Can you approve that the notice ships only after that check? | The 2018 forms and procedures may have changed | 1, 6 |
-| **OQ-L4** | **Are the vendor DPAs binding on CarworX?** Supabase's DPA applies standard contractual clauses where the exporter's law "prohibit[s] the transfer … in the absence of a transfer mechanism" (DPA cl. 12.1(b)). Please check in each dashboard whether a DPA must be accepted or signed, and do so | Basis for the section 72(1)(a) route | 4 |
-| **OQ-L5** | **Is the free site an "electronic transaction" under ECTA Chapter VII?** No goods or services are sold for money in Phase 2. The draft takes the cautious view and gives the s43 information anyway | Low cost either way; the draft errs towards disclosure | 2 |
+| ~~OQ-L3~~ | **Resolved 2026-11-11.** The amended Regulations were read; see "Regulations cross-check" below | — | 1, 6 |
+| **OQ-L4** | **Are the vendor DPAs binding on CarworX?** Supabase's DPA applies standard contractual clauses where the exporter's law "prohibit[s] the transfer … in the absence of a transfer mechanism" (DPA cl. 12.1(b)). Please check in each dashboard whether a DPA must be accepted or signed, and do so. **Accepting is necessary but not sufficient:** an agent must still check each DPA's terms against s72(1)(a)(i) and (ii), including onward transfers | Needed before rows T1c, T2b and T3 of the s72 assessment can close | 4 |
+| **OQ-L5** | **ECTA Chapter VII scope, and the Cybercrimes Act.** Is the free site an "electronic transaction"? No goods or services are sold for money in Phase 2; the draft gives the s43 information anyway. Separately, the Cybercrimes Act 19 of 2020 Schedule wasn't read, so its effect on ECTA s43 and s48 is unconfirmed (see "ECTA amendments" above) | Low cost either way; the Cybercrimes Act check stays open | 2 |
 | **OQ-L6** | **Children.** The draft says the site is for people aged 18 and over (POPIA s1 "child" is under 18; s34 prohibits processing children's information without a s35 authorisation). Is that acceptable? | Sign-up needs an age statement | 1, 2 |
-| **OQ-L7** | **PAIA manual.** The IO guidance (para 6.2.3) lists a manual "as prescribed in sections 14 and 51 of PAIA" among the Information Officer's regulation 4 duties. The PAIA text and any small-business exemption weren't read for this draft. Should agents draft one next? | Possibly required for a private body | 6 |
+| **OQ-L7** | **PAIA manual.** The 2025 amendment **deletes** regulation 4(1)(c) (the duty to ensure a PAIA manual under PAIA ss14 and 51) and 4(2) (copies of it) from the POPIA Regulations, so the 2021 IO Guidance Note paras 6.2.3 and 6.2.6 are out of date on this point. Whether PAIA s51 itself still requires a manual from a private body like CarworX wasn't checked: PAIA wasn't read. Should agents read PAIA and draft one if needed? | May still be required under PAIA itself | 6 |
+
+## Regulations cross-check (2026-11-11)
+
+The Regulations relating to the Protection of Personal Information, 2018, as amended by GN 6126 (GG 52523, 17 April 2025, "with immediate effect"). Each amended regulation and where the drafts deal with it:
+
+| Regulation (as amended) | What it now says | Where handled |
+|---|---|---|
+| 1 | New definitions, including "day" (calendar day) and "writing" (ECTA s12) | Read; the drafts' periods are in calendar days |
+| 2.1–2.3 | Objections are free, during office hours, on a form "substantially similar to Form 1", and "reasonably accessible … by hand, fax, post, email, SMS, or WhatsApp and or in any manner expedient" | Privacy notice §9 "How to ask" |
+| 2.4 | Tell people of their right to object when collecting (s18(1)(h)(iv)) | Privacy notice §9 |
+| 2.5, 3.5 | A telephone objection or correction request must be "electronically recorded" and made available, including a transcription, free | Privacy notice §9; incident plan unaffected |
+| 3.2–3.4 | Correction, deletion and destruction requests are free, on a form like Form 2, by the same channels | Privacy notice §9 |
+| 3.6 | Within 30 days, tell the person **in writing** what was done | Privacy notice §9 |
+| 4 | Regulation 4(1)(a) adds "continually improved"; **4(1)(c) (PAIA manual) and 4(2) (manual copies) deleted** | README OQ-L7. Follow-up: owner guide 13 (#59) still lists the PAIA manual among regulation 4 duties, citing the 2021 Guidance Note; correct it in a later edit |
+| 5 | "relevant body/bodies" wording; Form 3 amended | Not relevant to the free site |
+| 6.1–6.4 | Marketing consent must be **written**, on a form like Form 4 or another free, accessible way; phone and automated-call requests recorded; **"opt-out shall not constitute consent"** | Privacy notice §3 marketing row and reviewer note |
+| 7 | Who may complain, and how: in writing on Form 5 (online, at the Regulator's offices, or by fax, post, courier or email); acknowledged within 14 days | Privacy notice §10. Could add "Form 5 on the Regulator's website" when publishing |
+| 12, new 13 | Forms 17–19 deleted; administrative fines may be paid in instalments | Read; no drafting change |
+| 10, 11 | Things done under the 2018 Regulations count under the new ones. The text's own short title says it commences "on a date to be determined", but GN 6126 publishes it "for implementation with immediate effect" (17 April 2025); the drafts treat it as in force | Read; no drafting change |
+
+**Also checked:** the Regulations relating to the Processing of Data Subjects' Health Information by Certain Responsible Parties, 2026 (GN 7198, GG 54268, 6 March 2026). These apply to insurers, medical schemes, pension funds, employers and similar bodies processing **health** information. CarworX processes none, so they don't apply. Only the gazette's title and scope were seen, in search results; gov.za was unreachable on 2026-11-11, so the full text wasn't read.

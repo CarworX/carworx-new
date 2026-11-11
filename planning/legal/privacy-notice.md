@@ -1,6 +1,6 @@
 # CarworX privacy notice (free site)
 
-> **Draft for owner approval.** 2026-11-10 (SAST). Not legal advice (D-045). The right-hand "Basis" notes are for the reviewer and are removed before publishing. Bracketed items wait on owner questions in the [README](README.md). Publish only after OQ-L3 (the 2025 amended Regulations) is checked.
+> **Draft for owner approval.** 2026-11-10 (SAST). Not legal advice (D-045). The right-hand "Basis" notes are for the reviewer and are removed before publishing. Bracketed items wait on owner questions in the [README](README.md). Cross-checked on 2026-11-11 against the POPIA Regulations as amended with effect from 17 April 2025 (GN 6126, GG 52523); see the README's "Regulations cross-check".
 
 **Version:** draft 1 · **Applies from:** [launch date]
 
@@ -33,7 +33,7 @@ This notice covers carworx.app: searching for car-service providers, reading lis
 | Verification evidence | You apply | To grant honest trust labels. Raw evidence is deleted after review (see section 7) | (b) and (f) | Only for the label it supports |
 | Your enquiry: your name, email address, the message, and the service and area you ask about | You send an enquiry to a provider (when the enquiry form launches) | To pass it to **the provider you chose**, so they can reply, and to handle any complaint | (b) actions towards a contract you asked for; (f) | Yes, to send an enquiry |
 | Your messages to us | You contact support | To answer you | (f), or (b) if about your account | No |
-| Marketing email permission | Only if you tick the box | To send news. The box is **never** ticked for you | (a) consent; s69(1)(a) | No |
+| Marketing email permission | Only if you tick the box | To send news. The box is **never** ticked for you, and not unticking a box never counts as permission | (a) consent; s69(1)(a); Regulations reg 6.1 (written consent, free) and 6.4 ("opt-out shall not constitute consent") | No |
 | Security logs, with addresses and coordinates removed | Every request | To keep the site working and safe | (f) | — |
 
 We **don't** collect ID numbers, card details or bank details during the free pilot. We don't ask **customers** for a home or street address. **Mobile providers** do give us a private base location: if a provider uses their home, that is an exact home location, which is why we advise against it (terms of use, section 7). *Basis: PLAN §9.2 "No ID numbers in v1"; POPIA s10 (minimality).*
@@ -69,9 +69,15 @@ We don't sell personal information. *Basis: POPIA s18(1)(h)(i) (recipients); s20
 
 ## 6. Information sent outside South Africa
 
-Our database and most of our operators are outside South Africa. We send information abroad only as POPIA section 72 allows. The main ground is that each operator is bound by written terms giving protection substantially similar to POPIA, including for onward transfers (s72(1)(a)). For your account and listing, the transfer is also needed to perform our agreement with you (s72(1)(c)). Our assessment is available on request.
+Our database and most of our operators are outside South Africa. We send information abroad only as POPIA section 72 allows:
 
-*Basis: POPIA s18(1)(g); s72(1)(a), (c). See [s72-cross-border.md](s72-cross-border.md).*
+- **Your account, your listing and enquiries you send:** the transfer is needed to perform our agreement with you, or the steps you asked us to take (s72(1)(c)).
+- **Sign in with Google:** you choose it, after we've told you here that Google is abroad (s72(1)(b)).
+- **Everything else**, such as the security and abuse checks on every visit and place searches: [to be completed when the operators' terms have been assessed; see the s72 assessment, rows T1c, T2b, T3 and T6. **This notice can't be published until then.**]
+
+Our assessment is available on request.
+
+*Basis: POPIA s18(1)(g) (tell people about the transfer and "the level of protection"); s72(1)(b), (c), and (a) once assessed. See [s72-cross-border.md](s72-cross-border.md).*
 
 ## 7. How long we keep it
 
@@ -101,9 +107,9 @@ You can:
 - withdraw consent you gave, without affecting earlier processing;
 - complain to the Information Regulator.
 
-Email [privacy@ address]. We'll ask for proof of identity before releasing anything.
+**How to ask.** It's free. Use whichever is easiest for you: email [privacy@ address], post or hand delivery to [address], or [WhatsApp or SMS number]. You can use the Regulator's Form 1 (objection) or Form 2 (correction or deletion), or just tell us in your own words. If you ask by phone, we record the call and give you the recording or a transcript on request, free. We'll ask for proof of identity before releasing anything, and we'll tell you **in writing within 30 days** what we did about a correction or deletion request.
 
-*Basis: POPIA s5 (rights); s11(2)(b), (3), (4) (withdrawal and objection); s23(1) (access, "free of charge" confirmation, "adequate proof of identity"); s24 (correction and deletion); s18(1)(h)(iii)–(v).*
+*Basis: POPIA s5 (rights); s11(2)(b), (3), (4) (withdrawal and objection); s23(1) (access, "free of charge" confirmation, "adequate proof of identity"); s24 (correction and deletion); s18(1)(h)(iii)–(v). Regulations (as amended 2025): reg 2.1–2.3 (objections free, on a form "substantially similar to Form 1", "by hand, fax, post, email, SMS, or WhatsApp and or in any manner expedient"); reg 2.5 and 3.5 (telephone requests "electronically recorded" and made available, including a transcription); reg 3.2–3.4 (correction or deletion free, Form 2); reg 3.6 (written notice of the action taken within 30 days). The channels in brackets wait on OQ-L2.*
 
 ## 10. The Information Regulator
 
@@ -124,8 +130,9 @@ We'll post any change here with a new version number and date, and email account
 ### Reviewer notes (remove before publishing)
 
 - **Enquiries:** the provider is a recipient (s18(1)(h)(i)), named in sections 3 and 5. The form itself is Bundle B (P2-5); keep this row in step with it.
+- **Regulation 2.4:** the right to object must be notified at collection (s18(1)(h)(iv)); section 9 does this.
 - **s18 checklist:** (a) section 3; (b) section 1; (c) section 3; (d), (e) section 3 "Must you give it?"; (f) none: no law requires the collection; (g) section 6; (h)(i) section 5; (h)(ii) section 3; (h)(iii), (iv), (v) sections 9 and 10.
-- **s69:** marketing needs an opt-in box, off by default (Claude 17 §3). Each marketing email must carry the sender's identity and an opt-out (s69(4)). ECTA s45(1) also requires an opt-out option. Marketing isn't planned for launch.
+- **s69:** marketing needs an opt-in box, off by default (Claude 17 §3). Each marketing email must carry the sender's identity and an address for opt-out requests (s69(4)). ECTA s45 is **not** cited: POPIA s110 and its Schedule repeal ECTA ss45, 50 and 51, and s110 commenced on 30 June 2021 (Proclamation R.21 of 2020, GG 43461). Regulation 6 requires written marketing consent and says opt-out isn't consent. Marketing isn't planned for launch.
 - **Google (PLAN §9.1):** scopes `openid email profile` only; Google named as a sign-in provider. Done in sections 3 and 5.
 - **Search data:** matches PLAN §6.2 and D-082 (geocodes never stored). The privacy claim "discard" relies on A17.
 - **Gap R-1:** the limiter Durable Objects currently keep their counter rows with no expiry (`limiter.ts` at `b899190` has no alarm or delete). The 24-hour claim in section 7 is **false until that's fixed**. See the retention schedule.
