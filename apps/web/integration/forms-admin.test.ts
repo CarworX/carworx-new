@@ -302,6 +302,9 @@ describe("A14: no ID-number field anywhere; fines copy", () => {
     const external = [...reply.body.matchAll(/href="(https?:\/\/[^"]+)"/g)]
       .map((m) => m[1])
       .filter((h) => h !== undefined && !h.startsWith("http://localhost"));
-    expect(external).toEqual(["https://www.rtia.co.za/"]);
+    expect(external).toEqual([
+      "https://rtmc.co.za/",
+      "https://www.rtia.co.za/",
+    ]);
   });
 });

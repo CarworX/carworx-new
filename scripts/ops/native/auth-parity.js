@@ -175,6 +175,17 @@ try {
             file:
               /(?:^|\/)([a-z0-9-]+\.test\.tsx?)$/.exec(file.name)?.[1] ??
               "unknown",
+            source_locations: file.assertionResults.flatMap((test) =>
+              test.status === "failed"
+                ? (test.failureMessages ?? []).flatMap((message) =>
+                    [
+                      ...message.matchAll(
+                        /integration\/([a-z0-9-]+\.test\.tsx?):(\d+):(\d+)/g,
+                      ),
+                    ].map((m) => `${m[1]}:${m[2]}:${m[3]}`),
+                  )
+                : [],
+            ),
             failed_indices: file.assertionResults.flatMap((test, index) =>
               test.status === "failed" ? [index] : [],
             ),
