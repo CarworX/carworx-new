@@ -9,6 +9,11 @@
 -- SELECT-only client grants, so RLS decides reads and nothing else writes.
 -- listing_public is not touched: no column, owner or grant changes.
 --
+-- Lock order, everywhere: dispute row, then claim row, then the organisation
+-- row, then its memberships. Every ownership decision (approve a claim,
+-- dispute it, resolve a dispute) holds the organisation lock while it checks
+-- and changes state, so those decisions are serialised per organisation.
+--
 -- Errors: 42501 not allowed, 22023 bad input, P0001 with a fixed message key
 -- for a refused state transition. Messages never echo input.
 
@@ -310,6 +315,11 @@ begin
   if v_uid is null then raise exception 'not_allowed' using errcode = '42501'; end if;
   select * into v_c from public.listing_claims where id = p_claim for update;
   if not found or v_c.claimant_id = v_uid then raise exception 'not_allowed' using errcode = '42501'; end if;
+  -- Same organisation lock as approval and reversal, taken before the
+  -- supersession check, so a dispute and a later approval can't both commit.
+  -- The checks below are later statements, so they see whatever committed
+  -- while this transaction waited (READ COMMITTED).
+  perform from public.organisations where id = v_c.organisation_id for update;
   if not (
     (v_c.status = 'submitted' and private.has_org_role(v_c.organisation_id, array['owner','manager']))
     or (v_c.status = 'approved' and v_uid = any (v_c.displaced_user_ids))
@@ -432,9 +442,9 @@ begin
   if not found then perform private.bad_input(); end if;
   if v_d.status <> 'open' then raise exception 'dispute_closed' using errcode = 'P0001'; end if;
   select * into v_c from public.listing_claims where id = v_d.claim_id for update;
+  perform from public.organisations where id = v_c.organisation_id for update;
   if p_outcome = 'uphold' then
     if v_c.approved_at is not null then
-      perform from public.organisations where id = v_c.organisation_id for update;
       if private.transfer_superseded(v_c) then raise exception 'claim_superseded' using errcode = 'P0001'; end if;
       -- Restore the snapshot exactly: everyone active now (the claimant and
       -- anyone they granted access to) is revoked, then the displaced return.
