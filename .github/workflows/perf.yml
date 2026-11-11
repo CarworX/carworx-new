@@ -58,7 +58,20 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           node --test perf/budgets.test.js
-          pnpm --filter @carworx/web exec playwright install --with-deps chromium
+          # The OS packages come from Ubuntu's mirrors, which can be unreachable
+          # from runners. Retry, then fall back to the browser alone: the
+          # ubuntu-24.04 image already has Chrome's system libraries. If
+          # Chromium can't launch, the measurement step below still fails.
+          ok=0
+          for attempt in 1 2 3; do
+            if pnpm --filter @carworx/web exec playwright install --with-deps chromium; then ok=1; break; fi
+            echo "::warning::playwright --with-deps failed (attempt $attempt); retrying"
+            sleep 20
+          done
+          if [ "$ok" != 1 ]; then
+            echo "::warning::OS packages unavailable; installing Chromium without --with-deps"
+            pnpm --filter @carworx/web exec playwright install chromium
+          fi
           cat > apps/web/.dev.vars <<'VARS'
           CARWORX_ENV=local
           CARWORX_DEV_PAGES=1
