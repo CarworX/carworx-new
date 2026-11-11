@@ -7,8 +7,13 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "playwright";
 
 const app = join(dirname(fileURLToPath(import.meta.url)), "..");
+interface Worker {
+  fetch(request: Request, env: unknown, context: unknown): Promise<Response>;
+}
 const worker = (
-  await import(pathToFileURL(join(app, "build/server/index.js")).href)
+  (await import(pathToFileURL(join(app, "build/server/index.js")).href)) as {
+    default: Worker;
+  }
 ).default;
 const address = "synthetic-support@example.test";
 let contact: string | undefined = address;
