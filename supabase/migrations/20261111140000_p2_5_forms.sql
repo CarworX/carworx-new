@@ -284,9 +284,6 @@ begin
   ) select count(*) into demand_deleted from gone;
   with gone as (
     delete from public.enquiries where created_at <= now() - interval '12 months' returning consent_id
-  ), ended as (
-    update public.consents c set processing_ended_at = now(), retain_until = now() + interval '3 years'
-    from gone where c.id = gone.consent_id and c.processing_ended_at is null returning c.id
   ) select count(*) into enquiries_deleted from gone;
   with gone as (
     delete from public.support_cases where status = 'closed' and closed_at <= now() - interval '3 years' returning id
