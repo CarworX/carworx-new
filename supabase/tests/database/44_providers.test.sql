@@ -24,7 +24,7 @@ insert into public.services(slug,category_slug,name) values
   ('p24-fixed','p24-cat','P2-4 fixed service (synthetic)'), ('p24-mobile','p24-cat','P2-4 mobile service (synthetic)');
 insert into private.platform_admins (user_id) values ('b4000000-0000-4000-8000-000000000006');
 
-select plan(105);
+select plan(107);
 
 -- ===== Application ==========================================================
 set local role anon;
@@ -54,12 +54,13 @@ select throws_ok($$select public.provider_apply('Max','p24-fixed','fixed','Gaute
 select throws_ok($$select public.provider_apply('Max','p24-mobile','mobile','Gauteng','Synthetic no radius',null,-26.1,28.0,null)$$, '22023', null, 'mobile without a radius rejected');
 select throws_ok($$select public.provider_apply('Max','p24-mobile','mobile','Gauteng','Synthetic huge radius',null,-26.1,28.0,101)$$, '22023', null, 'mobile radius above 100 km rejected');
 select throws_ok($$select public.provider_apply('Max','no-such-service','fixed','Gauteng','Synthetic bad service','1 Road',-26.1,28.0,null)$$, '22023', null, 'unknown service rejected');
+select throws_ok($$select public.provider_apply('Max','p24-fixed','fixed','Gauteng',E'Synthetic line one\x01line two','1 Road',-26.1,28.0,null)$$, '22023', null, 'control characters other than line breaks rejected in a description');
 select throws_ok($$select public.provider_apply(E'Max\x01','p24-fixed','fixed','Gauteng','Synthetic control char','1 Road',-26.1,28.0,null)$$, '22023', null, 'control characters rejected');
 
 reset role;
 set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
-select ok((select set_config('t.mobile', public.provider_apply('Gus Mobile (synthetic)','p24-mobile','mobile','Gauteng','Synthetic mobile applicant',null,-26.05,28.05,20)::text, true)) is not null,
+select ok((select set_config('t.mobile', public.provider_apply('Gus Mobile (synthetic)','p24-mobile','mobile','Gauteng',E'Synthetic mobile applicant\r\nComes to you',null,-26.05,28.05,20)::text, true)) is not null,
   'signed-in person applies (mobile, private base)');
 
 reset role;
@@ -67,6 +68,8 @@ select is((select status from public.listings where public_id = current_setting(
 select is((select provenance_kind from public.listings where public_id = current_setting('t.fixed')::uuid), 'provider_application', 'provenance is provider_application');
 select is((select m.role from public.memberships m join public.listings l on l.organisation_id = m.organisation_id
   where l.public_id = current_setting('t.fixed')::uuid and m.user_id = 'b4000000-0000-4000-8000-000000000001'), 'owner', 'applicant owns the new organisation');
+select is((select description from public.listings where public_id = current_setting('t.mobile')::uuid), E'Synthetic mobile applicant\nComes to you',
+  'a multi-line description keeps its line break, normalised to \\n');
 select is((select count(*)::int from public.service_areas where listing_public_id = current_setting('t.mobile')::uuid), 1, 'mobile base stored only in private service_areas');
 select is((select source_kind from public.coordinate_sources c join public.listings l on l.organisation_id = c.organisation_id
   where l.public_id = current_setting('t.mobile')::uuid), 'provider_supplied', 'pin provenance is provider_supplied');
