@@ -59,7 +59,7 @@ Same shape as T3: a `SECURITY INVOKER` wrapper in `public` (the only schema Post
 | `provider_resubmit`, `dispute_claim` | Active owner/manager (or displaced member, for a dispute) |
 | `admin_decide_application`, `admin_set_suspension`, `admin_decide_claim`, `admin_resolve_dispute` | `private.is_platform_admin()`, which requires the listed admin **and** `aal = aal2` |
 
-**Defence in depth:** the Worker refuses non-admins with 404 and `aal1` admins with a redirect to `/auth/mfa` before any read; the definer checks `aal2` again; RLS on every new table checks `aal2` inline for admin reads. Revoking members uses the existing membership RLS (owner, or admin at `aal2`).
+**Defence in depth:** the Worker refuses non-admins with 404 and `aal1` admins with a redirect to `/auth/mfa` before any read; the definer checks `aal2` again; RLS on every new table checks `aal2` inline for admin reads. Revoking members uses the existing membership RLS (owner, or admin at `aal2`). Every client membership write also passes a trigger that takes the organisation lock and rechecks, with a fresh read, that the caller is still an active owner or an `aal2` admin, so a grant cannot slip in behind a transfer or a reversal.
 
 **RLS on the new tables** (no client `INSERT`, `UPDATE` or `DELETE` grant at all):
 
