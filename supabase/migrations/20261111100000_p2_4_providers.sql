@@ -199,6 +199,18 @@ begin
   return v;
 end $$;
 
+-- Multi-line text (business descriptions): line breaks are normalised to \n
+-- and kept; every other control character is still refused.
+create function private.clean_multiline(p text, p_min integer, p_max integer) returns text
+language plpgsql immutable set search_path = '' as $$
+declare v text := pg_catalog.btrim(pg_catalog.replace(pg_catalog.replace(p, E'\r\n', E'\n'), E'\r', E'\n'), E' \n\t');
+begin
+  if v is null or length(v) < p_min or length(v) > p_max or pg_catalog.replace(v, E'\n', '') ~ '[[:cntrl:]]' then
+    perform private.bad_input();
+  end if;
+  return v;
+end $$;
+
 -- A later approved transfer on the same organisation supersedes an earlier
 -- one: the earlier claim can no longer be disputed or reversed.
 create function private.transfer_superseded(p_claim public.listing_claims) returns boolean
@@ -224,7 +236,7 @@ begin
   if v_uid is null then raise exception 'not_allowed' using errcode = '42501'; end if;
   v_name := private.clean_text(p_business_name, 2, 160);
   v_metro := private.clean_text(p_metro, 2, 120);
-  v_desc := private.clean_text(p_description, 10, 2000);
+  v_desc := private.clean_multiline(p_description, 10, 2000);
   if p_mode is null or p_mode not in ('fixed','mobile')
      or p_lat is null or p_lng is null or not (p_lat between -35 and -22) or not (p_lng between 16 and 33)
      or not exists (select from public.services s where s.slug = p_service_slug)
@@ -275,7 +287,7 @@ begin
     raise exception 'not_allowed' using errcode = '42501';
   end if;
   v_name := private.clean_text(p_display_name, 2, 160);
-  v_desc := private.clean_text(p_description, 10, 2000);
+  v_desc := private.clean_multiline(p_description, 10, 2000);
   if v_l.status <> 'draft' then raise exception 'not_draft' using errcode = 'P0001'; end if;
   if exists (select from public.listings l join public.memberships m on m.organisation_id = l.organisation_id
              where m.user_id = v_uid and m.status = 'active' and m.role = 'owner' and l.status = 'submitted') then
@@ -528,7 +540,7 @@ create trigger memberships_client_write_guard before insert or update or delete 
 -- ---------------------------------------------------------------------------
 revoke all on function private.transfer_superseded(public.listing_claims) from public, anon, authenticated, service_role;
 revoke all on function private.require_admin(), private.bad_input(), private.is_free_mail_domain(text),
-  private.clean_text(text, integer, integer) from public, anon, authenticated, service_role;
+  private.clean_text(text, integer, integer), private.clean_multiline(text, integer, integer) from public, anon, authenticated, service_role;
 revoke all on function
   private.provider_apply(text, text, text, text, text, text, double precision, double precision, integer),
   private.provider_resubmit(uuid, text, text),

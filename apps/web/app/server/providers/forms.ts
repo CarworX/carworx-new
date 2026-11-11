@@ -107,6 +107,30 @@ function text(form: FormData, name: string, min: number, max: number) {
   return value;
 }
 
+/**
+ * Multi-line text (business descriptions): CRLF and CR become LF and line
+ * breaks are kept; every other control character is refused, as the
+ * database's private.clean_multiline does.
+ */
+function multiline(form: FormData, name: string, min: number, max: number) {
+  const value = field(form, name)
+    .replace(/\r\n?/g, "\n")
+    .replace(/^[ \n\t]+|[ \n\t]+$/g, "");
+  if (
+    value.length < min ||
+    value.length > max ||
+    // eslint-disable-next-line no-control-regex -- only line breaks are allowed
+    /[\u0000-\u0009\u000b-\u001f\u007f]/.test(value)
+  )
+    return null;
+  return value;
+}
+
+/** A business description from a multi-line field. */
+export function parseDescription(form: FormData): string | null {
+  return multiline(form, "description", 10, 2000);
+}
+
 function number(form: FormData, name: string): number | null {
   const raw = field(form, name).trim();
   if (!/^-?\d{1,3}(\.\d{1,7})?$/.test(raw)) return null;
@@ -130,7 +154,7 @@ export function parseApplication(form: FormData): Application | null {
   const service = field(form, "service");
   const mode = field(form, "mode");
   const metro = text(form, "metro", 2, 120);
-  const description = text(form, "description", 10, 2000);
+  const description = parseDescription(form);
   const lat = number(form, "latitude");
   const lng = number(form, "longitude");
   if (
