@@ -471,6 +471,42 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
+-- Direct membership writes by clients join the same per-organisation
+-- serialisation as transfers. The owner/admin RLS policies are checked
+-- against the statement's snapshot, so a claimant's write that started
+-- before an upheld reversal committed could otherwise land after it and keep
+-- control through another account. For client writes only (current_user is
+-- authenticated; the private.* functions above run as their owner and are
+-- already serialised), take the organisation lock, then recheck with a fresh
+-- read that the caller is still an active owner or an aal2 admin.
+-- ---------------------------------------------------------------------------
+create function private.guard_membership_write(p_org uuid) returns void
+language plpgsql volatile security definer set search_path = '' as $$
+begin
+  perform from public.organisations where id = p_org for update;
+  if private.is_platform_admin() then return; end if;
+  if not exists (select from public.memberships m
+                 where m.organisation_id = p_org and m.user_id = auth.uid()
+                   and m.status = 'active' and m.role = 'owner') then
+    raise exception 'not_allowed' using errcode = '42501';
+  end if;
+end $$;
+revoke all on function private.guard_membership_write(uuid) from public, anon, authenticated, service_role;
+grant execute on function private.guard_membership_write(uuid) to authenticated;
+
+create function private.memberships_client_write_guard() returns trigger
+language plpgsql volatile security invoker set search_path = '' as $$
+begin
+  if current_user = 'authenticated' then
+    perform private.guard_membership_write(case when tg_op = 'DELETE' then old.organisation_id else new.organisation_id end);
+  end if;
+  return case when tg_op = 'DELETE' then old else new end;
+end $$;
+revoke all on function private.memberships_client_write_guard() from public, anon, authenticated, service_role;
+create trigger memberships_client_write_guard before insert or update or delete on public.memberships
+  for each row execute function private.memberships_client_write_guard();
+
+-- ---------------------------------------------------------------------------
 -- Grants on private functions: authenticated only (helpers: nobody).
 -- ---------------------------------------------------------------------------
 revoke all on function private.transfer_superseded(public.listing_claims) from public, anon, authenticated, service_role;
