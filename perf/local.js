@@ -40,6 +40,10 @@ try {
     phase = "preview_route";
     const reports = [];
     const samples = [];
+    const entry = { route, samples, status: "incomplete" };
+    summary.routes.push(entry);
+    summary.current_route = route;
+    summary.completed_samples = 0;
     const routeUrl = new URL(route, origin).href;
     const response = await fetch(routeUrl, {
       redirect: "error",
@@ -75,6 +79,15 @@ try {
         if (result.lhr.finalDisplayedUrl !== routeUrl)
           throw new Error("Unexpected measured route");
         reports.push(result.lhr);
+        summary.completed_samples = reports.length;
+        if (result.lhr.runtimeError) {
+          const code = result.lhr.runtimeError.code;
+          summary.failure_code =
+            typeof code === "string" && /^[A-Z][A-Z_]{0,63}$/.test(code)
+              ? code
+              : "lighthouse_runtime_error";
+          throw new Error("Invalid Lighthouse run");
+        }
         samples.push({
           performance: result.lhr.categories.performance.score * 100,
           accessibility: result.lhr.categories.accessibility.score * 100,
@@ -108,7 +121,7 @@ try {
       }
     }
     phase = "budget_evaluation";
-    summary.routes.push({ route, samples, ...evaluate(reports) });
+    Object.assign(entry, evaluate(reports));
   }
   summary.status = summary.routes.every((r) => r.status === "passed")
     ? "passed"
@@ -116,6 +129,15 @@ try {
   if (summary.status !== "passed") process.exitCode = 1;
 } catch (error) {
   summary.status = "blocked";
+  summary.stage = phase;
+  summary.failure_code ??=
+    {
+      "Invalid Lighthouse run": "invalid_lighthouse_report",
+      "Missing measurement": "missing_measurement",
+      "Five complete runs required": "incomplete_measurements",
+      "Invalid preview route": "invalid_preview_route",
+      "Unexpected measured route": "unexpected_measured_route",
+    }[error.message] ?? "stage_error";
   summary.reason = [
     "available_ram_below_2_gib",
     "loopback_origin_required",

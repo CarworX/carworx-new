@@ -44,6 +44,7 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$K1_HEAD_SHA"
           pnpm install --frozen-lockfile
+          pnpm run check
           node --test scripts/ops/native/mail-config.test.js
           NATIVE_AUTH_SUMMARY="$RUNNER_TEMP/native-auth-summary.json" node scripts/ops/native/auth-parity.js
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
