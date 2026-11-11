@@ -27,7 +27,8 @@ jobs:
     name: perf-${{ github.event.pull_request.head.sha || inputs.source_sha }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || github.event.pull_request.head.repo.full_name == github.repository
+    # Drafts don't run CI (saves Actions minutes); the run starts at ready_for_review.
+    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft)
     env:
       TESTED_SHA: ${{ github.event.pull_request.head.sha || inputs.source_sha }}
       CI: "true"
@@ -57,7 +58,20 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           node --test perf/budgets.test.js
-          pnpm --filter @carworx/web exec playwright install --with-deps chromium
+          # The OS packages come from Ubuntu's mirrors, which can be unreachable
+          # from runners; apt then spends ~10 minutes per attempt on DNS
+          # timeouts. Cap each attempt at 4 minutes, try twice, then fall back
+          # to the browser alone: the ubuntu-24.04 image already has Chrome's
+          # system libraries. If Chromium can't launch, measurement still fails.
+          ok=0
+          for attempt in 1 2; do
+            if timeout 240 pnpm --filter @carworx/web exec playwright install --with-deps chromium; then ok=1; break; fi
+            echo "::warning::playwright --with-deps failed or timed out (attempt $attempt)"
+          done
+          if [ "$ok" != 1 ]; then
+            echo "::warning::OS packages unavailable; installing Chromium without --with-deps"
+            pnpm --filter @carworx/web exec playwright install chromium
+          fi
           cat > apps/web/.dev.vars <<'VARS'
           CARWORX_ENV=local
           CARWORX_DEV_PAGES=1
