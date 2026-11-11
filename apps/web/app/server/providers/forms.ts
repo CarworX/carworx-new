@@ -149,6 +149,35 @@ export interface Application {
   p_radius_km: number | null;
 }
 
+/** Claims shown per page on /provider. */
+export const CLAIMS_PAGE = 50;
+
+export interface ClaimCursor {
+  at: string;
+  id: string;
+}
+
+const CURSOR =
+  /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2}))_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
+
+/**
+ * Keyset cursor for the claims list: the last row's `created_at` and `id`,
+ * so rows with the same timestamp keep a stable order. `null` means the
+ * first page; `"invalid"` is anything else.
+ */
+export function parseClaimCursor(
+  value: string | null,
+): ClaimCursor | null | "invalid" {
+  if (value === null) return null;
+  const m = CURSOR.exec(value);
+  if (m === null || Number.isNaN(Date.parse(m[1] ?? ""))) return "invalid";
+  return { at: m[1] ?? "", id: m[2] ?? "" };
+}
+
+export function claimCursor(row: { created_at: string; id: string }): string {
+  return `${row.created_at}_${row.id}`;
+}
+
 export function parseApplication(form: FormData): Application | null {
   const name = text(form, "businessName", 2, 160);
   const service = field(form, "service");
