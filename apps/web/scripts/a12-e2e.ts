@@ -295,7 +295,17 @@ try {
   );
   await admin.goto(`${ORIGIN}/admin/claims`);
   await shot(admin, "08-admin-claims");
-  await admin.locator("[data-row] a").first().click();
+  // Open this run's own claim: the list may hold other synthetic claims.
+  const claimId =
+    (await provider
+      .locator("[data-claim]")
+      .first()
+      .getAttribute("data-claim")) ?? "";
+  check(
+    "admin claims list shows the disputed claim",
+    (await admin.locator(`[data-row="${claimId}"]`).count()) === 1,
+  );
+  await admin.goto(`${ORIGIN}/admin/claims/${claimId}`);
   await admin
     .getByLabel("Why you uphold it")
     .fill("Synthetic: the owner's evidence is stronger");
