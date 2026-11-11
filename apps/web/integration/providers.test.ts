@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, onTestFinished } from "vitest";
 
 import {
   attr,
@@ -301,6 +301,13 @@ describe("claims, disputes and former staff", () => {
       select l.public_id, l.organisation_id, n.id, 'document', 'Synthetic paged ref',
         case when n.g <= 300 then timestamptz '2026-01-01 12:00:00.123456+00' else now() - n.g * interval '1 minute' end
       from public.listings l, n where l.public_id = '${publicId}' returning id`);
+    // Shared local stack: remove the bulk rows afterwards so other suites'
+    // first pages (the admin claims queue) are not filled with them.
+    onTestFinished(() => {
+      sql(
+        `delete from public.listing_claims where document_reference in ('Synthetic paged ref', 'Synthetic taker ref', 'Synthetic stranger ref')`,
+      );
+    });
     expect(pending).toHaveLength(1105);
     // The oldest of all: a transfer that displaced this owner from another
     // business. It is still disputable and sits far beyond the first page.
