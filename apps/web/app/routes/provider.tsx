@@ -63,6 +63,13 @@ interface Claim {
 const CLAIM_COLUMNS =
   "id, listing_public_id, organisation_id, claimant_id, status, evidence_kind, email_domain, created_at";
 
+function pageHref(claims: string | null, enquiries: string | null): string {
+  const query = new URLSearchParams();
+  if (claims !== null) query.set("claims", claims);
+  if (enquiries !== null) query.set("enquiries", enquiries);
+  return `/provider${query.size ? `?${query}` : ""}`;
+}
+
 const STATUS_COPY: Record<Listing["status"], string> = {
   draft: "Needs changes",
   submitted: "Waiting for review",
@@ -91,6 +98,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const cursor = parseClaimCursor(url.searchParams.get("claims"));
   if (cursor === "invalid") throwStatus(404, signedIn.headers);
+  const enquiryCursor = parseClaimCursor(url.searchParams.get("enquiries"));
+  if (enquiryCursor === "invalid") throwStatus(404, signedIn.headers);
   const mine = await db
     .from("memberships")
     .select("id, organisation_id, user_id, role, status, created_at")
@@ -172,16 +181,21 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     .overrideTypes<Decision[], { merge: false }>();
   if (decisions.error !== null) throwStatus(503, signedIn.headers);
   // P2-5: enquiries visitors sent to my listings. RLS limits these to owners
-  // and managers; the newest 50 are shown, and they're kept 12 months.
-  const enquiries = await db
+  // and managers. Both cursors keep their independent position when paged.
+  const enquiryQuery = db
     .from("enquiries")
     .select(
       "id, listing_public_id, sender_name, sender_email, message, created_at",
-    )
+    );
+  if (enquiryCursor !== null)
+    enquiryQuery.or(
+      `created_at.lt."${enquiryCursor.at}",and(created_at.eq."${enquiryCursor.at}",id.lt.${enquiryCursor.id})`,
+    );
+  const enquiries = await enquiryQuery
     .in("organisation_id", controlled)
     .order("created_at", { ascending: false })
     .order("id", { ascending: false })
-    .limit(50)
+    .limit(CLAIMS_PAGE + 1)
     .overrideTypes<Enquiry[], { merge: false }>();
   if (enquiries.error !== null) throwStatus(503, signedIn.headers);
   const latest = new Map<string, Decision>();
@@ -214,7 +228,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           !controlled.includes(c.organisation_id) && c.status === "approved",
       ),
       mineClaims: own.data,
-      enquiries: enquiries.data.map((e) => ({
+      enquiries: enquiries.data.slice(0, CLAIMS_PAGE).map((e) => ({
         ...e,
         listing:
           listings.data.find((l) => l.public_id === e.listing_public_id)
@@ -225,6 +239,12 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           ? claimCursor(last)
           : null,
       claimsPaged: cursor !== null,
+      claimsCursor: url.searchParams.get("claims"),
+      enquiryCursor: url.searchParams.get("enquiries"),
+      olderEnquiries:
+        enquiries.data.length > CLAIMS_PAGE
+          ? claimCursor(enquiries.data[CLAIMS_PAGE - 1]!)
+          : null,
     },
     { headers: signedIn.headers },
   );
@@ -496,13 +516,16 @@ export default function Provider({
           ))}
           <nav className="mt-4 flex flex-wrap gap-4" aria-label="More claims">
             {claimsPaged ? (
-              <Link to="/provider" data-claims-newest>
+              <Link
+                to={pageHref(null, loaderData.enquiryCursor)}
+                data-claims-newest
+              >
                 Back to the newest claims
               </Link>
             ) : null}
             {olderClaims !== null ? (
               <Link
-                to={`/provider?claims=${encodeURIComponent(olderClaims)}`}
+                to={pageHref(olderClaims, loaderData.enquiryCursor)}
                 data-claims-older
               >
                 Show older claims
@@ -512,7 +535,7 @@ export default function Provider({
         </section>
       ) : null}
 
-      {loaderData.enquiries.length > 0 ? (
+      {loaderData.enquiries.length > 0 || loaderData.enquiryCursor !== null ? (
         <section className="mt-10" data-enquiries>
           <h2 className="type-title">Enquiries</h2>
           <p className="type-body-sm text-quiet mt-1">
@@ -541,6 +564,27 @@ export default function Provider({
               </li>
             ))}
           </ul>
+          <nav
+            aria-label="More enquiries"
+            className="mt-4 flex flex-wrap gap-4"
+          >
+            {loaderData.enquiryCursor !== null ? (
+              <Link to={pageHref(loaderData.claimsCursor, null)}>
+                Newest enquiries
+              </Link>
+            ) : null}
+            {loaderData.olderEnquiries !== null ? (
+              <Link
+                data-enquiries-older
+                to={pageHref(
+                  loaderData.claimsCursor,
+                  loaderData.olderEnquiries,
+                )}
+              >
+                Show older enquiries
+              </Link>
+            ) : null}
+          </nav>
         </section>
       ) : null}
 

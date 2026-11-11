@@ -117,6 +117,42 @@ beforeAll(async () => {
 });
 
 describe("provider enquiries inbox", () => {
+  it("paginates tied enquiry timestamps without losing older messages or tenant isolation", async () => {
+    const mine = await provider("paged-inbox");
+    const other = await provider("paged-other");
+    enquiryFixture(other.listing, other.org, "Synthetic hidden tenant enquiry");
+    const ids = sqlRows(`with c as (
+      insert into public.consents(purpose, notice_version, subject_email)
+      select 'enquiry_share_with_provider','privacy-2026-11-11','inbox-${TAG}@example.test'
+      from generate_series(1,61) returning id)
+      insert into public.enquiries(id, listing_public_id, organisation_id, sender_name, sender_email, message, consent_id, created_at)
+      select c.id,'${mine.listing}','${mine.org}','Synthetic Sender','inbox-${TAG}@example.test',
+      'Synthetic paged enquiry',c.id,timestamptz '2026-11-01 12:00:00.123456+00' from c returning id`);
+    const b = await signIn(mine.owner.email);
+    let path: string | null = "/provider";
+    const seen: string[] = [];
+    for (let pages = 0; path !== null; pages++) {
+      expect(pages).toBeLessThan(4);
+      const page = await b.send(path);
+      expect(page.status).toBe(200);
+      expect(page.headers.get("Cache-Control")).toBe("private, no-store");
+      expect(page.body).not.toContain("Synthetic hidden tenant enquiry");
+      const batch = [
+        ...page.body.matchAll(/data-enquiry="([0-9a-f-]{36})"/g),
+      ].map((m) => m[1] ?? "");
+      expect(batch.length).toBeLessThanOrEqual(50);
+      seen.push(...batch);
+      const tag = /<a\b[^>]*\bdata-enquiries-older\b[^>]*>/.exec(
+        page.body,
+      )?.[0];
+      const next =
+        tag === undefined ? undefined : /href="([^"]+)"/.exec(tag)?.[1];
+      path = next === undefined ? null : next.replaceAll("&amp;", "&");
+    }
+    expect(seen).toHaveLength(61);
+    expect(new Set(seen)).toEqual(new Set(ids));
+    expect((await b.send("/provider?enquiries=invalid")).status).toBe(404);
+  });
   it("shows an owner their own listing's enquiries, and nobody else's", async () => {
     const mine = await provider("mine");
     const theirs = await provider("theirs");
