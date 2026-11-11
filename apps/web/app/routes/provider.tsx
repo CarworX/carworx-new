@@ -204,6 +204,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
   const page = actionable.data.slice(0, CLAIMS_PAGE);
   const last = page.at(-1);
+  const lastEnquiry = enquiries.data.slice(0, CLAIMS_PAGE).at(-1);
   return data(
     {
       csrf: context.security.csrfToken,
@@ -242,8 +243,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       claimsCursor: url.searchParams.get("claims"),
       enquiryCursor: url.searchParams.get("enquiries"),
       olderEnquiries:
-        enquiries.data.length > CLAIMS_PAGE
-          ? claimCursor(enquiries.data[CLAIMS_PAGE - 1]!)
+        enquiries.data.length > CLAIMS_PAGE && lastEnquiry !== undefined
+          ? claimCursor(lastEnquiry)
           : null,
     },
     { headers: signedIn.headers },
