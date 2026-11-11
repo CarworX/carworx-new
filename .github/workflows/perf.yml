@@ -59,14 +59,14 @@ jobs:
           pnpm install --frozen-lockfile
           node --test perf/budgets.test.js
           # The OS packages come from Ubuntu's mirrors, which can be unreachable
-          # from runners. Retry, then fall back to the browser alone: the
-          # ubuntu-24.04 image already has Chrome's system libraries. If
-          # Chromium can't launch, the measurement step below still fails.
+          # from runners; apt then spends ~10 minutes per attempt on DNS
+          # timeouts. Cap each attempt at 4 minutes, try twice, then fall back
+          # to the browser alone: the ubuntu-24.04 image already has Chrome's
+          # system libraries. If Chromium can't launch, measurement still fails.
           ok=0
-          for attempt in 1 2 3; do
-            if pnpm --filter @carworx/web exec playwright install --with-deps chromium; then ok=1; break; fi
-            echo "::warning::playwright --with-deps failed (attempt $attempt); retrying"
-            sleep 20
+          for attempt in 1 2; do
+            if timeout 240 pnpm --filter @carworx/web exec playwright install --with-deps chromium; then ok=1; break; fi
+            echo "::warning::playwright --with-deps failed or timed out (attempt $attempt)"
           done
           if [ "$ok" != 1 ]; then
             echo "::warning::OS packages unavailable; installing Chromium without --with-deps"
