@@ -119,6 +119,22 @@ describe("provider applications", () => {
     expect(listing.body).toContain(`/provider/claim/${publicId}`);
   });
 
+  it("a multi-line description is accepted and keeps its line break", async () => {
+    const user = await createConfirmedUser("multiline");
+    const browser = await signIn(user.email);
+    const sent = await apply(browser, {
+      ...fixed,
+      businessName: "Multiline Motors (synthetic)",
+      description: "Synthetic workshop\r\nOpen on weekdays",
+    });
+    expect(sent.status).toBe(302);
+    const [row] = sqlRows(
+      `select replace(replace(l.description, chr(13), '<CR>'), chr(10), '<LF>') from public.listings l join public.memberships m on m.organisation_id = l.organisation_id
+       where m.user_id = '${user.id}'`,
+    );
+    expect(row).toBe("Synthetic workshop<LF>Open on weekdays");
+  });
+
   it("never renders a mobile base or radius, even to its owner (A10)", async () => {
     const user = await createConfirmedUser("mobile");
     const browser = await signIn(user.email);

@@ -4,6 +4,7 @@ import {
   parseApplication,
   parseClaim,
   parseDecision,
+  parseDescription,
   parseId,
   problemFrom,
   PROBLEM_TEXT,
@@ -70,6 +71,34 @@ describe("parseApplication", () => {
     expect(
       parseApplication(form({ ...fixed, mode: "mobile", radiusKm })),
     ).toBeNull();
+  });
+});
+
+describe("parseDescription", () => {
+  it("keeps line breaks, normalised to \\n, and trims the ends", () => {
+    expect(
+      parseDescription(
+        form({
+          description: "  Synthetic line one\r\nline two\rline three\n ",
+        }),
+      ),
+    ).toBe("Synthetic line one\nline two\nline three");
+  });
+
+  it.each([
+    ["a tab", "Synthetic\tworkshop description"],
+    ["a bell", "Synthetic\u0007workshop description"],
+    ["too short once trimmed", "  short \n\n "],
+  ])("rejects %s", (_label, description) => {
+    expect(parseDescription(form({ description }))).toBeNull();
+  });
+
+  it("an application accepts a multi-line description", () => {
+    expect(
+      parseApplication(
+        form({ ...fixed, description: "Synthetic workshop\r\nOpen weekdays" }),
+      )?.p_description,
+    ).toBe("Synthetic workshop\nOpen weekdays");
   });
 });
 

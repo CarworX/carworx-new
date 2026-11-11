@@ -6,6 +6,7 @@ import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
 import {
   parseId,
+  parseDescription,
   parseReason,
   PROBLEM_TEXT,
   problemFrom,
@@ -205,7 +206,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   } else if (intent === "resubmit") {
     const listing = parseId(form, "listing");
     const name = parseReason(form, "displayName", 2, 160);
-    const description = parseReason(form, "description", 10, 2000);
+    const description = parseDescription(form);
     if (listing === null || name === null || description === null)
       return fail("invalid_input");
     result = await signedIn.supabase.rpc("provider_resubmit", {
