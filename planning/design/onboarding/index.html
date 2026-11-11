@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business onboarding concepts · CarworX</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<link rel="stylesheet" href="_shared/studio.css">
+<link rel="stylesheet" href="_shared/kit.css">
+<style>
+  main { max-width: 1180px; margin: 0 auto; padding: 32px 16px 80px; display: grid; gap: 28px; }
+  header { display: grid; gap: 12px; max-width: 720px; }
+  header h1 { font: 500 56px/58px var(--font-sans); letter-spacing: -.04em; }
+  .grid { display: grid; gap: 20px; }
+  .c { display: grid; grid-template-columns: 1fr 340px; gap: 24px; padding: 20px; border-radius: var(--radius-xl); background: var(--surface); box-shadow: var(--sh-1); }
+  .c h2 { font: 500 28px/32px var(--font-sans); letter-spacing: -.03em; }
+  .c .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+  .c p { font: 400 15px/23px var(--font-sans); color: var(--graphite); }
+  .c .info { display: grid; gap: 12px; align-content: start; }
+  .thumbs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+  .thumbs img { width: 100%; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--hair), var(--sh-1); display: block; }
+  .desk { grid-column: 1 / -1; }
+  .strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .strip a { flex: none; }
+  .strip img { width: 104px; border-radius: 12px; box-shadow: var(--sh-1); display: block; }
+  .pc { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font: 400 14px/20px var(--font-sans); }
+  .pc div { padding: 10px 12px; border-radius: var(--radius-sm); }
+  .pc .pro { background: var(--ok-bg); color: var(--ok); }
+  .pc .con { background: var(--warn-bg); color: var(--warn); }
+  .rec { border-radius: var(--radius-xl); padding: 24px; background: var(--ink); color: var(--white); display: grid; gap: 8px; }
+  .rec h2 { font: 500 24px var(--font-sans); letter-spacing: -.02em; }
+  .rec p { color: #e9e7e2; font: 400 16px/25px var(--font-sans); max-width: 80ch; }
+  @media (max-width: 860px) { .c { grid-template-columns: 1fr; } header h1 { font-size: 40px; line-height: 42px; } .pc { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body class="cx-canvas">
+<div class="ob-navwrap"><nav class="cx-nav" aria-label="CarworX"><a class="logo" href="index.html"><img src="_shared/carworx-lockup-horizontal-ink.svg" alt="CarworX"></a><div class="act"><span class="ob-demo">Onboarding concepts</span><a class="cx-btn outlined sm" href="BRIEF.md">Brief</a></div></nav></div>
+<main>
+  <header>
+    <p class="cx-eyebrow">Business onboarding · 5 concepts · 2026-11-11</p>
+    <h1>Pick a flow.<br><span style="color:var(--quiet)">Same brand, five ways in.</span></h1>
+    <p class="t-lede">Every concept covers welcome, new or claim, the steps, review, submitted, waiting and approved. All five use the same pick-don't-type questions: <b style="color:var(--ink)">2 typed fields</b> (name and one "about" line) for a new business and <b style="color:var(--ink)">0</b> for a claim. Click any thumbnail to try it. <kbd>Enter</kbd> is Next, <kbd>Esc</kbd> is Back.</p>
+  </header>
+  <div class="grid" data-board></div>
+  <section class="rec" aria-labelledby="rec">
+    <h2 id="rec">Owner direction: 5 as the frame, 2 inside the tasks, 3's live card throughout</h2>
+    <p>The owner liked concepts 2, 3 and 5 (2026-11-11). Earlier recommendation: The checklist hub is the only concept that is resumable by design and that grows into the business dashboard after approval (team, photos, booking requests). Inside each task, use the calm one-question screens from concept 1, and show the live listing card from concept 3 on the hub so people see what they are building. Details in NOTES.md.</p>
+  </section>
+</main>
+<script>
+  const C = [
+    ["one-thing", "1 · One thing at a time", "One question per full screen, big type, a thin bar, Next and Back fixed at the bottom. Picks move on by themselves when tapped.", "12–13 screens", ["Calmest on a phone; nothing to scan", "Easy to build: one component per question"], ["Most screens to tap through", "Hard to see what's left beyond the bar"], ["01-welcome", "03-services", "04-mode-both", "06-review", "08-waiting"]],
+    ["stepper", "2 · Guided stepper", "Six named steps (Business, Service, Location, About, Check, Send) with the StepList look as the rail. On phones the rail becomes a segmented bar.", "6 pages", ["Always clear where you are and what's next", "Fewest pages; good on desktop"], ["Longer pages on phones (more scrolling)", "Feels most like a form"], ["01-welcome", "02-business", "03-location-both", "04-check", "05-waiting"]],
+    ["live-preview", "3 · Live preview", "Each answer builds the public listing card beside the question, inside a phone. On phones it docks at the top and expands on tap.", "7 pages", ["Shows why each answer matters", "Makes the public vs private line (A10) visible"], ["The most layout work", "Preview competes for space on small phones"], ["01-welcome", "02-services", "03-where-both", "04-review-mobile", "05-waiting"]],
+    ["chat", "4 · Conversational", "Friendly prompt bubbles with one answer each; your answers stack up as a thread you can change.", "12–13 turns", ["Warmest; good for first-time owners", "Answers stay visible as a transcript"], ["Slowest for confident users", "Chat UI is harder to make fully accessible"], ["01-welcome", "02-mode", "03-hours", "04-doc-claim", "05-review"]],
+    ["checklist", "5 · Setup checklist", "A short welcome, then a Get set up hub. Each task (Details, Location, Proof, Team) is its own short Next/Back flow. Saved on the device; stop and come back.", "4 tasks · 8 short steps", ["Resumable; any order", "Becomes the business dashboard after approval"], ["One extra level (hub, then task)", "Needs a saved-draft model on the server"], ["01-welcome", "02-hub-partial", "03-l-where-both", "04-hub", "07-live"]],
+  ];
+  document.querySelector("[data-board]").innerHTML = C.map(([d, t, idea, len, pro, con, shots]) => `
+    <article class="c" aria-labelledby="h-${d}">
+      <div class="info">
+        <h2 id="h-${d}"><a class="cx-link" href="${d}/index.html" style="color:inherit">${t}</a></h2>
+        <div class="meta"><span class="cx-label info">${len}</span><span class="cx-label">2 typed fields</span></div>
+        <p>${idea}</p>
+        <div class="pc"><div class="pro">+ ${pro.join("<br>+ ")}</div><div class="con">− ${con.join("<br>− ")}</div></div>
+        <div class="strip" aria-label="Phone screenshots">${shots.map((s) => `<a href="${d}/shots/${s}.png"><img src="${d}/shots/${s}.png" alt="${t}: ${s.replace(/^\d+-/, "").replace(/-/g, " ")} (phone)" loading="lazy"></a>`).join("")}</div>
+        <div><a class="cx-btn primary sm" href="${d}/index.html">Try it</a></div>
+      </div>
+      <div class="thumbs"><a class="desk" href="${d}/index.html"><img src="${d}/shots/desktop.png" alt="${t}, desktop" loading="lazy"></a></div>
+    </article>`).join("");
+</script>
+</body>
+</html>

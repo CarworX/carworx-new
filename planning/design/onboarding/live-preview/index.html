@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3 · Live preview · CarworX onboarding concept</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+  /* Concept 3: every answer builds the public listing card, live, beside the question. */
+  .shell { max-width: 1120px; margin: 0 auto; padding: 28px 16px 120px; display: grid; grid-template-columns: 1fr 400px; gap: 40px; align-items: start; }
+  .q { display: grid; gap: 26px; max-width: 600px; }
+  .q h2 { font: 500 40px/44px var(--font-sans); letter-spacing: -.035em; }
+  .prog { display: flex; gap: 12px; align-items: center; }
+  .prog .ob-bar { flex: 1; }
+  .prog span { font: 500 12px var(--font-mono); color: var(--muted); }
+  [data-step]:not([hidden]) { animation: rise .4s cubic-bezier(.2,.8,.2,1); }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+  .pv { position: sticky; top: 92px; display: grid; gap: 12px; }
+  .phone { border-radius: var(--radius-phone); background: var(--ink); padding: 10px; box-shadow: var(--sh-3); }
+  .screen { border-radius: 36px; background: var(--canvas); padding: 18px 14px 22px; display: grid; gap: 12px; min-height: 520px; align-content: start; }
+  .fakesearch { display: flex; gap: 8px; align-items: center; min-height: 44px; padding: 0 14px; border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--sh-1); font: 400 14px var(--font-sans); color: var(--muted); }
+  .ghost { height: 96px; border-radius: var(--radius-lg); background: rgba(255,255,255,.55); }
+  .pvhead { display: flex; justify-content: space-between; align-items: center; }
+  .pvhead b { font: 500 13px var(--font-sans); }
+  .yours { position: relative; }
+  .yours::before { content: "You"; position: absolute; top: -9px; right: 14px; z-index: 1; padding: 1px 8px; border-radius: 99px; background: var(--blue); color: var(--white); font: 500 12px var(--font-mono); }
+  .flash { animation: flash .9s ease-out; }
+  @keyframes flash { 0% { background: var(--sky); box-shadow: 0 0 0 6px var(--sky); } 100% { background: transparent; box-shadow: 0 0 0 6px transparent; } }
+  .actions { position: sticky; bottom: 0; padding: 14px 0 calc(14px + env(safe-area-inset-bottom)); background: linear-gradient(transparent, var(--canvas) 30%); }
+  .shell:has(.pv[hidden]) { grid-template-columns: minmax(0, 760px); justify-content: center; }
+  .shell:has(.pv[hidden]) .q { max-width: none; }
+  details.dock { display: none; }
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: 1fr; gap: 16px; padding-top: 12px; }
+    .pv { display: none; }
+    details.dock { display: block; position: sticky; top: 76px; z-index: 12; border-radius: var(--radius-lg); background: var(--frost); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: var(--sh-1); }
+    details.dock summary { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 14px; cursor: pointer; list-style: none; font: 500 14px var(--font-sans); }
+    details.dock summary::-webkit-details-marker { display: none; }
+    details.dock summary .av { width: 36px; height: 36px; border-radius: 10px; background: var(--ink); color: var(--white); display: grid; place-items: center; font: 500 14px var(--font-sans); flex: none; }
+    details.dock summary small { display: block; font: 400 12px var(--font-sans); color: var(--muted); }
+    details.dock summary::after { content: "Preview"; margin-left: auto; font: 500 12px var(--font-mono); color: var(--muted); }
+    details.dock[open] summary::after { content: "Hide"; }
+    details.dock > div { padding: 0 10px 12px; }
+    .q h2 { font-size: 28px; line-height: 32px; }
+    .ob-tiles { grid-template-columns: 1fr; }
+    .ob-keys { display: none; }
+  }
+</style>
+</head>
+<body class="cx-canvas">
+<form data-flow novalidate>
+  <div data-screen="nav" data-label="Concept 3 · live preview"></div>
+  <div class="shell">
+    <div>
+      <details class="dock" data-if="path=new" data-only="build">
+        <summary><span class="av" data-bind="initials">?</span><span><span data-bind="name" data-empty="Your listing"></span><small data-bind="publicWhere" data-empty="Builds as you answer"></small></span></summary>
+        <div data-screen="card"></div>
+      </details>
+      <div class="q" style="margin-top:16px">
+        <div class="prog" data-only="build"><div class="ob-bar" data-progress role="progressbar" aria-label="Application progress" aria-valuemin="0" aria-valuemax="100"><i></i></div><span data-progress-label></span></div>
+
+        <section data-step id="welcome" data-cta="Start building">
+          <div class="q"><p class="cx-eyebrow">For businesses · R0 during the pilot</p><h2>Build your listing and watch it appear.</h2><p class="t-lede">Every answer shows up on the right, exactly as drivers will see it in search. Nothing goes public until a CarworX admin has checked it.</p></div>
+        </section>
+        <section data-step id="path" data-kind="build" data-count data-require="path"><div class="q"><h2>Start here</h2><div data-q="path"></div></div></section>
+        <section data-step id="basics" data-kind="build" data-count data-if="path=new" data-require="name,role"><div class="q"><h2>The basics</h2><div data-q="name"></div><div data-q="role"></div></div></section>
+        <section data-step id="services" data-kind="build" data-count data-if="path=new" data-require="services"><div class="q"><h2>Your services</h2><div data-q="services"></div></div></section>
+        <section data-step id="where" data-kind="build" data-count data-if="path=new" data-require="mode,metro,pin,base"><div class="q"><h2>Where you work</h2><div data-q="mode"></div><div data-q="metro"></div><div data-q="pin"></div><div data-q="base"></div></div></section>
+        <section data-step id="hours" data-kind="build" data-count data-if="path=new" data-require="days,staff"><div class="q"><h2>Hours and team</h2><div data-q="hours"></div><div data-q="staff"></div><div data-q="since"></div></div></section>
+        <section data-step id="about" data-kind="build" data-count data-if="path=new" data-require="about"><div class="q"><h2>One line about you</h2><div data-q="about"></div></div></section>
+        <section data-step id="claim" data-kind="build" data-count data-if="path=claim" data-require="claimListing,role"><div class="q"><h2>Find your listing</h2><div data-q="claimListing"></div><div data-q="role"></div></div></section>
+        <section data-step id="proof" data-kind="build" data-count data-if="path=claim" data-require="evidence,doc,docDate"><div class="q"><h2>Show it's yours</h2><div data-q="evidence"></div><div data-q="doc"></div><div data-q="docDate"></div></div></section>
+        <section data-step id="checks" data-kind="build" data-count data-require="adult,consent"><div class="q"><h2>Two quick checks</h2><div data-q="adult"></div><div data-q="consent"></div></div></section>
+        <section data-step id="review" data-kind="build" data-cta="Send for review"><div class="q"><h2>Looks good?</h2><p class="t-body">This is your listing, ready to send. The labels arrive once an admin has checked you.</p><div data-if="path=new" class="yours"><div data-screen="card"></div></div><div data-screen="review"></div></div></section>
+        <section data-step id="submitted" data-cta="Go to your dashboard"><div data-screen="submitted"></div></section>
+        <section data-step id="waiting"><div data-screen="waiting"></div></section>
+        <section data-step id="live" data-skip><div data-screen="live"></div></section>
+
+        <div class="actions" data-only="!welcome !waiting !live"><div class="ob-actions">
+          <button type="button" class="ob-back" data-back data-only="!submitted">Back</button>
+          <span class="ob-keys" data-only="build"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span>
+          <button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button>
+        </div></div>
+        <div data-only="welcome"><button type="button" class="cx-btn primary" data-next>Start building</button></div>
+      </div>
+    </div>
+    <aside class="pv" data-only="welcome build" aria-label="Live preview of your listing">
+      <div class="pvhead"><b>Live preview</b><span class="cx-label info">Not public yet</span></div>
+      <div class="phone"><div class="screen">
+        <div class="fakesearch"><span data-ic="pin"></span><span data-bind="services" data-empty="Car services">,</span></div>
+        <p class="cx-eyebrow" data-bind="metro" data-empty="Near you"></p>
+        <div class="yours" data-if="path!=claim"><div data-screen="card"></div></div>
+        <div class="yours" data-if="path=claim"><article class="ob-card"><div class="top"><span class="av">SB</span><div><h3 data-bind="claimListing" data-empty="Pick your listing"></h3><p class="m">Claim pending · you'll manage it once approved</p></div></div></article></div>
+        <div class="ghost" aria-hidden="true"></div><div class="ghost" aria-hidden="true"></div>
+      </div></div>
+      <p class="t-cap" data-if="mode=I go to them">Mobile: drivers see "Comes to you" and your metro. Your base and radius never appear here.</p>
+    </aside>
+  </div>
+</form>
+<script src="../_shared/kit.js"></script>
+<script>
+  document.querySelectorAll("[data-ic]").forEach((e) => (e.outerHTML = OB.ic(e.dataset.ic)));
+  const form = document.querySelector("[data-flow]");
+  // Flash the part of the preview an answer changed.
+  const part = { name: "h3", about: ".about", services: ".svcs", days: ".m:last-of-type", open: ".m:last-of-type", close: ".m:last-of-type", metro: ".top .m", mode: ".top .m", pin: ".top .m" };
+  const flash = (name) => {
+    if (!part[name]) return;
+    document.querySelectorAll(".pv .ob-card, .dock .ob-card").forEach((c) => {
+      const el = c.querySelector(part[name]);
+      if (!el) return;
+      el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+    });
+  };
+  form.addEventListener("input", (e) => flash(e.target.name));
+  form.addEventListener("change", (e) => flash(e.target.name));
+  OB.boot();
+</script>
+</body>
+</html>
