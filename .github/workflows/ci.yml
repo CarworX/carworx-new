@@ -3,10 +3,15 @@ name: K1 CI
 on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
-    # Docs-only PRs run docs.yml (secrets scan and format) instead.
-    paths-ignore:
-      - "planning/**"
-      - "**/*.md"
+    # Docs-only PRs run docs.yml (secrets scan and format) instead. Later
+    # patterns win: planning/design (app tokens and SVGs) and planning/evidence
+    # (read by ops scripts) are build or script inputs, so they keep K1.
+    paths:
+      - "**"
+      - "!planning/**"
+      - "!**/*.md"
+      - "planning/design/**"
+      - "planning/evidence/**"
 
 permissions:
   contents: read

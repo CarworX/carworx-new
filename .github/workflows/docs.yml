@@ -1,7 +1,7 @@
 name: Docs check
 
-# Docs-only PRs (everything under planning/ or in *.md) skip K1 (ci.yml
-# paths-ignore) and run this instead: the same pinned secrets scan as K1,
+# Docs-only PRs (planning/ except design/ and evidence/, or *.md) skip K1
+# (ci.yml paths) and run this instead: the same pinned secrets scan as K1,
 # plus the repo's format check. About 1 minute instead of about 7.
 # Note: staging deploys need a K1 run at the deployed head, so deploy from
 # the latest code PR's head; docs-only merges change nothing deployed.
