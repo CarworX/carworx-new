@@ -1,0 +1,35 @@
+name: Commit email
+
+# D-087: every commit in a PR must use noreply author and committer emails,
+# so the owner's personal address never enters history. About 10 seconds.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: commit-email-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  commit-email:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: PR commits use noreply emails
+        run: >-
+          node scripts/ci/commit-email.js
+          ${{ github.event.pull_request.base.sha }}
+          ${{ github.event.pull_request.head.sha }}
