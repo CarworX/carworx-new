@@ -65,7 +65,7 @@ The Regulations relating to the Protection of Personal Information, 2018, as ame
 | 2.4 | Tell people of their right to object when collecting (s18(1)(h)(iv)) | Privacy notice §9 |
 | 2.5, 3.5 | A telephone objection or correction request must be "electronically recorded" and made available, including a transcription, free | Privacy notice §9; incident plan unaffected |
 | 3.2–3.4 | Correction, deletion and destruction requests are free, on a form like Form 2, by the same channels | Privacy notice §9 |
-| 3.6 | Within 30 days, tell the person **in writing** what was done | Privacy notice §9 |
+| 3.6 | Tell the person **in writing** what was done, "within thirty (30) days of receipt of the outcome of the request" | Privacy notice §9 gives a stricter service commitment: within 30 days of the request |
 | 4 | Regulation 4(1)(a) adds "continually improved"; **4(1)(c) (PAIA manual) and 4(2) (manual copies) deleted** | README OQ-L7. Owner guide 13 (merged in #59) listed the PAIA manual among regulation 4 duties; Codex's #67 corrects it |
 | 5 | "relevant body/bodies" wording; Form 3 amended | Not relevant to the free site |
 | 6.1–6.4 | Marketing consent must be **written**, on a form like Form 4 or another free, accessible way; phone and automated-call requests recorded; **"opt-out shall not constitute consent"** | Privacy notice §3 marketing row and reviewer note |

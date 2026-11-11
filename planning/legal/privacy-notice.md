@@ -71,8 +71,8 @@ We don't sell personal information. *Basis: POPIA s18(1)(h)(i) (recipients); s20
 
 Our database and most of our operators are outside South Africa. We send information abroad only as POPIA section 72 allows. [Reviewer: each ground below is a **candidate** that clears only when its prerequisites in the s72 assessment are met; see the CONDITIONAL rows there.]
 
-- **Your account, your listing and enquiries you send:** the transfer is needed to perform our agreement with you, or the steps you asked us to take (s72(1)(c)).
-- **Sign in with Google:** you choose it, after we've told you here that Google is abroad (s72(1)(b)).
+- **Your account, your listing and enquiries you send:** [proposed wording, to be confirmed by the necessity notes in the s72 assessment, rows T1a, T1b and T2a] we send this abroad because it's needed to perform our agreement with you, or the steps you asked us to take (s72(1)(c)).
+- **Sign in with Google:** [proposed wording, valid only once the sign-in page shows this notice before the Google button and email sign-up stays an equal choice, s72 row T4] if you choose Google, you agree to Google receiving your sign-in details abroad (s72(1)(b)). You can sign up with email instead.
 - **Everything else**, such as the security and abuse checks on every visit and place searches: [to be completed when the operators' terms have been assessed; see the s72 assessment, rows T1c, T2b, T3 and T6. **This notice can't be published until then.**]
 
 Our assessment is available on request.
@@ -107,9 +107,9 @@ You can:
 - withdraw consent you gave, without affecting earlier processing;
 - complain to the Information Regulator.
 
-**How to ask.** It's free. Use whichever is easiest for you: email [privacy@ address], post or hand delivery to [address], or [WhatsApp or SMS number]. You can use the Regulator's Form 1 (objection) or Form 2 (correction or deletion), or just tell us in your own words. If you ask by phone, we record the call and give you the recording or a transcript on request, free. We'll ask for proof of identity before releasing anything, and we'll tell you **in writing within 30 days** what we did about a correction or deletion request.
+**How to ask.** It's free. Use whichever is easiest for you: email [privacy@ address], post or hand delivery to [address], or [WhatsApp or SMS number]. You can use the Regulator's Form 1 (objection) or Form 2 (correction or deletion), or just tell us in your own words. If you ask by phone, we record the call and give you the recording or a transcript on request, free. We'll ask for proof of identity before releasing anything, and we aim to tell you **in writing within 30 days** of your request what we did about a correction or deletion request.
 
-*Basis: POPIA s5 (rights); s11(2)(b), (3), (4) (withdrawal and objection); s23(1) (access, "free of charge" confirmation, "adequate proof of identity"); s24 (correction and deletion); s18(1)(h)(iii)–(v). Regulations (as amended 2025): reg 2.1–2.3 (objections free, on a form "substantially similar to Form 1", "by hand, fax, post, email, SMS, or WhatsApp and or in any manner expedient"); reg 2.5 and 3.5 (telephone requests "electronically recorded" and made available, including a transcription); reg 3.2–3.4 (correction or deletion free, Form 2); reg 3.6 (written notice of the action taken within 30 days). The channels in brackets wait on OQ-L2.*
+*Basis: POPIA s5 (rights); s11(2)(b), (3), (4) (withdrawal and objection); s23(1) (access, "free of charge" confirmation, "adequate proof of identity"); s24 (correction and deletion); s18(1)(h)(iii)–(v). Regulations (as amended 2025): reg 2.1–2.3 (objections free, on a form "substantially similar to Form 1", "by hand, fax, post, email, SMS, or WhatsApp and or in any manner expedient"); reg 2.5 and 3.5 (telephone requests "electronically recorded" and made available, including a transcription); reg 3.2–3.4 (correction or deletion free, Form 2); reg 3.6 (the responsible party must "within thirty (30) days of receipt of the outcome of the request" notify the data subject in writing of the action taken). The regulation counts from the *outcome*, not the request, so "within 30 days of your request" above is CarworX's own **service commitment**, stricter than the regulation, not a quote of it. The channels in brackets wait on OQ-L2.*
 
 ## 10. The Information Regulator
 
