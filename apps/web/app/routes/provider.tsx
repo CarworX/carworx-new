@@ -55,6 +55,9 @@ interface Claim {
   created_at: string;
 }
 
+const CLAIM_COLUMNS =
+  "id, listing_public_id, organisation_id, claimant_id, status, evidence_kind, email_domain, created_at";
+
 const STATUS_COPY: Record<Listing["status"], string> = {
   draft: "Needs changes",
   submitted: "Waiting for review",
@@ -86,7 +89,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     .filter((m) => m.role === "owner")
     .map((m) => m.organisation_id);
 
-  const [orgs, listings, members, claims] = await Promise.all([
+  const [orgs, listings, members, actionable, own] = await Promise.all([
     db
       .from("organisations")
       .select("id, name")
@@ -108,9 +111,18 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       .overrideTypes<Membership[], { merge: false }>(),
     db
       .from("listing_claims")
-      .select(
-        "id, listing_public_id, organisation_id, claimant_id, status, evidence_kind, email_domain, created_at",
-      )
+      .select(CLAIM_COLUMNS)
+      // Every claim someone else made that can still be disputed. Not
+      // limited, so no amount of claim history can hide one (RLS keeps this
+      // to claims on my businesses and transfers that displaced me).
+      .in("status", ["submitted", "approved", "disputed"])
+      .neq("claimant_id", uid)
+      .order("created_at", { ascending: false })
+      .overrideTypes<Claim[], { merge: false }>(),
+    db
+      .from("listing_claims")
+      .select(CLAIM_COLUMNS)
+      .eq("claimant_id", uid)
       .order("created_at", { ascending: false })
       .limit(50)
       .overrideTypes<Claim[], { merge: false }>(),
@@ -119,7 +131,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     orgs.error !== null ||
     listings.error !== null ||
     members.error !== null ||
-    claims.error !== null
+    actionable.error !== null ||
+    own.error !== null
   )
     throwStatus(503, signedIn.headers);
   const decisions = await db
@@ -154,17 +167,15 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         members: members.data.filter((m) => m.organisation_id === o.id),
       })),
       // Claims on businesses I control, by other people.
-      against: claims.data.filter(
-        (c) => c.claimant_id !== uid && controlled.includes(c.organisation_id),
+      against: actionable.data.filter((c) =>
+        controlled.includes(c.organisation_id),
       ),
       // Claims that moved control away from me: I can still dispute them.
-      displaced: claims.data.filter(
+      displaced: actionable.data.filter(
         (c) =>
-          c.claimant_id !== uid &&
-          !controlled.includes(c.organisation_id) &&
-          c.status === "approved",
+          !controlled.includes(c.organisation_id) && c.status === "approved",
       ),
-      mineClaims: claims.data.filter((c) => c.claimant_id === uid),
+      mineClaims: own.data,
     },
     { headers: signedIn.headers },
   );
