@@ -1,10 +1,13 @@
-import { data } from "react-router";
+import { data, Link } from "react-router";
 
 import { field } from "../auth/forms";
 import { throwRedirect, throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
 import {
+  claimCursor,
+  CLAIMS_PAGE,
+  parseClaimCursor,
   parseId,
   parseDescription,
   parseReason,
@@ -75,6 +78,9 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const signedIn = await requireSignedIn(request, context.security);
   const db = signedIn.supabase;
   const uid = signedIn.user.id;
+  const url = new URL(request.url);
+  const cursor = parseClaimCursor(url.searchParams.get("claims"));
+  if (cursor === "invalid") throwStatus(404, signedIn.headers);
   const mine = await db
     .from("memberships")
     .select("id, organisation_id, user_id, role, status, created_at")
@@ -110,15 +116,24 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       .in("organisation_id", owned)
       .order("created_at")
       .overrideTypes<Membership[], { merge: false }>(),
-    db
-      .from("listing_claims")
-      .select(CLAIM_COLUMNS)
-      // Every claim someone else made that can still be disputed. Not
-      // limited, so no amount of claim history can hide one (RLS keeps this
-      // to claims on my businesses and transfers that displaced me).
+    // Every claim someone else made that can still be disputed, newest
+    // first, a page at a time (keyset on created_at then id, so ties keep a
+    // stable order and the server's row cap never hides one). RLS keeps
+    // this to claims on my businesses and transfers that displaced me.
+    (cursor === null
+      ? db.from("listing_claims").select(CLAIM_COLUMNS)
+      : db
+          .from("listing_claims")
+          .select(CLAIM_COLUMNS)
+          .or(
+            `created_at.lt."${cursor.at}",and(created_at.eq."${cursor.at}",id.lt.${cursor.id})`,
+          )
+    )
       .in("status", ["submitted", "approved", "disputed"])
       .neq("claimant_id", uid)
       .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .limit(CLAIMS_PAGE + 1)
       .overrideTypes<Claim[], { merge: false }>(),
     db
       .from("listing_claims")
@@ -150,7 +165,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   for (const d of decisions.data)
     if (!latest.has(d.listing_public_id)) latest.set(d.listing_public_id, d);
 
-  const url = new URL(request.url);
+  const page = actionable.data.slice(0, CLAIMS_PAGE);
+  const last = page.at(-1);
   return data(
     {
       csrf: context.security.csrfToken,
@@ -168,15 +184,18 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         members: members.data.filter((m) => m.organisation_id === o.id),
       })),
       // Claims on businesses I control, by other people.
-      against: actionable.data.filter((c) =>
-        controlled.includes(c.organisation_id),
-      ),
+      against: page.filter((c) => controlled.includes(c.organisation_id)),
       // Claims that moved control away from me: I can still dispute them.
-      displaced: actionable.data.filter(
+      displaced: page.filter(
         (c) =>
           !controlled.includes(c.organisation_id) && c.status === "approved",
       ),
       mineClaims: own.data,
+      olderClaims:
+        actionable.data.length > CLAIMS_PAGE && last !== undefined
+          ? claimCursor(last)
+          : null,
+      claimsPaged: cursor !== null,
     },
     { headers: signedIn.headers },
   );
@@ -251,8 +270,17 @@ export default function Provider({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { orgs, against, displaced, mineClaims, csrf, uid, notice } =
-    loaderData;
+  const {
+    orgs,
+    against,
+    displaced,
+    mineClaims,
+    olderClaims,
+    claimsPaged,
+    csrf,
+    uid,
+    notice,
+  } = loaderData;
   const names: Record<string, string> = Object.fromEntries(
     orgs.flatMap((o) => o.listings.map((l) => [l.public_id, l.display_name])),
   );
@@ -394,8 +422,10 @@ export default function Provider({
         </section>
       ))}
 
-      {[...against, ...displaced].length > 0 ? (
-        <section className="mt-10">
+      {[...against, ...displaced].length > 0 ||
+      olderClaims !== null ||
+      claimsPaged ? (
+        <section className="mt-10" data-claims-section>
           <h2 className="type-title">Claims on your business</h2>
           {[...against, ...displaced].map((c) => (
             <article
@@ -435,6 +465,21 @@ export default function Provider({
               ) : null}
             </article>
           ))}
+          <nav className="mt-4 flex flex-wrap gap-4" aria-label="More claims">
+            {claimsPaged ? (
+              <Link to="/provider" data-claims-newest>
+                Back to the newest claims
+              </Link>
+            ) : null}
+            {olderClaims !== null ? (
+              <Link
+                to={`/provider?claims=${encodeURIComponent(olderClaims)}`}
+                data-claims-older
+              >
+                Show older claims
+              </Link>
+            ) : null}
+          </nav>
         </section>
       ) : null}
 
