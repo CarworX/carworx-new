@@ -261,9 +261,12 @@ end $$;
 
 create function private.provider_resubmit(p_listing uuid, p_display_name text, p_description text) returns void
 language plpgsql volatile security definer set search_path = '' as $$
-declare v_l public.listings; v_name text; v_desc text;
+declare v_uid uuid := auth.uid(); v_l public.listings; v_name text; v_desc text;
 begin
-  if auth.uid() is null then raise exception 'not_allowed' using errcode = '42501'; end if;
+  if v_uid is null then raise exception 'not_allowed' using errcode = '42501'; end if;
+  -- Same per-applicant lock as provider_apply, taken first, so apply and
+  -- resubmit together still leave at most one pending application.
+  perform pg_catalog.pg_advisory_xact_lock(172906, pg_catalog.hashtext(v_uid::text));
   select * into v_l from public.listings where public_id = p_listing for update;
   if not found or not private.has_org_role(v_l.organisation_id, array['owner','manager']) then
     raise exception 'not_allowed' using errcode = '42501';
@@ -271,6 +274,10 @@ begin
   v_name := private.clean_text(p_display_name, 2, 160);
   v_desc := private.clean_text(p_description, 10, 2000);
   if v_l.status <> 'draft' then raise exception 'not_draft' using errcode = 'P0001'; end if;
+  if exists (select from public.listings l join public.memberships m on m.organisation_id = l.organisation_id
+             where m.user_id = v_uid and m.status = 'active' and m.role = 'owner' and l.status = 'submitted') then
+    raise exception 'application_pending' using errcode = 'P0001';
+  end if;
   update public.listings set status = 'submitted', submitted_at = now(), display_name = v_name, description = v_desc
     where public_id = p_listing;
 end $$;
