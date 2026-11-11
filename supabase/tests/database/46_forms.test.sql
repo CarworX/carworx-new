@@ -25,7 +25,7 @@ insert into public.listings(public_id,organisation_id,service_slug,display_name,
   ('b6200000-0000-4000-8000-000000000001','b6100000-0000-4000-8000-00000000000a','p25-svc','Live synthetic listing','Synthetic description','Gauteng','mobile','live','provider_application','synthetic-forms'),
   ('b6200000-0000-4000-8000-000000000002','b6100000-0000-4000-8000-00000000000a','p25-svc','Pending synthetic listing','Synthetic description','Gauteng','mobile','submitted','provider_application','synthetic-forms');
 
-select plan(69);
+select plan(74);
 
 -- ===== Who may call what ====================================================
 select ok(has_function_privilege('forms_server','public.submit_enquiry(uuid,text,text,text,boolean,text)','execute')
@@ -226,5 +226,20 @@ select is_empty($$select id from public.audit_log where target_table in ('consen
   and (details::text ~ '@' or details::text ~* '(sender|message|note|email|synthetic)')$$,
   'audit details hold no email, name, message or note');
 
+-- A listing cascade must start the same retention clock as expiry purge.
+savepoint cascade_consent;
+insert into public.listings(public_id,organisation_id,service_slug,display_name,description,metro,mode,status,provenance_kind,provenance_reference)
+values ('b6200000-0000-4000-8000-000000000003','b6100000-0000-4000-8000-00000000000a','p25-svc','Cascade listing','Synthetic cascade fixture','Gauteng','mobile','live','admin_import','synthetic-cascade');
+set local role forms_server;
+select public.submit_enquiry('b6200000-0000-4000-8000-000000000003','Synthetic Sender','cascade@example.test','Synthetic cascade enquiry',true,'privacy-2026-11-11');
+reset role;
+select lives_ok($$delete from public.listings where public_id='b6200000-0000-4000-8000-000000000003'$$, 'listing cascade succeeds');
+select is((select count(*) from public.enquiries where sender_email='cascade@example.test'),0::bigint,'cascade removes enquiry');
+select ok((select processing_ended_at = now() and retain_until = now() + interval '3 years' from public.consents where subject_email='cascade@example.test'),'cascade starts consent proof retention');
+select ok(not has_function_privilege('forms_server','private.end_enquiry_consent()','execute'),'submit login cannot invoke retention trigger directly');
+update public.consents set retain_until = now() - interval '1 day' where subject_email='cascade@example.test';
+do $$ begin perform private.purge_expired_forms(); end $$;
+select is((select count(*) from public.consents where subject_email='cascade@example.test'),0::bigint,'ended cascade consent is eventually purged');
+rollback to savepoint cascade_consent;
 select * from finish();
 rollback;

@@ -59,6 +59,21 @@ comment on table public.enquiries is 'Visitor enquiries to a live listing. Read 
 create index enquiries_org_idx on public.enquiries(organisation_id, created_at desc);
 create index enquiries_created_idx on public.enquiries(created_at);
 
+-- Expiry is not the only deletion path: deleting a listing cascades here.
+-- Start the proof-retention clock for every deletion without extending a
+-- clock that withdrawal or an earlier end-of-processing already started.
+create function private.end_enquiry_consent() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  update public.consents set processing_ended_at = now(),
+    retain_until = coalesce(retain_until, now() + interval '3 years')
+  where id = old.consent_id and processing_ended_at is null;
+  return old;
+end $$;
+revoke all on function private.end_enquiry_consent() from public, anon, authenticated, service_role, forms_server;
+create trigger end_enquiry_consent before delete on public.enquiries
+  for each row execute function private.end_enquiry_consent();
+
 create table public.demand_requests (
   id uuid primary key default gen_random_uuid(),
   email text not null check (length(email) between 6 and 254),
