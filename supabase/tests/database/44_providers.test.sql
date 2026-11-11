@@ -24,7 +24,7 @@ insert into public.services(slug,category_slug,name) values
   ('p24-fixed','p24-cat','P2-4 fixed service (synthetic)'), ('p24-mobile','p24-cat','P2-4 mobile service (synthetic)');
 insert into private.platform_admins (user_id) values ('b4000000-0000-4000-8000-000000000006');
 
-select plan(101);
+select plan(103);
 
 -- ===== Application ==========================================================
 set local role anon;
@@ -121,6 +121,14 @@ reset role;
 set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
 select is((select reason from public.listing_decisions where listing_public_id = current_setting('t.mobile')::uuid), 'Synthetic rejection reason: details unclear', 'provider reads the rejection reason');
+-- A fresh application while the rejected one is a draft is fine, but then the
+-- draft cannot also go back into the queue (rolled back to keep later state).
+savepoint resubmit_limit;
+select ok(public.provider_apply('Gus Second (synthetic)','p24-fixed','fixed','Gauteng','Synthetic second business','3 Synthetic Road',-26.1,28.0,null) is not null,
+  'a rejected applicant may apply again');
+select throws_ok($$select public.provider_resubmit(current_setting('t.mobile')::uuid,'Gus Mobile (synthetic)','Synthetic mobile applicant, clearer details')$$,
+  'P0001', 'application_pending', 'resubmission respects the one-pending-application limit');
+rollback to savepoint resubmit_limit;
 select lives_ok($$select public.provider_resubmit(current_setting('t.mobile')::uuid,'Gus Mobile (synthetic)','Synthetic mobile applicant, clearer details')$$, 'owner resubmits after rejection');
 select throws_ok($$select public.provider_resubmit(current_setting('t.mobile')::uuid,'Gus Mobile','Synthetic again and again')$$, 'P0001', 'not_draft', 'cannot resubmit a submitted listing');
 
