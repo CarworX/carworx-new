@@ -76,7 +76,10 @@ create table public.listing_claims (
   check (displaced_roles <@ array['owner','manager','staff'])
 );
 comment on table public.listing_claims is 'Claims on a listing. Control transfers only after admin review (Claude 17 section 3). Document evidence is a typed reference only: nothing is uploaded.';
-create unique index listing_claims_one_open on public.listing_claims(listing_public_id, claimant_id) where status in ('submitted','disputed');
+-- One pending claim per listing and claimant. A disputed approved transfer is
+-- not pending, so a repeat claim can never block its dispute.
+create unique index listing_claims_one_open on public.listing_claims(listing_public_id, claimant_id)
+  where status = 'submitted' or (status = 'disputed' and approved_at is null);
 create index listing_claims_org_idx on public.listing_claims(organisation_id);
 create index listing_claims_status_idx on public.listing_claims(status, created_at);
 
