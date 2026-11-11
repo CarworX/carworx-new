@@ -12,6 +12,8 @@
 
 Sources, read 2026-11-10: the Regulator's [eServices Information Officers page](https://eservices.inforegulator.org.za/officers/default.aspx) and the [Guidance Note on Information Officers](https://inforegulator.org.za/wp-content/uploads/2020/07/InfoRegSA-GuidanceNote-IO-DIO-20210401.pdf) (1 April 2021).
 
+**Legal-source update, 2026-11-11:** read the 2021 Guidance Note together with [GN 6126, GG 52523](https://www.justice.gov.za/legislation/notices/2025/20250417-gg52523gon6126-POPIA-Regulations-Amendment.pdf) and its [linked final Regulations](https://inforegulator.org.za/wp-content/uploads/2025/04/POPIA-2021-Regulations-FINAL-21-Jan-2025.pdf). The notice gives the amendments immediate effect from 17 April 2025. Some duties listed in the older guidance have changed; registration under POPIA s55(2) remains required.
+
 ## Before you start: one decision
 
 **Which organisation do you register? (OQ-L1)** The company isn't registered yet (D-049). Under POPIA a "private body" includes "a natural person who carries or has carried on any trade, business or profession" (POPIA s1). For that kind of body, the Information Officer is the natural person, or someone they authorise (Guidance Note, para 5.1). The portal form asks for the organisation's "registered name, registration number, type, and address".
@@ -31,7 +33,7 @@ Sources, read 2026-11-10: the Regulator's [eServices Information Officers page](
 ## After registering
 
 - **Keep it current.** Update the details on the portal when anything changes, and check them at least once a year. The Guidance Note says to update "at intervals of not more than one year" (para 11.1).
-- **Your other duties** under regulation 4, as the Guidance Note lists them (para 6.2), include a compliance framework, a personal information impact assessment, internal measures for requests, awareness sessions and, possibly, a PAIA manual (OQ-L7). The legal drafts in `planning/legal/` cover most of the first two.
+- **Your other duties** under regulation 4 include a compliance framework that is continually improved, a personal information impact assessment, internal measures and systems for requests, and awareness sessions. These are operational duties: drafting the legal documents alone does not complete them. The 2025 amendment adds continual improvement to regulation 4(1)(a) and deletes regulation 4(1)(c) and 4(2), so the 2021 Guidance Note's PAIA-manual duties (paras 6.2.3 and 6.2.6) are no longer current duties under that regulation. **This does not decide whether PAIA s51 independently requires a manual.** Keep OQ-L7 open until that separate assessment is complete.
 
 ## Check it worked
 
