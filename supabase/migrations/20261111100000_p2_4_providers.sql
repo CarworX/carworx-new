@@ -415,6 +415,13 @@ begin
              and o.status = 'disputed' and o.approved_at is not null) then
     raise exception 'transfer_disputed' using errcode = 'P0001';
   end if;
+  -- A claimant who already belongs (say, through a claim on another of the
+  -- organisation's listings) gains nothing, and a second transfer would
+  -- supersede the first and leave the displaced unable to dispute it.
+  if exists (select from public.memberships m where m.organisation_id = v_c.organisation_id
+             and m.user_id = v_c.claimant_id and m.status = 'active') then
+    raise exception 'already_member' using errcode = 'P0001';
+  end if;
   -- Transfer of control: everyone else loses access; who they were and their
   -- roles are snapshotted on the claim so an upheld dispute can restore them.
   perform from public.memberships where organisation_id = v_c.organisation_id for update;
