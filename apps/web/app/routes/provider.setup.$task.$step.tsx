@@ -1,3 +1,4 @@
+import { readTeamChanges, type TeamChange } from "../team/changes";
 import { data } from "react-router";
 
 import { field } from "../auth/forms";
@@ -47,12 +48,6 @@ const TITLES: Record<string, string> = {
   cover: "Cover photo",
   history: "Team changes",
 };
-interface TeamChange {
-  id: number;
-  occurred_at: string;
-  action: string;
-  target_table: string;
-}
 
 export const meta: Route.MetaFunction = () => [
   { title: "Finish setup · CarworX" },
@@ -123,10 +118,9 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   let changes: TeamChange[] | null = [];
   if (params.task === "history") {
     // Narrow projection only. audit_log itself stays admin-only under RLS.
-    const result = await signedIn.supabase
-      .rpc("team_changes", { p_org: organisation.id })
-      .overrideTypes<TeamChange[], { merge: false }>();
-    changes = result.error === null ? result.data : null;
+    const result: { data: unknown; error: unknown } =
+      await signedIn.supabase.rpc("team_changes", { p_org: organisation.id });
+    changes = result.error === null ? readTeamChanges(result.data) : null;
   }
   return data(
     {

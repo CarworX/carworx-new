@@ -210,7 +210,7 @@ describe("transactional email", () => {
 });
 
 describe("Resend webhook verification", () => {
-  // Independent published Svix test vector, rather than a self-generated signature.
+  // Fixed synthetic HMAC fixture; expected bytes are checked independently of WebCrypto.
   const raw = '{"event_type":"ping","data":{"success":true}}';
   const headers = {
     "svix-id": "msg_loFOjxBNrRLzqYUf",
@@ -225,7 +225,7 @@ describe("Resend webhook verification", () => {
       headers,
       body,
     });
-  it("accepts the independent raw-body signature vector", async () => {
+  it("accepts the fixed raw-body HMAC fixture", async () => {
     expect(
       await receiveMailWebhook(request(), secret, database().db, time),
     ).toBe("accepted");

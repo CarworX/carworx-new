@@ -84,7 +84,8 @@ export function ApplicationReview({
             <fieldset
               className="cx-field"
               onChange={(event) => {
-                const input = event.target as HTMLInputElement;
+                const input = event.target;
+                if (!(input instanceof HTMLInputElement)) return;
                 setLabels((before) =>
                   input.checked
                     ? [...before, input.value]

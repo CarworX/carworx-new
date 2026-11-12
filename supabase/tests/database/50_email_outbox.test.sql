@@ -14,10 +14,13 @@ select is((select count(*) from (values('private.enqueue_mail(text,text,text,tex
 select ok(not pg_has_role('authenticated','mail_server','member') and not pg_has_role('anon','mail_server','member') and not pg_has_role('service_role','mail_server','member'),'PostgREST identities cannot assume mail role');
 select is_empty($q$select proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='private' and p.proname in ('enqueue_mail','claim_mail','finish_mail','mail_delivery','purge_expired_mail') and (not p.prosecdef or p.proconfig is distinct from array['search_path=""'])$q$,'mail functions have fixed empty search path and SECURITY DEFINER');
 select hasnt_column('private','mail_outbox','email','recipient email is not a plaintext column');
-set local role mail_server;
-select throws_ok($q$select * from private.mail_outbox$q$,'42501',null,'mail role cannot read ciphertext directly');
+-- Keep pgTAP itself in the harness role; the tested statement runs as mail_server.
+select throws_ok($q$set local role mail_server; select * from private.mail_outbox$q$,'42501',null,'mail role cannot read ciphertext directly');
 reset role;
+set local role mail_server;
 do $$begin perform private.enqueue_mail('invite/o5-1','invite',repeat('a',64),'v1.AAAAAAAAAAAAAAAA.'||repeat('B',60),now()+interval '6 days'); end$$;
+
+reset role;
 select is((select count(*) from private.mail_outbox where logical_key='invite/o5-1'),1::bigint,'logical event queued once');
 do $$begin perform private.enqueue_mail('invite/o5-1','invite',repeat('a',64),'v1.AAAAAAAAAAAAAAAA.'||repeat('C',60),now()+interval '6 days'); end$$;
 select is((select count(*) from private.mail_outbox where logical_key='invite/o5-1'),1::bigint,'replay does not overwrite or duplicate logical event');

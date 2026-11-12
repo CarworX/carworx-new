@@ -38,7 +38,7 @@ function fixture() {
     MAIL_SENDING_DOMAIN: "mail.example.test",
     MAIL_ENCRYPTION_KEY: "AQ".repeat(21) + "A",
     RESEND_API_KEY: "re_synthetic_key_only",
-    // The same public Svix vector used by mail.test.ts, never a live credential.
+    // The same synthetic HMAC fixture used by mail.test.ts, never a live credential.
     RESEND_WEBHOOK_SECRET: ["whsec", "plJ3nmyCDGBKInavdOK15jsl"].join("_"),
   };
   return {

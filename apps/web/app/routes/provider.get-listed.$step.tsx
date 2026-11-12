@@ -112,7 +112,11 @@ export async function loader({ request, context, params }: Route.LoaderArgs) {
     status = listing.data[0]?.status ?? "submitted";
   } else {
     const missing = incompleteStep(draft);
-    if (missing && STEPS.indexOf(step) > STEPS.indexOf(missing))
+    if (
+      missing &&
+      STEPS.findIndex((candidate) => candidate === step) >
+        STEPS.indexOf(missing)
+    )
       return throwRedirect(path(missing), signedIn.headers);
   }
   const env = context.cloudflare.env as unknown as MapEnv;

@@ -61,7 +61,7 @@ export function ReviewFlow({
         const panel = input.closest<HTMLElement>("[data-review-step]");
         if (panel && panel.hidden) {
           event.preventDefault();
-          setStep(Number(panel.dataset.reviewStep));
+          setStep(Number(panel.dataset["reviewStep"]));
           requestAnimationFrame(() => {
             input.focus();
             input.reportValidity();
@@ -75,7 +75,7 @@ export function ReviewFlow({
       <div className="min-w-0 max-w-[65ch]">
         <SegmentedProgress
           label={label}
-          name={steps[step].title}
+          name={steps[step]?.title ?? label}
           step={step}
           total={steps.length}
         />

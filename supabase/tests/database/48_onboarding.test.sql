@@ -124,11 +124,11 @@ reset role;
 -- Mo: mobile only, through explicit draft and acknowledged submission.
 set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
-select lives_ok($$do $submit$
+select lives_ok($q$do $submit$
 begin
   perform public.provider_save_draft('{"step":5,"business_name":"Mo Mobile (synthetic)","service_slugs":["o2-wash"],"mode":"mobile","metro":"Synthetic Durban","description":"Synthetic mobile description.","pin":{"lat":-29.8,"lng":31.0,"source":"tap"},"radius_km":20,"applicant_role":"owner"}');
   perform public.provider_submit(true, true, 'onboarding-v1');
-end $submit$$$, 'mobile application uses the acknowledged submission path');
+end $submit$;$q$, 'mobile application uses the acknowledged submission path');
 reset role;
 
 -- ===== Admin premises label (§7) ============================================
