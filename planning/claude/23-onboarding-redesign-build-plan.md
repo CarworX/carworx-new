@@ -129,9 +129,16 @@ Codex 31 closed the earlier open items into contracts: §7 (admin labels), §8 (
 
 **Who may use the email fallback.** Only accounts with a **password** identity, after the correct password in the same session. **Google-only accounts may not** (owner, 2026-11-12). They use recovery codes, a second authenticator device, or the reset path below.
 
-**Recovery codes (everyone).** Codes are hashed and single use. Redeeming one needs a **fresh first sign-in** in the same session:
-- **Password accounts:** the password, re-entered now.
-- **Google-only accounts:** a **fresh Google sign-in**, meaning a new OAuth round trip with the session's `auth_time` no more than 5 minutes old.
+**Recovery codes (everyone).** Codes are hashed and single use. Redeeming one needs a **fresh first sign-in** in the same session, proven by a **server receipt** (Codex 31, re-review of `2eb4fcc`). Supabase access tokens have no `auth_time` claim (https://supabase.com/docs/guides/auth/jwt-fields), and a refreshed token's `iat` doesn't prove a new sign-in, so neither is used.
+
+- **The receipt** (`private.primary_auth_receipts`: `user_id`, `session_id`, `method in ('password','oauth')`, `issued_at`, `expires_at`, `used_at`):
+  - Written **only by the Worker**, through a server-only capability role (the `forms_server` pattern). No client JWT can write one.
+  - Written **only right after the Worker itself completed a primary sign-in**:
+    - **Password accounts:** the Worker re-verified the password just entered (a Supabase password sign-in for that email, server-side).
+    - **Google-only accounts:** the Worker's own OAuth callback has just exchanged the authorisation code for a session (a new Google round trip, started from the recovery screen).
+  - Bound to the resulting user and `session_id`, read from the verified JWT. It expires after 5 minutes and is consumed by the redemption.
+- **Defence in depth:** where the pinned Auth version supplies it, the verified JWT's `amr` must also hold a `password` or `oauth` entry no older than 5 minutes.
+- **Fails closed:** with no receipt, an expired, used or mismatched receipt, or another session's receipt, the code is refused. Browser-supplied times, user metadata and a token's `iat` are never evidence.
 
 A code **only removes TOTP factors**, and that is audited. The person then re-enrols and reaches aal2 natively. A code never grants aal2.
 
@@ -148,7 +155,13 @@ Both paths are audited, and both end with native re-enrolment.
 
 **Tests:**
 - Both layers (Worker and direct RPC/RLS): under the optional policy, allowed; owner exempt, allowed; uncovered role, allowed; covered role at aal1 with no proof, refused; covered role at aal2 or with a valid proof, allowed.
-- Recovery: a password account redeems a code; a Google-only account redeems one after a fresh Google sign-in; a Google-only account with a stale `auth_time` is refused; the email fallback is refused for Google-only accounts; an admin's code resets factors but grants no aal2; a used code is refused on replay.
+- Recovery:
+  - a password account redeems a code after re-entering the password;
+  - a Google-only account redeems one after a fresh OAuth round trip;
+  - refused: a stale OAuth sign-in with a newly refreshed token, absent evidence, another session's receipt, and a replayed receipt;
+  - the email fallback is refused for Google-only accounts;
+  - an admin's code resets factors but grants no aal2;
+  - a used code is refused on replay.
 - pgTAP: direct RPC and RLS with an aal1 JWT under a policy are refused; a proof from another session, an expired proof, a revoked proof and a replayed code are each refused; a policy change applies at once; the owner exemption holds; admin functions ignore proofs.
 - Worker integration: the same cases through the routes.
 
