@@ -272,6 +272,16 @@
         ["Booking details only", "Service, time and place. No customer details.", "lock"],
       ]),
     },
+    teamMfa: {
+      t: "Two-step sign-in for your team",
+      h: "You decide. A 6-digit code from an authenticator app at each sign-in; anyone can get the code by email if their app gives trouble.",
+      type: "tiles",
+      opts: tiles([
+        ["Optional", "Managers and staff choose for themselves.", "user"],
+        ["Required for managers", "Managers set it up; staff choose.", "lock"],
+        ["Required for everyone", "Managers and staff set it up when they join.", "team"],
+      ]),
+    },
     cover: {
       t: "Pick a cover photo",
       h: "Prototype: synthetic swatches stand in for your photos.",

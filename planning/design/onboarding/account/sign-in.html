@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · two-step code · CarworX (prototype)</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+  /* The second sign-in step. Authenticator app first; email code as the owner-approved fallback. */
+  main { max-width: 460px; margin: 0 auto; padding: 8vh 16px 60px; }
+  .card { display: grid; gap: 16px; padding: 26px; border-radius: var(--radius-xl); background: var(--surface); box-shadow: var(--sh-2); }
+  .card h1 { font: 500 28px/32px var(--font-sans); letter-spacing: -.03em; }
+  .otp { font: 500 26px var(--font-mono); letter-spacing: .4em; text-align: center; }
+  .alt { display: grid; gap: 10px; padding-top: 14px; border-top: 1px solid var(--hair); }
+  .logo { display: block; width: 120px; margin: 0 auto 22px; }
+</style>
+</head>
+<body class="cx-canvas">
+<main>
+  <img class="logo" src="../_shared/carworx-lockup-horizontal-ink.svg" alt="CarworX">
+  <div class="card" data-state="app">
+    <p class="cx-eyebrow">Step 2 of 2 · sipho@example.co.za</p>
+    <h1 data-h tabindex="-1">Enter the code from your authenticator app</h1>
+    <p class="t-cap" data-sub>Open Microsoft Authenticator, Google Authenticator or the app you set up, and find CarworX.</p>
+    <label class="cx-vh" for="code">6-digit code</label>
+    <input class="ob-input otp" id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••">
+    <p class="ob-err" role="alert" data-err></p>
+    <button type="button" class="cx-btn primary wide" data-verify>Sign in</button>
+    <div class="alt">
+      <button type="button" class="ob-link" data-email>Trouble with your app? Email me a code instead</button>
+      <button type="button" class="ob-link" data-back hidden>Use my authenticator app</button>
+      <button type="button" class="ob-link">Use a recovery code</button>
+    </div>
+  </div>
+  <p class="t-cap" style="text-align:center;margin-top:16px">Prototype: any 6 digits work; nothing is sent.</p>
+</main>
+<script>
+  const card = document.querySelector(".card"), h = card.querySelector("[data-h]"), sub = card.querySelector("[data-sub]"), err = card.querySelector("[data-err]"), code = card.querySelector("#code");
+  const set = (st) => {
+    card.dataset.state = st;
+    code.value = ""; err.textContent = "";
+    card.querySelector("[data-email]").hidden = st === "email";
+    card.querySelector("[data-back]").hidden = st !== "email";
+    if (st === "email") { h.textContent = "Check your email"; sub.textContent = "We sent a 6-digit code to s***o@example.co.za. It works for 10 minutes. Didn't get it? You can send another in 60 seconds."; }
+    else if (st === "done") { h.textContent = "You're signed in"; sub.textContent = "Taking you to Shine Bay Car Wash…"; card.querySelectorAll("input, [data-verify], .alt, label").forEach((x) => (x.hidden = true)); }
+    else { h.textContent = "Enter the code from your authenticator app"; sub.textContent = "Open Microsoft Authenticator, Google Authenticator or the app you set up, and find CarworX."; }
+    h.focus();
+  };
+  card.querySelector("[data-email]").onclick = () => set("email");
+  card.querySelector("[data-back]").onclick = () => set("app");
+  code.oninput = () => (err.textContent = "");
+  const verify = () => (/^\d{6}$/.test(code.value) ? set("done") : ((err.textContent = "Enter the 6 digits."), code.focus()));
+  card.querySelector("[data-verify]").onclick = verify;
+  code.onkeydown = (e) => e.key === "Enter" && verify();
+  if (new URLSearchParams(location.search).get("state") === "email") set("email");
+</script>
+</body>
+</html>

@@ -56,6 +56,16 @@
     <section data-step id="s-days" data-title="Your days" data-kind="task" data-group="join" data-count data-require="myDays"><div class="card"><h2>Joining Shine Bay Car Wash</h2><div data-q="myDays"></div><div data-actions></div></div></section>
     <section data-step id="s-name" data-title="How customers see you" data-kind="task" data-group="join" data-count data-if="pick=customer" data-require="firstName" data-cta="Join the team"><div class="card"><h2>Joining Shine Bay Car Wash</h2><div data-q="firstName"></div><div data-actions></div></div></section>
 
+    <section data-step id="s-mfa" data-title="Two-step sign-in" data-kind="task" data-group="join" data-count data-if="mfareq=yes" data-require="joinOtp" data-cta="Join the team">
+      <div class="card"><h2>Joining Shine Bay Car Wash</h2>
+        <p class="ob-qt">Set up two-step sign-in</p>
+        <p class="ob-qh">Sipho requires it for <span data-bind="mfaWho"></span>. Use an authenticator app such as Microsoft Authenticator or Google Authenticator: choose <b>Add account</b>, then scan.</p>
+        <img src="../account/qr-demo.svg" alt="QR code to add CarworX to your authenticator app" width="200" height="200" style="display:block;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line), var(--sh-1)">
+        <div data-q="joinOtp"></div>
+        <p class="ob-private"><span data-ic="mail"></span><span>If your app ever gives trouble, you can get a sign-in code by email instead.</span></p>
+        <div data-actions></div></div>
+    </section>
+
     <section data-step id="home" data-skip>
       <div class="hubhead"><div><p class="cx-eyebrow">Shine Bay Car Wash · <span data-bind="joinRole"></span></p><h1>You're on the team<span data-bind="firstName" data-prefix=", "></span></h1></div></div>
       <div class="ob-dashgrid">
@@ -76,8 +86,8 @@
       <p class="ob-private" style="margin-top:16px"><span data-ic="eye"></span><span data-if="pick=customer">This business lets customers pick who they get, so your first name shows on its listing.</span><span data-if="pick!=customer">The business assigns bookings, so customers don't see your name on the listing.</span></p>
     </section>
   </main>
-  <!-- Set by the business in Phase 2 (demo: ?pick=customer|assign&contact=phone|first|none&role=Staff|Manager) -->
-  <input type="hidden" name="pick"><input type="hidden" name="contact"><input type="hidden" name="joinRole">
+  <!-- Set by the business in Phase 2 (review: ?pick=customer|assign&contact=phone|first|none&role=Staff|Manager&teamMfa=optional|managers|all) -->
+  <input type="hidden" name="pick"><input type="hidden" name="contact"><input type="hidden" name="joinRole"><input type="hidden" name="mfareq"><input type="hidden" name="mfaWho">
 </form>
 <script src="../_shared/kit.js"></script>
 <script>
@@ -90,11 +100,17 @@
   form.elements.pick.value = q.get("pick") || "customer";
   form.elements.contact.value = { phone: "Name and phone number", first: "First name only", none: "Booking details only" }[q.get("contact") || "first"];
   form.elements.joinRole.value = q.get("role") || "Staff";
+  OB.Q.joinOtp = { t: "The 6-digit code from your app", type: "text", it: "text", ac: "one-time-code", ph: "••••••", max: 6 };
+  const tm = q.get("teamMfa") || "optional";
+  const role = form.elements.joinRole.value;
+  form.elements.mfareq.value = (tm === "all" || (tm === "managers" && role === "Manager")) ? "yes" : "";
+  form.elements.mfaWho.value = tm === "all" ? "everyone on the team" : "managers";
   const flow = OB.boot();
   // The last join step (name, or days when the business assigns) finishes on the staff home.
-  const last = () => (form.elements.pick.value === "customer" ? "s-name" : "s-days");
+  const last = () => (form.elements.mfareq.value ? "s-mfa" : form.elements.pick.value === "customer" ? "s-name" : "s-days");
   form.querySelector("#" + last()).dataset.next = "home";
-  if (last() === "s-days") form.querySelector("#s-days").dataset.cta = "Join the team";
+  ["s-days", "s-name"].forEach((id) => { if (id !== last()) delete form.querySelector("#" + id).dataset.cta; });
+  form.querySelector("#" + last()).dataset.cta = "Join the team";
   // Name prefix for the greeting.
   form.addEventListener("ob:change", () => form.querySelectorAll("[data-prefix]").forEach((el) => { if (!el.classList.contains("empty") && el.textContent) el.textContent = el.dataset.prefix + el.textContent.replace(/^, /, ""); }));
   if (q.get("demo")) {

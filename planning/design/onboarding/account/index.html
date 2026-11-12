@@ -52,6 +52,8 @@
   const KEY = "TZ6R SLLE FYUB XYHA 7KHU PKX4 OUBK XUX4";
   const q = new URLSearchParams(location.search);
   let as = q.get("as") || "owner", tab = q.get("tab") || "profile";
+  const teamMfa = q.get("teamMfa") || "optional";
+  const required = () => (as === "manager" && teamMfa !== "optional") || (as === "staff" && teamMfa === "all");
   const mfa = { on: q.get("mfa") === "on", step: q.get("mfastep") ? +q.get("mfastep") : -1, method: "Authenticator app" };
   const biz = () => as === "owner" || as === "manager";
   const TABS = () => [["profile", "Profile"], ["security", "Security"], ["notifications", "Notifications"], ["privacy", "Privacy and data"], ...(as === "staff" ? [["work", "Your work"]] : []), ...(biz() ? [["business", "Business"]] : [])];
@@ -77,14 +79,14 @@
     el.querySelector(".segcount").textContent = `${at + 1} of ${n}`;
     el.setAttribute("aria-valuetext", `Step ${at + 1} of ${n}: ${name}`);
   }
-  const MFA_STEPS = () => ["Get an authenticator app", "Scan your code", "Enter the code", "Save recovery codes"];
+  const MFA_STEPS = () => ["Get an authenticator app", "Scan your code", "Enter the code", "Your backup"];
   function mfaFlow() {
     const S = MFA_STEPS(), i = mfa.step, name = S[i];
     let body = "";
     if (name === "Get an authenticator app") body = `<p>Use any authenticator app on your phone, for example <b>Microsoft Authenticator</b> or <b>Google Authenticator</b>. Already have one? Carry on.</p><p class="t-cap">The app makes a new 6-digit code every 30 seconds. CarworX never sees your phone.</p>`;
     if (name === "Scan your code") body = `<p>In your app, choose <b>Add account</b>, then scan this code.</p><img class="qrimg" src="qr-demo.svg" alt="QR code to add CarworX to your authenticator app" width="220" height="220"><p class="t-cap">This code is yours alone. It's made fresh when you set up, works for your account only, and isn't shown again.</p><details class="manual"><summary>Can't scan? Type the key instead</summary><p class="key">${KEY}</p><p class="t-cap">Account: CarworX · time-based</p></details>`;
     if (name === "Enter the code") body = `<label class="field">The 6-digit code from your app<input class="ob-input otp" name="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="••••••"></label><p class="ob-err" role="alert" data-otperr></p>`;
-    if (name === "Save recovery codes") body = `<p>If you lose your phone, each of these codes signs you in once. Keep them somewhere safe.</p><div class="codes">${["4F7K-29QD", "M8X2-LP4T", "Q3ZR-71VN", "B6HW-X0CJ", "T9EA-5KMS", "R2YU-8DGF", "H5NB-3QWL", "C7PV-6ZRT"].map((c) => `<span>${c}</span>`).join("")}</div><div class="acts" style="flex-wrap:nowrap"><button type="button" class="cx-btn outlined sm">Download</button><button type="button" class="cx-btn outlined sm">Copy</button></div><div class="ob-consent"><label class="cx-check"><input type="checkbox" name="saved"><span class="cx-box" aria-hidden="true">${ic("tick")}</span><span>I've saved my recovery codes</span></label></div><p class="ob-err" role="alert" data-savederr></p>`;
+    if (name === "Your backup") body = `<p>If your app gives trouble (new phone, lost phone), you can get a sign-in code by <b>email</b> instead.</p><div class="line"><span>Email backup<small>${SHELL.WHO[as].name.split(" ")[0].toLowerCase().replace(/^./, (c) => c)}@example.co.za · verified</small></span><span class="cx-label">On</span></div><details class="manual"><summary>Also make recovery codes (optional)</summary><p class="t-cap">Single-use codes for when you can't reach your app or your email.</p><div class="codes">${["4F7K-29QD", "M8X2-LP4T", "Q3ZR-71VN", "B6HW-X0CJ", "T9EA-5KMS", "R2YU-8DGF", "H5NB-3QWL", "C7PV-6ZRT"].map((c) => `<span>${c}</span>`).join("")}</div></details>`;
     return `<div class="box" data-mfabox><h2>Set up two-step sign-in</h2><div class="ob-segbar" data-mfaseg aria-label="Two-step sign-in setup"></div>${body}
       <div class="acts"><button type="button" class="ob-back" data-mfa-back>${i === 0 ? "Cancel" : "Back"}</button><button type="button" class="cx-btn primary" data-mfa-next>${i === S.length - 1 ? "Turn on" : "Next"}</button></div></div>`;
   }
@@ -98,11 +100,12 @@
         <p class="ob-private">${ic("lock")}<span>We never ask for your ID number or date of birth.</span></p>`,
     security: () => `<div class="box"><h2>Two-step sign-in ${mfa.on ? '<span class="cx-label">On</span>' : '<span class="cx-label warn">Off</span>'}</h2>
         <p>${mfa.on ? "Authenticator app · added 12 Nov 2026. Each new sign-in asks for a code from it." : "Adds a 6-digit code from an authenticator app (such as Microsoft Authenticator or Google Authenticator) when you sign in, so a stolen password isn't enough."}</p>
-        <p class="t-cap">${{ owner: "Required before anyone can change payment settings, when payments open (to confirm).", manager: "Strongly recommended: you can edit the listing and invite people.", staff: "Recommended.", driver: "Recommended." }[as]}</p>
-        ${mfa.on ? `<div class="line"><span>Recovery codes<small>8 one-time codes</small></span><button type="button" class="ob-link">Make new codes</button></div><div class="line"><span>Turn off two-step sign-in</span><button type="button" class="ob-link danger" data-mfa-off>Turn off</button></div>` : mfa.step < 0 ? `<div><button type="button" class="cx-btn primary sm" data-mfa-start>Turn on two-step sign-in</button></div>` : ""}
+        <p class="t-cap">${required() ? `<b>Required by Shine Bay Car Wash</b> for ${as === "manager" ? "managers" : "everyone on the team"}. Sipho decides this.` : { owner: "Recommended. You decide whether your managers and staff must use it, under Business.", manager: "Recommended. Optional at Shine Bay Car Wash.", staff: "Recommended. Optional at Shine Bay Car Wash.", driver: "Recommended." }[as]}</p>${required() && !mfa.on ? `<p class="ob-err" style="color:var(--warn)">Turn it on to keep using Shine Bay Car Wash's business tools.</p>` : ""}
+        ${mfa.on ? `<div class="line"><span>Email backup<small>Get a sign-in code by email if your app gives trouble</small></span><span class="cx-label">On</span></div><div class="line"><span>Recovery codes<small>Optional single-use codes</small></span><button type="button" class="ob-link">Make codes</button></div>${required() ? `<div class="line"><span>Turn off two-step sign-in<small>Required by your business</small></span><span class="ob-lbl-off">Required</span></div>` : `<div class="line"><span>Turn off two-step sign-in</span><button type="button" class="ob-link danger" data-mfa-off>Turn off</button></div>`}` : mfa.step < 0 ? `<div><button type="button" class="cx-btn primary sm" data-mfa-start>Turn on two-step sign-in</button></div>` : ""}
       </div>
       ${!mfa.on && mfa.step >= 0 ? mfaFlow() : ""}
       <div class="box"><h2>Signing in</h2>
+        <div class="line"><span>What sign-in looks like<small>App code, or an email code if your app gives trouble</small></span><a class="ob-link" href="sign-in.html">Preview</a></div>
         <div class="line"><span>Password<small>Last changed 3 Nov 2026</small></span><button type="button" class="ob-link">Change</button></div>
 </div>
       <div class="box"><h2>Where you're signed in</h2>
@@ -126,10 +129,11 @@
     business: () => `<div class="box"><h2>Shine Bay Car Wash</h2>
         <div class="line"><span>Team and roles<small>Invite, change roles, remove</small></span><a class="ob-link" href="../setup/index.html#t-team">Open</a></div>
         <div class="line"><span>Who gets the booking<small>The customer picks, with "Anyone available"</small></span><a class="ob-link" href="../setup/index.html#b-assign">Change</a></div>
+        ${as === "owner" ? `<div class="line"><span>Two-step sign-in for your team<small>${{ optional: "Optional", managers: "Required for managers", all: "Required for everyone" }[teamMfa]}</small></span><a class="ob-link" href="../setup/index.html#s-mfa">Change</a></div>` : ""}
         ${as === "owner" ? `<div class="line"><span>What staff can see<small>First name only</small></span><a class="ob-link" href="../setup/index.html#p-contact">Change</a></div>` : ""}
         <div class="line"><span>Listing details<small>Name, services, hours, location, photo</small></span><button type="button" class="ob-link">Edit</button></div>
-        ${as === "owner" ? `<div class="line"><span>Payments<small>Opens with bookings. Needs two-step sign-in.</small></span><span class="ob-lbl-off">Later</span></div>` : ""}</div>
-      ${as === "owner" ? `<div class="box"><h2>Ownership</h2><div class="line"><span>Transfer ownership<small>To a manager. They must have two-step sign-in on.</small></span><button type="button" class="ob-link">Start</button></div><div class="line"><span>Close the business listing<small>Removes it from search. History stays.</small></span><button type="button" class="ob-link danger">Close</button></div></div>` : `<div class="box"><h2>Leave this business</h2><p>Sipho will see that you left.</p><div><button type="button" class="cx-btn outlined sm danger">Leave Shine Bay Car Wash</button></div></div>`}`,
+        ${as === "owner" ? `<div class="line"><span>Payments<small>Opens with bookings.</small></span><span class="ob-lbl-off">Later</span></div>` : ""}</div>
+      ${as === "owner" ? `<div class="box"><h2>Ownership</h2><div class="line"><span>Transfer ownership<small>Hand Shine Bay Car Wash to someone on your team.</small></span><button type="button" class="ob-link">Start</button></div><div class="line"><span>Close the business listing<small>Removes it from search. History stays.</small></span><button type="button" class="ob-link danger">Close</button></div></div>` : `<div class="box"><h2>Leave this business</h2><p>Sipho will see that you left.</p><div><button type="button" class="cx-btn outlined sm danger">Leave Shine Bay Car Wash</button></div></div>`}`,
   };
   let mounted = null;
   function render() {
@@ -152,14 +156,13 @@
     else if (t.hasAttribute("data-mfa-next")) {
       const S = MFA_STEPS(), name = S[mfa.step];
       if (name === "Enter the code") { const v = document.querySelector("[name=otp]").value; if (!/^\d{6}$/.test(v)) { document.querySelector("[data-otperr]").textContent = "Enter the 6 digits from your app."; document.querySelector("[name=otp]").focus(); return; } }
-      if (name === "Save recovery codes") { if (!document.querySelector("[name=saved]").checked) { document.querySelector("[data-savederr]").textContent = "Tick this once you've saved them."; return; } mfa.on = true; mfa.step = -1; render(); return; }
+      if (name === "Your backup") { mfa.on = true; mfa.step = -1; render(); return; }
       mfa.step += 1; render();
     }
   });
   // Clear an error as soon as it's fixed.
   document.addEventListener("input", (e) => { if (e.target.name === "otp") document.querySelector("[data-otperr]").textContent = ""; });
   document.addEventListener("change", (e) => {
-    if (e.target.name === "saved") document.querySelector("[data-savederr]").textContent = "";
   });
   render();
   if (q.get("menu")) document.querySelector("[data-sh-menu]").click();

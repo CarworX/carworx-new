@@ -137,4 +137,10 @@ For review, the role is set in the address only: `account/index.html?as=driver|s
 - **Recovery codes:** Supabase Auth has no built-in recovery codes. The build plan chooses between custom single-use codes (stored hashed) or asking people to add a second authenticator device.
 - Passkey sign-in was dropped from this round. "Sign out" confirms on screen and points to Security to sign out everywhere.
 
-*For the owner to confirm:* making two-step sign-in **required** for owners before payment settings (it is shown that way), and transfer of ownership only to a manager with two-step sign-in on.
+**Owner answers (2026-11-12):**
+1. **Owners are not forced** to use two-step sign-in (it is recommended), payment settings included.
+2. **Ownership transfer has no two-step condition.**
+3. **The owner decides** whether two-step sign-in is **optional**, **required for managers**, or **required for everyone**. This is a fifth "Finish setup" task, *Team sign-in security* (`setup/#s-mfa`), and it shows on the owner's Business tab. When it is required: the staff join flow adds a "Set up two-step sign-in" step (`staff/?teamMfa=all`); a manager's or staff member's Security tab shows "Required by Shine Bay Car Wash" with a prompt to turn it on, and they can't turn it off.
+4. **Email fallback.** If someone has trouble with their authenticator app, they can get a sign-in code **by email** instead (`account/sign-in.html`: "Trouble with your app? Email me a code instead"). The setup's last step is now "Your backup": email backup on, with recovery codes optional.
+
+*Security trade-off for the build plan:* if the password reset also goes to the same email, an email code makes the second step only as strong as the email account. Mitigations to consider: email codes only after the correct password, 10-minute single-use codes with rate limits, and an email alert "someone signed in with an email code". Supabase Auth's MFA factors are TOTP and phone, so the email code is custom work (for example the existing email OTP, used as a step-up).
