@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useMatches } from "react-router";
 
 import { ButtonLink, QuietLink } from "../Button";
 import { NavBar } from "../NavBar";
@@ -7,6 +8,46 @@ const NAV = [
   { href: "/", label: "Find a service" },
   { href: "/fines", label: "Fines & admin" },
 ] as const;
+
+function SignedInNavigation() {
+  const matches = useMatches();
+  let csrf: string | undefined;
+  for (const match of matches) {
+    const value: unknown = match.data;
+    if (
+      typeof value === "object" &&
+      value !== null &&
+      "csrf" in value &&
+      typeof value.csrf === "string"
+    ) {
+      csrf = value.csrf;
+    }
+  }
+  return (
+    <NavBar
+      items={NAV}
+      {...(csrf
+        ? {
+            account: {
+              name: "Your account",
+              sub: "CarworX",
+              initials: "CX",
+              csrf,
+              links: [
+                { href: "/account/profile", label: "Profile and settings" },
+                { href: "/account/security", label: "Security" },
+              ],
+            },
+          }
+        : { action: <QuietLink href="/account">Account</QuietLink> })}
+      sheetActions={
+        <ButtonLink href="/" block arrow>
+          Find a service near you
+        </ButtonLink>
+      }
+    />
+  );
+}
 
 /** The public page frame: Studio canvas, nav pill, one main landmark. */
 export function PublicShell({
@@ -22,22 +63,20 @@ export function PublicShell({
   return (
     <div className="cx-canvas min-h-dvh">
       <div className="mx-auto max-w-[1180px] px-4 pt-4 pb-24 sm:px-6">
-        <NavBar
-          items={NAV}
-          {...(current ? { current } : {})}
-          action={
-            signedIn ? (
-              <QuietLink href="/account">Account</QuietLink>
-            ) : (
-              <QuietLink href="/auth/sign-in">Sign in</QuietLink>
-            )
-          }
-          sheetActions={
-            <ButtonLink href="/" block arrow>
-              Find a service near you
-            </ButtonLink>
-          }
-        />
+        {signedIn ? (
+          <SignedInNavigation />
+        ) : (
+          <NavBar
+            items={NAV}
+            {...(current ? { current } : {})}
+            action={<QuietLink href="/auth/sign-in">Sign in</QuietLink>}
+            sheetActions={
+              <ButtonLink href="/" block arrow>
+                Find a service near you
+              </ButtonLink>
+            }
+          />
+        )}
         <main id="main" className="mt-10">
           {children}
         </main>

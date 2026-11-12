@@ -25,7 +25,7 @@ export const PRIVATE_NO_STORE = "private, no-store";
 export const MAX_FORM_BYTES = 64 * 1024;
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
-const PERSONAL_PATHS = /^\/(?:auth|account|admin|org)(?:[/.]|$)/;
+const PERSONAL_PATHS = /^\/(?:auth|account|admin|org|provider|join)(?:[/.]|$)/;
 
 export interface SecurityContext {
   /**

@@ -14,6 +14,10 @@ const ALLOWED = [
   /^\/org\/[^/?#]+(?:[?#]|$)/,
   /^\/provider(?:\/apply)?(?:[?#]|$)/,
   /^\/provider\/claim\/[0-9a-f-]{36}(?:[?#]|$)/i,
+  /^\/provider\/get-listed\/(?:business|service|location|about|check|submitted)$/,
+  /^\/provider\/setup\/[a-z-]+\/[a-z-]+$/,
+  // Invite secrets stay in a short-lived HttpOnly cookie, never in returnTo.
+  /^\/join$/,
 ];
 
 export function safeReturnTo(
