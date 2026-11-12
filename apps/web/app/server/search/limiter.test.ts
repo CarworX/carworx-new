@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   IP_WINDOW,
   SESSION_WINDOW,
+  FORM_WINDOW,
   SearchLimiter,
+  checkFormLimit,
   checkSearchLimits,
   decide,
   type Counter,
@@ -144,5 +146,42 @@ describe("search limits", () => {
       }),
     );
     expect(response.status).toBe(400);
+  });
+});
+
+describe("form limits (P2-5)", () => {
+  it("allows 5 posts per IP per form, with hashed keys apart from search", async () => {
+    const ns = namespace();
+    for (let i = 0; i < FORM_WINDOW.limit; i++)
+      expect(
+        (await checkFormLimit(ns, SALT, "198.51.100.7", "enquiry")).kind,
+      ).toBe("allowed");
+    expect(
+      await checkFormLimit(ns, SALT, "198.51.100.7", "enquiry"),
+    ).toMatchObject({ kind: "limited" });
+    // Another form, another IP and search keep their own counters.
+    expect(
+      (await checkFormLimit(ns, SALT, "198.51.100.7", "support")).kind,
+    ).toBe("allowed");
+    expect(
+      (await checkFormLimit(ns, SALT, "203.0.113.9", "enquiry")).kind,
+    ).toBe("allowed");
+    expect((await checkSearchLimits(ns, SALT, "198.51.100.7", "s1")).kind).toBe(
+      "allowed",
+    );
+    const forms = ns.names.filter((n) => n.startsWith("form:"));
+    expect(forms).toHaveLength(3);
+    for (const name of forms)
+      expect(name).toMatch(/^form:(?:enquiry|support):ip:[0-9a-f]{64}$/);
+    expect(ns.names.join(" ")).not.toMatch(/198\.51|203\.0/);
+  });
+
+  it("fails closed without a binding or a long enough salt", async () => {
+    expect(
+      await checkFormLimit(undefined, SALT, "198.51.100.7", "demand"),
+    ).toEqual({ kind: "unavailable" });
+    expect(
+      await checkFormLimit(namespace(), "short", "198.51.100.7", "demand"),
+    ).toEqual({ kind: "unavailable" });
   });
 });

@@ -22,6 +22,11 @@ export const SESSION_WINDOW: Window = { limit: 60, windowMs: 600_000 };
  */
 export const GEOCODE_DAILY: Window = { limit: 3_000, windowMs: 86_400_000 };
 export const MAP_DAILY: Window = { limit: 1_500, windowMs: 86_400_000 };
+/**
+ * Visitor forms (P2-5, Claude 22 §4): 5 posts per 10 minutes per IP, per form.
+ * A person sends one or two; a script is stopped at once.
+ */
+export const FORM_WINDOW: Window = { limit: 5, windowMs: 600_000 };
 export const LIMITER_TIMEOUT_MS = 300;
 
 export interface Counter {
@@ -72,9 +77,13 @@ export class SearchLimiter {
   async fetch(request: Request): Promise<Response> {
     try {
       const body = await request.json<Partial<Window>>();
-      const window = [IP_WINDOW, SESSION_WINDOW, GEOCODE_DAILY, MAP_DAILY].find(
-        (w) => w.limit === body.limit && w.windowMs === body.windowMs,
-      );
+      const window = [
+        IP_WINDOW,
+        SESSION_WINDOW,
+        GEOCODE_DAILY,
+        MAP_DAILY,
+        FORM_WINDOW,
+      ].find((w) => w.limit === body.limit && w.windowMs === body.windowMs);
       if (!window) return Response.json({}, { status: 400 });
       const result = await this.storage.transaction(async (txn) => {
         const outcome = decide(
@@ -196,6 +205,27 @@ export async function checkQuota(
       `quota:${name}`,
       name === "geocode" ? GEOCODE_DAILY : MAP_DAILY,
     );
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
+/**
+ * One per-IP window per visitor form. Keyed by a salted hash of the IP with
+ * its own purpose label, so form and search counters never share a key. Any
+ * failure is "unavailable" (fail closed).
+ */
+export async function checkFormLimit(
+  namespace: LimiterNamespace | undefined,
+  salt: string | undefined,
+  ip: string,
+  form: "enquiry" | "demand" | "support",
+): Promise<LimitResult> {
+  if (!namespace || typeof salt !== "string" || salt.length < 32)
+    return { kind: "unavailable" };
+  try {
+    const key = await keyHash(salt, `form-ip:${form}`, ip);
+    return await ask(namespace, `form:${form}:ip:${key}`, FORM_WINDOW);
   } catch {
     return { kind: "unavailable" };
   }

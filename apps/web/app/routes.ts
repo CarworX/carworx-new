@@ -13,6 +13,9 @@ export default [
   route("c/:category", "routes/c.$category.tsx"),
   route("p/:publicId", "routes/p.$publicId.tsx"),
   route("fines", "routes/fines.tsx"),
+  // P2-5 visitor forms (Claude 22). The enquiry form lives on /p/:publicId.
+  route("demand", "routes/demand.tsx"),
+  route("support", "routes/support.tsx"),
   // Review tool: guarded by routes/_dev.guard.ts (404 outside local/staging).
   route("_dev/components", "routes/_dev.components.tsx"),
   ...authRoutes,
