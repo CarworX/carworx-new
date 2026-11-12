@@ -32,13 +32,19 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   const signedIn = await requireSignedIn(request, context.security);
   const tab = accountTab(params.tab);
   if (tab === null) throwStatus(404, signedIn.headers);
-  const label: unknown = signedIn.user.user_metadata["display_name"];
+  const profile = await signedIn.supabase
+    .from("profiles")
+    .select("display_name")
+    .eq("id", signedIn.user.id)
+    .maybeSingle()
+    .overrideTypes<{ display_name: string }, { merge: false }>();
+  if (profile.error !== null) throwStatus(503, signedIn.headers);
   return data(
     {
       tab,
       csrf: context.security.csrfToken,
       email: signedIn.user.email ?? "",
-      name: typeof label === "string" ? label : "",
+      name: profile.data?.display_name ?? "",
       aal: signedIn.aal,
       enrolled: signedIn.nextAal === "aal2",
     },
@@ -58,12 +64,46 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     const name = displayName(form.get("displayName"));
     if (name === null)
       return reply(false, "Use a name of up to 80 characters.", 400);
-    const { error } = await signedIn.supabase.auth.updateUser({
-      data: { display_name: name },
-    });
-    return error === null
-      ? reply(true, "Your profile is saved.")
-      : reply(false, "We couldn't save your profile. Please try again.", 503);
+    // Update only the granted display_name column; upsert would also require
+    // UPDATE(id), which is intentionally not granted to authenticated callers.
+    const update = () =>
+      signedIn.supabase
+        .from("profiles")
+        .update({ display_name: name })
+        .eq("id", signedIn.user.id)
+        .select("id")
+        .maybeSingle()
+        .overrideTypes<{ id: string }, { merge: false }>();
+    const saved = await update();
+    if (saved.error !== null)
+      return reply(
+        false,
+        "We couldn't save your profile. Please try again.",
+        503,
+      );
+    if (saved.data === null) {
+      const inserted = await signedIn.supabase.from("profiles").insert({
+        id: signedIn.user.id,
+        display_name: name,
+      });
+      if (inserted.error !== null) {
+        // Another session may have created this same person's profile first.
+        if (inserted.error.code !== "23505")
+          return reply(
+            false,
+            "We couldn't save your profile. Please try again.",
+            503,
+          );
+        const retried = await update();
+        if (retried.error !== null || retried.data === null)
+          return reply(
+            false,
+            "We couldn't save your profile. Please try again.",
+            503,
+          );
+      }
+    }
+    return reply(true, "Your profile is saved.");
   }
   if (tab === "security" && intent === "sign-out-others") {
     const { error } = await signedIn.supabase.auth.signOut({ scope: "others" });
@@ -109,6 +149,8 @@ export default function Settings({
               <TextField
                 label="Display name"
                 name="displayName"
+                required
+                minLength={1}
                 maxLength={80}
                 defaultValue={loaderData.name}
                 autoComplete="nickname"

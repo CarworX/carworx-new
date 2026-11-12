@@ -9,9 +9,10 @@ describe("account settings input", () => {
     expect(accountTab(undefined)).toBeNull();
   });
 
-  it("accepts optional international display names without treating them as identity", () => {
+  it("accepts international display names without treating them as identity", () => {
     expect(displayName("  Léa van Wyk  ")).toBe("Léa van Wyk");
-    expect(displayName("")).toBe("");
+    expect(displayName("")).toBeNull();
+    expect(displayName("   ")).toBeNull();
   });
 
   it("refuses oversized, control-character and non-text input", () => {
