@@ -822,6 +822,22 @@ async function drill() {
     }
     assert.deepEqual(inventory(restored), manifest.tables);
     assert.equal(sha(schema(restored)), manifest.payloads["schema.txt"].sha256);
+    // Every table is proven restored. Drop the BK-1 fixture rows again, so
+    // the tenant checks and the RLS suite below see the data they always
+    // have (the matrix tests count whole tables).
+    run("fixture-cleanup", "psql", [
+      "-Xq",
+      "--single-transaction",
+      "-v",
+      "ON_ERROR_STOP=1",
+      restored.DB_URL,
+      "-c",
+      triggers("disable"),
+      "-f",
+      join(repo, "scripts/ops/backup/fixture-cleanup.sql"),
+      "-c",
+      triggers("enable"),
+    ]);
     await verify(restored, factor, read);
     assert.deepEqual(
       JSON.parse(

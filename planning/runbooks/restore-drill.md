@@ -33,7 +33,9 @@ start and locks out concurrent K4 runs.
 4. Buckets come back with the data. Upload every saved object through the
    Storage API and restore its owner and metadata. Compare counts and hashes
    for every exported table, including `storage.objects` on the columns a
-   restore keeps. Verify object ownership, bytes and access. The restored
+   restore keeps. Then remove the BK-1 fixture rows
+   (`scripts/ops/backup/fixture-cleanup.sql`, triggers paused), so the checks
+   below run on the usual data. Verify object ownership, bytes and access. The restored
    Storage versions are newly assigned.
 5. Run the existing RLS suite against the target and verify tenant boundaries,
    revoked access and admin TOTP with genuine local sessions. Stop the target.
