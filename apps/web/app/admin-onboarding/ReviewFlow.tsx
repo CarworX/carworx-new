@@ -4,6 +4,12 @@ import { Button } from "../ui/Button";
 import { SegmentedProgress } from "../ui/SegmentedProgress";
 import { StepRail, type RailStep } from "../ui/StepRail";
 
+// A selector spanning input/select/textarea uses their shared browser contract.
+interface ValidatableControl extends HTMLElement {
+  checkValidity(): boolean;
+  reportValidity(): boolean;
+}
+
 const subscribe = () => () => {};
 const yes = () => true;
 const no = () => false;
@@ -34,9 +40,8 @@ export function ReviewFlow({
       `[data-review-step="${String(step)}"]`,
     );
     const controls =
-      panel?.querySelectorAll<
-        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-      >("input, select, textarea") ?? [];
+      panel?.querySelectorAll<ValidatableControl>("input, select, textarea") ??
+      [];
     for (const control of controls) {
       if (!control.checkValidity()) {
         control.reportValidity();
