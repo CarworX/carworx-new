@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>History · CarworX business menu (prototype)</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+  /* History: a clear, read-only record of past bookings, assignments and team changes.
+     Owners and managers see the whole business; staff see their own. Synthetic data. */
+  .nav-links { display: flex; gap: 2px; list-style: none; margin: 0 0 0 16px; padding: 0; flex: 1; }
+  .nav-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: var(--radius-pill); font: 500 14px var(--font-sans); color: var(--muted); text-decoration: none; }
+  .nav-links a[aria-current] { color: var(--ink); background: rgba(13,15,18,.06); }
+  .menubtn { display: none; margin-left: auto; }
+  .sheet { position: fixed; inset: 76px 12px auto; z-index: 30; padding: 8px; border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--sh-3); }
+  .sheet a { display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 0 14px; border-radius: var(--radius-sm); font: 500 16px var(--font-sans); color: var(--ink); text-decoration: none; }
+  .sheet a[aria-current] { background: var(--canvas); }
+  .sheet small { font: 400 12px var(--font-mono); color: var(--muted); }
+  main { max-width: 1120px; margin: 0 auto; padding: 20px 16px 80px; display: grid; gap: 18px; }
+  .head h1 { font: 500 40px/44px var(--font-sans); letter-spacing: -.035em; }
+  .filters { display: grid; gap: 10px; }
+  .filters .ob-scrollrow { gap: 8px; align-items: end; padding-bottom: 2px; }
+  .filters .ob-input { min-height: 44px; font-size: 14px; width: auto; }
+  .filters label { display: grid; gap: 4px; font: 500 12px var(--font-sans); color: var(--muted); }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .kpi { padding: 14px 16px; border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--sh-1); }
+  .kpi b { display: block; font: 300 34px/38px var(--font-sans); letter-spacing: -.04em; }
+  .kpi small { font: 400 13px var(--font-sans); color: var(--muted); }
+  .split { display: grid; grid-template-columns: 1fr 420px; gap: 18px; align-items: start; }
+  .day { font: 500 12px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 14px 4px 6px; }
+  .rows { display: grid; gap: 8px; }
+  .rowb { width: 100%; display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border: 0; border-radius: var(--radius-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hair); text-align: left; font: inherit; color: inherit; cursor: pointer; }
+  .rowb[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--ink); }
+  .rowb .t { font: 500 14px var(--font-mono); }
+  .rowb b { display: block; font: 500 15px var(--font-sans); }
+  .rowb small { font: 400 13px var(--font-sans); color: var(--muted); }
+  .rowb .r { display: grid; justify-items: end; gap: 4px; }
+  .rowb .r span:last-child { font: 500 14px var(--font-sans); }
+  .who { display: inline-flex; align-items: center; gap: 6px; }
+  .mini { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--ink); color: var(--white); font: 500 10px var(--font-sans); }
+  .detail { position: sticky; top: 92px; display: grid; gap: 14px; padding: 20px; border-radius: var(--radius-xl); background: var(--surface); box-shadow: var(--sh-2); }
+  .detail h2 { font: 500 24px/28px var(--font-sans); letter-spacing: -.02em; }
+  .detail .cx-steps > li { padding: 10px; grid-template-columns: 44px 1fr; }
+  .detail .cx-steps .k { width: 40px; height: 40px; }
+  .detail .cx-steps .k .n { display: none; }
+  .detail .cx-steps p { font-size: 13px; }
+  .detail .when { font: 500 12px var(--font-mono); color: var(--muted); }
+  .facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font: 400 14px var(--font-sans); }
+  .facts dt { color: var(--muted); }
+  .back { display: none; }
+  .logrow { display: grid; grid-template-columns: 120px 1fr; gap: 12px; padding: 12px 14px; border-radius: var(--radius-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hair); font: 400 14px/20px var(--font-sans); }
+  .logrow .when { font: 500 12px/20px var(--font-mono); color: var(--muted); }
+  @media (max-width: 1060px) { .nav-links { display: none; } .menubtn { display: inline-flex; } }
+  @media (max-width: 900px) {
+    .split { grid-template-columns: 1fr; }
+    .detail { position: static; }
+    .split.open .list { display: none; }
+    .split:not(.open) .detail { display: none; }
+    .back { display: inline-flex; }
+    [data-panel].open .kpis, [data-panel].open .filters { display: none; }
+    .head h1 { font-size: 30px; line-height: 34px; }
+    .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .kpi b { font-size: 26px; line-height: 30px; }
+    }
+</style>
+</head>
+<body class="cx-canvas">
+<div data-shell></div>
+<main>
+  <div class="head"><p class="cx-eyebrow">Shine Bay Car Wash</p><h1>History</h1><p class="t-cap" data-scope></p></div>
+  <div class="cx-tabs" role="tablist" aria-label="History type" data-tabs></div>
+  <div data-panel></div>
+</main>
+<script src="../_shared/kit.js"></script>
+<script src="../_shared/shell.js"></script>
+<script>
+  const { ic, esc } = OB;
+  const P = { SD: ["Sipho", "Owner"], AN: ["Ayanda", "Manager"], LM: ["Lerato", "Staff"], TK: ["Thabo", "Staff"] };
+  // Synthetic bookings (SAST). trail: [time, actor, what, kind]
+  const B = [
+    { id: "B-1042", day: "Wed 11 Nov 2026", t: "14:00", svc: "Full wash and valet", cust: ["Thandi", "Mokoena", "072 *** 4410"], staff: "TK", was: "LM", st: "Completed", price: "R350",
+      trail: [["09:02", "cust", "Request sent for 14:00", "flag"], ["09:41", "SD", "Accepted (within 2 business hours)", "tick"], ["09:42", "SD", "Assigned to Lerato", "user"], ["09:48", "cust", "Paid R350 on the payment partner's page (slot held 15 min)", "lock"], ["11:05", "AN", "Reassigned from Lerato to Thabo · reason: Lerato off sick", "team"], ["15:10", "TK", "Marked completed", "tick"]] },
+    { id: "B-1041", day: "Wed 11 Nov 2026", t: "10:30", svc: "Express wash", cust: ["Pieter", "van Wyk", "082 *** 1187"], staff: "LM", st: "Completed", price: "R150",
+      trail: [["08:15", "cust", "Request sent for 10:30", "flag"], ["08:20", "AN", "Accepted", "tick"], ["08:21", "AN", "Assigned to Lerato", "user"], ["08:30", "cust", "Paid R150", "lock"], ["11:02", "LM", "Marked completed", "tick"]] },
+    { id: "B-1039", day: "Tue 10 Nov 2026", t: "16:00", svc: "Windscreen chip repair", cust: ["Naledi", "Khumalo", "079 *** 3302"], staff: "TK", st: "Completed", price: "R450",
+      trail: [["Mon 12:10", "cust", "Request sent", "flag"], ["Mon 12:55", "SD", "Sent a written quote: R450, valid 7 days", "doc"], ["Mon 18:20", "cust", "Approved the quote", "tick"], ["Mon 18:21", "SD", "Assigned to Thabo", "user"], ["Mon 18:25", "cust", "Paid R450", "lock"], ["16:50", "TK", "Marked completed", "tick"]] },
+    { id: "B-1038", day: "Tue 10 Nov 2026", t: "09:00", svc: "Express wash", cust: ["Johan", "Botha", "083 *** 9021"], staff: "LM", st: "Cancelled", price: "R150",
+      trail: [["Mon 17:40", "cust", "Request sent for Tue 09:00", "flag"], ["Mon 18:02", "AN", "Accepted", "tick"], ["Mon 18:03", "AN", "Assigned to Lerato", "user"], ["Mon 18:30", "cust", "Didn't pay within the 15-minute hold; slot released", "clock"]] },
+    { id: "B-1036", day: "Mon 9 Nov 2026", t: "13:30", svc: "Full wash and valet", cust: ["Aisha", "Patel", "071 *** 5560"], staff: "LM", st: "Completed", price: "R350",
+      trail: [["10:01", "cust", "Request sent for 13:30", "flag"], ["10:30", "SD", "Accepted", "tick"], ["10:31", "cust", "Picked Lerato when booking", "user"], ["10:38", "cust", "Paid R350", "lock"], ["14:40", "LM", "Marked completed", "tick"]] },
+    { id: "B-1035", day: "Mon 9 Nov 2026", t: "08:30", svc: "Express wash", cust: ["Kagiso", "Tau", "060 *** 7734"], staff: null, st: "Declined", price: "—",
+      trail: [["Sun 19:12", "cust", "Request sent for Mon 08:30", "flag"], ["Mon 08:05", "AN", "Declined · reason: fully booked", "clock"]] },
+  ];
+  const TEAM = [["Tue 10 Nov 2026 08:40", "SD", "Changed what staff can see to: First name only"], ["Mon 9 Nov 2026 17:15", "AN", "Invited a staff member (email). Accepted by Thabo, Mon 9 Nov 19:02"], ["Sun 8 Nov 2026 12:00", "SD", "Invited Ayanda as Manager (link). Accepted 12:31"], ["Sun 8 Nov 2026 11:50", "SD", "Set: the customer picks, with \"Anyone available\""]];
+  let as = "owner", tab = "bookings", sel = null, filt = "All";
+  const me = () => ({ owner: "SD", manager: "AN", staff: "LM" })[as];
+  const lead = () => as !== "staff";
+  const label = (st) => `<span class="cx-label ${st === "Completed" ? "" : st === "Cancelled" ? "warn" : "err"}">${st}</span>`;
+  // Staff see customers per the owner's setting (Phase 2): first name only.
+  const custName = (c) => (lead() ? `${c[0]} ${c[1]}` : c[0]);
+  const actor = (a) => (a === "cust" ? ["Customer", "you"] : [P[a][0], P[a][1].toLowerCase()]);
+  const mine = (b) => b.staff === "LM" || b.was === "LM";
+  const visible = () => B.filter((b) => (lead() || mine(b)) && (filt === "All" || (filt === "Reassigned" ? b.was : b.st === filt)));
+
+  let mounted = null;
+  function links() {
+    if (mounted === as) return;
+    mounted = as;
+    SHELL.mount(document.querySelector("[data-shell]"), { role: as, current: "history" });
+  }
+  function tabs() {
+    const T = [["bookings", "Bookings"], ["assign", "Assignments"], ...(lead() ? [["team", "Team changes"]] : [])];
+    if (!T.some(([k]) => k === tab)) tab = "bookings";
+    document.querySelector("[data-tabs]").innerHTML = T.map(([k, t]) => `<button type="button" role="tab" aria-selected="${k === tab}" data-tab="${k}">${t}</button>`).join("");
+  }
+  function detail(b) {
+    if (!b) return `<p class="t-cap">Pick a booking to see its full record.</p>`;
+    const trail = b.trail.filter((e) => lead() || !/^Reassigned/.test(e[2]) || b.staff === "LM" || b.was === "LM");
+    return `<button type="button" class="ob-back back" data-close>All bookings</button>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="when">${b.id} · ${b.day} · ${b.t}</span>${label(b.st)}</div>
+      <h2>${esc(b.svc)}</h2>
+      <dl class="facts"><dt>Customer</dt><dd>${esc(custName(b.cust))}${lead() ? ` · ${b.cust[2]}` : ""}</dd>
+        <dt>Done by</dt><dd>${b.staff ? (b.staff === "LM" && !lead() ? "You" : P[b.staff][0]) : "Not assigned"}${b.was ? (lead() ? ` · was ${P[b.was][0]}` : b.was === "LM" && b.staff !== "LM" ? " · moved from you" : "") : ""}</dd>
+        <dt>Paid</dt><dd>${b.price}${b.price !== "—" ? " · straight to the business" : ""}</dd></dl>
+      <ol class="cx-steps">${trail.map(([w, a, what, i]) => { const [n, r] = actor(a); return `<li><span class="k">${ic(i)}</span><div><span class="cx-actor ${a === "cust" ? "" : "business"}">${esc(n)}${a === "cust" ? "" : " · " + r}</span><b>${esc(what.replace("Lerato", !lead() ? "you" : "Lerato"))}</b><p class="when">${w} SAST</p></div></li>`; }).join("")}</ol>
+      <p class="ob-private">${ic("lock")}<span>This record can't be edited or deleted. ${lead() ? "Everyone on the team sees their own part of it." : "Owners and managers see the full record."}</span></p>`;
+  }
+  function render() {
+    links(); tabs();
+    document.querySelector("[data-scope]").textContent = lead() ? "Every booking, assignment and team change at this business." : "Your bookings and assignments. Customer details as Sipho set them: first name only.";
+    const panel = document.querySelector("[data-panel]");
+    panel.classList.remove("open");
+    if (tab === "team") {
+      panel.innerHTML = `<div class="rows">${TEAM.map(([w, a, t]) => `<div class="logrow"><span class="when">${w.replace(" 2026", "")}</span><span><span class="who"><span class="mini">${a}</span><b style="font-weight:500">${P[a][0]}</b> <small class="t-cap">${P[a][1]}</small></span><br>${esc(t)}</span></div>`).join("")}</div>`;
+      return;
+    }
+    if (tab === "assign") {
+      const rows = [];
+      B.filter((b) => lead() || mine(b)).forEach((b) => b.trail.filter((e) => /Assigned|Reassigned|Picked/.test(e[2])).forEach((e) => rows.push([b, e])));
+      panel.innerHTML = `<div class="rows">${rows.map(([b, [w, a, what]]) => `<div class="logrow"><span class="when">${b.day.slice(0, 10)}<br>${w.replace(/^\w{3} /, "")} SAST</span><span><b style="font-weight:500">${esc(what.replace("Lerato", !lead() ? "you" : "Lerato"))}</b><br><small class="t-cap">${b.id} · ${esc(b.svc)} · by ${a === "cust" ? "the customer" : P[a][0] + " (" + P[a][1].toLowerCase() + ")"}</small></span></div>`).join("")}</div>`;
+      return;
+    }
+    panel.classList.toggle("open", !!sel);
+    const list = visible();
+    const done = list.filter((b) => b.st === "Completed").length;
+    const days = [...new Set(list.map((b) => b.day))];
+    panel.innerHTML = `
+      <div class="kpis"><div class="kpi"><b>${done}</b><small>Completed</small></div><div class="kpi"><b>${list.filter((b) => b.st !== "Completed").length}</b><small>Cancelled or declined</small></div><div class="kpi"><b>${list.filter((b) => b.was).length}</b><small>Reassigned</small></div></div>
+      <div class="filters" style="margin-top:14px">
+        <div class="ob-filterbar" role="group" aria-label="Status">${["All", "Completed", "Cancelled", "Declined", "Reassigned"].map((f) => `<button type="button" class="cx-chip" aria-pressed="${f === filt}" data-filt="${f}">${f}</button>`).join("")}</div>
+        <div class="ob-scrollrow" role="group" aria-label="More filters"><label>From<input class="ob-input" type="date" value="2026-11-09" min="2026-10-01" max="2026-11-12"></label>
+        <label>To<input class="ob-input" type="date" value="2026-11-11" min="2026-10-01" max="2026-11-12"></label>
+        ${lead() ? `<label>Team member<select class="ob-input"><option>Everyone</option><option>Ayanda</option><option>Lerato</option><option>Thabo</option></select></label><button type="button" class="cx-btn outlined sm">Download CSV</button>` : ""}</div>
+      </div>
+      <div class="split${sel ? " open" : ""}" style="margin-top:6px">
+        <div class="list">${days.map((d) => `<p class="day">${d}</p><div class="rows">${list.filter((b) => b.day === d).map((b) => `<button type="button" class="rowb" data-b="${b.id}" aria-pressed="${sel === b.id}"><span class="t">${b.t}</span><span><b>${esc(b.svc)}</b><small>${esc(custName(b.cust))} · ${b.staff ? `<span class="who"><span class="mini">${b.staff}</span>${b.staff === "LM" && !lead() ? "You" : P[b.staff][0]}</span>` : "Not assigned"}${b.was ? (lead() ? ` · was ${P[b.was][0]}` : b.staff !== "LM" ? " · moved from you" : "") : ""}</small></span><span class="r">${label(b.st)}<span>${b.price}</span></span></button>`).join("")}</div>`).join("") || '<p class="t-cap">Nothing matches these filters.</p>'}</div>
+        <aside class="detail" aria-live="polite">${detail(B.find((b) => b.id === sel))}</aside>
+      </div>`;
+  }
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("button");
+    if (!t) return;
+    if (t.dataset.tab) { tab = t.dataset.tab; sel = null; render(); }
+    else if (t.dataset.filt) { filt = t.dataset.filt; render(); }
+    else if (t.dataset.b) { sel = t.dataset.b; render(); document.querySelector(".detail h2")?.setAttribute("tabindex", "-1"); document.querySelector(".detail h2")?.focus(); }
+    else if (t.hasAttribute("data-close")) { sel = null; render(); }
+  });
+  const q = new URLSearchParams(location.search);
+  as = q.get("as") || "owner"; tab = q.get("tab") || "bookings"; sel = q.get("b"); filt = q.get("f") || "All";
+  render();
+  if (q.get("menu")) document.querySelector("[data-sh-menu]").click();
+</script>
+</body>
+</html>

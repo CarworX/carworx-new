@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 · One thing at a time · CarworX onboarding concept</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+  /* Concept 1: one question per screen, big type, thin bar, calm. */
+  .prog { position: sticky; top: 76px; z-index: 10; max-width: 720px; margin: 8px auto 0; padding: 0 24px; display: flex; gap: 12px; align-items: center; }
+  .prog .ob-bar { flex: 1; }
+  .prog span { font: 500 12px var(--font-mono); color: var(--muted); min-width: 52px; text-align: right; }
+  main { max-width: 720px; margin: 0 auto; padding: 9vh 24px 160px; }
+  [data-step]:not([hidden]) { animation: rise .45s cubic-bezier(.2,.8,.2,1); }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  [data-step] > .ob-q > .ob-qt, [data-step] .big { font: 500 48px/52px var(--font-sans); letter-spacing: -.04em; }
+  [data-step] > .ob-q > .ob-qh { font: 400 19px/29px var(--font-sans); margin-top: -2px; }
+  [data-step] > .ob-q { gap: 20px; }
+  [data-step] .ob-pick { min-height: 52px; font-size: 16px; padding: 0 22px; }
+  [data-step] .ob-input { font-size: 20px; min-height: 60px; }
+  .grey { color: var(--quiet); }
+  .facts { list-style: none; padding: 0; display: grid; gap: 10px; margin: 28px 0 36px; }
+  .facts li { display: flex; gap: 10px; align-items: center; font: 400 16px var(--font-sans); }
+  .facts .ob-ic { color: var(--muted); }
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 15; padding: 14px 24px calc(14px + env(safe-area-inset-bottom)); background: var(--frost); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); border-top: 1px solid var(--hair); }
+  .bar .ob-actions { max-width: 720px; margin: 0 auto; }
+  .stack { display: grid; gap: 20px; }
+  @media (max-width: 640px) {
+    main { padding-top: 6vh; }
+    [data-step] > .ob-q > .ob-qt, [data-step] .big { font-size: 32px; line-height: 36px; }
+    [data-step] > .ob-q > .ob-qh { font-size: 16px; line-height: 24px; }
+    .ob-keys { display: none; }
+    .ob-tiles { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body class="cx-canvas">
+<form data-flow data-autonext novalidate>
+  <div data-screen="nav" data-label="Concept 1 · one thing"></div>
+  <div class="prog" data-only="!welcome !submitted !waiting !live">
+    <div class="ob-bar" data-progress role="progressbar" aria-label="Application progress" aria-valuemin="0" aria-valuemax="100"><i></i></div>
+    <span data-progress-label aria-live="polite"></span>
+  </div>
+  <main>
+    <section data-step id="welcome" data-cta="Start">
+      <p class="cx-eyebrow">For businesses</p>
+      <h1 class="big" style="margin-top:12px">List your business.<br><span class="grey">One question at a time.</span></h1>
+      <ul class="facts">
+        <li><span data-ic="clock"></span>About 2 minutes. Mostly tapping, two short typed answers.</li>
+        <li><span data-ic="tick"></span>Free during the pilot. CarworX fee: R0.</li>
+        <li><span data-ic="eye"></span>A CarworX admin checks every business before it goes live.</li>
+      </ul>
+    </section>
+    <section data-step id="path" data-count data-require="path"><div data-q="path"></div></section>
+    <section data-step id="listing" data-count data-if="path=claim" data-require="claimListing"><div data-q="claimListing"></div></section>
+    <section data-step id="name" data-count data-if="path=new" data-require="name"><div data-q="name"></div></section>
+    <section data-step id="role" data-count data-require="role"><div data-q="role"></div></section>
+    <section data-step id="services" data-count data-if="path=new" data-require="services"><div data-q="services"></div></section>
+    <section data-step id="mode" data-count data-if="path=new" data-require="mode"><div data-q="mode"></div></section>
+    <section data-step id="metro" data-count data-if="path=new" data-require="metro"><div data-q="metro"></div></section>
+    <section data-step id="pin" data-count data-if="path=new&mode=They come to me" data-require="pin"><div data-q="pin"></div></section>
+    <section data-step id="base" data-count data-if="path=new&mode=I go to them" data-require="base"><div data-q="base"></div></section>
+    <section data-step id="hours" data-count data-if="path=new" data-require="days"><div data-q="hours"></div></section>
+    <section data-step id="staff" data-count data-if="path=new" data-require="staff"><div data-q="staff"></div></section>
+    <section data-step id="since" data-count data-if="path=new"><div data-q="since"></div></section>
+    <section data-step id="about" data-count data-if="path=new" data-require="about"><div data-q="about"></div></section>
+    <section data-step id="evidence" data-count data-if="path=claim" data-require="evidence"><div data-q="evidence"></div></section>
+    <section data-step id="doc" data-count data-if="path=claim&evidence=Show an admin a document" data-require="doc,docDate"><div class="stack"><div data-q="doc"></div><div data-q="docDate"></div></div></section>
+    <section data-step id="checks" data-count data-require="adult,consent">
+      <div class="stack"><h2 class="big">Two quick checks</h2><div data-q="adult"></div><div data-q="consent"></div></div>
+    </section>
+    <section data-step id="review" data-cta="Send">
+      <div class="stack"><h2 class="big">Check and send</h2><div data-screen="review"></div></div>
+    </section>
+    <section data-step id="submitted" data-cta="Go to your dashboard"><div data-screen="submitted"></div></section>
+    <section data-step id="waiting"><div data-screen="waiting"></div></section>
+    <section data-step id="live" data-skip><div data-screen="live"></div></section>
+  </main>
+  <div class="bar" data-only="!waiting !live">
+    <div class="ob-actions">
+      <button type="button" class="ob-back" data-back data-only="!welcome !submitted">Back</button>
+      <span class="ob-keys" data-only="!welcome !submitted"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span>
+      <button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button>
+    </div>
+  </div>
+</form>
+<script src="../_shared/kit.js"></script>
+<script>
+  document.querySelectorAll("[data-ic]").forEach((e) => (e.outerHTML = OB.ic(e.dataset.ic)));
+  OB.boot();
+</script>
+</body>
+</html>

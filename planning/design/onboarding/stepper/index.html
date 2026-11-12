@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2 · Guided stepper · CarworX onboarding concept</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+  /* Concept 2: named sections, the StepList look as the progress rail. */
+  .shell { max-width: 1120px; margin: 0 auto; padding: 28px 16px 64px; display: grid; grid-template-columns: 340px 1fr; gap: 28px; align-items: start; }
+  .rail { position: sticky; top: 92px; display: grid; gap: 12px; }
+  .rail .cx-steps { counter-reset: s; }
+  .rail .cx-steps > li { counter-increment: s; grid-template-columns: 56px 1fr; padding: 12px; }
+  .rail .cx-steps .k .n::before { content: "0" counter(s); }
+  .rail .cx-steps > li.done .k { background: var(--ink); color: var(--white); }
+  .rail .cx-steps > li.done .k .n { color: var(--steel); }
+  .rail .cx-steps > li:not([aria-current]):not(.done) { opacity: .72; }
+  .rail .cx-steps p { font-size: 13px; }
+  .rail .state { font: 500 12px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .card { background: var(--surface); border-radius: var(--radius-xl); box-shadow: var(--sh-2); padding: 32px; display: grid; gap: 28px; }
+  .card.plain { background: transparent; box-shadow: none; padding: 8px 0; }
+  .head { display: grid; gap: 6px; }
+  .head h2 { font: 500 32px/36px var(--font-sans); letter-spacing: -.03em; }
+  [data-step]:not([hidden]) { animation: rise .4s cubic-bezier(.2,.8,.2,1); }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+  .ob-actions { padding-top: 20px; border-top: 1px solid var(--hair); }
+  .segtop { margin-bottom: 16px; }
+  /* ?rail=off: bar only, for the owner's desktop A/B (2026-11-12) */
+  .norail .rail { display: none; }
+  .norail .shell { grid-template-columns: minmax(0, 760px); justify-content: center; }
+  .hero { display: grid; gap: 18px; max-width: 560px; }
+  .hero h1 { font: 500 56px/58px var(--font-sans); letter-spacing: -.04em; }
+  @media (max-width: 860px) {
+    .shell { grid-template-columns: 1fr; padding-top: 12px; gap: 16px; }
+    .rail { position: static; }
+    .rail { display: none; }
+    .card { padding: 20px; border-radius: var(--radius-lg); gap: 22px; }
+    .head h2 { font-size: 26px; line-height: 30px; }
+    .hero h1 { font-size: 40px; line-height: 42px; }
+    .ob-tiles { grid-template-columns: 1fr; }
+    .ob-keys { display: none; }
+  }
+</style>
+</head>
+<body class="cx-canvas">
+<form data-flow novalidate>
+  <div data-screen="nav" data-label="Concept 2 · stepper"></div>
+  <div class="shell">
+    <aside class="rail" data-only="section" aria-label="Your progress">
+      <p class="state">List your business</p>
+      <ol class="cx-steps" data-rail>
+        <li data-for="business"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="store"></span></span><div><b>Business</b><p>Name and your role</p></div></li>
+        <li data-for="service" data-if="path!=claim"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="team"></span></span><div><b>Service</b><p>What you offer and how</p></div></li>
+        <li data-for="location" data-if="path!=claim"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="pin"></span></span><div><b>Location</b><p>Metro, pin or travel area</p></div></li>
+        <li data-for="about" data-if="path!=claim"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="clock"></span></span><div><b>About</b><p>Hours and one line about you</p></div></li>
+        <li data-for="proof" data-if="path=claim"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="doc"></span></span><div><b>Proof</b><p>How we check it's yours</p></div></li>
+        <li data-for="check"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="eye"></span></span><div><b>Check</b><p>Everything on one page</p></div></li>
+        <li data-for="send"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="flag"></span></span><div><b>Send</b><p>Two ticks and you're done</p></div></li>
+      </ol>
+    </aside>
+    <div class="steps">
+      <div class="ob-segbar segtop" data-segbar data-only="section" aria-label="Application progress"></div>
+      <section data-step id="welcome" data-cta="Start">
+        <div class="hero">
+          <p class="cx-eyebrow">For businesses · free during the pilot</p>
+          <h1>Get listed in six short steps.</h1>
+          <p class="t-lede">Business, Service, Location, About, Check, Send. You'll always see where you are, and you can go back to any step.</p>
+          <div class="ob-actions" style="border:0;padding:0"><button type="button" class="cx-btn primary" data-next style="margin-left:0">Start</button></div>
+        </div>
+      </section>
+
+      <section data-step id="business" data-kind="section" data-section="business" data-title="Business" data-count data-require="path,name,claimListing,role">
+        <div class="card">
+          <div class="head"><p class="cx-eyebrow">Step 1 · Business</p><h2>Tell us who you are</h2></div>
+          <div data-q="path"></div>
+          <div data-if="path=new"><div data-q="name"></div></div>
+          <div data-if="path=claim"><div data-q="claimListing"></div></div>
+          <div data-q="role"></div>
+          <div data-actions></div>
+        </div>
+      </section>
+      <section data-step id="service" data-kind="section" data-section="service" data-title="Service" data-count data-if="path=new" data-require="services,mode,staff">
+        <div class="card">
+          <div class="head"><p class="cx-eyebrow">Step 2 · Service</p><h2>What you offer</h2></div>
+          <div data-q="services"></div><div data-q="mode"></div><div data-q="staff"></div>
+          <div data-actions></div>
+        </div>
+      </section>
+      <section data-step id="location" data-kind="section" data-section="location" data-title="Location" data-count data-if="path=new" data-require="metro,pin,base">
+        <div class="card">
+          <div class="head"><p class="cx-eyebrow">Step 3 · Location</p><h2>Where customers find you</h2></div>
+          <div data-q="metro"></div><div data-q="pin"></div><div data-q="base"></div>
+          <div data-actions></div>
+        </div>
+      </section>
+      <section data-step id="about" data-kind="section" data-section="about" data-title="About" data-count data-if="path=new" data-require="days,about">
+        <div class="card">
+          <div class="head"><p class="cx-eyebrow">Step 4 · About</p><h2>Hours and a line about you</h2></div>
+          <div data-q="hours"></div><div data-q="since"></div><div data-q="about"></div>
+          <div data-actions></div>
+        </div>
+      </section>
+      <section data-step id="proof" data-kind="section" data-section="proof" data-title="Proof" data-count data-if="path=claim" data-require="evidence,doc,docDate">
+        <div class="card">
+          <div class="head"><p class="cx-eyebrow">Step 2 · Proof</p><h2>Show it's yours</h2></div>
+          <div data-q="evidence"></div><div data-q="doc"></div><div data-q="docDate"></div>
+          <div data-actions></div>
+        </div>
+      </section>
+      <section data-step id="check" data-kind="section" data-section="check" data-title="Check" data-count>
+        <div class="card">
+          <div class="head"><p class="cx-eyebrow">Check</p><h2>Is this right?</h2><p class="t-cap">Tap Change to fix anything. You'll come straight back here.</p></div>
+          <div data-screen="review"></div>
+          <div data-actions></div>
+        </div>
+      </section>
+      <section data-step id="send" data-kind="section" data-section="send" data-title="Send" data-count data-require="adult,consent" data-cta="Send application">
+        <div class="card">
+          <div class="head"><p class="cx-eyebrow">Send</p><h2>Two ticks and you're done</h2></div>
+          <div data-q="adult"></div><div data-q="consent"></div>
+          <div data-actions></div>
+        </div>
+      </section>
+      <section data-step id="submitted" data-cta="Go to your dashboard"><div class="card"><div data-screen="submitted"></div><div class="ob-actions"><button type="button" class="cx-btn primary" data-next>Go to your dashboard</button></div></div></section>
+      <section data-step id="waiting"><div class="card plain"><div data-screen="waiting"></div></div></section>
+      <section data-step id="live" data-skip><div class="card plain"><div data-screen="live"></div></div></section>
+    </div>
+  </div>
+</form>
+<script src="../_shared/kit.js"></script>
+<script>
+  // One shared Next/Back row per section card.
+  document.querySelectorAll("[data-actions]").forEach((el) => {
+    el.outerHTML = `<div class="ob-actions"><button type="button" class="ob-back" data-back>Back</button><span class="ob-keys"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span><button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button></div>`;
+  });
+  document.querySelectorAll("[data-ic]").forEach((e) => (e.outerHTML = OB.ic(e.dataset.ic)));
+  if (new URLSearchParams(location.search).get("rail") === "off") document.body.classList.add("norail");
+  const form = document.querySelector("[data-flow]");
+  // Steps sit in the right-hand column; welcome and the status screens span both.
+  form.addEventListener("ob:step", (e) => {
+    const sec = e.detail.step.dataset.section;
+    document.querySelector(".steps").style.gridColumn = sec ? "" : "1 / -1";
+  });
+  OB.boot();
+</script>
+</body>
+</html>
