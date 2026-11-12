@@ -201,8 +201,7 @@ export async function action({ request, context, params }: Route.ActionArgs) {
       { headers: signedIn.headers },
     );
   }
-  if (intent !== "save" && intent !== "submit")
-    return reply(MESSAGES.invalid);
+  if (intent !== "save" && intent !== "submit") return reply(MESSAGES.invalid);
   if (step === "check") {
     if (intent !== "submit") return reply(MESSAGES.invalid);
     if (!isTicked(form, "adult")) return reply(MESSAGES.consent_required);
@@ -213,12 +212,30 @@ export async function action({ request, context, params }: Route.ActionArgs) {
     });
     if (error)
       return reply(
-        (MESSAGES as Readonly<Record<string, string>>)[error.message] ?? MESSAGES.unavailable,
+        (MESSAGES as Readonly<Record<string, string>>)[error.message] ??
+          MESSAGES.unavailable,
         error.code === "P0001" ? 400 : 503,
       );
     return throwRedirect(path("submitted"), signedIn.headers);
   }
   if (intent !== "save") return reply(MESSAGES.invalid);
+  if (step === "location") {
+    // Mode belongs to this person's saved draft; a hidden field is not authoritative.
+    const current = await signedIn.supabase
+      .from("provider_applications")
+      .select("mode")
+      .eq("user_id", signedIn.user.id)
+      .is("submitted_at", null)
+      .limit(1)
+      .overrideTypes<
+        { mode: "fixed" | "mobile" | "both" | null }[],
+        { merge: false }
+      >();
+    if (current.error) return reply(MESSAGES.unavailable, 503);
+    const mode = current.data[0]?.mode;
+    if (!mode) return reply(MESSAGES.invalid);
+    form.set("mode", mode);
+  }
   const patch = parseStep(
     form,
     step,
@@ -244,6 +261,10 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
   const [previewName, setPreviewName] = useState(
     draft?.business_name ?? "Your business name",
   );
+  const [previewServices, setPreviewServices] = useState(
+    draft?.service_slugs ?? [],
+  );
+  const [previewMetro, setPreviewMetro] = useState(draft?.metro ?? "Your area");
   if (step === "submitted")
     return (
       <PublicShell signedIn>
@@ -332,11 +353,21 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
               method="post"
               className="grid gap-5"
               onChange={(event) => {
-                const name = new FormData(event.currentTarget).get(
-                  "businessName",
-                );
+                const answers = new FormData(event.currentTarget);
+                const name = answers.get("businessName");
                 if (typeof name === "string")
                   setPreviewName(name || "Your business name");
+                if (step === "service")
+                  setPreviewServices(
+                    answers
+                      .getAll("services")
+                      .filter(
+                        (value): value is string => typeof value === "string",
+                      ),
+                  );
+                const metro = answers.get("metro");
+                if (typeof metro === "string")
+                  setPreviewMetro(metro || "Your area");
               }}
             >
               <CsrfField token={csrf} />
@@ -587,7 +618,7 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
             <ResultCard
               name={previewName}
               href="#application-step"
-              meta={`${draft?.metro ?? "Your area"} · ${draft?.service_slugs.map((slug) => SERVICE_OPTIONS.find((s) => s.slug === slug)?.label ?? slug).join(", ") || "Your services"}`}
+              meta={`${previewMetro} · ${previewServices.map((slug) => SERVICE_OPTIONS.find((s) => s.slug === slug)?.label ?? slug).join(", ") || "Your services"}`}
               price="Prices added later"
               thumb={SERVICES[1]?.object ?? ""}
             />

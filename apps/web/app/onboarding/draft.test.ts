@@ -166,6 +166,49 @@ describe("provider draft allowlist", () => {
   });
 });
 
+describe("selected coordinate precision", () => {
+  it("accepts actual map-tap coordinates without truncating a user selection", () => {
+    const point = pixelPin(DEFAULT_CENTRE, 321, 180);
+    expect(point).not.toBeNull();
+    expect(
+      parseStep(
+        form({
+          metro: "Johannesburg",
+          mode: "fixed",
+          address: "12 Sample Street",
+          pinLat: String(point?.lat),
+          pinLng: String(point?.lng),
+          pinSource: "tap",
+        }),
+        "location",
+        services,
+      ),
+    ).toMatchObject({ pin: point });
+  });
+  it("accepts full-precision coordinates returned by the browser's device API", () => {
+    expect(
+      parseStep(
+        form({
+          metro: "Johannesburg",
+          mode: "mobile",
+          radiusKm: "25",
+          pinLat: "-26.204100123456789",
+          pinLng: "28.047300123456789",
+          pinSource: "device",
+        }),
+        "location",
+        services,
+      ),
+    ).toMatchObject({
+      pin: {
+        source: "device",
+        lat: Number("-26.204100123456789"),
+        lng: Number("28.047300123456789"),
+      },
+    });
+  });
+});
+
 describe("static-map tap geometry", () => {
   it("maps the image centre to its known coordinate", () => {
     const point = pixelPin(DEFAULT_CENTRE, 320, 180);

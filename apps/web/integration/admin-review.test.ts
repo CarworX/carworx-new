@@ -1,5 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { apply } from "./onboarding";
+
 import {
   asUser,
   attr,
@@ -60,8 +62,7 @@ async function stepUp(browser: Browser): Promise<void> {
 async function applyAs(label: string, form: Record<string, string>) {
   const user = await createConfirmedUser(label);
   const browser = await signIn(user.email);
-  await browser.send("/provider/apply");
-  const sent = await browser.send("/provider/apply", { form });
+  const sent = await apply(browser, form);
   expect(sent.status).toBe(302);
   const page = await browser.send("/provider");
   const publicId = /data-listing="([0-9a-f-]{36})"/.exec(page.body)?.[1] ?? "";
