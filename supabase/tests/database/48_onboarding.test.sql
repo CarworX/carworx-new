@@ -29,7 +29,7 @@ insert into public.services(slug, category_slug, name) values
   ('o2-wash', 'o2-cat', 'O2 wash (synthetic)'), ('o2-valet', 'o2-cat', 'O2 valet (synthetic)'), ('o2-polish', 'o2-cat', 'O2 polish (synthetic)');
 insert into private.platform_admins (user_id) values ('b8000000-0000-4000-8000-000000000009');
 
-select plan(85);
+select plan(93);
 
 -- ===== Mode 'both' shape ====================================================
 insert into public.organisations(id, name) values ('b8100000-0000-4000-8000-0000000000f1', 'Shape fixture (synthetic)');
@@ -242,25 +242,60 @@ select throws_ok($$select public.accept_invite(current_setting('tests.mel_token'
   'an invite dies when its creator loses their role');
 reset role;
 update public.memberships set status = 'active' where user_id = 'b8000000-0000-4000-8000-000000000004';
+-- Demotion: a manager made staff loses the authority behind their invites.
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(set_config('tests.mel_token2', public.create_invite((select bo_org from o2), 'staff', null), true) is not null, 'Mel makes another staff invite');
+reset role;
+update public.memberships set role = 'staff' where user_id = 'b8000000-0000-4000-8000-000000000004';
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-00000000000b","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.accept_invite(current_setting('tests.mel_token2'))$$, 'P0001', 'invite_invalid',
+  'an invite dies when its creator is demoted');
+reset role;
+update public.memberships set role = 'manager' where user_id = 'b8000000-0000-4000-8000-000000000004';
 set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
 select ok(set_config('tests.pre_transfer', public.create_invite((select bo_org from o2), 'manager', null), true) is not null,
   'the owner makes a manager invite before a transfer');
 reset role;
 create temporary table gen as select control_generation as before from public.organisations o join o2 on o.id = o2.bo_org;
--- A transfer as admin_decide_claim does it: the old team is revoked and the
--- claimant becomes owner. Then reversed, as admin_resolve_dispute does it.
-update public.memberships set status = 'revoked' where organisation_id = (select bo_org from o2) and status = 'active';
-insert into public.memberships(organisation_id, user_id, role, status)
-  select bo_org, 'b8000000-0000-4000-8000-00000000000a'::uuid, 'owner', 'active' from o2;
-update public.memberships set status = 'revoked' where user_id = 'b8000000-0000-4000-8000-00000000000a';
-update public.memberships set status = 'active' where organisation_id = (select bo_org from o2) and user_id <> 'b8000000-0000-4000-8000-00000000000a';
+-- The real P2-4 path: Cy claims the listing, the admin approves the transfer
+-- (Bo's team is revoked, Cy becomes owner), Cy makes an invite, then Bo
+-- disputes and the admin upholds the reversal (Cy's team revoked, Bo's back).
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-00000000000a","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(set_config('tests.claim', public.claim_listing((select bo_listing from o2), 'document', 'Synthetic utility bill')::text, true) is not null,
+  'Cy claims the listing');
+reset role;
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000009","role":"authenticated","aal":"aal2"}';
+set local role authenticated;
+select lives_ok($$select public.admin_decide_claim(current_setting('tests.claim')::uuid, 'approve', 'document_check', null)$$,
+  'the admin approves the transfer');
+reset role;
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-00000000000a","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(set_config('tests.cy_token', public.create_invite((select bo_org from o2), 'staff', null), true) is not null,
+  'the new owner can invite while in control');
+reset role;
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(set_config('tests.dispute', public.dispute_claim(current_setting('tests.claim')::uuid, 'Synthetic: this transfer was wrong')::text, true) is not null,
+  'Bo disputes the transfer');
+reset role;
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000009","role":"authenticated","aal":"aal2"}';
+set local role authenticated;
+select lives_ok($$select public.admin_resolve_dispute(current_setting('tests.dispute')::uuid, 'uphold', 'Synthetic reversal')$$,
+  'the admin upholds the dispute and reverses the transfer');
+reset role;
 select ok((select o.control_generation > g.before from public.organisations o join o2 on o.id = o2.bo_org, gen g),
   'a change of control starts a new generation');
 set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-00000000000b","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
 select throws_ok($$select public.accept_invite(current_setting('tests.pre_transfer'))$$, 'P0001', 'invite_invalid',
   'an invite made before a change of control cannot be redeemed after it, even once the owner is restored');
+select throws_ok($$select public.accept_invite(current_setting('tests.cy_token'))$$, 'P0001', 'invite_invalid',
+  'an invite made by the reversed claimant is dead after the reversal');
 reset role;
 set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
