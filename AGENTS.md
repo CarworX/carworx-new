@@ -1,19 +1,18 @@
-# Instructions for AI agents (Codex reads this file automatically)
+# CarworX agent instructions
 
-This repo is the single source of truth for CarworX. Two agents work here: **Claude Code** and **OpenAI Codex**. The owner is Gerrard Lewu.
+Shared rules for Claude Code and Codex; owner: Gerrard Lewu. Owner instructions take precedence.
 
-**Current phase: Phase 1 in progress (D-038).** The owner approved the design gate under D-067; design PR #10, T1 #11 and K1 #13 are merged. See STATUS for current feature reviews.
-- Work uses synthetic local/staging data. Phase completion still requires A1–A7 staging evidence; D-060 owner checks remain open until G-PROD.
-- Application code follows [PLAN §12](planning/PLAN.md): pull requests, `claude/*` and `codex/*` branches, and an `Agent:` trailer. D-073 requires the other agent's formal exact-head approval and green CI before merge; historical D-071 self-checks do not authorise new self-merges.
-- P2-1 is merged. Under D-078, Claude plans and implements P2-2, with Codex independently reviewing the plan and code. Follow [Codex 22](planning/codex/22-p2-2-claude-handoff.md); D-079 permits Claude to write the plan and implement from the published hardening branch while Codex is unavailable. Credential/pricing gates remain; Codex reviews later, and Claude-authored work stays unmerged.
-- D-071 permits Codex to operate the pinned Phase 1 staging targets, including scoped settings, migrations, deployment and email probes to owner-approved inboxes. Owner credentials stay private. Creating accounts, using production secrets, production deployment and spending still require separate authority.
+## Load only what the task needs
 
-**Commit identity (D-087, owner rule, binding on both agents):** never commit, author, sign off or write the owner's personal email address anywhere: commits, trailers, files, PR text or logs. When committing as the owner, use the owner's GitHub noreply address `86560354+Gerrard-Lewu@users.noreply.github.com`. Agent identities use their own noreply addresses (for example `noreply@anthropic.com`). Set it before committing: `git config user.email 86560354+Gerrard-Lewu@users.noreply.github.com`. CI (`.github/workflows/commit-email.yml`) rejects any PR commit whose author or committer email isn't a noreply address.
+- Read [STATUS](planning/STATUS.md) once at task start; check Git status, branch, remote and relevant PR heads. Refresh before publication.
+- Search [DECISIONS](planning/DECISIONS.md) by task/decision ID; read matching entries and later amendments before acting. All agreed/owner decisions remain binding.
+- For planning turns or changes to agreements, read [PROTOCOL](planning/PROTOCOL.md) and the other agent's latest relevant reply. Respect the baton; do not edit the other agent's folder.
+- Read only relevant [PLAN](planning/PLAN.md) sections, task contracts and scoped instructions. History, archives, design exports and unrelated proposals are on-demand references.
+- Search paths first (`rg --files`), then bounded excerpts (`rg -n`). Reuse evidence; check timestamps before rereading. Keep current state in STATUS and append evidence to [HISTORY](planning/HISTORY.md).
 
-Before doing anything:
+## Gates that always apply
 
-1. Read [`planning/PROTOCOL.md`](planning/PROTOCOL.md). It sets the rules for turns, proposals, objections and agreement.
-2. Read [`planning/STATUS.md`](planning/STATUS.md) to see whose turn it is and what is open.
-3. Read [`planning/DECISIONS.md`](planning/DECISIONS.md). Anything marked AGREED there is binding unless reopened under the protocol.
-
-If it is not your turn, do not edit another agent's folder or the decisions log. You may still add research notes.
+- Work only within owner-approved scope, using synthetic local/staging data. Phase 1 staging evidence A1–A7 and D-060 owner checks remain required before G-PROD.
+- Application changes: `claude/*` or `codex/*` branch, PR, `Agent:` commit trailer, green exact-head CI and independent formal review (D-073). Read D-080/D-085 before relying on any scoped interim exception; a self-check is never independent review. Draft CI skips pass no gate (D-086).
+- D-071 staging operations require their bounded authorization and verified targets. Accounts, production secrets/releases, outreach and spending need explicit owner authority. No new authority follows from this file.
+- D-087: never write the owner's personal email in commits, trailers, files, PRs or logs. Owner commits use `86560354+Gerrard-Lewu@users.noreply.github.com`; agents use their own noreply identities. Set a compliant local identity before committing.

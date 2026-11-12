@@ -313,3 +313,13 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - 2026-11-11 (SAST) — Claude: #64 narrowed after Codex CHANGES. The docs-only path filter was dropped because GitHub's 3,000-file diff limit could let K1 be skipped. Drafts still skip CI, and K1 runs on every ready PR.
 
 - 2026-11-11 (SAST) — Claude: perf.yml browser install retries three times, then falls back to installing Chromium without OS packages. Ubuntu mirror DNS failures on runners had blocked perf on #57–#64. Budgets unchanged.
+
+## 2026-11-12 UTC — Context-loading cleanup
+
+- Owner requested CUAR-assisted project instruction/configuration lightening. Base: main `66856fc`; branch: `codex/context-efficiency`. Existing checkout and unrelated untracked work preserved via a separate worktree.
+- Shortened AGENTS, CLAUDE and README; replaced unconditional full protocol/decision reads with task-specific lookup including later amendments. Condensed STATUS; preserved its complete prior text in STATUS-ARCHIVE-2026-11-12.md. Decisions, protocol, ownership and approval gates are unchanged.
+- Mandatory initial project text (AGENTS + previously required PROTOCOL/STATUS/DECISIONS) falls from 74,034 to 4,927 UTF-8 bytes (93%); task-specific reads are additional. This is a text-size comparison, not measured token billing or a usage guarantee. CLAUDE falls from 728 to 262 bytes; README from 2,784 to 1,364 bytes.
+- Audit found no CODEX.md, AGENT.md, project .codex/.claude configuration or nested AGENTS on main. Existing Git/formatter ignores already cover generated output; no runtime config, plugin, credential or global instruction changes.
+- Checks: relative Markdown file links resolve in changed entry documents and archive; archived status matches the original after line-ending normalization; git diff --check passes. Application tests are not applicable to Markdown-only changes. Draft CI skips are not evidence of passing K1.
+- Open #77 also changes STATUS: reconcile its owner directions on review/rebase. This cleanup does not approve pending onboarding decisions or change the baton. No merge, deployment or service probe performed. Review the draft PR before incorporation.
+- Publication refresh: main advanced to 7ec5eb7 as #77/#79 merged. Preserved D-088–D-090 unchanged, updated the compact status and archived the latest main status verbatim. Current startup comparison: 77110 → 4960 UTF-8 bytes (94% less); the earlier figures above describe the initial base.
