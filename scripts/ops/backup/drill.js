@@ -15,6 +15,14 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { validateTap } from "../../ci/core.js";
 import {
+  DISCOVER_SEQUENCES_SQL,
+  DISCOVER_TABLES_SQL,
+  assertManifestCovers,
+  classify,
+  inventorySql,
+  migrationTables,
+} from "./coverage.js";
+import {
   databaseDiagnostic,
   rlsFailureSummary,
 } from "../../ci/database-diagnostic.js";
@@ -47,16 +55,11 @@ const env = Object.fromEntries(
 );
 env.SUPABASE_EXPERIMENTAL_STACK = ci ? "0" : "1";
 env.PATH = pgBin + ":" + process.env.PATH;
-const tables = [
-  "auth.users",
-  "auth.identities",
-  "auth.mfa_factors",
-  "public.profiles",
-  "public.organisations",
-  "public.memberships",
-  "public.audit_log",
-  "private.platform_admins",
-];
+// BK-1: tables come from the live catalogue, never a fixed list. Every app
+// table is exported; platform tables follow the reviewed plan in coverage.js.
+let plan;
+let tables = [];
+let sequences = [];
 const bucket = "k4-private";
 const files = ["tenant-a.bin", "tenant-b.bin"];
 const objects = files.map((name, index) => ({ name, path: "object-" + index }));
@@ -229,21 +232,87 @@ function sql(config, stage, statement) {
   }).trim();
 }
 
+function discover(config) {
+  const found = classify(
+    JSON.parse(sql(config, "discover-tables", DISCOVER_TABLES_SQL)),
+  );
+  return {
+    plan: found,
+    sequences: JSON.parse(
+      sql(config, "discover-sequences", DISCOVER_SEQUENCES_SQL),
+    ),
+  };
+}
+
 function inventory(config) {
   return Object.fromEntries(
-    tables.map((table) => {
-      const order = table === "private.platform_admins" ? "user_id" : "id";
-      const rows = sql(
-        config,
-        "inventory-" + table,
-        "select coalesce(jsonb_agg(to_jsonb(t) order by " +
-          order +
-          "), '[]') from " +
-          table +
-          " t;",
-      );
+    [...plan.export, ...plan.objects].map((table) => {
+      const rows = sql(config, "inventory-" + table, inventorySql(table));
       return [table, { count: JSON.parse(rows).length, sha256: sha(rows) }];
     }),
+  );
+}
+
+// Every object in every bucket: what the export downloads and the restore
+// uploads again, with its owner and metadata.
+const OBJECTS_SQL = `select coalesce(jsonb_agg(jsonb_build_object('bucket', bucket_id, 'name', name,
+  'owner', owner, 'owner_id', owner_id, 'user_metadata', user_metadata,
+  'mimetype', coalesce(metadata->>'mimetype', 'application/octet-stream'))
+  order by bucket_id, name), '[]') from storage.objects;`;
+
+async function exportObject(config, object) {
+  const response = await ok(
+    await api(
+      config,
+      "/storage/v1/object/" +
+        encodeURIComponent(object.bucket) +
+        "/" +
+        object.name.split("/").map(encodeURIComponent).join("/"),
+    ),
+    "download object",
+  );
+  return Buffer.from(await response.arrayBuffer());
+}
+
+async function restoreObject(config, object, bytes) {
+  const response = await fetch(
+    new URL(
+      "/storage/v1/object/" +
+        encodeURIComponent(object.bucket) +
+        "/" +
+        object.name.split("/").map(encodeURIComponent).join("/"),
+      config.API_URL,
+    ),
+    {
+      method: "POST",
+      headers: {
+        apikey: config.SERVICE_ROLE_KEY,
+        Authorization: "Bearer " + config.SERVICE_ROLE_KEY,
+        "Content-Type": object.mimetype,
+      },
+      body: bytes,
+      signal: AbortSignal.timeout(180_000),
+    },
+  );
+  await ok(response, "upload restored object");
+  const literal = (value) =>
+    value === null ? "null" : "'" + String(value).replace(/'/g, "''") + "'";
+  sql(
+    config,
+    "restore-object-owner",
+    "update storage.objects set owner = " +
+      literal(object.owner) +
+      ", owner_id = " +
+      literal(object.owner_id) +
+      ", user_metadata = " +
+      (object.user_metadata === null
+        ? "null"
+        : literal(JSON.stringify(object.user_metadata)) + "::jsonb") +
+      " where bucket_id = " +
+      literal(object.bucket) +
+      " and name = " +
+      literal(object.name) +
+      ";",
   );
 }
 
@@ -337,16 +406,16 @@ async function getObject(config, name, token) {
 }
 
 function validate(manifest, read) {
-  assert.equal(manifest.version, 1);
+  assert.equal(manifest.version, 2);
   assert.equal(manifest.complete, true);
+  assert.ok(manifest.storageObjects.length >= objects.length);
   assert.deepEqual(
     Object.keys(manifest.payloads).sort(),
     [
       "database.dump",
       "schema.txt",
       "baseline.json",
-      "object-0",
-      "object-1",
+      ...manifest.storageObjects.map(({ path }) => path),
     ].sort(),
   );
   for (const [name, expected] of Object.entries(manifest.payloads)) {
@@ -357,6 +426,16 @@ function validate(manifest, read) {
 }
 
 function negativeTests(manifest, read) {
+  const [first, ...rest] = Object.keys(manifest.tables);
+  assert.ok(first);
+  assert.throws(
+    () =>
+      assertManifestCovers(
+        manifest.plan,
+        Object.fromEntries(rest.map((t) => [t, manifest.tables[t]])),
+      ),
+    /BK-1: manifest does not match/,
+  );
   assert.throws(() => validate({ ...manifest, complete: false }, read));
   assert.throws(() =>
     validate(manifest, (name) =>
@@ -423,6 +502,16 @@ async function seed(config) {
     config,
     files.map(() => randomBytes(1024)),
   );
+  // BK-1: synthetic rows in every Phase 2 and onboarding table too.
+  for (const file of ["supabase/seed.sql", "scripts/ops/backup/fixture.sql"])
+    run("seed-" + file.split("/").pop(), "psql", [
+      "-Xq",
+      "-v",
+      "ON_ERROR_STOP=1",
+      config.DB_URL,
+      "-f",
+      join(repo, file),
+    ]);
   return { id, secret, users };
 }
 
@@ -476,13 +565,15 @@ async function verify(config, factor, read) {
   assert.deepEqual(await ids(admin), []);
   assert.deepEqual(
     await ids(await elevate(config, admin, factor.id, factor.secret)),
-    [orgA, orgB].sort(),
+    sql(config, "all-organisations", "select id from public.organisations;")
+      .split("\n")
+      .sort(),
   );
   for (const [index, object] of objects.entries()) {
     const token = [a, b][index];
     assert.equal(
       sha(await getObject(config, object.name, token)),
-      sha(read(object.path)),
+      sha(read(objectPaths.get(bucket + "/" + object.name))),
     );
     assert.equal(
       sql(
@@ -516,7 +607,13 @@ async function verify(config, factor, read) {
   );
 }
 
+// Bundle path of each restored object, by name (set from the manifest).
+const objectPaths = new Map();
+
 async function drill() {
+  stageName = "coverage";
+  // BK-1 preflight: every app table the migrations create is in the plan.
+  classify(migrationTables(join(repo, "supabase/migrations")));
   assert.equal(run("cli-version", cli, ["--version"]).trim(), "2.122.1");
   for (const tool of ["pg_dump", "pg_restore", "psql"]) {
     assert.match(run(tool + "-version", tool, ["--version"]), /\b17\./);
@@ -535,10 +632,12 @@ async function drill() {
     );
     storagePolicy(origin);
     const factor = await seed(origin);
+    ({ plan, sequences } = discover(origin));
+    tables = plan.export;
     const exportStart = new Date();
     const read = (name) => readFileSync(join(bundle, name));
     const manifest = {
-      version: 1,
+      version: 2,
       complete: true,
       revision,
       cli: "2.122.1",
@@ -558,7 +657,15 @@ async function drill() {
       sha256: sha(migrations),
       count: JSON.parse(migrations).length,
     };
+    manifest.plan = plan;
+    manifest.sequences = sequences;
     manifest.tables = inventory(origin);
+    assertManifestCovers(plan, manifest.tables);
+    // Every app table holds synthetic rows, so each one is really restored.
+    const emptyAppTables = Object.entries(manifest.tables)
+      .filter(([t, v]) => /^(?:public|private)\./.test(t) && v.count === 0)
+      .map(([t]) => t);
+    assert.deepEqual(emptyAppTables, [], "BK-1 fixture left app tables empty");
     writeFileSync(join(bundle, "schema.txt"), schema(origin));
     const baseline = (instance) => {
       const directory = join(instance.cwd, "supabase");
@@ -589,37 +696,28 @@ async function drill() {
         "select jsonb_build_object('id', id, 'public', public, 'file_size_limit', file_size_limit, 'allowed_mime_types', allowed_mime_types) from storage.buckets where id = 'k4-private';",
       ),
     );
-    manifest.objects = objects.map((object) => ({
-      ...object,
-      version:
-        sql(
-          origin,
-          "object-version",
-          "select version from storage.objects where bucket_id = 'k4-private' and name = '" +
-            object.name +
-            "';",
-        ) || null,
-    }));
+    manifest.storageObjects = JSON.parse(
+      sql(origin, "export-objects", OBJECTS_SQL),
+    ).map((object, index) => ({ ...object, path: "object-" + index }));
     run("export", "pg_dump", [
       "--format=custom",
       "--data-only",
       ...tables.flatMap((table) => ["-t", table]),
-      "-t",
-      "public.audit_log_id_seq",
+      ...sequences.flatMap((sequence) => ["-t", sequence]),
       "-f",
       join(bundle, "database.dump"),
       origin.DB_URL,
     ]);
-    for (const object of objects)
+    for (const object of manifest.storageObjects)
       writeFileSync(
         join(bundle, object.path),
-        await getObject(origin, object.name),
+        await exportObject(origin, object),
       );
     for (const name of [
       "schema.txt",
       "baseline.json",
       "database.dump",
-      ...objects.map(({ path }) => path),
+      ...manifest.storageObjects.map(({ path }) => path),
     ]) {
       const bytes = read(name);
       manifest.payloads[name] = { bytes: bytes.length, sha256: sha(bytes) };
@@ -672,10 +770,20 @@ async function drill() {
     ]);
     const restoreFile = join(root, "restore.sql");
     writeFileSync(restoreFile, dataSql);
-    // The local DB login cannot disable managed Auth triggers. Only suspend
-    // app audit generation while replaying the original audit rows, and the
-    // O2 control-generation trigger, which would otherwise bump the restored
-    // organisations.control_generation as each owner membership is replayed.
+    // The target must have exactly the source's tables, in the same classes.
+    assert.deepEqual(discover(restored), { plan, sequences });
+    // The local DB login cannot disable managed Auth triggers, and needs
+    // none. Suspend every app trigger (audit generation, control generation,
+    // consent clocks, append-only guards) while the original rows replay, so
+    // restored data is byte-for-byte the export, then switch them back on.
+    const appTables = tables.filter((t) => /^(?:public|private)\./.test(t));
+    const triggers = (state) =>
+      appTables
+        .map((t) => {
+          const [schema, name] = t.split(".");
+          return `alter table "${schema}"."${name}" ${state} trigger user;`;
+        })
+        .join(" ");
     run("restore", "psql", [
       "-Xq",
       "--single-transaction",
@@ -683,18 +791,18 @@ async function drill() {
       "ON_ERROR_STOP=1",
       restored.DB_URL,
       "-c",
-      "alter table public.organisations disable trigger organisations_audit; alter table public.memberships disable trigger memberships_audit; alter table public.memberships disable trigger memberships_control_generation;",
+      triggers("disable"),
       "-f",
       restoreFile,
       "-c",
-      "alter table public.organisations enable trigger organisations_audit; alter table public.memberships enable trigger memberships_audit; alter table public.memberships enable trigger memberships_control_generation;",
+      triggers("enable"),
     ]);
+    for (const object of manifest.storageObjects) {
+      objectPaths.set(object.bucket + "/" + object.name, object.path);
+      await restoreObject(restored, object, read(object.path));
+    }
     assert.deepEqual(inventory(restored), manifest.tables);
     assert.equal(sha(schema(restored)), manifest.payloads["schema.txt"].sha256);
-    await putObjects(
-      restored,
-      objects.map(({ path }) => read(path)),
-    );
     await verify(restored, factor, read);
     assert.deepEqual(
       JSON.parse(
@@ -741,6 +849,15 @@ async function drill() {
       rlsAssertions: assertions,
       privateObjects: objects.length,
       tenantRecords: manifest.tables["public.organisations"].count,
+      tablesExported: plan.export.length,
+      tablesExcluded: {
+        managed: plan.managed.length,
+        ephemeral: plan.ephemeral.length,
+      },
+      storageObjects: manifest.storageObjects.length,
+      appRows: Object.entries(manifest.tables)
+        .filter(([t]) => /^(?:public|private)\./.test(t))
+        .reduce((sum, [, v]) => sum + v.count, 0),
       authIdentities: manifest.tables["auth.identities"].count,
       exportMs: Date.parse(manifest.exportFinished) - exportStart.getTime(),
       restoreAndVerifyMs: Date.now() - restoreStart,
@@ -750,7 +867,7 @@ async function drill() {
       ),
       hostFreeBytesBefore: freeAtStart,
       hostFreeBytesAfter: freeBytes(),
-      negativeChecks: 7,
+      negativeChecks: 8,
     };
   } finally {
     if (active) {

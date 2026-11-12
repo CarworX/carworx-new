@@ -12,9 +12,14 @@ start and locks out concurrent K4 runs.
 1. Start the disposable native source on dynamically assigned loopback ports.
    Disable seed replay and omit the two unsupported local Auth mail templates
    in the scratch copy. Populate synthetic identities, tenants, memberships,
-   audit rows, a TOTP factor and two private Storage objects. Quiesce writes.
-2. Export the selected application and Auth tables and audit sequence using
-   `pg_dump`. Save the exact config and migrations, schema and role inventory,
+   audit rows, a TOTP factor and two private Storage objects, then load
+   `supabase/seed.sql` and `scripts/ops/backup/fixture.sql` so every app
+   table has rows. Quiesce writes.
+2. Discover every table and sequence in `public`, `private`, `auth`, `storage`
+   and `supabase_migrations` and classify them with
+   `scripts/ops/backup/coverage.js` (BK-1); an unclassified table stops the
+   drill. Export every exported table and every sequence using `pg_dump`.
+   Download every Storage object in every bucket. Save the exact config and migrations, schema and role inventory,
    migration history count and digest, bucket settings and Storage bytes.
    The manifest records the source revision, export window, counts, object
    versions and SHA-256 hashes. Validate every payload before the manifest is
@@ -22,12 +27,14 @@ start and locks out concurrent K4 runs.
 3. Stop the source. Verify the saved manifest and bootstrap a fresh native
    target from the same baseline. Compare schema, role and migration history
    inventories. Decode the custom database archive and replay it with
-   `psql --single-transaction`. Pause only the two application audit triggers
-   during replay and re-enable them in the same transaction. Auth triggers
-   and FK checks stay active.
-4. Compare table counts and hashes. Recreate the private bucket and upload the
-   saved objects through the Storage API as their owners. Verify object
-   ownership, bytes and access. The restored Storage versions are newly assigned.
+   `psql --single-transaction`. Pause the app tables' user triggers (audit,
+   control generation, consent clocks) during replay and re-enable them in
+   the same transaction. Auth triggers and FK checks stay active.
+4. Buckets come back with the data. Upload every saved object through the
+   Storage API and restore its owner and metadata. Compare counts and hashes
+   for every exported table, including `storage.objects` on the columns a
+   restore keeps. Verify object ownership, bytes and access. The restored
+   Storage versions are newly assigned.
 5. Run the existing RLS suite against the target and verify tenant boundaries,
    revoked access and admin TOTP with genuine local sessions. Stop the target.
    Record the sanitized JSON receipt. If a command fails, use the reported
