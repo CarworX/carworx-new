@@ -34,7 +34,12 @@
           "binding": "FORMS_DB",
           "id": "OWNER_SETS_STAGING_FORMS_DB_HYPERDRIVE_ID",
         },
+        {
+          "binding": "RETENTION_DB",
+          "id": "OWNER_SETS_STAGING_RETENTION_DB_HYPERDRIVE_ID",
+        },
       ],
+      "triggers": { "crons": ["17 1 * * *"] },
     },
     "production": {
       "name": "carworx-web-production",
@@ -55,7 +60,12 @@
           "binding": "FORMS_DB",
           "id": "OWNER_SETS_PRODUCTION_FORMS_DB_HYPERDRIVE_ID",
         },
+        {
+          "binding": "RETENTION_DB",
+          "id": "OWNER_SETS_PRODUCTION_RETENTION_DB_HYPERDRIVE_ID",
+        },
       ],
+      "triggers": { "crons": ["17 1 * * *"] },
     },
   },
 }

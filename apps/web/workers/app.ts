@@ -1,5 +1,6 @@
 import { createRequestHandler } from "react-router";
 
+import { pgClient, runRetention } from "../app/server/retention/run";
 import {
   withSecurityBoundary,
   type SecurityContext,
@@ -31,5 +32,13 @@ export default {
     return withSecurityBoundary(request, env, (checked, security) =>
       requestHandler(checked, { cloudflare: { env, ctx }, security }),
     );
+  },
+  // R-2: the daily retention cron (wrangler.jsonc triggers). Logs counts
+  // only; any failure throws, so the cron run is marked failed.
+  async scheduled(_controller, env) {
+    const binding = (env as { RETENTION_DB?: { connectionString?: unknown } })
+      .RETENTION_DB;
+    const counts = await runRetention(binding, pgClient);
+    console.log(JSON.stringify({ event: "retention", counts }));
   },
 } satisfies ExportedHandler<Env>;
