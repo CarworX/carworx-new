@@ -78,7 +78,31 @@ Open for the build plan: server-side drafts for "stop and come back" (today's pr
 
 **Typed fields:** an invite is 1 typed field (email), or 0 with a link. A staff join is 0 typed fields, or 1 (first name) when customers pick.
 
-**Open:** whether the desktop stepper keeps the step rail beside the bar (A/B in `progress/desktop-A-bar-and-rail.png` and `desktop-B-bar-only.png`).
+**Desktop (owner, 2026-11-12): option A.** The stepper keeps the step rail beside the gliding bar on desktop (`progress/desktop-A-bar-and-rail.png`). On phones the bar alone replaces the rail.
+
+## Location for everyone (owner, 2026-11-12)
+
+Every map pin (premises and private mobile base, in every concept) now offers three ways in:
+1. **Search for an exact address or place** and pick a result (an ARIA combobox: arrow keys move, Enter picks, Esc closes). The prototype uses synthetic results. In the product this is D-082's server-side temporary geocoding: used once to choose a point, never stored.
+2. **Use my location** first shows a CarworX card explaining why ("used once to place your pin; we don't track you or keep your device's location"). Only **Allow** triggers the browser's own permission prompt; **Not now** returns to search or tap.
+3. **Tap the map** (keyboard: Enter, then the arrow keys).
+
+The search is optional, so the typed-field count (2) is unchanged. A10 still holds: a searched base stays private.
+
+## History in the menu (owner, 2026-11-12)
+
+[`history/`](history/index.html) is a read-only record in the business menu, designed now for when bookings open (Phase 3). Demo: "view as" Owner, Manager or Staff, or `?as=owner|manager|staff&tab=bookings|assign|team&b=B-1042`.
+
+| | Owner | Manager | Staff |
+|---|---|---|---|
+| Menu | Today, Requests, History, Team, Listing, Settings | Today, Requests, History, Team, Listing | Today, Requests, History |
+| Bookings | Every booking | Every booking | Their own, including ones moved away from them |
+| Assignments | Every assign and reassign: who, by whom, when, why | Same | Their own |
+| Team changes | Invites, acceptances, setting changes | Same | — |
+| Customer details | Full name and number | Full | As the owner set (demo: first name only) |
+| Filters | Status chips, date range (calendar), team member, Download CSV | Same | Status chips, date range |
+
+Each booking opens a timeline with an actor chip and the time in SAST: request → accepted (within 2 business hours) → assigned or picked by the customer → paid on the payment partner's page (15-minute hold) → reassigned (with reason) → completed, cancelled or declined. Repairs show the written quote (valid 7 days) and its approval. The record can't be edited or deleted (append-only), which matches the admin audit log approach.
 
 ## Recommendation (before the owner's pick)
 

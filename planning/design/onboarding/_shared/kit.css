@@ -858,3 +858,82 @@ button.ob-tile {
   font: inherit;
   color: inherit;
 }
+
+/* location: search + permission (owner, 2026-11-12: everyone can search an exact place or allow detection) */
+.ob-mapsearch {
+  position: relative;
+}
+.ob-mapsearch .ob-input {
+  padding-left: 40px;
+  background: var(--surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b6470' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4.5 4.5'/%3E%3C/svg%3E")
+    12px center / 20px no-repeat;
+}
+.ob-results {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--sh-2);
+}
+.ob-results li {
+  display: grid;
+  gap: 1px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.ob-results li b {
+  font: 500 15px var(--font-sans);
+}
+.ob-results li small {
+  font: 400 13px var(--font-sans);
+  color: var(--muted);
+}
+.ob-results li[aria-selected="true"],
+.ob-results li[data-hit]:hover {
+  background: var(--canvas);
+}
+.ob-results li.note {
+  cursor: default;
+  font: 400 12px var(--font-mono);
+  color: var(--muted);
+}
+.ob-perm {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--sh-2);
+}
+.ob-perm .ic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--sky);
+  color: var(--blue-ink);
+  display: grid;
+  place-items: center;
+}
+.ob-perm b {
+  font: 500 15px var(--font-sans);
+}
+.ob-perm p {
+  margin-top: 2px;
+  font: 400 13px/18px var(--font-sans);
+  color: var(--muted);
+}
+.ob-perm .acts {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-top: 10px;
+}

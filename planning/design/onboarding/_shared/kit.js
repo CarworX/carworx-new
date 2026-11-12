@@ -136,14 +136,14 @@
     pin: {
       t: "Drop a pin on your premises",
       chat: "Drop a pin where customers should arrive.",
-      h: "Tap the map, or use your location. Customers see this on your listing.",
+      h: "Search for your exact address, tap the map, or use your location. Customers see this on your listing.",
       type: "pin",
       if: "mode=They come to me",
     },
     base: {
       t: "Where do you start from, and how far will you go?",
       chat: "Where do you usually start from, and how far will you travel?",
-      h: "Used only to match you with nearby customers.",
+      h: "Search for an exact address, tap the map, or use your location. Used only to match you with nearby customers.",
       type: "base",
       if: "mode=I go to them",
     },
@@ -439,9 +439,33 @@
     return s;
   })();
   const PIN = `<svg class="pin" viewBox="0 0 34 44" aria-hidden="true"><path d="M17 43s15-14 15-26A15 15 0 0 0 2 17c0 12 15 26 15 26Z" fill="#0d0f12"/><circle cx="17" cy="17" r="5.5" fill="#fff"/></svg>`;
+  // Synthetic places for the search (prototype). Live: server-side temporary geocoding,
+  // used once to choose a point and never stored (D-082). x/y are map fractions.
+  const PLACES = [
+    ["12 Jan Smuts Avenue", "Saxonwold, Johannesburg", 0.5, 0.5],
+    ["Oxford Road & Bath Avenue", "Rosebank, Johannesburg", 0.5, 0.17],
+    ["Corlett Drive", "Illovo, Johannesburg", 0.84, 0.2],
+    ["4th Avenue", "Parkhurst, Johannesburg", 0.16, 0.2],
+    ["Victoria Avenue", "Parktown, Johannesburg", 0.18, 0.5],
+    ["High Street", "Melrose, Johannesburg", 0.83, 0.47],
+    ["Houghton Drive", "Houghton, Johannesburg", 0.5, 0.8],
+    ["De Korte Street", "Braamfontein, Johannesburg", 0.15, 0.82],
+    ["Louis Botha Avenue", "Orange Grove, Johannesburg", 0.84, 0.8],
+  ];
   function mapHtml(k, ring) {
-    return `<div class="ob-map" tabindex="0" data-map="${k}" role="application" aria-roledescription="map" aria-label="Map. Click or tap to drop a pin. With a keyboard, press Enter to drop it in the middle, then use the arrow keys to move it.">${MAP_SVG}${ring ? '<span class="ring" hidden></span>' : ""}<span class="pinwrap" hidden>${PIN}</span><span class="tag">Synthetic map · not to scale</span></div>
-      <div class="ob-maprow"><p class="ob-pinread" aria-live="polite" data-pinread="${k}">No pin yet</p><button type="button" class="cx-btn outlined sm" data-locate="${k}">${ic("loc")} Use my location</button></div>
+    const id = `ms-${k}-${uid}`;
+    return `<div class="ob-mapsearch">
+        <label class="cx-vh" for="${id}">Search for an address or place</label>
+        <input class="ob-input" id="${id}" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-list" autocomplete="off" placeholder="Search an address or place" data-mapsearch="${k}">
+        <ul class="ob-results" id="${id}-list" role="listbox" aria-label="Places" hidden></ul>
+      </div>
+      <div class="ob-map" tabindex="0" data-map="${k}" role="application" aria-roledescription="map" aria-label="Map. Click or tap to drop a pin. With a keyboard, press Enter to drop it in the middle, then use the arrow keys to move it.">${MAP_SVG}${ring ? '<span class="ring" hidden></span>' : ""}<span class="pinwrap" hidden>${PIN}</span><span class="tag">Synthetic map · not to scale</span></div>
+      <div class="ob-maprow"><p class="ob-pinread" aria-live="polite" data-pinread="${k}">Search, tap the map, or use your location</p><button type="button" class="cx-btn outlined sm" data-locate="${k}">${ic("loc")} Use my location</button></div>
+      <div class="ob-perm" data-perm="${k}" role="region" aria-label="Location permission" hidden>
+        <span class="ic">${ic("loc")}</span>
+        <div><b>Allow CarworX to use your location?</b><p>We use it once to place your pin${k === "base" ? ". Your base stays private" : ""}. We don't track you or keep your device's location. Your browser will ask you next.</p>
+        <div class="acts"><button type="button" class="cx-btn primary sm" data-allow="${k}">Allow location</button><button type="button" class="ob-link" data-notnow="${k}">Not now</button></div></div>
+      </div>
       <input type="hidden" name="${k}">`;
   }
 
@@ -933,7 +957,7 @@
         areaIn = Object.assign(document.createElement("input"), { type: "hidden", name: "pinArea" });
         form.append(areaIn);
       }
-      function place(nx, ny, note) {
+      function place(nx, ny, note, label) {
         x = Math.min(0.97, Math.max(0.03, nx));
         y = Math.min(0.95, Math.max(0.08, ny));
         pin.hidden = false;
@@ -944,10 +968,11 @@
         const lng = (28.0 + x * 0.08).toFixed(4);
         hidden.value = `${lat}, ${lng}`;
         if (areaIn && k === "pin") areaIn.value = area;
+        const where = label ? `at ${esc(label)}` : `near ${area}`;
         read.innerHTML =
           k === "base"
-            ? `Base near ${area}<small>${note || "Private: only you and CarworX admins see this"}</small>`
-            : `Pin near ${area}<small>${note || hidden.value + " · synthetic"}</small>`;
+            ? `Base ${where}<small>${note || "Private: only you and CarworX admins see this"}</small>`
+            : `Pin ${where}<small>${note || hidden.value + " · synthetic"}</small>`;
         if (ring) sizeRing();
         update();
       }
@@ -974,16 +999,82 @@
           place(x + d[0], y + d[1]);
         }
       });
+      // "Use my location" explains first; only "Allow" triggers the browser's own prompt.
+      const perm = form.querySelector(`[data-perm="${k}"]`);
       form.querySelector(`[data-locate="${k}"]`).addEventListener("click", () => {
+        perm.hidden = false;
+        perm.querySelector("[data-allow]").focus();
+      });
+      perm.querySelector("[data-notnow]").addEventListener("click", () => {
+        perm.hidden = true;
+        read.textContent = "No problem. Search or tap the map instead.";
+        form.querySelector(`[data-locate="${k}"]`).focus();
+      });
+      perm.querySelector("[data-allow]").addEventListener("click", () => {
+        perm.hidden = true;
         read.textContent = "Finding you…";
         if (!navigator.geolocation)
-          return (read.textContent = "Location isn't available here. Tap the map instead.");
+          return (read.textContent = "Location isn't available here. Search or tap the map instead.");
         navigator.geolocation.getCurrentPosition(
-          () => place(0.5, 0.5, "From your device. Demo: shown at the map centre, nothing is sent."),
-          () => (read.textContent = "Couldn't get your location. Tap the map instead."),
+          () => place(0.5, 0.5, "From your device, used once. Demo: shown at the map centre, nothing is sent."),
+          () => (read.textContent = "Location was blocked or unavailable. Search or tap the map instead."),
           { timeout: 8000 },
         );
       });
+      // Search: a combobox over synthetic places. Arrow keys move, Enter picks, Esc closes.
+      const box = form.querySelector(`[data-mapsearch="${k}"]`);
+      const list = box.nextElementSibling;
+      let hits = [];
+      let act = -1;
+      const close = () => {
+        list.hidden = true;
+        box.setAttribute("aria-expanded", "false");
+        box.removeAttribute("aria-activedescendant");
+        act = -1;
+      };
+      const paint = () => {
+        list.innerHTML = hits.length
+          ? hits.map(([a, b], j) => `<li role="option" id="${list.id}-${j}" aria-selected="${j === act}" data-hit="${j}"><b>${esc(a)}</b><small>${esc(b)}</small></li>`).join("") + '<li class="note" aria-hidden="true">Synthetic results · prototype</li>'
+          : '<li class="note">No matches. Try a street or suburb.</li>';
+        list.hidden = false;
+        box.setAttribute("aria-expanded", "true");
+        if (act >= 0) box.setAttribute("aria-activedescendant", `${list.id}-${act}`);
+      };
+      const pick = (j) => {
+        const [a, b, px, py] = hits[j];
+        box.value = `${a}, ${b}`;
+        close();
+        place(px, py, k === "base" ? "Private: only you and CarworX admins see this" : `${b} · exact point you chose`, `${a}, ${b.split(",")[0]}`);
+      };
+      box.addEventListener("input", () => {
+        const t = box.value.trim().toLowerCase();
+        act = -1;
+        if (t.length < 2) return close();
+        hits = PLACES.filter(([a, b]) => (a + " " + b).toLowerCase().includes(t));
+        paint();
+      });
+      box.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          if (list.hidden || !hits.length) return;
+          act = (act + (e.key === "ArrowDown" ? 1 : -1) + hits.length) % hits.length;
+          paint();
+        } else if (e.key === "Enter") {
+          e.preventDefault(); // never "Next" from the search box
+          if (!list.hidden && hits.length) pick(act >= 0 ? act : 0);
+        } else if (e.key === "Escape" && !list.hidden) {
+          e.preventDefault(); // close the list instead of going Back
+          close();
+        }
+      });
+      list.addEventListener("mousedown", (e) => {
+        const li = e.target.closest("[data-hit]");
+        if (li) {
+          e.preventDefault();
+          pick(+li.dataset.hit);
+        }
+      });
+      box.addEventListener("blur", () => setTimeout(close, 120));
       if (ring)
         form.querySelector('[name="radius"]').addEventListener("input", sizeRing);
       map._place = place;
