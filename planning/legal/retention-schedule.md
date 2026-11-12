@@ -34,7 +34,7 @@
 | Support cases | 2 | Service | Per RLS | Case closed → **3 years** | s14(1)(b); CPA s116(1); Prescription Act s11(d) |
 | Audit log | 1 | Accountability | Admin | Entry created → **3 years**, then delete or de-identify NEW | s14(1)(b), s19(2)(c) (verify safeguards) |
 | Search place text and geocodes | 2 | One search | Nobody | **Never stored** (A17, D-082) | s10 |
-| Search limiter counters (keyed by a salted hash of IP or of a random cookie) | 2 | Abuse control | System | Window end → **24 hours** NEW, **gap R-1** | s14(1); an IP is "personal information" ("online identifier", s1) |
+| Search and form limiter counters (keyed by a salted hash of IP or of a random cookie) | 2 | Abuse control | System | **Deleted at window end** by a Durable Object alarm: 1 min (IP search), 10 min (search cookie, each form). Global Mapbox quotas (no personal data): 24 h. R-1 fixed | s14(1); an IP is "personal information" ("online identifier", s1) |
 | Search cookie `__Host-cx-search` | 2 | Abuse control | Browser | **24 hours** (cookie lifetime) | Already 86,400 s in `handler.ts` |
 | Logs (redacted) | 1 | Operations | Operators | **30 days** (PLAN) | s14(1) |
 | Outbox, notifications | 3 | Delivery | System, admin | **90 days** (PLAN) | s14(1) |
@@ -49,7 +49,7 @@
 
 | ID | Gap | Fix | Owner of the fix |
 |---|---|---|---|
-| **R-1** | The `SearchLimiter` Durable Object keeps its counter with **no expiry** (`apps/web/app/server/search/limiter.ts` at `b899190` has no alarm and no delete). One object exists per hashed IP and per search cookie | Add a storage alarm that deletes the counter when its window ends; test it. Until then, the privacy notice must not claim 24 hours | Agent PR (search owner) before G-PROD |
+| **R-1** | ~~The `SearchLimiter` Durable Object keeps its counter with **no expiry**~~ **Fixed 2026-11-12.** Each object stores its window length with the counter, arms an alarm for the window end, and the alarm deletes all its storage (`limiter.ts`; `limiter.test.ts` covers every window, early and late alarms and legacy rows). Rows written on staging before this fix have no alarm; they are synthetic and are dropped the next time their key is used | Done | Agent PR (search owner) |
 | **R-2** | No deletion jobs exist for any row in section 2 | A scheduled job per row, each with tests | Agents, before G-PROD for Phase 2 rows |
 | **R-3** | The audit log is append-only by design (T2) | A narrow, audited purge of entries older than 3 years, run by the system only | Agents, before the first entry turns 3 |
 

@@ -6,6 +6,13 @@
  * its own SQLite-backed Durable Object, so counts are exact per key. Raw IPs
  * and cookie values are never stored or logged. Any missing binding, error or
  * slow answer fails closed: the caller turns it into 503, never an allow.
+ *
+ * Retention (R-1): each object keeps one counter row and a storage alarm set
+ * for the end of its window. The alarm deletes the row (and the object's
+ * storage) once the window has ended, so a key that is never seen again
+ * leaves nothing behind. A stale row read before its alarm runs is ignored
+ * and overwritten. The longest window is the 24-hour global quota, which
+ * holds no personal data; per-visitor rows last at most 10 minutes.
  */
 export interface Window {
   limit: number;
@@ -58,10 +65,24 @@ export function decide(
   };
 }
 
-interface Storage {
+/** The stored row: the counter plus its window length, for the alarm. */
+export interface StoredCounter extends Counter {
+  windowMs: number;
+}
+
+/** The subset of DurableObjectStorage this class uses. */
+export interface LimiterStorage {
   get<T>(key: string): Promise<T | undefined>;
   put(key: string, value: unknown): Promise<void>;
-  transaction<T>(fn: (txn: Storage) => Promise<T>): Promise<T>;
+  transaction<T>(fn: (txn: LimiterStorage) => Promise<T>): Promise<T>;
+  setAlarm(scheduledTime: number): Promise<void>;
+  deleteAlarm(): Promise<void>;
+  deleteAll(): Promise<void>;
+}
+
+/** When the stored row must be gone: the end of its window. */
+export function expiresAt(row: StoredCounter): number {
+  return row.start + row.windowMs;
 }
 
 /**
@@ -69,8 +90,8 @@ interface Storage {
  * built Worker still loads in the Node integration harness.
  */
 export class SearchLimiter {
-  private readonly storage: Storage;
-  constructor(state: { storage: Storage }) {
+  private readonly storage: LimiterStorage;
+  constructor(state: { storage: LimiterStorage }) {
     this.storage = state.storage;
   }
 
@@ -85,15 +106,18 @@ export class SearchLimiter {
         FORM_WINDOW,
       ].find((w) => w.limit === body.limit && w.windowMs === body.windowMs);
       if (!window) return Response.json({}, { status: 400 });
+      const now = Date.now();
       const result = await this.storage.transaction(async (txn) => {
-        const outcome = decide(
-          await txn.get<Counter>("window"),
-          Date.now(),
-          window,
-        );
-        await txn.put("window", outcome.next);
+        const outcome = decide(await txn.get<Counter>("window"), now, window);
+        await txn.put("window", {
+          ...outcome.next,
+          windowMs: window.windowMs,
+        } satisfies StoredCounter);
         return outcome;
       });
+      // A new window: point the alarm at its end (replacing any older one).
+      if (result.next.start === now)
+        await this.storage.setAlarm(now + window.windowMs);
       return Response.json(
         result.allowed
           ? { allowed: true }
@@ -102,6 +126,25 @@ export class SearchLimiter {
     } catch {
       return Response.json({}, { status: 500 });
     }
+  }
+
+  /**
+   * Runs at (or shortly after) the window end. Deletes the counter once its
+   * window is over; if a newer window started meanwhile, waits for that one.
+   */
+  async alarm(): Promise<void> {
+    const row = await this.storage.get<Partial<StoredCounter>>("window");
+    if (
+      row &&
+      Number.isFinite(row.start) &&
+      Number.isFinite(row.windowMs) &&
+      Date.now() < expiresAt(row as StoredCounter)
+    ) {
+      await this.storage.setAlarm(expiresAt(row as StoredCounter));
+      return;
+    }
+    await this.storage.deleteAlarm();
+    await this.storage.deleteAll();
   }
 }
 
