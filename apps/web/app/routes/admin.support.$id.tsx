@@ -1,3 +1,4 @@
+import { mailtoHref } from "../ui/mailto";
 import { data, Form } from "react-router";
 
 import { throwRedirect, throwStatus } from "../auth/http.server";
@@ -82,7 +83,7 @@ export default function AdminSupportCase({
         </p>
         <p className="type-body-sm">
           Reply to{" "}
-          <a className="cx-tlink" href={`mailto:${row.email}`}>
+          <a className="cx-tlink" href={mailtoHref(row.email)}>
             {row.email}
           </a>
         </p>

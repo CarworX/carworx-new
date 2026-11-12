@@ -1,3 +1,4 @@
+import { mailtoHref } from "../ui/mailto";
 import { data, Link } from "react-router";
 
 import { field } from "../auth/forms";
@@ -552,7 +553,7 @@ export default function Provider({
               >
                 <p className="type-body">
                   <b>{e.sender_name}</b> ·{" "}
-                  <a className="cx-tlink" href={`mailto:${e.sender_email}`}>
+                  <a className="cx-tlink" href={mailtoHref(e.sender_email)}>
                     {e.sender_email}
                   </a>
                 </p>

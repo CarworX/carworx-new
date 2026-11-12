@@ -121,6 +121,23 @@ beforeAll(async () => {
 });
 
 describe("provider enquiries inbox", () => {
+  it("encodes reply addresses in provider and admin views without injected recipients", async () => {
+    const address = `?to=a%40example.test&bcc=b%40example.test&x=${TAG}@example.test`;
+    const mine = await provider("reply-uri");
+    enquiryFixture(mine.listing, mine.org, "Synthetic reply URI fixture");
+    sql(
+      `update public.enquiries set sender_email='${address}' where listing_public_id='${mine.listing}'`,
+    );
+    const inbox = await (await signIn(mine.owner.email)).send("/provider");
+    const support = supportFixture(address);
+    const detail = await admin.send(`/admin/support/${support}`);
+    const href = `mailto:${encodeURIComponent(address).replaceAll("%40", "@")}`;
+    for (const page of [inbox, detail]) {
+      expect(page.status).toBe(200);
+      expect(page.body).toContain(`href="${href}"`);
+      expect(page.body).not.toContain('href="mailto:?to=');
+    }
+  });
   it("paginates tied enquiry timestamps without losing older messages or tenant isolation", async () => {
     const mine = await provider("paged-inbox");
     const other = await provider("paged-other");
