@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review an application · CarworX admin (prototype)</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="cx-canvas">
+<div data-shell></div>
+<form data-flow novalidate>
+  <div class="rv-shell">
+    <aside class="rv-rail" data-only="section" aria-label="Review progress">
+      <p class="cx-eyebrow">Reviewing · <span data-app-name></span></p>
+      <ol class="cx-steps" data-rail>
+        <li data-for="business"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="store"></span></span><div><b>Business</b><p>What they told us</p></div></li>
+        <li data-for="location"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="pin"></span></span><div><b>Location</b><p>Pin, or private base and radius</p></div></li>
+        <li data-for="checks"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="eye"></span></span><div><b>Checks</b><p>How you checked, and the labels</p></div></li>
+        <li data-for="decision"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="flag"></span></span><div><b>Decision</b><p>Publish, or send back</p></div></li>
+        <li data-for="confirm"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="tick"></span></span><div><b>Confirm</b><p>Recorded in the audit log</p></div></li>
+      </ol>
+      <a class="ob-link" href="index.html#applications">Back to applications</a>
+    </aside>
+    <div>
+      <div class="ob-segbar rv-top" data-segbar data-only="section" aria-label="Review progress"></div>
+
+      <section data-step id="r-business" data-kind="section" data-section="business" data-title="Business" data-count>
+        <div class="rv-card"><div><p class="cx-eyebrow">Application · sent <span data-app-sent></span></p><h2 data-app-name></h2></div>
+          <dl class="ad-facts" data-app-facts></dl>
+          <div><p class="cx-eyebrow" style="margin-bottom:8px">How it will look in search</p><div data-app-card></div></div>
+          <div data-actions></div></div>
+      </section>
+      <section data-step id="r-location" data-kind="section" data-section="location" data-title="Location" data-count>
+        <div class="rv-card"><h2>Location</h2><div data-app-map></div><dl class="ad-facts" data-app-where></dl>
+          <p class="ad-only" data-app-a10 hidden><span data-ic="lock"></span><span><b>Admin only.</b> The mobile base and radius are private (A10). They never appear in search, on the listing, in the business's public text or in logs. Customers only see "Comes to you" and the metro.</span></p>
+          <div data-actions></div></div>
+      </section>
+      <section data-step id="r-checks" data-kind="section" data-section="checks" data-title="Checks" data-count data-require="method,evidence">
+        <div class="rv-card"><h2>How you checked</h2>
+          <div data-q="method"></div>
+          <div data-q="labels"></div>
+          <p class="t-cap" data-premises-note hidden>"Premises visited" is for businesses with premises. This one only goes to customers.</p>
+          <div data-if="haslabels=yes"><div data-q="evidence"></div></div>
+          <div data-actions></div></div>
+      </section>
+      <section data-step id="r-decision" data-kind="section" data-section="decision" data-title="Decision" data-count data-require="decision,sendReason">
+        <div class="rv-card"><h2>Your decision</h2><div data-q="decision"></div>
+          <div data-if="decision=Send back to the business"><div data-q="sendReason"></div><div data-q="sendNote" style="margin-top:14px"></div></div>
+          <div data-actions></div></div>
+      </section>
+      <section data-step id="r-confirm" data-kind="section" data-section="confirm" data-title="Confirm" data-count data-require="attest" data-cta="Approve and publish">
+        <div class="rv-card"><h2>Check and confirm</h2>
+          <dl class="ob-review">
+            <div><dt>Decision</dt><dd data-bind="decision"></dd><button type="button" class="ob-link" data-change="decision">Change</button></div>
+            <div><dt>Checked by</dt><dd data-bind="method" data-empty="Not chosen"></dd><button type="button" class="ob-link" data-change="method">Change</button></div>
+            <div data-if="decision=Approve and publish"><dt>Labels to show</dt><dd data-bind="labels" data-empty="None. The listing goes live without labels."></dd><button type="button" class="ob-link" data-change="labels">Change</button></div>
+            <div data-if="haslabels=yes"><dt>Evidence reference</dt><dd data-bind="evidence"></dd><button type="button" class="ob-link" data-change="evidence">Change</button></div>
+            <div data-if="decision=Send back to the business"><dt>What they need to change</dt><dd data-bind="sendReason|sendNote"></dd><button type="button" class="ob-link" data-change="sendReason">Change</button></div>
+          </dl>
+          <div data-q="attest"></div>
+          <p class="ad-only"><span data-ic="eye"></span><span>Saved to the audit log with your name and the time (SAST). Decisions can't be edited later, only followed by a new one.</span></p>
+          <div data-actions></div></div>
+      </section>
+      <section data-step id="r-done" data-skip>
+        <div class="rv-card"><div class="ob-status"><div class="ob-tickbig" data-ic="tick"></div>
+          <h2 data-if="decision=Approve and publish">Published</h2><h2 data-if="decision=Send back to the business">Sent back</h2>
+          <p class="t-lede" data-if="decision=Approve and publish"><span data-app-name></span> is now in search<span data-if="haslabels=yes"> with: <b data-bind="labels"></b></span>. We've emailed the business.</p>
+          <p class="t-lede" data-if="decision=Send back to the business">We've emailed <span data-app-name></span> what to change. It comes back to the queue when they resend.</p>
+          <div class="ad-log"><span class="when">12 Nov 2026<br>08:52 SAST</span><span><b style="font-weight:500">Naledi Dube (admin)</b> · <span data-bind="decision"></span> · <span data-bind="method"></span></span></div></div>
+          <div class="ob-actions"><a class="ob-link" href="index.html#audit">See the audit log</a><a class="cx-btn primary" href="index.html#applications" style="margin-left:auto">Next application</a></div></div>
+      </section>
+    </div>
+  </div>
+  <input type="hidden" name="haslabels">
+</form>
+<script src="../_shared/kit.js"></script>
+<script src="../_shared/shell.js"></script>
+<script>
+  const { Q, ic, esc } = OB;
+  // Synthetic applications (fictional). ?app=shine (premises) | mzansi (mobile) | jacaranda (both)
+  const APPS = {
+    shine: { name: "Shine Bay Car Wash", ini: "SB", sent: "11 Nov 2026, 22:43 SAST", who: "Sipho Dlamini · Owner", services: "Wash & Detailing, Glass Repair & Replacement", mode: ["They come to me"], metro: "Johannesburg", area: "Saxonwold", hours: "Mon–Sat · 08:00–17:00", team: "2–5", since: "1 March 2019", about: "Hand wash only. Secure parking while you wait.", map: [{ x: 0.5, y: 0.5, kind: "pin" }] },
+    mzansi: { name: "Mzansi Mobile Mechanics", ini: "MM", sent: "11 Nov 2026, 14:10 SAST", who: "Thabo Khumalo · Owner", services: "Mobile mechanic, Auto electrical", mode: ["I go to them"], metro: "Ekurhuleni", hours: "Mon–Fri · 07:00–18:00", team: "Just me", since: "—", about: "We come to your home or office. Free written quotes.", map: [{ x: 0.55, y: 0.45, kind: "base", r: 25 }] },
+    jacaranda: { name: "Jacaranda Tyre & Align", ini: "JT", sent: "12 Nov 2026, 07:15 SAST", who: "Priya Naidoo · Manager", services: "Tyres & Wheel Alignment", mode: ["They come to me", "I go to them"], metro: "Tshwane (Pretoria)", area: "Hatfield", hours: "Mon–Sat · 07:30–17:30", team: "6–15", since: "12 June 2015", about: "Same-day fitment. Fleet work welcome.", map: [{ x: 0.35, y: 0.4, kind: "pin" }, { x: 0.62, y: 0.58, kind: "base", r: 20 }] },
+  };
+  const A = APPS[new URLSearchParams(location.search).get("app")] || APPS.shine;
+  const fixed = A.mode.includes("They come to me"), mobile = A.mode.includes("I go to them");
+  // Questions for the review (real values from apps/web/app/server/providers/forms.ts).
+  Q.method = { t: "How did you check this business?", h: "Recorded with your decision (D-023).", type: "pick", opts: ["Phone call", "Video call", "Documents checked", "Business registry checked", "Site visit"] };
+  Q.labels = { t: "Labels to show on the listing", h: "Only what you actually checked. You can approve with no labels.", type: "pick", multi: true, opts: ["Identity checked", "Business details checked", "Premises visited"] };
+  Q.evidence = { t: "Evidence reference", h: "Where the proof is kept, for example \"Call log 12 Nov 08:40\" or a document reference. Never type an ID number or paste the document.", type: "text", ac: "off", ph: "For example, Call log 12 Nov 08:40", max: 200 };
+  Q.decision = { t: "What happens to this application?", type: "tiles", opts: [{ v: "Approve and publish", d: "It goes live in search now, with the labels you chose.", i: "tick" }, { v: "Send back to the business", d: "They get an email saying what to change, then resend.", i: "mail" }] };
+  Q.sendReason = { t: "What do they need to change?", h: "Pick all that apply. This is what the business sees.", type: "pick", multi: true, opts: ["Business name doesn't match the proof", "Location isn't clear", "Services don't match what they do", "We couldn't reach them", "About line breaks the rules"] };
+  Q.sendNote = { t: "Anything to add", type: "text", ac: "off", opt: true, ph: "Optional, shown to the business", max: 300 };
+  Q.attest = { t: "I checked this myself, and this record is accurate", type: "switch" };
+  document.querySelectorAll("[data-actions]").forEach((el) => {
+    el.outerHTML = `<div class="ob-actions"><button type="button" class="ob-back" data-back>Back</button><span class="ob-keys"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span><button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button></div>`;
+  });
+  document.querySelectorAll("[data-ic]").forEach((e) => (e.innerHTML = ic(e.dataset.ic)));
+  SHELL.mount(document.querySelector("[data-shell]"), { role: "admin", current: "applications" });
+  const form = document.querySelector("[data-flow]");
+  const flow = OB.boot();
+  // Fill the submitted application.
+  document.querySelectorAll("[data-app-name]").forEach((e) => (e.textContent = A.name));
+  document.querySelector("[data-app-sent]").textContent = A.sent;
+  const row = (k, v) => `<dt>${k}</dt><dd>${esc(v)}</dd>`;
+  document.querySelector("[data-app-facts]").innerHTML = row("Sent by", A.who) + row("Services", A.services) + row("Customers", A.mode.join(" and ")) + row("Hours", A.hours) + row("Team size", A.team) + row("Trading since", A.since) + row("About", A.about);
+  const pub = fixed ? `${A.area}, ${A.metro}${mobile ? " · also comes to you" : ""}` : `Comes to you · ${A.metro}`;
+  document.querySelector("[data-app-card]").innerHTML = `<article class="ob-card"><div class="top"><span class="av">${A.ini}</span><div><h3>${esc(A.name)}</h3><p class="m">${esc(pub)}</p></div></div><div class="svcs">${A.services.split(", ").map((x) => `<span>${esc(x)}</span>`).join("")}</div><p class="about">${esc(A.about)}</p><div class="lbls"><span class="ob-lbl-off">Labels appear after your check</span></div></article>`;
+  document.querySelector("[data-app-map]").innerHTML = OB.mapStatic(A.map, fixed && mobile ? "Map: premises pin and private base with travel radius" : fixed ? "Map: premises pin" : "Map: private base with travel radius");
+  document.querySelector("[data-app-where]").innerHTML = (fixed ? row("Premises (public)", `Pin near ${A.area}, ${A.metro}`) : "") + (mobile ? row("Base (private)", `Set on the map · travels up to ${A.map.find((p) => p.kind === "base").r} km`) : "") + row("Shown to customers", pub);
+  document.querySelector("[data-app-a10]").hidden = !mobile;
+  // Premises visited only for businesses with premises.
+  if (!fixed) {
+    const p = form.querySelector('[name="labels"][value="Premises visited"]');
+    p.disabled = true; p.closest("label").style.opacity = 0.45;
+    form.querySelector("[data-premises-note]").hidden = false;
+  }
+  form.addEventListener("ob:change", (e) => {
+    const s = e.detail;
+    const has = (s.labels || []).length ? "yes" : "";
+    if (form.elements.haslabels.value !== has) { form.elements.haslabels.value = has; flow.update(); }
+    const cta = s.decision === "Send back to the business" ? "Send back" : "Approve and publish";
+    form.querySelector("#r-confirm").dataset.cta = cta;
+    if (form.dataset.step === "r-confirm") form.querySelector("#r-confirm [data-next]").textContent = cta;
+  });
+  form.querySelector("#r-confirm").dataset.next = "r-done";
+  flow.update();
+</script>
+</body>
+</html>

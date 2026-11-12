@@ -874,7 +874,15 @@
       e.preventDefault();
       next();
     });
-    form.addEventListener("input", update);
+    // Clear a question's error as soon as its answer changes.
+    const clearErr = (e) => {
+      const q = e.target.closest?.(".ob-q");
+      if (!q) return;
+      q.querySelectorAll("[data-err]").forEach((x) => (x.textContent = ""));
+      q.querySelectorAll("[aria-invalid]").forEach((x) => x.removeAttribute("aria-invalid"));
+    };
+    form.addEventListener("input", (e) => (clearErr(e), update()));
+    form.addEventListener("change", clearErr);
     let lastPointer = 0;
     form.addEventListener("pointerdown", () => (lastPointer = Date.now()));
     form.addEventListener("change", (e) => {
@@ -1191,7 +1199,20 @@
   window.addEventListener("resize", () => bars());
   document.addEventListener("DOMContentLoaded", () => bars());
 
+  // Read-only map for admin review: points [{x, y, kind: "pin"|"base", r?: km}].
+  function mapStatic(points, label) {
+    const pins = points
+      .map((p) =>
+        p.kind === "base"
+          ? `<span class="ring" style="left:${p.x * 100}%;top:${p.y * 100}%;width:${(p.r / 60) * 90}%;aspect-ratio:1;height:auto"></span><span class="basedot" style="left:${p.x * 100}%;top:${p.y * 100}%"></span>`
+          : `<span class="pinwrap" style="position:absolute;inset:0"><svg class="pin" viewBox="0 0 34 44" style="left:${p.x * 100}%;top:${p.y * 100}%" aria-hidden="true"><path d="M17 43s15-14 15-26A15 15 0 0 0 2 17c0 12 15 26 15 26Z" fill="#0d0f12"/><circle cx="17" cy="17" r="5.5" fill="#fff"/></svg></span>`,
+      )
+      .join("");
+    return `<div class="ob-map" role="img" aria-label="${esc(label)}" style="cursor:default">${MAP_SVG}${pins}<span class="tag">Synthetic map · not to scale</span></div>`;
+  }
+
   window.OB = {
+    mapStatic,
     bars,
     Q,
     matches,

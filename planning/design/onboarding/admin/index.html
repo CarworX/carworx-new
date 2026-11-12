@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarworX admin (prototype)</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="cx-canvas">
+<div data-shell></div>
+<main class="ad-main" data-view></main>
+<script src="../_shared/kit.js"></script>
+<script src="../_shared/shell.js"></script>
+<script>
+  /* Admin console. Every admin route needs two-step sign-in (aal2, D-042); non-admins get a 404.
+     Synthetic, fictional data; times in SAST. */
+  const { ic, esc } = OB;
+  const APPS = [
+    { id: "shine", ini: "SB", name: "Shine Bay Car Wash", where: "Saxonwold, Johannesburg", mode: "They come to me", since: "11 Nov, 22:43", st: "Waiting" },
+    { id: "mzansi", ini: "MM", name: "Mzansi Mobile Mechanics", where: "Comes to you · Ekurhuleni", mode: "I go to them", since: "11 Nov, 14:10", st: "Waiting" },
+    { id: "jacaranda", ini: "JT", name: "Jacaranda Tyre & Align", where: "Hatfield, Tshwane · also comes to you", mode: "Both", since: "12 Nov, 07:15", st: "Waiting" },
+    { id: "kloof", ini: "KD", name: "Kloof Detailing", where: "Kloof, eThekwini", mode: "They come to me", since: "10 Nov, 11:30", st: "Sent back", note: "Location isn't clear" },
+    { id: "karoo", ini: "KG", name: "Karoo Glass Fix", where: "Bellville, Cape Town", mode: "They come to me", since: "9 Nov, 09:12", st: "Approved" },
+  ];
+  const CLAIMS = [
+    { id: "email", ini: "KG", name: "Karoo Glass Fix", by: "Anele Mostert", how: "Business email · domain matches", since: "12 Nov, 07:58", st: "Waiting" },
+    { id: "doc", ini: "MM", name: "Mzansi Mobile Mechanics", by: "Bongani Zulu", how: "Document · utility bill", since: "10 Nov, 16:20", st: "Disputed" },
+  ];
+  const BIZ = [
+    { id: "KG", name: "Karoo Glass Fix", where: "Bellville, Cape Town", st: "Live", labels: ["Identity checked", "Business details checked", "Premises visited"], people: [["Anele Mostert", "Owner"], ["Riaan Botha", "Staff"]] },
+    { id: "PV", name: "Pinetown Valet Co.", where: "Pinetown, eThekwini", st: "Live", labels: ["Business details checked"], people: [["Zanele Mthembu", "Owner"]] },
+    { id: "BB", name: "Bright Bay Detailing", where: "Umhlanga, eThekwini", st: "Suspended", note: "Duplicate of another listing", labels: ["Identity checked"], people: [["Kevin Pillay", "Owner"]] },
+  ];
+  const AUDIT = [
+    ["12 Nov 08:52", "Applications", "Naledi Dube", "Approved Shine Bay Car Wash · Phone call · labels: Identity checked, Business details checked"],
+    ["12 Nov 08:31", "Admin sign-ins", "Naledi Dube", "Signed in with two-step sign-in (authenticator app)"],
+    ["11 Nov 17:04", "Suspensions", "Kagiso Molefe", "Suspended Bright Bay Detailing · reason: duplicate of another listing"],
+    ["11 Nov 15:40", "Access", "Kagiso Molefe", "Removed access for a former staff member at Pinetown Valet Co."],
+    ["10 Nov 19:02", "Disputes", "Thabo Khumalo (business)", "Opened a dispute on the claim for Mzansi Mobile Mechanics"],
+    ["10 Nov 11:45", "Applications", "Kagiso Molefe", "Sent back Kloof Detailing · Location isn't clear"],
+    ["9 Nov 09:40", "Claims", "Naledi Dube", "Transferred control of Pinetown Valet Co. to Zanele Mthembu · Documents checked"],
+  ];
+  const label = (st) => `<span class="cx-label ${{ Waiting: "info", "Sent back": "warn", Disputed: "err", Suspended: "err" }[st] || ""}">${st}</span>`;
+  const filt = {};
+  const bar = (key, opts) => `<div class="ob-filterbar" role="group" aria-label="Filter">${opts.map((o) => `<button type="button" class="cx-chip" aria-pressed="${(filt[key] || opts[0]) === o}" data-f="${key}" data-v="${o}">${o}</button>`).join("")}</div>`;
+  const more = (team) => `<div class="ob-scrollrow" role="group" aria-label="More filters" style="gap:8px;align-items:end"><label class="field" style="display:grid;gap:4px;font:500 12px var(--font-sans);color:var(--muted)">From<input class="ob-input" type="date" value="2026-11-09" style="width:auto;min-height:44px;font-size:14px"></label><label style="display:grid;gap:4px;font:500 12px var(--font-sans);color:var(--muted)">To<input class="ob-input" type="date" value="2026-11-12" style="width:auto;min-height:44px;font-size:14px"></label>${team ? `<label style="display:grid;gap:4px;font:500 12px var(--font-sans);color:var(--muted)">Admin<select class="ob-input" style="width:auto;min-height:44px;font-size:14px"><option>Everyone</option><option>Naledi Dube</option><option>Kagiso Molefe</option></select></label>` : ""}<button type="button" class="cx-btn outlined sm">Download CSV</button></div>`;
+  const head = (eyebrow, title, sub) => `<div class="ad-head"><p class="cx-eyebrow">${eyebrow}</p><h1>${title}</h1>${sub ? `<p class="t-cap" style="margin-top:4px">${sub}</p>` : ""}</div>`;
+  const pick = (key, list, f) => { const v = filt[key]; return !v || v === "All" ? list.filter(f || (() => true)) : list.filter((x) => x.st === v); };
+
+  const V = {
+    today: () => head("CarworX admin · 12 Nov 2026", "Good morning, Naledi", "Oldest first. Nothing goes live without a person checking it.") + `
+      <div class="ad-kpis">
+        <a class="ad-kpi" href="#applications"><b>3</b><small>Applications waiting</small></a>
+        <a class="ad-kpi" href="#claims"><b>2</b><small>Claims · 1 disputed</small></a>
+        <a class="ad-kpi" href="#businesses"><b>1</b><small>Suspended</small></a>
+        <a class="ad-kpi" href="#applications"><b>1</b><small>Sent back, waiting on the business</small></a></div>
+      <div class="ad-split"><section class="ad-box"><h2>Next up</h2><div class="ad-rows">
+        ${CLAIMS.filter((c) => c.st === "Disputed").map((c) => row(`claim.html?claim=${c.id}`, c.ini, c.name, `Claim by ${c.by} · ${c.how}`, c.st, c.since)).join("")}
+        ${APPS.filter((a) => a.st === "Waiting").sort((a, b) => (a.since > b.since ? 1 : -1)).map((a) => row(`review.html?app=${a.id}`, a.ini, a.name, `${a.where} · ${a.mode}`, a.st, a.since)).join("")}</div></section>
+        <section class="ad-box"><h2>Your recent decisions</h2><div class="ad-rows">${AUDIT.filter((x) => x[2] === "Naledi Dube" && x[1] !== "Admin sign-ins").map(log).join("")}</div><a class="ob-link" href="#audit">Full audit log</a></section></div>`,
+    applications: () => head("Admin", "Applications", "New businesses waiting for a person to check them.") + bar("apps", ["Waiting", "Sent back", "Approved", "All"]) + `<div class="ad-rows">${pick("apps", APPS, (a) => a.st === "Waiting").map((a) => row(`review.html?app=${a.id}`, a.ini, a.name, `${a.where} · ${a.mode}${a.note ? " · " + a.note : ""}`, a.st, a.since)).join("") || empty()}</div>`,
+    claims: () => head("Admin", "Claims", "People asking to manage a listing that already exists.") + bar("claims", ["Waiting", "Disputed", "Decided", "All"]) + `<div class="ad-rows">${pick("claims", CLAIMS, (c) => c.st === "Waiting").map((c) => row(`claim.html?claim=${c.id}`, c.ini, c.name, `By ${c.by} · ${c.how}`, c.st, c.since)).join("") || empty()}</div>`,
+    businesses: () => head("Admin", "Businesses", "Live and suspended listings.") + bar("biz", ["Live", "Suspended", "All"]) + `<div class="ad-rows">${pick("biz", BIZ, (b) => b.st === "Live").map((b) => row(`#business=${b.id}`, b.id, b.name, `${b.where}${b.note ? " · " + b.note : ""}`, b.st, b.labels.length + " label" + (b.labels.length === 1 ? "" : "s"))).join("") || empty()}</div>`,
+    business: (id) => { const b = BIZ.find((x) => x.id === id) || BIZ[0]; const sus = b.st === "Suspended"; return `<a class="ob-back" href="#businesses" style="text-decoration:none;justify-self:start">Businesses</a>` + head(b.where, esc(b.name)) + `<div style="display:flex;gap:8px;align-items:center">${label(b.st)}${sus ? `<span class="t-cap">${esc(b.note)}</span>` : ""}</div>
+      <div class="ad-split">
+        <section class="ad-box"><h2>Labels</h2><div class="lbls" style="display:flex;gap:6px;flex-wrap:wrap">${b.labels.map((l) => `<span class="cx-label">${ic("tick").replace('class="ob-ic"', 'class="ob-ic" style="width:12px;height:12px"')} ${l}</span>`).join("")}</div><p class="t-cap">Each label has a recorded check and evidence reference.</p></section>
+        <section class="ad-box"><h2>${sus ? "Restore" : "Suspend"} this business</h2>
+          <p>${sus ? "It goes back into search with its labels." : "It leaves search straight away. The business sees the reason. Bookings and history are kept."}</p>
+          <label class="field" style="display:grid;gap:6px;font:500 13px var(--font-sans)">Reason (kept in the decision record)<input class="ob-input" data-reason placeholder="${sus ? "For example, duplicate removed" : "For example, duplicate of another listing"}"></label>
+          <p class="ob-err" role="alert" data-reason-err></p>
+          <div><button type="button" class="cx-btn ${sus ? "primary" : "outlined"} sm" data-suspend="${b.id}">${sus ? "Restore" : "Suspend"}</button></div></section></div>
+      <section class="ad-box"><h2>People with access</h2><ul class="ob-checks">${b.people.map(([n, r]) => `<li><span class="sh-av" style="width:32px;height:32px;font-size:12px">${n.split(" ").map((w) => w[0]).join("")}</span>${esc(n)} · ${r}<small><button type="button" class="ob-link" style="font-size:13px">Remove access</button></small></li>`).join("")}</ul><p class="t-cap">Removing access is recorded. Use it for former staff, or when a claim moves control.</p></section>
+      <section class="ad-box"><h2>Decisions</h2><div class="ad-rows">${AUDIT.filter((x) => x[3].includes(b.name)).map(log).join("") || '<p class="t-cap">Approved 9 Nov 2026, 09:40 SAST by Naledi Dube · Site visit</p>'}</div></section>`; },
+    audit: () => head("Admin", "Audit log", "Every admin decision and sign-in, and every dispute. Read-only: entries can't be edited or deleted.") + bar("audit", ["All", "Applications", "Claims", "Disputes", "Suspensions", "Access", "Admin sign-ins"]) + more(true) + `<div class="ad-rows">${AUDIT.filter((x) => !filt.audit || filt.audit === "All" || x[1] === filt.audit).map(log).join("") || empty()}</div>`,
+  };
+  function row(href, ini, name, sub, st, right) {
+    return `<a class="ad-row" href="${href}"><span class="av">${ini}</span><span><b>${esc(name)}</b><small>${esc(sub)}</small></span><span class="r">${label(st)}<span>${esc(right)}${/\d{2}:\d{2}$/.test(right) ? " SAST" : ""}</span></span></a>`;
+  }
+  function log([w, cat, who, what]) {
+    return `<div class="ad-log"><span class="when">${w} SAST<br>${cat}</span><span><b style="font-weight:500">${esc(who)}</b><br>${esc(what)}</span></div>`;
+  }
+  const empty = () => '<p class="t-cap">Nothing here right now.</p>';
+  let mounted = "";
+  function render() {
+    const h = location.hash.slice(1) || "today";
+    const [view, arg] = h.split("=");
+    const nav = view === "business" ? "businesses" : view;
+    if (mounted !== nav) { SHELL.mount(document.querySelector("[data-shell]"), { role: "admin", current: nav }); mounted = nav; }
+    document.querySelector("[data-view]").innerHTML = (V[view] || V.today)(arg);
+    document.title = `${{ today: "Today", applications: "Applications", claims: "Claims", businesses: "Businesses", business: "Business", audit: "Audit log" }[view] || "Today"} · CarworX admin (prototype)`;
+  }
+  window.addEventListener("hashchange", () => { render(); scrollTo(0, 0); });
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("button");
+    if (!t) return;
+    if (t.dataset.f) { filt[t.dataset.f] = t.dataset.v; render(); document.querySelector(`[data-f="${t.dataset.f}"][data-v="${t.dataset.v}"]`)?.focus(); }
+    if (t.dataset.suspend) {
+      const r = document.querySelector("[data-reason]");
+      if (r.value.trim().length < 3) { document.querySelector("[data-reason-err]").textContent = "Add a reason. It's kept in the decision record."; r.focus(); return; }
+      const b = BIZ.find((x) => x.id === t.dataset.suspend);
+      const was = b.st; b.st = was === "Suspended" ? "Live" : "Suspended"; b.note = r.value.trim();
+      AUDIT.unshift(["12 Nov 09:10", "Suspensions", "Naledi Dube", `${was === "Suspended" ? "Restored" : "Suspended"} ${b.name} · reason: ${b.note}`]);
+      render();
+    }
+  });
+  render();
+</script>
+</body>
+</html>

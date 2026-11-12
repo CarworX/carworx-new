@@ -1180,3 +1180,13 @@ button.ob-tile {
   display: grid;
   gap: 2px;
 }
+
+.ob-map .basedot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 0 3px var(--surface);
+}

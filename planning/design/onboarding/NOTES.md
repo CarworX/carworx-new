@@ -1,5 +1,7 @@
 # Business onboarding concepts: notes
 
+> **LOCKED by the owner, 2026-11-12 (SAST),** for the build plan: the 2 + 3 + 5 direction, the gliding segmented bar, desktop option A (rail and bar), two-phase onboarding (Get approved → Finish setup), staff join, History, settings and sign-out for every user, filter and tab swipe bars, CarworX-styled authenticator QR codes, and the owner-chosen team two-step rule with email fallback. The admin designs build on these ([`admin/`](admin/index.html)).
+
 **Status:** exploration, 2026-11-11 (SAST). Brief: [BRIEF.md](BRIEF.md). Board: [index.html](index.html). Design files only; no product code changed.
 
 ## How they are built

@@ -1,0 +1,16 @@
+# CarworX admin designs
+
+**Status:** for owner review, 2026-11-12 (SAST). Built on the locked business designs (see [`../NOTES.md`](../NOTES.md)): the desktop stepper (rail and gliding bar, option A), filter and tab swipe bars, the shared menu with settings and sign-out, and the History-style read-only record. They follow the admin workflows already in the code (`apps/web/app/routes/admin.*`, `server/providers/forms.ts`): synthetic data, no product code changed.
+
+| Screen | File | What it does |
+|---|---|---|
+| Console | [`index.html`](index.html) | **Today** (waiting counts, oldest first, your recent decisions), **Applications** (filter bar: Waiting, Sent back, Approved, All), **Claims** (Waiting, Disputed, Decided, All), **Businesses** (Live, Suspended, All), each business's **record** (labels, suspend or restore with a required reason, people with access and Remove access, decisions), and the **Audit log** (filters by type, dates and admin; Download CSV; read-only) |
+| Review an application | [`review.html`](review.html) `?app=shine\|mzansi\|jacaranda` | Business → Location → Checks → Decision → Confirm, on the rail and the gliding bar. **Checks** uses the five D-023 methods (phone call, video call, documents checked, business registry checked, site visit) and the three Claude 17 §3 labels. An **evidence reference** is required as soon as any label is ticked; it never holds an ID number or the document. "Premises visited" is disabled for mobile-only businesses. **Decision:** approve and publish, or send back with reasons the business sees (plus an optional note). **Confirm:** "I checked this myself" switch; the decision is saved to the audit log with the admin's name and time |
+| Review a claim | [`claim.html`](claim.html) `?claim=email\|doc` | Claim → Evidence → Current access → Decision → Confirm. Business email shows the domain match (free-mail domains are refused); a document claim shows type and date only (nothing uploaded). Current access shows who controls it now and any **open dispute**. Decide: transfer control (with method and an optional note) or reject or keep the current owner (with a required reason) |
+| Admin settings and sign-in | [`../account/index.html?as=admin&tab=security`](../account/index.html?as=admin&tab=security), [`../account/sign-in.html?admin=1`](../account/sign-in.html?admin=1) | Two-step sign-in **required for every admin** (D-042, enforced on the server; admin pages won't open without it) and can't be turned off. Admin notifications: a morning summary at 07:30 SAST, and new disputes as they come in |
+
+**A10 in admin.** Admins see a mobile business's private base and radius on the review's Location step, under a blue **"Admin only"** note. Customers still only see "Comes to you" and the metro.
+
+**Recommendation for the owner to confirm: no email-code fallback for admins.** Owners and staff may get a sign-in code by email; admins can approve, suspend and move control of any business, so their second step stays the authenticator app. Their backup is recovery codes, and a lost app is reset by **another admin** who checks it's them first. The owner can overrule this.
+
+**Not designed yet:** support cases and enquiries (P2-5) and demand requests. These are natural next tabs in the same console.

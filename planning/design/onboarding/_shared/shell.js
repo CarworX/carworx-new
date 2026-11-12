@@ -8,12 +8,14 @@
     staff: { name: "Lerato Mahlangu", ini: "LM", sub: "Staff · Shine Bay Car Wash" },
     manager: { name: "Ayanda Nkosi", ini: "AN", sub: "Manager · Shine Bay Car Wash" },
     owner: { name: "Sipho Dlamini", ini: "SD", sub: "Owner · Shine Bay Car Wash" },
+    admin: { name: "Naledi Dube", ini: "ND", sub: "CarworX admin" },
   };
   const H = (p) => ROOT + p;
   const LINKS = {
     driver: [["Find a service", "#search"], ["Bookings", "#bookings"], ["History", "#history"]],
     staff: [["Today", "#today"], ["Requests", "#requests"], ["History", H("history/index.html?as=staff"), "history"]],
     manager: [["Today", "#today"], ["Requests", "#requests"], ["History", H("history/index.html?as=manager"), "history"], ["Team", "#team"], ["Listing", "#listing"]],
+    admin: [["Today", H("admin/index.html#today"), "today"], ["Applications", H("admin/index.html#applications"), "applications"], ["Claims", H("admin/index.html#claims"), "claims"], ["Businesses", H("admin/index.html#businesses"), "businesses"], ["Audit log", H("admin/index.html#audit"), "audit"]],
     owner: [["Today", "#today"], ["Requests", "#requests"], ["History", H("history/index.html?as=owner"), "history"], ["Team", "#team"], ["Listing", "#listing"], ["Business settings", H("account/index.html?as=owner&tab=business"), "business"]],
   };
   const acct = (role) => [
