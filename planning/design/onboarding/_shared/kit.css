@@ -938,16 +938,14 @@ button.ob-tile {
   margin-top: 10px;
 }
 
-/* ---------- One unified, swipeable bar (owner rule, 2026-11-12) ----------
- * Chip, pick, filter and tab groups never wrap onto a second line, for any user.
- * They sit in one pill bar that scrolls sideways (swipe, trackpad, Shift+wheel,
- * mouse wheel, or Tab to focus). Edge fades show there is more. */
-.ob-picks,
+/* ---------- Filter and tab bars (owner rule, 2026-11-12) ----------
+ * Filters and tabs never wrap onto a second line: one unified pill bar that scrolls
+ * sideways (swipe, trackpad, wheel, Tab), with an edge fade where there is more.
+ * Setup and onboarding choices (.ob-picks) keep wrapping as normal chips. */
+.ob-filterbar,
 .cx-tabs,
-.ob-scrollrow,
-.lbls,
-.ob-card .svcs {
-  display: flex !important;
+.ob-scrollrow {
+  display: flex;
   flex-wrap: nowrap;
   gap: 4px;
   max-width: 100%;
@@ -958,14 +956,12 @@ button.ob-tile {
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
-.ob-picks::-webkit-scrollbar,
+.ob-filterbar::-webkit-scrollbar,
 .cx-tabs::-webkit-scrollbar,
-.ob-scrollrow::-webkit-scrollbar,
-.lbls::-webkit-scrollbar,
-.ob-card .svcs::-webkit-scrollbar {
+.ob-scrollrow::-webkit-scrollbar {
   display: none;
 }
-.ob-picks,
+.ob-filterbar,
 .cx-tabs {
   padding: 4px;
   border-radius: var(--radius-pill);
@@ -973,17 +969,13 @@ button.ob-tile {
   border: 1px solid var(--surface);
   box-shadow: inset 0 0 0 1px var(--hair);
 }
-.ob-picks > *,
+.ob-filterbar > *,
 .cx-tabs > *,
-.ob-scrollrow > *,
-.lbls > *,
-.ob-card .svcs > * {
+.ob-scrollrow > * {
   flex: none;
   scroll-snap-align: start;
 }
-/* Items inside the bar: no individual outline; selected = ink, like the tabs. */
-.ob-picks .ob-pick,
-.ob-picks .cx-chip {
+.ob-filterbar .cx-chip {
   min-height: 40px;
   padding: 0 16px;
   background: transparent;
@@ -991,13 +983,11 @@ button.ob-tile {
   color: var(--muted);
   font: 500 14px var(--font-sans);
 }
-.ob-picks .ob-pick:hover,
-.ob-picks .cx-chip:hover {
+.ob-filterbar .cx-chip:hover {
   background: rgba(13, 15, 18, 0.05);
   color: var(--ink);
 }
-.ob-picks .ob-pick:has(input:checked),
-.ob-picks .cx-chip[aria-pressed="true"] {
+.ob-filterbar .cx-chip[aria-pressed="true"] {
   background: var(--ink);
   color: var(--white);
 }

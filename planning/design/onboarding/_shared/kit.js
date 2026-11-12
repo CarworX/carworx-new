@@ -1129,9 +1129,9 @@
   }
 
   // ---------- swipeable bars ----------
-  // Every chip/tab/filter group is one row that scrolls sideways. Fades mark the side
+  // Filter and tab bars are one row that scrolls sideways (setup chips still wrap). Fades mark the side
   // with more; a vertical wheel scrolls it sideways; focus and the chosen item stay in view.
-  const BAR = ".ob-picks, .cx-tabs, .ob-scrollrow, .lbls, .ob-card .svcs";
+  const BAR = ".ob-filterbar, .cx-tabs, .ob-scrollrow";
   function fade(el) {
     const max = el.scrollWidth - el.clientWidth;
     el.classList.toggle("ob-more-l", el.scrollLeft > 2);
@@ -1140,7 +1140,7 @@
   function toChosen(el) {
     const on = el.querySelector('input:checked, [aria-pressed="true"], [aria-selected="true"]');
     if (!on) return;
-    const item = on.closest(".ob-picks > *, .cx-tabs > *, .ob-scrollrow > *") || on;
+    const item = on.closest(".ob-filterbar > *, .cx-tabs > *, .ob-scrollrow > *") || on;
     const l = item.offsetLeft - el.offsetLeft;
     if (l < el.scrollLeft || l + item.offsetWidth > el.scrollLeft + el.clientWidth)
       el.scrollLeft = Math.max(0, l - 8);
@@ -1167,7 +1167,7 @@
       { passive: false },
     );
     el.addEventListener("focusin", (e) => {
-      const item = e.target.closest(".ob-picks > *, .cx-tabs > *, .ob-scrollrow > *, .lbls > *") || e.target;
+      const item = e.target.closest(".ob-filterbar > *, .cx-tabs > *, .ob-scrollrow > *") || e.target;
       item.scrollIntoView({ block: "nearest", inline: "nearest" });
     });
     toChosen(el);

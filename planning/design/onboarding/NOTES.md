@@ -91,7 +91,7 @@ The search is optional, so the typed-field count (2) is unchanged. A10 still hol
 
 ## History in the menu (owner, 2026-11-12)
 
-[`history/`](history/index.html) is a read-only record in the business menu, designed now for when bookings open (Phase 3). Demo: "view as" Owner, Manager or Staff, or `?as=owner|manager|staff&tab=bookings|assign|team&b=B-1042`.
+[`history/`](history/index.html) is a read-only record in the business menu, designed now for when bookings open (Phase 3). For review, the role is set in the address only (no on-screen switcher): `?as=owner|manager|staff&tab=bookings|assign|team&b=B-1042`.
 
 | | Owner | Manager | Staff |
 |---|---|---|---|
@@ -116,10 +116,7 @@ Each booking opens a timeline with an actor chip and the time in SAST: request �
 
 ## Owner rules, 2026-11-12 (SAST): no stacked buttons; settings and sign-out for every user
 
-**1. Nothing stacks, for any CarworX user.** Every group of chips, picks, filters or tabs is **one unified pill bar on one line** that **scrolls sideways** when it doesn't fit, like the tabs bar. There is no second row. The bar is `.ob-picks` / `.cx-tabs` / `.ob-scrollrow` in `_shared/kit.css`, wired by `bars()` in `kit.js`.
-- **Swipe** on touch, a trackpad, or the mouse wheel (turned into sideways scroll); **Tab** brings the focused item into view.
-- A **fade on the edge with more** shows there are other options; the chosen item scrolls into view.
-- It applies to services, roles, team size, documents, starter phrases, staff days, History filters and tabs, settings tabs, and the label rows on listing cards. Large choice tiles (for example "They come to me" / "I go to them") are cards, not buttons in a row, so they still list down the page.
+**1. Filters and tabs never stack (corrected by the owner the same day: filters and tabs only).** Filter groups (such as History's status filters, dates and team member) and tab bars are **one unified pill bar on one line** that **scrolls sideways** (swipe, trackpad, wheel, Tab), with an edge fade where there is more and the chosen item kept in view (`.ob-filterbar`, `.cx-tabs`, `.ob-scrollrow` in `_shared/kit.css`; `bars()` in `kit.js`). **Setup and onboarding choices (services, days, roles, phrases, documents) keep wrapping as normal chips.**
 
 **2. Every user's menu has settings and Sign out** ([`account/`](account/index.html), shared menu in `_shared/shell.js`). Desktop: an avatar button opens Profile and settings, Security and two-step sign-in, and Sign out. Phone: the same items sit at the bottom of the menu sheet.
 
@@ -132,6 +129,12 @@ Each booking opens a timeline with an actor chip and the time in SAST: request �
 | Your work (services, days, leave the team) | — | ✓ | — | — |
 | Business (team and roles, who gets the booking, listing details, leave) | — | — | ✓ | ✓ plus what staff can see, payments (later), transfer ownership, close the listing |
 
-The two-step setup uses the approved gliding bar (method → scan → code → recovery codes; a passkey skips the code). A wrong code or unticked "I've saved my codes" blocks the next step. "Sign out" confirms on screen and points to Security to sign out everywhere.
+For review, the role is set in the address only: `account/index.html?as=driver|staff|manager|owner&tab=…`. The "view as" switchers were removed (owner, 2026-11-12).
+
+**Two-step sign-in uses the person's own authenticator app** (owner, 2026-11-12), for example Microsoft Authenticator or Google Authenticator. Steps, on the approved gliding bar: get an app → scan your code → enter the 6-digit code → save recovery codes. A wrong code or the unticked "I've saved my codes" box blocks the next step.
+- **No connector needed.** It is the open TOTP standard (RFC 6238), and the app already enrols it through Supabase Auth (D-042, `apps/web/app/auth/routes/mfa.tsx`). Each enrolment makes a **new secret and `otpauth://` link for that one person**, so every code is unique and never reused.
+- **CarworX-styled QR code:** round dot modules, rounded corner "eyes", and the CarworX mark in a white circle in the centre, at error-correction level H (about 30% recovery) so the mark never stops it scanning. The prototype codes (`account/qr-demo.svg` for a synthetic `otpauth://` link; `setup/qr-invite.svg` for the invite link) were made offline and **decoded successfully** at 600 and 220 px. In the build, draw the same style from Supabase's `totp.uri` instead of its default `qr_code` SVG, in the browser only. Never log or store the secret, and never send it to a third-party QR service. A QR encoder library is a build-plan choice (pin the version).
+- **Recovery codes:** Supabase Auth has no built-in recovery codes. The build plan chooses between custom single-use codes (stored hashed) or asking people to add a second authenticator device.
+- Passkey sign-in was dropped from this round. "Sign out" confirms on screen and points to Security to sign out everywhere.
 
 *For the owner to confirm:* making two-step sign-in **required** for owners before payment settings (it is shown that way), and transfer of ownership only to a manager with two-step sign-in on.

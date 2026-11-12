@@ -24,6 +24,8 @@
   .field { display: grid; gap: 6px; font: 500 13px var(--font-sans); }
   .codes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font: 500 14px var(--font-mono); }
   .codes span { padding: 8px 10px; border-radius: var(--radius-sm); background: var(--canvas); }
+  .qrimg { display: block; width: 220px; height: 220px; border-radius: var(--radius-md); box-shadow: inset 0 0 0 1px var(--line), var(--sh-1); }
+  .manual summary { cursor: pointer; font: 500 14px var(--font-sans); min-height: 44px; display: flex; align-items: center; }
   .qr { width: 140px; height: 140px; border-radius: var(--radius-md); background:
     conic-gradient(from 90deg at 20% 20%, var(--ink) 25%, transparent 0) 0 0 / 25% 25%,
     repeating-linear-gradient(0deg, var(--ink) 0 7px, transparent 7px 14px), var(--surface);
@@ -38,8 +40,6 @@
 <body class="cx-canvas">
 <div data-shell></div>
 <main>
-  <div style="display:grid;gap:6px"><span class="ob-demo">Demo · view as</span>
-    <div class="ob-picks" role="radiogroup" aria-label="View as" data-roles></div></div>
   <div class="who"><span class="sh-av" data-ini></span><div><p class="cx-eyebrow" data-sub></p><h1>Profile and settings</h1></div></div>
   <div class="cx-tabs" role="tablist" aria-label="Settings sections" data-tabs></div>
   <div class="panel" role="tabpanel" data-panel></div>
@@ -48,6 +48,8 @@
 <script src="../_shared/shell.js"></script>
 <script>
   const { ic, esc } = OB;
+  // Synthetic key matching qr-demo.svg (prototype only; real keys are made per person at setup).
+  const KEY = "TZ6R SLLE FYUB XYHA 7KHU PKX4 OUBK XUX4";
   const q = new URLSearchParams(location.search);
   let as = q.get("as") || "owner", tab = q.get("tab") || "profile";
   const mfa = { on: q.get("mfa") === "on", step: q.get("mfastep") ? +q.get("mfastep") : -1, method: "Authenticator app" };
@@ -75,14 +77,13 @@
     el.querySelector(".segcount").textContent = `${at + 1} of ${n}`;
     el.setAttribute("aria-valuetext", `Step ${at + 1} of ${n}: ${name}`);
   }
-  const MFA_STEPS = () => (mfa.method === "Passkey" ? ["Choose a method", "Create your passkey", "Save recovery codes"] : ["Choose a method", "Scan the code", "Enter the code", "Save recovery codes"]);
+  const MFA_STEPS = () => ["Get an authenticator app", "Scan your code", "Enter the code", "Save recovery codes"];
   function mfaFlow() {
     const S = MFA_STEPS(), i = mfa.step, name = S[i];
     let body = "";
-    if (name === "Choose a method") body = `<div class="ob-tiles" style="grid-template-columns:1fr">${[["Authenticator app", "A free app on your phone gives you a 6-digit code. Recommended.", "lock"], ["Passkey", "Use this device's fingerprint, face or PIN. No codes to type.", "user"]].map(([v, d, k]) => `<label class="ob-tile"><input type="radio" name="mfam" value="${v}"${mfa.method === v ? " checked" : ""}><span class="ic">${ic(k)}</span><b>${v}</b><small>${d}</small></label>`).join("")}</div>`;
-    if (name === "Scan the code") body = `<p>Open your authenticator app and scan this code. Can't scan? Type the key instead.</p><div class="qr" role="img" aria-label="QR code (illustration)"></div><p class="key">JBSW Y3DP EHPK 3PXP</p>`;
+    if (name === "Get an authenticator app") body = `<p>Use any authenticator app on your phone, for example <b>Microsoft Authenticator</b> or <b>Google Authenticator</b>. Already have one? Carry on.</p><p class="t-cap">The app makes a new 6-digit code every 30 seconds. CarworX never sees your phone.</p>`;
+    if (name === "Scan your code") body = `<p>In your app, choose <b>Add account</b>, then scan this code.</p><img class="qrimg" src="qr-demo.svg" alt="QR code to add CarworX to your authenticator app" width="220" height="220"><p class="t-cap">This code is yours alone. It's made fresh when you set up, works for your account only, and isn't shown again.</p><details class="manual"><summary>Can't scan? Type the key instead</summary><p class="key">${KEY}</p><p class="t-cap">Account: CarworX · time-based</p></details>`;
     if (name === "Enter the code") body = `<label class="field">The 6-digit code from your app<input class="ob-input otp" name="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="••••••"></label><p class="ob-err" role="alert" data-otperr></p>`;
-    if (name === "Create your passkey") body = `<p>Your browser will ask you to confirm with your fingerprint, face or device PIN.</p><button type="button" class="cx-btn outlined sm" data-mfa-next>Create passkey</button>`;
     if (name === "Save recovery codes") body = `<p>If you lose your phone, each of these codes signs you in once. Keep them somewhere safe.</p><div class="codes">${["4F7K-29QD", "M8X2-LP4T", "Q3ZR-71VN", "B6HW-X0CJ", "T9EA-5KMS", "R2YU-8DGF", "H5NB-3QWL", "C7PV-6ZRT"].map((c) => `<span>${c}</span>`).join("")}</div><div class="acts" style="flex-wrap:nowrap"><button type="button" class="cx-btn outlined sm">Download</button><button type="button" class="cx-btn outlined sm">Copy</button></div><div class="ob-consent"><label class="cx-check"><input type="checkbox" name="saved"><span class="cx-box" aria-hidden="true">${ic("tick")}</span><span>I've saved my recovery codes</span></label></div><p class="ob-err" role="alert" data-savederr></p>`;
     return `<div class="box" data-mfabox><h2>Set up two-step sign-in</h2><div class="ob-segbar" data-mfaseg aria-label="Two-step sign-in setup"></div>${body}
       <div class="acts"><button type="button" class="ob-back" data-mfa-back>${i === 0 ? "Cancel" : "Back"}</button><button type="button" class="cx-btn primary" data-mfa-next>${i === S.length - 1 ? "Turn on" : "Next"}</button></div></div>`;
@@ -96,14 +97,14 @@
         <div class="acts"><button type="button" class="cx-btn primary">Save</button></div></div>
         <p class="ob-private">${ic("lock")}<span>We never ask for your ID number or date of birth.</span></p>`,
     security: () => `<div class="box"><h2>Two-step sign-in ${mfa.on ? '<span class="cx-label">On</span>' : '<span class="cx-label warn">Off</span>'}</h2>
-        <p>${mfa.on ? `${mfa.method} · added 12 Nov 2026. Each new sign-in needs it.` : "Adds a second check when you sign in, so a stolen password isn't enough."}</p>
-        <p class="t-cap">${{ owner: "Required before anyone can change payment settings, when payments open.", manager: "Strongly recommended: you can edit the listing and invite people.", staff: "Recommended.", driver: "Recommended." }[as]}</p>
+        <p>${mfa.on ? "Authenticator app · added 12 Nov 2026. Each new sign-in asks for a code from it." : "Adds a 6-digit code from an authenticator app (such as Microsoft Authenticator or Google Authenticator) when you sign in, so a stolen password isn't enough."}</p>
+        <p class="t-cap">${{ owner: "Required before anyone can change payment settings, when payments open (to confirm).", manager: "Strongly recommended: you can edit the listing and invite people.", staff: "Recommended.", driver: "Recommended." }[as]}</p>
         ${mfa.on ? `<div class="line"><span>Recovery codes<small>8 one-time codes</small></span><button type="button" class="ob-link">Make new codes</button></div><div class="line"><span>Turn off two-step sign-in</span><button type="button" class="ob-link danger" data-mfa-off>Turn off</button></div>` : mfa.step < 0 ? `<div><button type="button" class="cx-btn primary sm" data-mfa-start>Turn on two-step sign-in</button></div>` : ""}
       </div>
       ${!mfa.on && mfa.step >= 0 ? mfaFlow() : ""}
       <div class="box"><h2>Signing in</h2>
         <div class="line"><span>Password<small>Last changed 3 Nov 2026</small></span><button type="button" class="ob-link">Change</button></div>
-        <div class="line"><span>Passkey for sign-in<small>Sign in with your fingerprint, face or PIN instead of a password</small></span><button type="button" class="ob-link">Add</button></div></div>
+</div>
       <div class="box"><h2>Where you're signed in</h2>
         <div class="line"><span>This device<small>Chrome on Android · active now</small></span><span class="cx-label info">This device</span></div>
         <div class="line"><span>Safari on iPhone<small>Last used 10 Nov 2026, 18:20 SAST</small></span><button type="button" class="ob-link">Sign out</button></div>
@@ -134,7 +135,6 @@
   function render() {
     if (mounted !== as) { SHELL.mount(document.querySelector("[data-shell]"), { role: as, current: tab === "security" ? "security" : tab === "business" ? "business" : "profile" }); mounted = as; }
     if (!TABS().some(([k]) => k === tab)) tab = "profile";
-    document.querySelector("[data-roles]").innerHTML = [["driver", "Driver · Thandi"], ["staff", "Staff · Lerato"], ["manager", "Manager · Ayanda"], ["owner", "Owner · Sipho"]].map(([v, t]) => `<label class="ob-pick"><input type="radio" name="as" value="${v}"${v === as ? " checked" : ""}>${t}</label>`).join("");
     document.querySelector("[data-ini]").textContent = SHELL.WHO[as].ini;
     document.querySelector("[data-sub]").textContent = SHELL.WHO[as].sub;
     document.querySelector("[data-tabs]").innerHTML = TABS().map(([k, t]) => `<button type="button" role="tab" aria-selected="${k === tab}" data-tab="${k}">${t}</button>`).join("");
@@ -160,8 +160,6 @@
   document.addEventListener("input", (e) => { if (e.target.name === "otp") document.querySelector("[data-otperr]").textContent = ""; });
   document.addEventListener("change", (e) => {
     if (e.target.name === "saved") document.querySelector("[data-savederr]").textContent = "";
-    if (e.target.name === "as") { as = e.target.value; mfa.on = false; mfa.step = -1; render(); }
-    if (e.target.name === "mfam") { mfa.method = e.target.value; render(); }
   });
   render();
   if (q.get("menu")) document.querySelector("[data-sh-menu]").click();
