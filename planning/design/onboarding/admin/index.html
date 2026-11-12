@@ -49,7 +49,8 @@
   const bar = (key, opts) => `<div class="ob-filterbar" role="group" aria-label="Filter">${opts.map((o) => `<button type="button" class="cx-chip" aria-pressed="${(filt[key] || opts[0]) === o}" data-f="${key}" data-v="${o}">${o}</button>`).join("")}</div>`;
   const more = (team) => `<div class="ob-scrollrow" role="group" aria-label="More filters" style="gap:8px;align-items:end"><label class="field" style="display:grid;gap:4px;font:500 12px var(--font-sans);color:var(--muted)">From<input class="ob-input" type="date" value="2026-11-09" style="width:auto;min-height:44px;font-size:14px"></label><label style="display:grid;gap:4px;font:500 12px var(--font-sans);color:var(--muted)">To<input class="ob-input" type="date" value="2026-11-12" style="width:auto;min-height:44px;font-size:14px"></label>${team ? `<label style="display:grid;gap:4px;font:500 12px var(--font-sans);color:var(--muted)">Admin<select class="ob-input" style="width:auto;min-height:44px;font-size:14px"><option>Everyone</option><option>Naledi Dube</option><option>Kagiso Molefe</option></select></label>` : ""}<button type="button" class="cx-btn outlined sm">Download CSV</button></div>`;
   const head = (eyebrow, title, sub) => `<div class="ad-head"><p class="cx-eyebrow">${eyebrow}</p><h1>${title}</h1>${sub ? `<p class="t-cap" style="margin-top:4px">${sub}</p>` : ""}</div>`;
-  const pick = (key, list, f) => { const v = filt[key]; return !v || v === "All" ? list.filter(f || (() => true)) : list.filter((x) => x.st === v); };
+  // No filter chosen yet: the view's default (for example, Waiting). "All": everything. Otherwise: that status.
+  const pick = (key, list, f) => { const v = filt[key]; if (!v) return list.filter(f || (() => true)); if (v === "All") return list; return list.filter((x) => x.st === v); };
 
   const V = {
     today: () => head("CarworX admin · 12 Nov 2026", "Good morning, Naledi", "Oldest first. Nothing goes live without a person checking it.") + `
