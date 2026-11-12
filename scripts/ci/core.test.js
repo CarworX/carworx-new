@@ -22,11 +22,24 @@ test("database diagnostics expose only fixed labels from private service output"
       diagnostic: "unclassified",
     },
   );
+  assert.deepEqual(
+    rlsFailureSummary({
+      stdout:
+        "FAIL 44_providers.test.sql\nFAIL 50_email_outbox.test.sql\nnot ok 7 - private values must stay private",
+    }),
+    {
+      files: ["44_providers.test.sql", "50_email_outbox.test.sql"],
+      assertions: [7],
+      diagnostic: "unclassified",
+    },
+  );
   for (const [input, expected] of [
     ["must be able to SET ROLE secret-role", "database-role-switch"],
     ["must be owner of secret-table", "database-ownership"],
     ["ERROR SQLSTATE 42501 secret", "database-permission"],
     ["ERROR SQLSTATE 42601 secret", "database-syntax"],
+    ['schema "private-secret" does not exist', "database-missing-schema"],
+    ["permission denied for function secret_function", "database-permission"],
     ["SQLSTATE 42710 secret", "database-duplicate-object"],
     ["SQLSTATE 42P01 secret", "database-missing-relation"],
     ["token=secret malformed SQLSTATE SEC12", "unclassified"],

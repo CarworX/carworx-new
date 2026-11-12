@@ -27,7 +27,10 @@ begin
     'radius_km', p_radius_km, 'applicant_role', 'owner'));
   return public.provider_submit(true, true, 'onboarding-v1');
 end $$;
-grant usage on schema pg_temp to anon, authenticated;
+-- GRANT resolves catalog schema names; pg_temp is a parser alias, not a row.
+do $grant$ begin
+  execute format('grant usage on schema %I to anon, authenticated', pg_my_temp_schema()::regnamespace::text);
+end $grant$;
 grant execute on function pg_temp.submit_application(text,text,text,text,text,text,double precision,double precision,integer)
   to anon, authenticated;
 

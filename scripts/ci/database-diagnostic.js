@@ -13,7 +13,7 @@ export function databaseDiagnostic(result) {
     return "database-role-switch";
   if (/must be owner of/i.test(text)) return "database-ownership";
   if (
-    /SQLSTATE[\s:=(]+42501\b|permission denied for (?:schema|table|relation)/i.test(
+    /SQLSTATE[\s:=(]+42501\b|permission denied for (?:schema|table|relation|function)/i.test(
       text,
     )
   )
@@ -21,6 +21,7 @@ export function databaseDiagnostic(result) {
   if (/SQLSTATE[\s:=(]+42601\b/i.test(text)) return "database-syntax";
   if (/SQLSTATE[\s:=(]+42710\b/i.test(text)) return "database-duplicate-object";
   if (/SQLSTATE[\s:=(]+42P01\b/i.test(text)) return "database-missing-relation";
+  if (/schema .* does not exist/i.test(text)) return "database-missing-schema";
   return "unclassified";
 }
 
@@ -35,6 +36,14 @@ export function rlsFailureSummary(result) {
     "41_catalogue_matrix.test.sql",
     "42_catalogue_review.test.sql",
     "43_search.test.sql",
+    "44_providers.test.sql",
+    "45_providers_matrix.test.sql",
+    "46_forms.test.sql",
+    "47_forms_matrix.test.sql",
+    "48_onboarding.test.sql",
+    "49_onboarding_matrix.test.sql",
+    "50_email_outbox.test.sql",
+    "51_onboarding_paths.test.sql",
   ]);
   return {
     files: [

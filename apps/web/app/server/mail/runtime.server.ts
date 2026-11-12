@@ -17,9 +17,7 @@ export interface MailRuntimeDependencies {
   now?: () => number;
 }
 
-function settings(
-  env: unknown,
-): {
+function settings(env: unknown): {
   vars: MailRuntimeEnv;
   security: ServerConfig;
   connectionString: string;
