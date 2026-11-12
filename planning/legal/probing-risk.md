@@ -18,6 +18,7 @@ A **mobile provider** (a mobile mechanic, a mobile car wash) gives CarworX a pri
 | Rate limits: **30 searches a minute per IP** and **60 per 10 minutes per search cookie**, both fail closed | `limiter.ts` | Slows a single source |
 | No anonymous RPC; the database login can only run the search wrapper | D-081 | No direct database probing |
 | Moving a base while the point stays inside the radius leaves the response byte-identical | Claude 17 §2.1 tests | No side channel through response bytes |
+| **Both-businesses** (premises and comes to you, O2): the premises is public; the service area stays private. A both-listing is in the fixed group when its premises is within the radius, otherwise in the mobile group with no distance, never in both | `20261112120000_onboarding.sql`, `43_search` tests | Same residual risk as mobile. For both, the base is the public premises pin, so the probe learns nothing new about location |
 
 ## 3. The remaining attack, stated plainly
 
@@ -49,7 +50,7 @@ The only signal an attacker gets is **in or out**: "does provider X appear for p
 
 | # | Mitigation | Strength | State |
 |---|---|---|---|
-| M1 | **At onboarding, tell mobile providers plainly** that **someone determined could work out where their base is**, and **advise them to use a base point that isn't their home**, for example a public landmark or business address inside their area. Their radius then still covers their real area | Strongest. Removes the home from the data | **Wording in the terms (section 7)**; Bundle A's application form must show it and record that it was shown |
+| M1 | **At onboarding, tell mobile providers plainly** that **someone determined could work out where their base is**, and **advise them to use a base point that isn't their home**, for example a public landmark or business address inside their area. Their radius then still covers their real area | Strongest. Removes the home from the data | **Wording in the terms (section 7)**; Bundle A's application form must show it and record that it was shown. **O2:** `provider_submit` refuses mobile and both applications without the acknowledgement and records when it was given and which notice version; the form notice ships in O3 |
 | M2 | Keep the controls in section 2, and keep tests A9–A11 required in CI | Medium | Built |
 | M3 | Never publish a mobile provider's suburb or anything derived from the base | Medium | Built (A10) |
 | M4 | **Later:** an admin report of search sources that sweep a grid around a single listing | Detection only | Not built. Proposed after launch |

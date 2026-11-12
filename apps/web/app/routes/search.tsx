@@ -256,7 +256,7 @@ function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
           {mobile.map((p) => (
             <ListingResult
               key={p.public_id}
-              listing={{ ...p, mode: "mobile" }}
+              listing={{ ...p, mode: p.also_premises ? "both" : "mobile" }}
               matched
             />
           ))}

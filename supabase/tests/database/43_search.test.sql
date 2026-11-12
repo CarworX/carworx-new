@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
-select plan(53);
+select plan(63);
 
 -- Fixture ----------------------------------------------------------------------
 insert into public.organisations(id, name) values ('5ea0c000-0000-4000-8000-0000000000a1', 'Search fixture (synthetic)');
@@ -47,7 +47,7 @@ select l.public_id, l.organisation_id,
 from public.listings l where l.organisation_id = '5ea0c000-0000-4000-8000-0000000000a1' and l.mode = 'mobile';
 
 -- Structure and grants ------------------------------------------------------------
-select is(pg_get_userbyid((select proowner from pg_proc where oid = 'private.mobile_eligible_ids(double precision,double precision,text[],uuid,integer)'::regprocedure))::text,
+select is(pg_get_userbyid((select proowner from pg_proc where oid = 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid,integer)'::regprocedure))::text,
   'listing_eligibility', 'eligibility helper owned by listing_eligibility');
 select is(pg_get_userbyid((select proowner from pg_proc where oid = 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)'::regprocedure))::text,
   'listing_projection', 'wrapper owned by listing_projection');
@@ -59,9 +59,9 @@ select ok(not has_function_privilege('anon', 'api.search_listings(double precisi
 select ok(not has_function_privilege('authenticated', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'authenticated cannot execute wrapper');
 select ok(not has_function_privilege('service_role', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'service_role cannot execute wrapper');
 select ok(has_function_privilege('catalogue_server', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'catalogue_server can execute wrapper');
-select ok(not has_function_privilege('catalogue_server', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid,integer)', 'execute')
-  and not has_function_privilege('anon', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid,integer)', 'execute')
-  and not has_function_privilege('authenticated', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid,integer)', 'execute'),
+select ok(not has_function_privilege('catalogue_server', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid,integer)', 'execute')
+  and not has_function_privilege('anon', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid,integer)', 'execute')
+  and not has_function_privilege('authenticated', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid,integer)', 'execute'),
   'only the projection owner can execute the eligibility helper');
 select ok(not has_schema_privilege('anon', 'api', 'usage') and not has_schema_privilege('authenticated', 'api', 'usage')
   and not has_schema_privilege('catalogue_server', 'private', 'usage'), 'no client usage on api; server has no usage on private');
@@ -202,6 +202,63 @@ select is((select count(*)::integer from pg_temp.s('mobile', null, 25, null, nul
   'unknown category returns nothing');
 select throws_ok($$select * from pg_temp.s('fixed', 'srch-fixed', 25, null, null, 20, -33.9, 18.4, 'srch-cat')$$, '22023', null,
   'service and category together rejected');
+
+-- O2 (Claude 23 §10): mode 'both'. A both-listing is in the fixed group when
+-- its premises is within the radius, otherwise in the mobile group through its
+-- private area, never in both. Query point (-33.9, 18.4), radius 10 km;
+-- 0.08993 deg = 9.9997 km (edge in), 0.08994 deg = 10.0008 km (edge out).
+insert into public.services(slug, category_slug, name) values ('srch-both', 'srch-cat', 'Search both');
+insert into public.branches(public_id, organisation_id, name, public_address, public_latitude, public_longitude, coordinate_source_id) values
+  ('5ea0b000-0000-4000-8000-00000000b001', '5ea0c000-0000-4000-8000-0000000000a1', 'Both near', 'Both near', -33.9 + 0.05, 18.4, '5ea0c000-0000-4000-8000-0000000000c1'),
+  ('5ea0b000-0000-4000-8000-00000000b002', '5ea0c000-0000-4000-8000-0000000000a1', 'Both far', 'Both far', -33.9 + 0.2, 18.4, '5ea0c000-0000-4000-8000-0000000000c1'),
+  ('5ea0b000-0000-4000-8000-00000000b003', '5ea0c000-0000-4000-8000-0000000000a1', 'Both edge in', 'Both edge in', -33.9 + 0.08993, 18.4, '5ea0c000-0000-4000-8000-0000000000c1'),
+  ('5ea0b000-0000-4000-8000-00000000b004', '5ea0c000-0000-4000-8000-0000000000a1', 'Both edge out', 'Both edge out', -33.9 + 0.08994, 18.4, '5ea0c000-0000-4000-8000-0000000000c1'),
+  ('5ea0b000-0000-4000-8000-00000000b005', '5ea0c000-0000-4000-8000-0000000000a1', 'Both nowhere', 'Both nowhere', -33.0, 18.4, '5ea0c000-0000-4000-8000-0000000000c1');
+insert into public.listings(public_id, organisation_id, service_slug, branch_public_id, display_name, description, metro, mode, status, provenance_kind, provenance_reference)
+select ('5ea03000-0000-4000-8000-' || substr(b.public_id::text, 25))::uuid, b.organisation_id, 'srch-both', b.public_id,
+  b.name, 'Synthetic both', 'Synthetic Cape', 'both', 'live', 'provider_application', 'synthetic-search'
+from public.branches b where b.public_id::text like '5ea0b000-0000-4000-8000-00000000b00%';
+insert into public.service_areas(listing_public_id, listing_mode, organisation_id, centre_latitude, centre_longitude, radius_km, coordinate_source_id)
+select l.public_id, 'both', l.organisation_id, b.public_latitude, b.public_longitude, case when b.name = 'Both nowhere' then 5 else 30 end,
+  '5ea0c000-0000-4000-8000-0000000000c1'
+from public.listings l join public.branches b on b.public_id = l.branch_public_id where l.mode = 'both';
+
+create temporary table pg_temp.both_fixed as select j from pg_temp.s('fixed', 'srch-both', 10, null, null, 21) j;
+create temporary table pg_temp.both_mobile as select j from pg_temp.s('mobile', 'srch-both', 10, null, null, 21) j;
+select is((select array_agg(j->>'display_name' order by j->>'display_name') from pg_temp.both_fixed),
+  array['Both edge in','Both near'], 'both: premises within the radius (edge included) is in the fixed group');
+select is((select array_agg(j->>'display_name' order by j->>'display_name') from pg_temp.both_mobile),
+  array['Both edge out','Both far'], 'both: premises outside the radius but area covering the point is in the mobile group');
+select is((select count(*)::integer from (select j->>'public_id' from pg_temp.both_fixed intersect select j->>'public_id' from pg_temp.both_mobile) x), 0,
+  'both: never in both groups');
+select ok(not exists(select from (select j from pg_temp.both_fixed union all select j from pg_temp.both_mobile) u where u.j->>'display_name' = 'Both nowhere'),
+  'both: neither premises nor area in range means no result');
+select ok((select bool_and(j->>'mode' = 'both' and j->>'public_address' is not null and j->>'distance_bucket' is not null) from pg_temp.both_fixed),
+  'both in the fixed group carries its public premises and straight-line bucket');
+select ok((select bool_and(j->>'mode' = 'both' and j->>'public_address' is null and j->>'public_latitude' is null and j->>'distance_bucket' is null) from pg_temp.both_mobile),
+  'both in the mobile group carries no address, coordinates or distance');
+-- Mobile-group paging, one row a page: no gaps or duplicates.
+create temporary table pg_temp.both_pages(n int, j jsonb);
+do $$ declare a uuid; page int := 0; got int; begin
+  loop
+    page := page + 1;
+    insert into pg_temp.both_pages select page, x from pg_temp.s('mobile', 'srch-both', 10, null, a, 1) x;
+    get diagnostics got = row_count;
+    exit when got < 1 or page > 5;
+    select (j->>'public_id')::uuid into a from pg_temp.both_pages where n = page;
+  end loop;
+end $$;
+select is((select array_agg(j->>'display_name' order by n) from pg_temp.both_pages),
+  (select array_agg(j->>'display_name' order by j->>'public_id') from pg_temp.both_mobile), 'both: mobile pages of one have no gaps or duplicates');
+do $$ begin perform set_config('tests.both_before', (select string_agg(j::text, ',' order by j->>'public_id') from pg_temp.s('mobile', 'srch-both', 10, null, null, 21) j), true); end $$;
+update public.service_areas set centre_latitude = -33.9 + 0.15, radius_km = 25
+  where listing_public_id = '5ea03000-0000-4000-8000-00000000b002';
+select is((select string_agg(j::text, ',' order by j->>'public_id') from pg_temp.s('mobile', 'srch-both', 10, null, null, 21) j),
+  current_setting('tests.both_before'), 'both: moving the private base within coverage leaves mobile output byte-identical');
+select ok((select string_agg(j::text, '') from pg_temp.s('mobile', 'srch-both', 10, null, null, 21) j) !~ '(centre|radius|organisation|provenance|5ea0c000|5ea0b000)',
+  'both: mobile output exposes no private centre, radius, organisation or branch IDs');
+select is((select count(*)::integer from public.listing_public where mode = 'both' and public_address is not null), 5,
+  'both: the premises is public in listing_public');
 
 select * from finish();
 rollback;
