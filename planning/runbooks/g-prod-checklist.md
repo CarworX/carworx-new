@@ -89,7 +89,6 @@ Each stays **open until evidenced**; never counted as a pass from screenshots (D
 |---|---|---|---|---|---|
 | G1 | Turnstile widgets made (needed by Bundle B forms) | Claude 17 §5 | Owner ([guide 12](../owner-guides/12-turnstile.md)) | Sitekeys sent; secret set | 🟡 Guide in #59 |
 | G2 | **Owner-run release** of the approved `main` commit, with smoke checks passing | PLAN §12, §18 | Owner | Version ID, SHA and smoke receipt (runbook §9–10) | ⛔ everything above |
-
 | G3 | Create and verify planned `support@carworx.app`; configure the non-widget contact before launch | [Owner decision/backlog](../codex/support-mail-launch-backlog.md), [#74](https://github.com/CarworX/carworx-new/issues/74) | Owner; Codex assists when authorised | Domain control, monitored inbox/operator, verified inbound/reply test, `SUPPORT_CONTACT_EMAIL` set, no-JS/blocked-widget launch smoke and owner sign-off | 🔴 Planned, not created; due before G-PROD, not an immediate Bundle B implementation blocker |
 
 ## How to update this file
