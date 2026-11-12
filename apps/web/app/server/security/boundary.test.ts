@@ -60,6 +60,9 @@ describe("mutation checks", () => {
       { origin: "https://evil.example", cookie: goodCookie },
     ],
     ["a missing Origin", { origin: null, cookie: goodCookie }],
+    // An opaque origin stays refused even with a valid CSRF token: the
+    // no-JS fix is the referrer policy, never a weaker Origin check.
+    ["a literal Origin: null", { origin: "null", cookie: goodCookie }],
     [
       "a look-alike Origin",
       { origin: "http://localhost:5173.evil.example", cookie: goodCookie },
@@ -207,11 +210,37 @@ describe("response finalisation", () => {
     ).headers;
     expect(headers.get("X-Content-Type-Options")).toBe("nosniff");
     expect(headers.get("X-Frame-Options")).toBe("DENY");
-    expect(headers.get("Referrer-Policy")).toBe("no-referrer");
+    expect(headers.get("Referrer-Policy")).toBe("same-origin");
     expect(headers.get("Content-Security-Policy")).toContain(
       "frame-ancestors 'none'",
     );
   });
+
+  it.each(["/auth/sign-in", "/account", "/admin/support", "/org", "/org/team"])(
+    "%s keeps referrers same-origin, so native form posts carry a real Origin",
+    (path) => {
+      const policy = finalizeResponse(
+        new Request(`${APP}${path}`),
+        new Response("x"),
+        config,
+      ).headers.get("Referrer-Policy");
+      // never no-referrer: Chromium then sends `Origin: null` on form posts.
+      expect(policy).toBe("same-origin");
+    },
+  );
+
+  it.each(["/", "/search", "/p/abc", "/fines"])(
+    "%s keeps the public default referrer policy",
+    (path) => {
+      expect(
+        finalizeResponse(
+          new Request(`${APP}${path}`),
+          new Response("x"),
+          config,
+        ).headers.get("Referrer-Policy"),
+      ).toBe("strict-origin-when-cross-origin");
+    },
+  );
 
   it("sets the CSRF cookie only on HTML responses", async () => {
     const html = await withSecurityBoundary(
