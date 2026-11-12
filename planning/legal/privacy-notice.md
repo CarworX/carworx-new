@@ -85,7 +85,7 @@ Our assessment is available on request.
 |---|---|
 | Your account | Until you close it, then deleted within 30 days |
 | Search place text | Not kept |
-| Search abuse counters | Up to 24 hours [after gap R-1 is fixed] |
+| Search and form abuse counters | Deleted when their time window ends: at most 10 minutes |
 | A mobile provider's base location | Until the listing is removed, then 30 days |
 | Raw verification evidence | Deleted within 30 days of the decision |
 | Support messages | 3 years after the case closes |
@@ -135,4 +135,4 @@ We'll post any change here with a new version number and date, and email account
 - **s69:** marketing needs an opt-in box, off by default (Claude 17 §3). Each marketing email must carry the sender's identity and an address for opt-out requests (s69(4)). ECTA s45 is **not** cited: POPIA s110 and its Schedule repeal ECTA ss45, 50 and 51, and s110 commenced on 30 June 2021 (Proclamation R.21 of 2020, GG 43461). Regulation 6 requires written marketing consent and says opt-out isn't consent. Marketing isn't planned for launch.
 - **Google (PLAN §9.1):** scopes `openid email profile` only; Google named as a sign-in provider. Done in sections 3 and 5.
 - **Search data:** matches PLAN §6.2 and D-082 (geocodes never stored). The privacy claim "discard" relies on A17.
-- **Gap R-1:** the limiter Durable Objects currently keep their counter rows with no expiry (`limiter.ts` at `b899190` has no alarm or delete). The 24-hour claim in section 7 is **false until that's fixed**. See the retention schedule.
+- **Gap R-1 (fixed 2026-11-12):** each limiter Durable Object sets a storage alarm for its window end and deletes its counter row then (`limiter.ts`, tested in `limiter.test.ts`). Per-visitor windows are 1 minute (IP search), 10 minutes (search cookie) and 10 minutes (each form, per IP), so "at most 10 minutes" is true. Alarms can run slightly late; a stale row is ignored and overwritten on access. The two 24-hour Mapbox quota counters are global and hold no personal data.
