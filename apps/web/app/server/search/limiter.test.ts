@@ -1,6 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  GEOCODE_DAILY,
+  MAP_DAILY,
   IP_WINDOW,
   SESSION_WINDOW,
   FORM_WINDOW,
@@ -10,25 +12,40 @@ import {
   decide,
   type Counter,
   type LimiterNamespace,
+  type LimiterStorage,
+  type Window,
 } from "./limiter";
 
 const SALT = "synthetic-limiter-salt-".repeat(2);
 
-/** In-memory stand-in for one Durable Object's transactional storage (tests only). */
-interface MemoryStorage {
-  get<T>(key: string): Promise<T | undefined>;
-  put(key: string, value: unknown): Promise<void>;
-  transaction<T>(fn: (txn: MemoryStorage) => Promise<T>): Promise<T>;
-}
+/** In-memory stand-in for one Durable Object's transactional storage and alarm (tests only). */
+type MemoryStorage = LimiterStorage & {
+  data: Map<string, unknown>;
+  alarm: number | null;
+};
 function memoryStorage(): MemoryStorage {
   const data = new Map<string, unknown>();
   const storage: MemoryStorage = {
+    data,
+    alarm: null,
     get: <T>(key: string) => Promise.resolve(data.get(key) as T | undefined),
     put: (key: string, value: unknown) => {
       data.set(key, value);
       return Promise.resolve();
     },
-    transaction: <T>(fn: (txn: MemoryStorage) => Promise<T>) => fn(storage),
+    transaction: <T>(fn: (txn: LimiterStorage) => Promise<T>) => fn(storage),
+    setAlarm: (time: number) => {
+      storage.alarm = time;
+      return Promise.resolve();
+    },
+    deleteAlarm: () => {
+      storage.alarm = null;
+      return Promise.resolve();
+    },
+    deleteAll: () => {
+      data.clear();
+      return Promise.resolve();
+    },
   };
   return storage;
 }
@@ -183,5 +200,119 @@ describe("form limits (P2-5)", () => {
     expect(
       await checkFormLimit(namespace(), "short", "198.51.100.7", "demand"),
     ).toEqual({ kind: "unavailable" });
+  });
+});
+
+describe("counter retention (R-1)", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  function check(object: SearchLimiter, window: Window) {
+    return object.fetch(
+      new Request("https://search-limiter.invalid/check", {
+        method: "POST",
+        body: JSON.stringify(window),
+      }),
+    );
+  }
+
+  /** Fire the alarm the way workerd does: at (or after) its scheduled time. */
+  async function fireAlarm(
+    object: SearchLimiter,
+    storage: MemoryStorage,
+    lateMs = 0,
+  ) {
+    expect(storage.alarm).not.toBeNull();
+    vi.setSystemTime((storage.alarm ?? 0) + lateMs);
+    storage.alarm = null;
+    await object.alarm();
+  }
+
+  it.each([
+    ["ip", IP_WINDOW],
+    ["session", SESSION_WINDOW],
+    ["form", FORM_WINDOW],
+    ["geocode quota", GEOCODE_DAILY],
+    ["map quota", MAP_DAILY],
+  ])(
+    "%s: the row is deleted when its window ends, never later",
+    async (_, window) => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(1_800_000_000_000);
+      const storage = memoryStorage();
+      const object = new SearchLimiter({ storage });
+      await (await check(object, window)).body?.cancel();
+      expect(storage.data.size).toBe(1);
+      expect(storage.alarm).toBe(1_800_000_000_000 + window.windowMs);
+      // More requests in the same window keep the same deadline.
+      vi.setSystemTime(1_800_000_000_000 + window.windowMs - 1);
+      await (await check(object, window)).body?.cancel();
+      expect(storage.alarm).toBe(1_800_000_000_000 + window.windowMs);
+      await fireAlarm(object, storage);
+      expect(storage.data.size).toBe(0);
+      expect(storage.alarm).toBeNull();
+    },
+  );
+
+  it("an early alarm keeps the row and re-arms for the window end", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(10_000);
+    const storage = memoryStorage();
+    const object = new SearchLimiter({ storage });
+    await (await check(object, IP_WINDOW)).body?.cancel();
+    vi.setSystemTime(10_000 + IP_WINDOW.windowMs - 5);
+    await object.alarm();
+    expect(storage.data.size).toBe(1);
+    expect(storage.alarm).toBe(10_000 + IP_WINDOW.windowMs);
+  });
+
+  it("a stale row is ignored on access and the alarm moves to the new window", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(10_000);
+    const storage = memoryStorage();
+    const object = new SearchLimiter({ storage });
+    for (let i = 0; i <= FORM_WINDOW.limit; i++)
+      await (await check(object, FORM_WINDOW)).body?.cancel();
+    // The alarm is late; the window has ended, so the next post is fresh.
+    const later = 10_000 + FORM_WINDOW.windowMs + 1;
+    vi.setSystemTime(later);
+    const reply = await check(object, FORM_WINDOW);
+    expect(await reply.json()).toEqual({ allowed: true });
+    expect(storage.data.get("window")).toEqual({
+      start: later,
+      count: 1,
+      windowMs: FORM_WINDOW.windowMs,
+    });
+    expect(storage.alarm).toBe(later + FORM_WINDOW.windowMs);
+    await fireAlarm(object, storage, 250);
+    expect(storage.data.size).toBe(0);
+  });
+
+  it("an alarm on a legacy or damaged row deletes it", async () => {
+    for (const row of [
+      { start: 1, count: 3 },
+      { start: "x", count: 1, windowMs: 60_000 },
+      undefined,
+    ]) {
+      const storage = memoryStorage();
+      if (row) storage.data.set("window", row);
+      storage.alarm = 1;
+      await new SearchLimiter({ storage }).alarm();
+      expect(storage.data.size).toBe(0);
+      expect(storage.alarm).toBeNull();
+    }
+  });
+
+  it("a refused (over-limit) request never extends the row's life", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(50_000);
+    const storage = memoryStorage();
+    const object = new SearchLimiter({ storage });
+    for (let i = 0; i < IP_WINDOW.limit + 10; i++) {
+      vi.setSystemTime(50_000 + i * 100);
+      await (await check(object, IP_WINDOW)).body?.cancel();
+    }
+    expect(storage.alarm).toBe(50_000 + IP_WINDOW.windowMs);
   });
 });
