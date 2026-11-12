@@ -17,6 +17,7 @@ import {
 // /auth/mfa; the database refuses aal1 too. SYNTHETIC DATA ONLY.
 
 const ADMIN_PATHS = [
+  "/admin/today",
   "/admin/listings",
   "/admin/listings?status=live",
   "/admin/claims",
