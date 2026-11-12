@@ -1,0 +1,317 @@
+/* Browser copy of apps/web/app/styles/tokens.generated.css for the static onboarding concepts.
+ * Only change: Tailwind's '@theme static' block is a plain ':root' block (browsers drop @theme),
+ * and the Tailwind-only '--x-*: initial' resets are removed. Do not edit by hand. */
+/* GENERATED from planning/design/brand/tokens.json (v4, sha256 ffaa5e7d633392553b87ed8117224a5b3fa35b42b144c8962f4edf063df5b7ef).
+ * Do not edit. Run `pnpm --filter @carworx/web tokens` to regenerate;
+ * the unit tests and `tokens:check` fail when this file is stale. */
+
+@font-face {
+  font-family: "Geist";
+  src: url("./fonts/Geist-latin.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("./fonts/GeistMono-latin.woff2") format("woff2");
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("./fonts/Caveat-latin.woff2") format("woff2");
+  font-weight: 500 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --color-canvas: #f2f1ee;
+  --color-canvas-2: #e9e7e2;
+  --color-dot: rgba(13, 15, 18, 0.12);
+  --color-surface: #ffffff;
+  --color-frost: rgba(255, 255, 255, 0.82);
+  --color-hair: rgba(13, 15, 18, 0.09);
+  --color-line: #dedcd6;
+  --color-control-edge: #8b929b;
+  --color-key-side: #e2e0db;
+  --color-ink: #0d0f12;
+  --color-graphite: #1c2128;
+  --color-muted: #5b6470;
+  --color-quiet: #727a85;
+  --color-steel: #8a97a6;
+  --color-blue: #3d6dff;
+  --color-blue-ink: #2a54d4;
+  --color-blue-soft: #a9c0ff;
+  --color-sky: #e3eaff;
+  --color-signal: #ff3b0a;
+  --color-signal-soft: #ff6a33;
+  --color-apricot: #ffb08a;
+  --color-peach: #ffe3d4;
+  --color-peach-ink: #8a2a0a;
+  --color-note: #ffe9a6;
+  --color-ok: #1e6b45;
+  --color-ok-bg: #e7f4ec;
+  --color-warn: #8a5300;
+  --color-warn-bg: #fff4e0;
+  --color-err: #a61b1b;
+  --color-err-bg: #fdecea;
+  --color-paper: #f4efe6;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --font-sans:
+    "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --font-hand: "Caveat", "Segoe Print", cursive;
+  --text-display-xl: 76px;
+  --text-display-xl--line-height: 78px;
+  --text-display-xl--font-weight: 500;
+  --text-display-xl--letter-spacing: -0.045em;
+  --text-display-lg: 56px;
+  --text-display-lg--line-height: 58px;
+  --text-display-lg--font-weight: 500;
+  --text-display-lg--letter-spacing: -0.04em;
+  --text-heading: 32px;
+  --text-heading--line-height: 36px;
+  --text-heading--font-weight: 500;
+  --text-heading--letter-spacing: -0.03em;
+  --text-title: 22px;
+  --text-title--line-height: 28px;
+  --text-title--font-weight: 500;
+  --text-title--letter-spacing: -0.02em;
+  --text-kpi: 56px;
+  --text-kpi--line-height: 56px;
+  --text-kpi--font-weight: 200;
+  --text-kpi--letter-spacing: -0.055em;
+  --text-lede: 19px;
+  --text-lede--line-height: 29px;
+  --text-lede--font-weight: 400;
+  --text-body: 16px;
+  --text-body--line-height: 25px;
+  --text-body--font-weight: 400;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 21px;
+  --text-body-sm--font-weight: 400;
+  --text-label: 15px;
+  --text-label--line-height: 20px;
+  --text-label--font-weight: 500;
+  --text-caption: 13px;
+  --text-caption--line-height: 18px;
+  --text-caption--font-weight: 400;
+  --text-eyebrow: 12px;
+  --text-eyebrow--line-height: 17px;
+  --text-eyebrow--font-weight: 500;
+  --text-eyebrow--letter-spacing: 0.08em;
+  --text-price: 15px;
+  --text-price--line-height: 20px;
+  --text-price--font-weight: 500;
+  --text-timer: 28px;
+  --text-timer--line-height: 28px;
+  --text-timer--font-weight: 500;
+  --text-timer--letter-spacing: -0.03em;
+  --text-note: 24px;
+  --text-note--line-height: 25px;
+  --text-note--font-weight: 600;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-24: 96px;
+  --radius-xs: 6px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-phone: 44px;
+  --radius-pill: 999px;
+  --radius-icon: 22.37%;
+  --shadow-1:
+    0 1px 1px rgba(13, 15, 18, 0.04), 0 2px 6px rgba(13, 15, 18, 0.04),
+    0 8px 24px rgba(13, 15, 18, 0.06);
+  --shadow-2:
+    0 1px 2px rgba(13, 15, 18, 0.05), 0 8px 16px rgba(13, 15, 18, 0.05),
+    0 16px 32px rgba(13, 15, 18, 0.08), 0 40px 80px rgba(13, 15, 18, 0.08);
+  --shadow-3:
+    0 2px 3px rgba(13, 15, 18, 0.06), 0 8px 24px rgba(13, 15, 18, 0.07),
+    0 32px 64px rgba(13, 15, 18, 0.1), 0 64px 120px rgba(13, 15, 18, 0.1);
+  --shadow-key:
+    inset 0 1px 0 #ffffff, inset 0 -2px 0 rgba(13, 15, 18, 0.04),
+    0 6px 0 -1px #e2e0db, 0 1px 2px rgba(13, 15, 18, 0.05),
+    0 8px 16px rgba(13, 15, 18, 0.05), 0 16px 32px rgba(13, 15, 18, 0.08);
+  --shadow-key-row:
+    inset 0 1px 0 #ffffff, 0 3px 0 -1px #e2e0db,
+    0 1px 2px rgba(13, 15, 18, 0.06), 0 8px 16px rgba(13, 15, 18, 0.05);
+  --blur-frost: 18px;
+  --blur-glow: 50px;
+}
+
+/* Studio names, as in brand/studio/tokens.css, for the cx- component styles. */
+:root {
+  --canvas: var(--color-canvas);
+  --canvas-2: var(--color-canvas-2);
+  --dot: var(--color-dot);
+  --surface: var(--color-surface);
+  --frost: var(--color-frost);
+  --hair: var(--color-hair);
+  --line: var(--color-line);
+  --control-edge: var(--color-control-edge);
+  --key-side: var(--color-key-side);
+  --ink: var(--color-ink);
+  --graphite: var(--color-graphite);
+  --muted: var(--color-muted);
+  --quiet: var(--color-quiet);
+  --steel: var(--color-steel);
+  --blue: var(--color-blue);
+  --blue-ink: var(--color-blue-ink);
+  --blue-soft: var(--color-blue-soft);
+  --sky: var(--color-sky);
+  --signal: var(--color-signal);
+  --signal-soft: var(--color-signal-soft);
+  --apricot: var(--color-apricot);
+  --peach: var(--color-peach);
+  --peach-ink: var(--color-peach-ink);
+  --note: var(--color-note);
+  --ok: var(--color-ok);
+  --ok-bg: var(--color-ok-bg);
+  --warn: var(--color-warn);
+  --warn-bg: var(--color-warn-bg);
+  --err: var(--color-err);
+  --err-bg: var(--color-err-bg);
+  --paper: var(--color-paper);
+  --white: var(--color-white);
+  --black: var(--color-black);
+  --space-1: var(--spacing-1);
+  --space-2: var(--spacing-2);
+  --space-3: var(--spacing-3);
+  --space-4: var(--spacing-4);
+  --space-6: var(--spacing-6);
+  --space-8: var(--spacing-8);
+  --space-10: var(--spacing-10);
+  --space-12: var(--spacing-12);
+  --space-16: var(--spacing-16);
+  --space-24: var(--spacing-24);
+  --sh-1: var(--shadow-1);
+  --sh-2: var(--shadow-2);
+  --sh-3: var(--shadow-3);
+  --sh-key: var(--shadow-key);
+  --sh-key-row: var(--shadow-key-row);
+}
+
+/* One utility per type style: family, size, line height, weight, tracking. */
+@utility type-display-xl {
+  font-family: var(--font-sans);
+  font-size: var(--text-display-xl);
+  line-height: var(--text-display-xl--line-height);
+  font-weight: var(--text-display-xl--font-weight);
+  letter-spacing: var(--text-display-xl--letter-spacing);
+}
+@utility type-display-lg {
+  font-family: var(--font-sans);
+  font-size: var(--text-display-lg);
+  line-height: var(--text-display-lg--line-height);
+  font-weight: var(--text-display-lg--font-weight);
+  letter-spacing: var(--text-display-lg--letter-spacing);
+}
+@utility type-heading {
+  font-family: var(--font-sans);
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
+  font-weight: var(--text-heading--font-weight);
+  letter-spacing: var(--text-heading--letter-spacing);
+}
+@utility type-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-title);
+  line-height: var(--text-title--line-height);
+  font-weight: var(--text-title--font-weight);
+  letter-spacing: var(--text-title--letter-spacing);
+}
+@utility type-kpi {
+  font-family: var(--font-sans);
+  font-size: var(--text-kpi);
+  line-height: var(--text-kpi--line-height);
+  font-weight: var(--text-kpi--font-weight);
+  letter-spacing: var(--text-kpi--letter-spacing);
+}
+@utility type-lede {
+  font-family: var(--font-sans);
+  font-size: var(--text-lede);
+  line-height: var(--text-lede--line-height);
+  font-weight: var(--text-lede--font-weight);
+  letter-spacing: 0;
+}
+@utility type-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: var(--text-body--font-weight);
+  letter-spacing: 0;
+}
+@utility type-body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: var(--text-body-sm--font-weight);
+  letter-spacing: 0;
+}
+@utility type-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: var(--text-label--font-weight);
+  letter-spacing: 0;
+}
+@utility type-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  font-weight: var(--text-caption--font-weight);
+  letter-spacing: 0;
+}
+@utility type-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  line-height: var(--text-eyebrow--line-height);
+  font-weight: var(--text-eyebrow--font-weight);
+  letter-spacing: var(--text-eyebrow--letter-spacing);
+}
+@utility type-price {
+  font-family: var(--font-mono);
+  font-size: var(--text-price);
+  line-height: var(--text-price--line-height);
+  font-weight: var(--text-price--font-weight);
+  letter-spacing: 0;
+}
+@utility type-timer {
+  font-family: var(--font-mono);
+  font-size: var(--text-timer);
+  line-height: var(--text-timer--line-height);
+  font-weight: var(--text-timer--font-weight);
+  letter-spacing: var(--text-timer--letter-spacing);
+}
+@utility type-note {
+  font-family: var(--font-hand);
+  font-size: var(--text-note);
+  line-height: var(--text-note--line-height);
+  font-weight: var(--text-note--font-weight);
+  letter-spacing: 0;
+}

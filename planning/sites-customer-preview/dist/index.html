@@ -1,0 +1,1420 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarworX — Car care, booked properly</title>
+<meta name="description" content="CarworX web design concept: Studio, refinement pass 1. Light, calm and tactile. Concept, not final.">
+<style>@font-face{font-family:Geist;src:url(/fonts/Geist-latin.woff2)}@font-face{font-family:"Geist Mono";src:url(/fonts/GeistMono-latin.woff2)}@font-face{font-family:Caveat;src:url(/fonts/Caveat-latin.woff2)}</style>
+<style>
+:root{
+  --canvas:#f2f1ee;
+  --canvas-deep:#e8e7e3;
+  --dot:rgba(13,15,18,.12);
+  --ink:#0d0f12;
+  --graphite:#1c2128;
+  --muted:#5b6470;
+  --quiet:#727a85;
+  --steel:#8a97a6;
+  --hair:rgba(13,15,18,.08);
+  --white:#ffffff;
+  --frost:rgba(255,255,255,.62);
+  --frost-strong:rgba(255,255,255,.82);
+  --frost-edge:rgba(255,255,255,.9);
+  --blue:#3d6dff;
+  --blue-ink:#2a54d4;
+  --blue-soft:#a9c0ff;
+  --sky:#e3eaff;
+  --signal:#ff3b0a;
+  --apricot:#ffb08a;
+  --peach:#ffe3d4;
+  --note:#ffe9a6;
+  --key-side:#e2e0db;
+  --f-sans:"Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --f-hand:"Caveat", "Segoe Print", cursive;
+  /* 8 px rhythm */
+  --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:40px; --s6:48px; --s8:64px; --s10:80px; --s12:96px;
+  --r-sm:12px; --r:16px; --r-md:24px; --r-lg:32px;
+  /* one shadow scale: box-shadow and drop-shadow forms of the same three steps */
+  --sh-1:0 1px 1px rgba(13,15,18,.04),0 2px 6px rgba(13,15,18,.04),0 8px 24px rgba(13,15,18,.06);
+  --sh-2:0 1px 2px rgba(13,15,18,.05),0 8px 16px rgba(13,15,18,.05),0 16px 32px rgba(13,15,18,.08),0 40px 80px rgba(13,15,18,.08);
+  --sh-3:0 2px 3px rgba(13,15,18,.06),0 8px 24px rgba(13,15,18,.07),0 32px 64px rgba(13,15,18,.10),0 64px 120px rgba(13,15,18,.10);
+  --ds-2:drop-shadow(0 2px 2px rgba(13,15,18,.07)) drop-shadow(0 16px 24px rgba(13,15,18,.14));
+  --ds-3:drop-shadow(0 3px 3px rgba(13,15,18,.12)) drop-shadow(0 24px 24px rgba(13,15,18,.18));
+  --ease:cubic-bezier(.16,1,.3,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --gutter:clamp(16px,4vw,48px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:auto}
+body{
+  margin:0;background-color:var(--canvas);color:var(--ink);
+  background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 1.4px);
+  background-size:24px 24px;
+  font-family:var(--f-sans);font-size:16px;line-height:1.5;font-weight:400;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+h1,h2,h3,h4,.gt,.k-lb{text-wrap:balance}
+p,li,small,.lede,.sub,.fine-print{text-wrap:pretty}
+.off,.off *{animation-play-state:paused!important}
+.wrap{width:100%;max-width:1240px;margin:0 auto;padding:0 var(--gutter)}
+.mono{font-family:var(--f-mono);font-feature-settings:"zero" 1}
+section{position:relative;scroll-margin-top:96px}
+
+/* ------- shared bits ------- */
+.pill{display:inline-flex;align-items:center;gap:var(--s1);height:56px;padding:0 8px 0 24px;border-radius:999px;background:var(--ink);color:#fff;font-weight:500;font-size:16px;letter-spacing:-.005em;box-shadow:0 1px 0 rgba(255,255,255,.12) inset,var(--sh-2);transition:transform .5s var(--ease);position:relative}
+.pill::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:var(--sh-3);opacity:0;transition:opacity .5s var(--ease);pointer-events:none}
+.pill:hover::after{opacity:1}
+.pill .arr{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);display:grid;place-items:center;transition:transform .5s var(--ease)}
+.pill:hover{transform:translateY(-2px)}
+.pill:hover .arr{transform:translateX(3px)}
+.pill.light{background:var(--white);color:var(--ink);box-shadow:var(--sh-1)}
+.pill.light .arr{background:var(--canvas)}
+.badge{display:inline-flex;align-items:center;gap:var(--s1);height:32px;padding:0 16px;border-radius:999px;background:var(--frost-strong);border:1px solid var(--frost-edge);box-shadow:var(--sh-1);font-size:13px;font-weight:500;color:var(--graphite)}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 4px rgba(255,59,10,.14)}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.h2{font-size:clamp(34px,5.2vw,68px);line-height:1.02;letter-spacing:-.04em;font-weight:500;margin:var(--s2) 0 0}
+.h2 .ln{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.h2 .ln>span{display:block}
+.grey{color:var(--quiet)}
+.lede{font-size:clamp(16px,1.35vw,19px);line-height:1.55;color:var(--muted);max-width:56ch;margin:var(--s3) 0 0}
+.sec{padding:clamp(96px,12vw,176px) 0}
+
+/* ------- intro ------- */
+#intro{position:fixed;inset:0;z-index:100;display:grid;place-items:center;cursor:pointer;overflow:hidden}
+#intro .ibg{position:absolute;inset:0;background-color:var(--canvas);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 1.4px);background-size:24px 24px}
+#intro .stage{position:relative;width:min(78vw,1180px);text-align:center}
+#intro .lk{width:100%;overflow:visible;color:var(--ink);transform-origin:0 0}
+#intro .glyph-slot{font-family:var(--f-mono);font-size:100px;fill:var(--quiet);font-weight:400}
+#intro .housing{fill:none;stroke:var(--steel);stroke-width:1.1}
+#intro .ticks line{stroke:var(--steel);stroke-width:1.1;stroke-linecap:round}
+#intro .pressure{fill:none;stroke:var(--steel);stroke-width:1.4;opacity:0}
+.intro-sub{margin-top:clamp(24px,3.5vw,48px);font-size:clamp(20px,2.2vw,32px);letter-spacing:-.025em;font-weight:500;color:var(--graphite);line-height:1.2}
+.intro-tag{margin:0;display:flex;justify-content:center;gap:.28em;flex-wrap:wrap}
+.intro-tag .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.1em;margin-bottom:-.1em}
+.intro-tag .w>span{display:inline-block}
+.intro-roll{display:flex;justify-content:center;margin-top:var(--s1);line-height:1.3em;font-weight:400}
+.roll-win{display:inline-block;height:1.3em;overflow:hidden;color:var(--ink)}
+.roll-track{display:block}
+.roll-track>span{display:block;height:1.3em;line-height:1.3em;text-align:center;white-space:nowrap}
+.roll-track i{font-style:normal;color:var(--muted)}
+.intro-skip{position:absolute;bottom:var(--s4);left:50%;transform:translateX(-50%);font-size:12px;color:var(--muted);font-family:var(--f-mono);letter-spacing:.06em;white-space:nowrap}
+html.intro-on{overflow:hidden}
+html.intro-done #intro{display:none}
+
+/* ------- nav ------- */
+.nav{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:50;width:min(1180px,calc(100% - 32px));height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 24px;border-radius:999px;background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,.85);box-shadow:var(--sh-1)}
+.nav .logo{width:128px;color:var(--ink)}
+.nav .links{display:flex;gap:var(--s4);font-size:14px;color:var(--muted);font-weight:500}
+.nav .links a:hover{color:var(--ink)}
+.nav .pill{height:48px;font-size:14px;padding:0 8px 0 16px}
+.nav .pill .arr{width:32px;height:32px}
+html.logo-wait .nav .logo{visibility:hidden}
+.menu-btn{display:none;width:48px;height:48px;border-radius:50%;background:#fff;box-shadow:var(--sh-1);flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.menu-btn i{display:block;width:18px;height:2px;border-radius:2px;background:var(--ink);transition:transform .4s var(--ease)}
+.menu-btn[aria-expanded="true"] i:first-child{transform:translateY(3px) rotate(45deg)}
+.menu-btn[aria-expanded="true"] i:last-child{transform:translateY(-3px) rotate(-45deg)}
+.scrim{position:fixed;inset:0;z-index:48;background:rgba(242,241,238,.55);opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility 0s .35s}
+.scrim.open{opacity:1;visibility:visible;transition:opacity .35s var(--ease)}
+.sheet{position:fixed;top:88px;left:16px;right:16px;z-index:49;padding:var(--s1) var(--s2) var(--s2);border-radius:var(--r-md);background:rgba(255,255,255,.8);-webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);border:1px solid rgba(255,255,255,.9);box-shadow:var(--sh-3);opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);transform-origin:50% 0;transition:opacity .35s var(--ease),transform .45s var(--ease),visibility 0s .45s}
+.sheet.open{opacity:1;visibility:visible;transform:none;transition:opacity .35s var(--ease),transform .45s var(--ease)}
+.sheet nav a{display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 var(--s1);font-size:20px;font-weight:500;letter-spacing:-.02em;border-bottom:1px solid var(--hair)}
+.sheet nav a svg{color:var(--muted)}
+.sheet .acts{display:grid;gap:var(--s1);margin-top:var(--s2)}
+.sheet .acts .pill{width:100%;justify-content:space-between}
+html.menu-open{overflow:hidden}
+
+/* ------- hero ------- */
+.hero{min-height:max(100svh,880px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:128px var(--gutter) var(--s8);overflow-x:clip;position:relative}
+.hero-copy{position:relative;z-index:3;max-width:980px}
+.hero h1{font-size:clamp(40px,5.3vw,76px);line-height:1.02;letter-spacing:-.045em;font-weight:500;margin:var(--s3) 0 0}
+.hero h1 .ln{display:block;overflow:hidden;padding-bottom:.1em;margin-bottom:-.1em}
+.hero h1 .ln>span{display:block}
+.hero .sub{font-size:clamp(16px,1.3vw,18px);color:var(--muted);max-width:560px;margin:var(--s3) auto 0}
+.hero .cta{margin-top:var(--s4)}
+
+/* the five services: hero-weight key-caps */
+.keys{position:relative;z-index:3;list-style:none;margin:var(--s6) 0 0;padding:0;display:grid;grid-template-columns:repeat(5,172px);gap:var(--s2);justify-content:center}
+.key a{position:relative;display:flex;flex-direction:column;justify-content:space-between;height:184px;padding:var(--s2) var(--s2) 20px;border-radius:var(--r-md);text-align:left;
+  background:linear-gradient(180deg,#ffffff 0%,#fbfaf8 60%,#f4f3f0 100%);
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:inset 0 1px 0 #fff,inset 0 -2px 0 rgba(13,15,18,.04),0 6px 0 -1px var(--key-side),var(--sh-2);
+  transition:transform .6s var(--spring)}
+.key a:hover,.key a:focus-visible{transform:translateY(-8px)}
+.key a::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:var(--sh-3);opacity:0;transition:opacity .6s var(--ease);pointer-events:none}
+.key a:hover::after,.key a:focus-visible::after{opacity:1}
+.key a:active{transform:translateY(4px);transition-duration:.12s}
+.key a:active::after{opacity:0}
+.k-obj{width:80px;height:80px;margin:-4px 0 0 -4px}
+.k-obj svg{width:100%;height:100%;overflow:visible;filter:var(--ds-2);transition:transform .7s var(--spring)}
+.key a:hover .k-obj svg{transform:translateY(-4px) rotate(-4deg) scale(1.04)}
+.ko-tyre,.ko-wrench,.ko-disc,.ko-bubbles,.ko-sponge{transform-box:fill-box;transform-origin:center;transition:transform .9s var(--spring)}
+.key a:hover .ko-tyre{transform:rotate(200deg)}
+.key a:hover .ko-wrench{transform:rotate(-28deg)}
+.key a:hover .ko-disc{transform:rotate(-16deg) translate(-2px,-2px)}
+.key a:hover .ko-bubbles{transform:translateY(-6px) scale(1.08)}
+.key a:hover .ko-sponge{transform:scale(1.04,.9)}
+.glint{transform-box:view-box!important;transform:translateX(-40px) rotate(20deg)}
+.key a:hover .glint{animation:glint .9s var(--ease) both}
+@keyframes glint{from{transform:translateX(-40px) rotate(20deg)}to{transform:translateX(60px) rotate(20deg)}}
+.k-lb{font-size:16px;line-height:1.25;font-weight:500;letter-spacing:-.015em;max-width:12ch}
+.k-n{position:absolute;top:var(--s2);right:var(--s2);font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+
+/* floating objects */
+.floats{position:absolute;inset:0;z-index:2;pointer-events:none}
+.obj{position:absolute;will-change:transform;pointer-events:auto}
+.obj-body{animation:drift var(--dur,9s) ease-in-out infinite alternate;animation-delay:var(--del,0s);transition:opacity .6s var(--ease)}
+@keyframes drift{0%{transform:translate3d(0,0,0) rotate(var(--r0,0deg))}100%{transform:translate3d(var(--dx,6px),var(--dy,-12px),0) rotate(var(--r1,2deg))}}
+.o-note{left:3.5%;top:15%;width:176px;--r0:-7deg;--r1:-4deg;--dur:8s}
+.o-book{right:1.5%;top:16%;width:256px;--r0:4deg;--r1:2deg;--dur:10s;--del:-3s}
+.o-gauge{left:5%;top:41%;width:160px;--r0:-4deg;--r1:3deg;--dur:11s;--del:-5s}
+.o-timer{right:6%;top:42%;width:152px;--r0:6deg;--r1:2deg;--dur:9s;--del:-2s}
+.o-fob{left:4.5%;top:67%;width:104px;--r0:20deg;--r1:14deg;--dur:12s;--del:-6s}
+.o-receipt{right:1.5%;top:65%;width:200px;--r0:-3deg;--r1:-5deg;--dur:10s;--del:-1s}
+.hero[data-hot] .obj-body{opacity:.75}
+.hero[data-hot="wash"] .o-note .obj-body,.hero[data-hot="repairs"] .o-receipt .obj-body,.hero[data-hot="tyres"] .o-gauge .obj-body,.hero[data-hot="glass"] .o-book .obj-body,.hero[data-hot="fines"] .o-timer .obj-body{opacity:1}
+
+.note{position:relative;aspect-ratio:1;padding:var(--s3) var(--s2) var(--s2);background:linear-gradient(160deg,#fff1bd,var(--note) 55%,#fbe08f);border-radius:3px 3px 3px 16px;box-shadow:var(--sh-2);text-align:left;color:#3a3326;transition:transform .8s var(--spring)}
+.note::before{content:"";position:absolute;left:50%;top:-12px;width:80px;height:24px;transform:translateX(-50%) rotate(-3deg);background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.note p{margin:0;font-family:var(--f-hand);font-size:24px;line-height:1.05;font-weight:600}
+.note p+p{margin-top:var(--s1);font-size:20px;font-weight:500;color:#5b5240}
+.note svg{position:absolute;right:16px;bottom:12px;width:40px}
+.hero[data-hot="wash"] .note{transform:translateY(-12px) rotate(5deg) scale(1.05)}
+
+.tile{background:#fff;border-radius:var(--r-md);padding:var(--s2);box-shadow:var(--sh-3);text-align:left;border:1px solid rgba(255,255,255,.9);transition:transform .8s var(--spring)}
+.tile .row{display:flex;align-items:center;gap:var(--s2)}
+.tick{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;background:linear-gradient(140deg,#7aa0ff,var(--blue));box-shadow:0 8px 16px rgba(61,109,255,.3)}
+.tick svg{width:20px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tile b{display:block;font-size:15px;font-weight:600;letter-spacing:-.01em}
+.tile small{display:block;font-size:13px;color:var(--muted)}
+.tile .meta{display:flex;justify-content:space-between;gap:var(--s1);margin-top:var(--s2);padding-top:var(--s2);border-top:1px dashed var(--hair);font-size:12px;color:var(--muted);white-space:nowrap}
+.tile .meta span:last-child{color:var(--ink);font-weight:500}
+.hero[data-hot="glass"] .tile{transform:translateY(-10px) rotate(-2deg)}
+
+.dial{position:relative;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0,#f7f6f3 45%,#e9e7e2 100%);box-shadow:inset 0 2px 1px #fff,inset 0 -6px 12px rgba(13,15,18,.06),var(--sh-2)}
+.dial svg{position:absolute;inset:0;width:100%;height:100%}
+.dial .read{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial .read b{font-family:var(--f-mono);font-size:30px;font-weight:500;letter-spacing:-.03em;line-height:1}
+.dial .read small{font-size:12px;color:var(--muted);margin-top:var(--s1);letter-spacing:.04em;text-transform:uppercase;font-family:var(--f-mono)}
+.timer-crown{position:absolute;left:50%;top:-14px;width:32px;height:20px;transform:translateX(-50%);border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#fff,#dcdad5);box-shadow:0 2px 3px rgba(13,15,18,.15)}
+.hero[data-hot="fines"] .o-timer .dial{animation:nudge .7s var(--spring)}
+@keyframes nudge{40%{transform:rotate(-6deg) scale(1.04)}}
+
+.gauge .needle{transform-box:view-box;transform-origin:100px 100px;animation:needle 5.5s cubic-bezier(.45,0,.2,1) infinite}
+.gauge .needle-sweep{transform-box:view-box;transform-origin:100px 100px;transition:transform 1.2s var(--spring)}
+@keyframes needle{0%,100%{transform:rotate(-2deg)}30%{transform:rotate(3deg)}55%{transform:rotate(-1deg)}75%{transform:rotate(1.5deg)}}
+.hero[data-hot="tyres"] .needle-sweep{transform:rotate(58deg)}
+.gauge .read-val{transition:opacity .3s}
+
+.receipt{position:relative;background:#fffdf9;padding:var(--s2) var(--s2) var(--s3);font-family:var(--f-mono);font-size:12px;line-height:1.55;color:#2c3036;text-align:left;-webkit-mask:linear-gradient(#000,#000) top/100% calc(100% - 9px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 9px repeat-x;mask:linear-gradient(#000,#000) top/100% calc(100% - 9px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 9px repeat-x}
+.receipt-wrap{filter:var(--ds-2);transition:transform .8s var(--spring)}
+.receipt h4{margin:0 0 var(--s1);font-size:12px;letter-spacing:.12em;font-weight:500}
+.receipt .ln2{display:flex;justify-content:space-between;gap:var(--s1)}
+.receipt hr{border:0;border-top:1px dashed #c9c6bf;margin:var(--s1) 0}
+.receipt .tot{font-weight:500;font-size:13px}
+.receipt .stamp{position:absolute;right:16px;bottom:20px;transform:rotate(-8deg);border:1.5px solid var(--blue-ink);color:var(--blue-ink);border-radius:6px;padding:2px 8px;font-size:12px;letter-spacing:.08em;opacity:.85}
+.hero[data-hot="repairs"] .receipt-wrap{transform:translateY(-12px) rotate(-3deg)}
+.hero[data-hot="repairs"] .receipt .stamp{animation:stamp .5s var(--spring)}
+@keyframes stamp{0%{transform:rotate(-8deg) scale(1.6);opacity:0}100%{transform:rotate(-8deg) scale(1);opacity:.85}}
+
+/* ------- signature: booking timeline (scroll-linked, sticky, never scroll-jacked) ------- */
+.tl{height:420vh}
+.tl-pin{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;padding:112px 0 var(--s4);overflow:hidden}
+.tl .h2{font-size:clamp(32px,3.6vw,52px)}
+.tl-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s4);flex-wrap:wrap}
+.tl-stage{position:relative;height:clamp(272px,36vh,336px);margin-top:var(--s3)}
+.tl-rail{position:absolute;left:12.5%;right:12.5%;top:50%;height:2px;margin-top:-1px}
+.tl-track{position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(13,15,18,.18) 0 8px,transparent 8px 16px)}
+.tl-fill{position:absolute;inset:0;background:linear-gradient(90deg,var(--blue-soft),var(--blue) 45%,var(--signal));transform-origin:left;transform:scaleX(0);will-change:transform}
+.tl-dot{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--canvas);border:2px solid rgba(13,15,18,.25);transition:transform .5s var(--spring)}
+.tl-dot::after{content:"";position:absolute;inset:-2px;border-radius:50%;background:var(--ink);opacity:0;transition:opacity .4s}
+.tl-dot.on{transform:scale(1.15)}.tl-dot.on::after{opacity:1}
+.bk{position:absolute;left:0;top:50%;width:0;height:0;will-change:transform;z-index:2}
+.bk-ground{position:absolute;top:calc(50% + 120px);left:0;width:200px;height:24px;margin-left:-100px;will-change:transform,opacity;border-radius:50%;background:radial-gradient(closest-side,rgba(13,15,18,.16),transparent);z-index:1;pointer-events:none}
+.bk-face{position:absolute;left:0;top:0;overflow:hidden;opacity:0;box-shadow:var(--sh-3);transform:translate(-50%,-50%);will-change:transform,opacity}
+.bk-face .fc{position:absolute;left:0;top:0;transform-origin:50% 50%}
+.bk-face.f0{width:208px;height:208px;border-radius:6px}.bk-face.f1{width:312px;height:136px;border-radius:24px}.bk-face.f2{width:220px;height:220px;border-radius:50%}.bk-face.f3{width:248px;height:300px;border-radius:6px}
+.bk-face.f0{opacity:1;background:linear-gradient(160deg,#fff1bd,var(--note) 55%,#fbe08f)}
+.bk-face.f1{background:#fff}
+.bk-face.f2{background:radial-gradient(circle at 35% 28%,#fff 0,#f7f6f3 45%,#e9e7e2 100%);box-shadow:inset 0 2px 1px #fff,inset 0 -6px 12px rgba(13,15,18,.06),var(--sh-3)}
+.bk-face.f3{background:#fffdf9}
+.f0 .fc{width:208px;height:208px;padding:var(--s4) var(--s3) var(--s3);color:#3a3326;text-align:left}
+.f0 .fc p{margin:0;font-family:var(--f-hand);font-size:28px;line-height:1.02;font-weight:600}
+.f0 .fc p+p{margin-top:var(--s1);font-size:22px;font-weight:500;color:#5b5240}
+.f0 .fc .sent{position:absolute;left:var(--s3);bottom:var(--s3);display:flex;align-items:center;gap:var(--s1);font-family:var(--f-mono);font-size:12px;color:#5b5240}
+.f0 .fc .sent::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue)}
+.f1 .fc{width:312px;height:136px;padding:var(--s3);text-align:left}
+.f1 .fc .row{display:flex;align-items:center;gap:var(--s2)}
+.f1 .fc b{display:block;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.f1 .fc small{display:block;font-size:13px;color:var(--muted)}
+.f1 .fc .meta{display:flex;justify-content:space-between;margin-top:var(--s2);padding-top:var(--s2);border-top:1px dashed var(--hair);font-size:13px;color:var(--muted)}
+.f1 .fc .meta span:last-child{color:var(--ink);font-weight:500}
+.f2 .fc{width:220px;height:220px}
+.f2 .fc svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.f2 .fc .read{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.f2 .fc .read b{font-family:var(--f-mono);font-size:40px;font-weight:500;letter-spacing:-.04em;line-height:1}
+.f2 .fc .read small{font-size:12px;color:var(--muted);margin-top:var(--s1);letter-spacing:.06em;text-transform:uppercase;font-family:var(--f-mono)}
+.f3 .fc{width:248px;height:300px;padding:var(--s3);font-family:var(--f-mono);font-size:12px;line-height:1.6;color:#2c3036;text-align:left}
+.f3 .fc h4{margin:0;font-size:12px;letter-spacing:.12em;font-weight:500;display:flex;justify-content:space-between}
+.f3 .fc h4 span:last-child{color:var(--blue-ink)}
+.f3 .fc .ln2{display:flex;justify-content:space-between;gap:var(--s1)}
+.f3 .fc hr{border:0;border-top:1px dashed #c9c6bf;margin:var(--s1) 0}
+.f3 .fc .tot{font-weight:500;font-size:14px}
+.f3 .fc .cx{display:flex;align-items:center;gap:var(--s1);margin-top:var(--s2);padding:var(--s1);border-radius:var(--r-sm);background:var(--canvas);color:var(--muted)}
+.f3 .fc .cx svg{width:28px;height:28px;flex:none;color:var(--ink)}
+.f3 .fc::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:9px;background:conic-gradient(from 135deg at top,var(--canvas) 90deg,transparent 0) top/14px 9px repeat-x}
+.tl-steps{list-style:none;margin:var(--s3) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s3);text-align:center}
+.tl-steps li{opacity:.42;transition:opacity .5s var(--ease);will-change:opacity}
+.tl-steps li.on{opacity:1}
+.tl-steps .k{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;color:var(--muted)}
+.tl-steps h3{font-size:clamp(18px,1.6vw,22px);line-height:1.15;letter-spacing:-.02em;font-weight:500;margin:var(--s1) 0 0}
+.tl-steps p{font-size:15px;color:var(--muted);margin:var(--s1) auto 0;max-width:30ch}
+
+.quote-blk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,520px);gap:clamp(32px,6vw,96px);align-items:center;padding:clamp(24px,4vw,56px);border-radius:var(--r-lg);background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.4));border:1px solid rgba(255,255,255,.8);box-shadow:var(--sh-1)}
+.quote-blk h3{font-size:clamp(28px,3.4vw,44px);line-height:1.05;letter-spacing:-.035em;font-weight:500;margin:var(--s2) 0 0}
+.quote-blk p{color:var(--muted);margin:var(--s2) 0 0;max-width:44ch}
+.qcard{padding:var(--s3);border-radius:var(--r-md);background:#fff;box-shadow:var(--sh-3)}
+.qcard .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s2)}
+.qcard .hd b{font-size:17px;font-weight:600;letter-spacing:-.01em;display:block}
+.qcard .hd small{color:var(--muted);font-size:13px}
+.qcard .chip{font-family:var(--f-mono);font-size:12px;padding:4px 8px;border-radius:999px;background:var(--sky);color:var(--blue-ink);white-space:nowrap}
+.qlines{margin:var(--s2) 0 0;padding:0;list-style:none;font-size:14px}
+.qlines li{display:flex;justify-content:space-between;padding:var(--s1) 0;border-bottom:1px solid var(--hair)}
+.qlines li span:last-child{font-family:var(--f-mono)}
+.qtot{display:flex;justify-content:space-between;align-items:baseline;margin-top:var(--s2)}
+.qtot b{font-size:34px;font-weight:300;letter-spacing:-.04em}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--s1);margin-top:var(--s3)}
+.days i{height:32px;border-radius:8px;background:var(--canvas);position:relative;overflow:hidden;font-style:normal;font-family:var(--f-mono);font-size:12px;color:var(--muted);display:grid;place-items:center}
+.days i::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--blue-soft),var(--apricot));transform:scaleX(var(--f,0));transform-origin:left;z-index:0}
+.days i span{position:relative;z-index:1}
+.days-cap{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:var(--s1)}
+.approve{margin-top:var(--s3);width:100%;height:48px;border-radius:999px;background:var(--ink);color:#fff;font-weight:500;display:flex;align-items:center;justify-content:center;gap:var(--s1);position:relative;overflow:hidden}
+.approve::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-100%);animation:sheen 3.6s ease-in-out infinite}
+@keyframes sheen{60%,100%{transform:translateX(100%)}}
+.qfoot{margin-top:var(--s2);font-size:13px;color:var(--muted);text-align:center}
+
+/* ------- fines interlude (micro-illustration) ------- */
+.fines .h2{font-size:clamp(34px,4.3vw,58px)}
+.fines{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:center}
+.ill{position:relative;aspect-ratio:7/5;border-radius:var(--r-lg);background:#fff;box-shadow:var(--sh-2);overflow:hidden}
+.ill svg{width:100%;height:100%}
+.ill .stroke{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.ill .thin{stroke-width:1.6}
+.wiper{transform-box:view-box;animation:wipe 4.2s cubic-bezier(.55,0,.35,1) infinite}
+.wiper.w1{transform-origin:150px 196px}.wiper.w2{transform-origin:246px 196px}
+@keyframes wipe{0%,12%{transform:rotate(0)}30%{transform:rotate(-74deg)}48%,100%{transform:rotate(0)}}
+.ticket{transform-box:view-box;transform-origin:282px 150px;animation:flutter 1.6s ease-in-out infinite}
+@keyframes flutter{0%,100%{transform:rotate(0) skewY(0)}50%{transform:rotate(-7deg) skewY(-3deg)}}
+.qmark{transform-box:view-box;transform-origin:372px 92px;animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(4deg)}}
+.breeze{stroke-dasharray:18 60;animation:breeze 2.2s linear infinite}
+@keyframes breeze{to{stroke-dashoffset:-78}}
+.qs{list-style:none;margin:var(--s4) 0 0;padding:0;display:flex;flex-wrap:wrap;gap:var(--s1)}
+.qs li{padding:var(--s1) var(--s2);border-radius:999px;background:#fff;box-shadow:var(--sh-1);font-size:14px}
+.qs li::before{content:"?";font-family:var(--f-hand);font-size:20px;line-height:0;margin-right:var(--s1);color:var(--blue-ink);font-weight:600}
+
+/* ------- product glimpse carousel ------- */
+.glimpse{overflow:clip;padding-top:var(--s4)}
+.glimpse .head{text-align:center}
+.glimpse .h2{font-size:clamp(32px,4.2vw,56px)}
+.glimpse .h2 .ln{display:inline-block;vertical-align:top}
+.gstage{position:relative;height:624px;margin-top:var(--s5);-webkit-mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
+.gstage:active{cursor:grabbing}
+.gblob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.7;pointer-events:none;will-change:transform}
+.gblob.b1{width:520px;height:420px;left:calc(50% - 470px);top:80px;background:radial-gradient(circle,#b9cbff,transparent 70%)}
+.gblob.b2{width:480px;height:420px;left:calc(50% - 20px);top:160px;background:radial-gradient(circle,#ffc9ad,transparent 70%)}
+.gcard{position:absolute;left:50%;top:16px;width:288px;height:592px;margin-left:-144px;border-radius:40px;padding:12px;background:linear-gradient(165deg,rgba(255,255,255,.94),rgba(255,255,255,.72));border:1px solid rgba(255,255,255,.95);box-shadow:var(--sh-3);will-change:transform,filter,opacity}
+.gscreen{position:relative;height:100%;border-radius:30px;background:linear-gradient(180deg,#fafaf8,#f4f3f0);overflow:hidden;padding:48px var(--s2) var(--s2);font-size:13px}
+.gscreen::before{content:"";position:absolute;top:12px;left:50%;width:80px;height:24px;margin-left:-40px;border-radius:12px;background:var(--ink)}
+.gscreen .sb{position:absolute;top:14px;left:24px;right:24px;display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.gt{font-size:22px;font-weight:500;letter-spacing:-.03em;line-height:1.1;margin:var(--s1) 0 var(--s2)}
+.srch{display:flex;align-items:center;gap:var(--s1);height:40px;padding:0 var(--s2);border-radius:var(--r-sm);background:#fff;box-shadow:var(--sh-1);color:var(--muted)}
+.srch svg{width:16px;fill:none;stroke:currentColor;stroke-width:2}
+.chips{display:flex;gap:var(--s1);margin:var(--s1) 0;overflow:hidden;-webkit-mask:linear-gradient(90deg,#000 72%,transparent);mask:linear-gradient(90deg,#000 72%,transparent)}
+.chips span{flex:none;font-size:12px;padding:4px 8px;border-radius:999px;background:#fff;border:1px solid var(--hair)}
+.chips span.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.res{display:flex;gap:var(--s1);padding:var(--s1);border-radius:var(--r);background:#fff;margin-top:var(--s1);box-shadow:0 1px 2px rgba(13,15,18,.05)}
+.res{align-items:center}
+.res .th{width:48px;height:48px;border-radius:var(--r-sm);flex:none;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(13,15,18,.05)}
+.res .th svg{width:100%;height:100%}
+.res b{display:block;font-size:13px;font-weight:600;letter-spacing:-.01em}
+.res small{display:block;font-size:12px;color:var(--muted);line-height:1.35}
+.res .pr{margin-left:auto;text-align:right;font-family:var(--f-mono);font-size:12px;white-space:nowrap}
+.hero-img{height:144px;border-radius:20px;margin:-4px -4px var(--s2);position:relative;overflow:hidden;background:linear-gradient(135deg,#cfdbff,#ffd8c4)}
+.hero-img svg{position:absolute;inset:0;width:100%;height:100%}
+.svc{display:flex;justify-content:space-between;padding:var(--s1) 2px;border-bottom:1px solid var(--hair);font-size:13px}
+.svc span:last-child{font-family:var(--f-mono)}
+.btn-s{display:flex;align-items:center;justify-content:center;height:48px;border-radius:999px;background:var(--ink);color:#fff;font-weight:500;margin-top:var(--s2);font-size:14px}
+.fine-print{font-size:12px;color:var(--muted);text-align:center;margin-top:var(--s1)}
+.gtabs{display:flex;justify-content:center;gap:var(--s1);flex-wrap:wrap;margin-top:var(--s3)}
+.gtabs button{height:40px;padding:0 var(--s2);border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8);transition:transform .3s var(--ease)}
+.gtabs button[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.marquee{margin-top:var(--s10);overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.mq-track{display:flex;width:max-content;animation:mq 38s linear infinite}
+.mq-track span{font-size:clamp(28px,3.4vw,46px);font-weight:300;letter-spacing:-.03em;color:var(--quiet);white-space:nowrap;padding:0 var(--s4);display:flex;align-items:center;gap:var(--s8)}
+.mq-track span::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--apricot)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ------- business / dashboard ------- */
+.biz-head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:var(--s5);align-items:end}
+.perks{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:var(--s1);justify-content:flex-end}
+.perks li{padding:var(--s1) var(--s2);border-radius:999px;background:rgba(255,255,255,.8);border:1px solid #fff;font-size:14px;box-shadow:var(--sh-1)}
+.dash-wrap{position:relative;margin-top:var(--s8)}
+.dash-glow{position:absolute;inset:6% 4% -4%;border-radius:64px;will-change:transform;background:linear-gradient(115deg,#9fb7ff 0%,#c9d6ff 35%,#ffd2bd 70%,#ff9a6e 100%);filter:blur(50px);opacity:.75;pointer-events:none}
+.dash{position:relative;border-radius:var(--r-lg);padding:var(--s2);background:linear-gradient(160deg,rgba(255,255,255,.62),rgba(255,255,255,.44));border:1px solid rgba(255,255,255,.85);box-shadow:var(--sh-3)}
+.dbar{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);padding:var(--s1) var(--s1) var(--s2);flex-wrap:wrap}
+.dbar .who{display:flex;align-items:center;gap:var(--s2)}
+.dbar .who b{display:block;font-size:15px;font-weight:600}
+.dbar .who small{display:block;font-size:12px;color:var(--muted)}
+.av{width:40px;height:40px;border-radius:var(--r-sm);display:grid;place-items:center;font-weight:600;font-size:14px;background:linear-gradient(140deg,#dfe7ff,#ffe3d4);color:var(--graphite);flex:none}
+.ptabs{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid #fff}
+.ptabs button{height:32px;padding:0 var(--s2);border-radius:999px;font-size:13px;font-weight:500;color:var(--muted)}
+.ptabs button[aria-selected="true"]{background:var(--ink);color:#fff;box-shadow:var(--sh-1)}
+.dgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s2)}
+.kpi{padding:var(--s3);border-radius:var(--r-md);background:rgba(255,255,255,.72);border:1px solid #fff;box-shadow:0 1px 2px rgba(13,15,18,.04)}
+.kpi small{display:block;font-size:13px;color:var(--muted)}
+.kpi .num{display:block;font-weight:200;font-size:clamp(40px,4.4vw,62px);line-height:1;letter-spacing:-.055em;margin-top:var(--s2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.kpi .num sub{font-size:.42em;vertical-align:baseline;letter-spacing:-.02em;font-weight:300;margin-left:2px;bottom:0}
+.kpi .foot{display:flex;align-items:center;gap:var(--s1);margin-top:var(--s2);font-size:12px;color:var(--muted)}
+.bar{flex:1;height:6px;border-radius:8px;background:rgba(13,15,18,.07);overflow:hidden}
+.bar i{display:block;height:100%;width:var(--w,50%);border-radius:inherit;background:linear-gradient(90deg,var(--blue),var(--apricot))}
+.kpi.fee{background:linear-gradient(150deg,rgba(255,255,255,.85),rgba(255,227,212,.85))}
+.dmain{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:var(--s2);margin-top:var(--s2)}
+.chart{padding:var(--s3);border-radius:var(--r-md);background:rgba(255,255,255,.72);border:1px solid #fff}
+.chart .ch{display:flex;justify-content:space-between;align-items:center;gap:var(--s1);flex-wrap:wrap}
+.chart .ch b{font-size:15px;font-weight:600}
+.chart svg{width:100%;height:auto;margin-top:var(--s2);overflow:visible}
+.chart .xl{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-top:var(--s1)}
+.queue{padding:var(--s3) var(--s2);border-radius:var(--r-md);background:rgba(255,255,255,.72);border:1px solid #fff;min-height:328px}
+.queue .qh{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;margin-bottom:var(--s1)}
+.queue .qh small{font-weight:500;font-size:12px;color:var(--muted)}
+.qpanel{display:none}.qpanel.on{display:block;animation:qin .6s var(--ease)}
+@keyframes qin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.qi{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) 0;border-bottom:1px solid var(--hair)}
+.qi:last-child{border-bottom:0}
+.qi .av{width:40px;height:40px;font-size:12px}
+.qi b{display:block;font-size:14px;font-weight:600}
+.qi small{display:block;font-size:12px;color:var(--muted)}
+.qi .act{margin-left:auto;display:flex;gap:var(--s1);flex:none}
+.qi .act span{height:32px;padding:0 12px;border-radius:999px;display:grid;place-items:center;font-size:12px;font-weight:500;background:var(--canvas)}
+.qi .act span.go{background:var(--ink);color:#fff}
+.qi .left{font-family:var(--f-mono);font-size:12px;color:var(--ink);display:flex;align-items:center;gap:var(--s1)}
+.qi .left::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--signal)}
+.biz-cta{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s6);flex-wrap:wrap}
+.biz-cta small{color:var(--muted);font-size:14px}
+
+/* ------- closing band ------- */
+.closing{padding:0 0 var(--s10)}
+.c-card{position:relative;overflow:hidden;text-align:center;padding:clamp(56px,8vw,112px) var(--s3);border-radius:var(--r-lg);background:linear-gradient(160deg,rgba(255,255,255,.88),rgba(255,255,255,.5));border:1px solid rgba(255,255,255,.9);box-shadow:var(--sh-2)}
+.c-card::before{content:"";position:absolute;left:10%;right:10%;bottom:-55%;height:90%;border-radius:50%;background:linear-gradient(90deg,rgba(169,192,255,.55),rgba(255,176,138,.5));filter:blur(56px);pointer-events:none}
+.c-card>*{position:relative}
+.c-rotor{width:64px;height:64px;margin:0 auto var(--s4);color:var(--ink);animation:idle 32s linear infinite}
+@keyframes idle{to{transform:rotate(360deg)}}
+.closing .h2{font-size:clamp(32px,4.4vw,60px);margin:0}
+.closing .h2 .ln{display:inline-block;vertical-align:top}
+.c-cta{display:flex;align-items:center;justify-content:center;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s5)}
+.c-link{display:inline-flex;align-items:center;gap:var(--s1);height:48px;padding:0 var(--s1);border-radius:999px;font-weight:500;color:var(--muted)}
+.c-link:hover{color:var(--ink)}
+
+/* ------- footer ------- */
+footer{padding:var(--s8) 0 var(--s6);text-align:center}
+footer .flk{width:min(520px,80vw);margin:0 auto;color:var(--ink)}
+footer .tag{margin-top:var(--s4);display:inline-flex}
+footer .fine{margin-top:var(--s5);display:flex;justify-content:space-between;gap:var(--s2);flex-wrap:wrap;font-size:13px;color:var(--muted);border-top:1px solid var(--hair);padding-top:var(--s3)}
+
+/* ------- reveal states (only when motion is on) ------- */
+html.motion [data-reveal]{opacity:0;transform:translateY(24px);filter:blur(8px)}
+html.motion .h2 .ln>span{transform:translateY(105%)}
+html.motion.hero-wait .hero h1 .ln>span{transform:translateY(105%)}
+html.motion.hero-wait .hero [data-hero],html.motion.hero-wait .key,html.motion.hero-wait .obj{opacity:0}
+
+/* ------- responsive ------- */
+@media (max-width:1439px){
+  .keys{grid-template-columns:repeat(5,156px);gap:12px}
+  .key a{height:168px}
+  .k-obj{width:72px;height:72px}
+  .obj{--s:.8}
+  .o-note{transform-origin:0 0}.o-gauge{transform-origin:0 50%}.o-fob{left:3%;transform-origin:0 0}
+  .o-book{transform-origin:100% 0}.o-timer{transform-origin:100% 50%}.o-receipt{right:1.5%;transform-origin:100% 0}
+}
+@media (max-width:1199px){
+  .keys{grid-template-columns:repeat(5,144px);gap:12px}
+  .key a{height:160px}
+  .k-lb{font-size:15px}
+  .obj{--s:.72}
+  .o-fob,.o-receipt{display:none}
+  .o-book{top:14%}
+  .dgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:900px){
+  .nav .links{display:none}
+  .nav{padding-right:8px}
+  .nav .pill{display:none}
+  .menu-btn{display:flex}
+  .hero{min-height:auto;padding:248px 24px var(--s8)}
+  .hero h1{margin-top:var(--s2)}
+  .obj{--s:1}
+  .o-gauge,.o-book{display:none}
+  .o-note{left:32px;top:112px;width:132px}
+  .note{padding:var(--s2) 12px 12px}
+  .note p{font-size:19px}.note p+p{display:none}
+  .note svg{width:28px;right:10px;bottom:8px}
+  .o-timer{right:32px;top:120px;width:116px;transform-origin:100% 0}
+  .o-timer .wide{display:none}
+  .o-timer .dial .read b{font-size:22px}
+  .o-timer .dial .read small{margin-top:4px}
+  .timer-crown{width:24px;height:16px;top:-11px}
+  .keys{grid-template-columns:repeat(5,minmax(0,1fr));width:100%;max-width:760px;gap:12px;margin-top:var(--s5)}
+  .key a{height:152px;padding:12px}
+  .k-obj{width:56px;height:56px}
+  .k-lb{font-size:14px}
+  .k-n{top:12px;right:12px}
+  .tl-pin{justify-content:flex-start;padding-top:128px}
+  .quote-blk,.fines,.biz-head{grid-template-columns:1fr}
+  .perks{justify-content:flex-start}
+  .dmain{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  #intro{padding-bottom:9vh}
+  #intro .stage{width:90vw}
+  #intro .stage.stacked .lk{margin:19.5vw 0}
+  #intro .stage.stacked .intro-sub{margin-top:calc(19.5vw + var(--s4))}
+  .intro-sub{margin-top:var(--s3)}
+  .tl{height:380vh}
+  .tl .eyebrow .wide{display:none}
+  .tl-pin{padding:96px 0 var(--s3);justify-content:flex-start}
+  .tl .h2{font-size:32px}
+  .tl-stage{height:300px;margin-top:var(--s3)}
+  .tl-rail{left:24px;right:24px;top:16px}
+  .bk-ground{top:calc(50% + 116px)}
+  .tl-steps{position:relative;display:block;height:160px;margin-top:var(--s2)}
+  .tl-steps li{position:absolute;inset:0;opacity:0;transform:translateY(8px);transition:opacity .4s var(--ease),transform .5s var(--ease)}
+  .tl-steps li.on{opacity:1;transform:none}
+  .gstage{height:560px;margin-top:var(--s3)}
+  .gcard{width:264px;height:536px;margin-left:-132px}
+  .gtabs button{padding:0 12px;font-size:13px}
+  .res .th{width:40px;height:40px;border-radius:10px}
+  .dash{padding:12px;border-radius:var(--r-md)}
+  .dbar{padding:4px 4px 12px}
+  .dgrid{grid-template-columns:1fr;gap:var(--s1)}
+  .kpi{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:var(--s2);padding:var(--s2)}
+  .kpi small{grid-column:1;grid-row:1}
+  .kpi .foot{grid-column:1;grid-row:2;margin-top:var(--s1)}
+  .kpi .num{grid-column:2;grid-row:1/3;margin:0;font-size:40px}
+  .chart{padding:var(--s2)}
+  .queue{padding:var(--s2) 12px;min-height:0}
+  .qi{background:#fff;border:0;border-radius:var(--r);padding:12px;margin-top:var(--s1);box-shadow:0 1px 2px rgba(13,15,18,.05)}
+  .qi .act span:not(.go){display:none}
+  footer .fine{justify-content:center;text-align:center}
+}
+@media (max-width:599px){
+  .nav{height:56px;padding-left:16px}
+  .menu-btn{width:40px;height:40px}
+  .sheet{top:80px}
+  .hero{padding:128px 16px var(--s6)}
+  .hero h1{margin-top:var(--s4)}
+  .badge{font-size:12px;padding:0 12px}
+  .hero .sub{font-size:15px;margin-top:var(--s2)}
+  .hero .cta{margin-top:var(--s3)}
+  .o-note{left:10px;top:92px;width:80px}
+  .note{padding:12px 8px 8px;border-radius:3px 3px 3px 12px}
+  .note::before{width:48px;height:16px;top:-8px}
+  .note p{font-size:15px}
+  .note svg{display:none}
+  .o-timer{right:12px;top:96px;width:76px}
+  .o-timer{width:80px}
+  .o-timer .dial .read b{font-size:16px}
+  .o-timer .dial .read small{margin-top:2px}
+  .timer-crown{width:20px;height:12px;top:-8px}
+  .key a{height:120px}
+  .keys{grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);margin-top:var(--s3)}
+  .key{grid-column:span 2}
+  .key:nth-child(4){grid-column:2/4}.key:nth-child(5){grid-column:4/6}
+  .key a{height:112px;padding:10px;border-radius:var(--r)}
+  .k-obj{width:40px;height:40px;margin:0}
+  .k-lb{font-size:12.5px;line-height:1.2}
+  .k-n{top:10px;right:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .obj-body,.gauge .needle,.wiper,.ticket,.qmark,.breeze,.mq-track,.approve::after{animation:none!important}
+  .key a,.k-obj svg,.ko-tyre,.ko-wrench,.ko-disc,.ko-bubbles,.ko-sponge,.note,.tile,.receipt-wrap,.needle-sweep,.tl-steps li,.tl-dot{transition-duration:.01s!important}
+  .key a:hover .glint,.hero[data-hot] .stamp,.hero[data-hot] .dial,.c-rotor{animation:none!important}
+  .sheet,.scrim,.menu-btn i{transition-duration:.01s!important}
+}
+</style>
+</head>
+<body><div style="background:#1c2128;color:white;text-align:center;padding:9px 18px;font:500 12px Geist,sans-serif;position:relative;z-index:1000">PRIVATE INTERACTIVE PREVIEW · Fictional businesses and simulated actions. No bookings or payments are made.</div>
+<!-- Turbine geometry, injected unchanged from brand/exports/core (five copies of one blade at 72°, and the seven outlined wordmark glyphs). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <path id="cx-blade" d="M0,-21C2.72,-20.12 12.13,-18.82 16.29,-15.73C20.46,-12.64 23.26,-5.33 24.99,-2.47C26.73,0.4 26.12,0.05 26.72,1.45C27.33,2.85 28.12,4.79 28.62,5.93C29.12,7.07 29.37,7.57 29.74,8.31C30.1,9.05 30.37,9.58 30.83,10.36C31.28,11.14 32.02,12.3 32.49,13C32.95,13.69 33.14,13.93 33.63,14.53C34.12,15.13 34.91,16.04 35.41,16.59C35.91,17.14 36.23,17.43 36.64,17.83C37.06,18.23 37.37,18.52 37.91,18.98C38.44,19.44 39.31,20.15 39.86,20.58C40.41,21.01 40.64,21.18 41.2,21.57C41.77,21.97 42.69,22.59 43.26,22.96C43.84,23.34 44.19,23.55 44.66,23.83C45.13,24.12 45.49,24.33 46.09,24.66C46.69,25 47.65,25.52 48.26,25.84C48.87,26.16 49.11,26.28 49.73,26.58C50.35,26.88 51.34,27.35 51.96,27.63C52.59,27.92 52.97,28.08 53.47,28.3C53.98,28.51 54.36,28.68 55,28.93C55.64,29.19 56.67,29.59 57.31,29.84C57.96,30.09 58.22,30.18 58.87,30.41C59.52,30.64 60.57,31 61.23,31.22C61.89,31.44 62.29,31.56 62.82,31.73C63.35,31.89 63.75,32.02 64.42,32.21C65.09,32.4 66.16,32.7 66.84,32.88C67.51,33.06 67.79,33.13 68.47,33.3C69.15,33.46 70.25,33.72 70.93,33.87C71.62,34.02 72.04,34.1 72.59,34.21C73.15,34.32 73.56,34.41 74.26,34.53C74.96,34.65 76.08,34.83 76.79,34.94C77.5,35.04 77.78,35.08 78.49,35.17C79.21,35.25 80.35,35.37 81.08,35.43C81.8,35.5 82.23,35.52 82.82,35.55C83.4,35.58 83.84,35.61 84.58,35.62C85.32,35.62 86.51,35.62 87.26,35.59C88.01,35.56 88.31,35.56 89.09,35.46C89.86,35.37 91.1,35.22 91.91,35.01C92.73,34.8 93.63,34.34 93.97,34.2L93.97,34.2C93.77,33.95 93.26,33.33 92.77,32.66C92.28,31.99 91.5,30.87 91.01,30.18C90.52,29.49 90.33,29.2 89.83,28.5C89.33,27.8 88.53,26.67 88.02,25.97C87.51,25.26 87.21,24.84 86.79,24.28C86.38,23.72 86.07,23.3 85.54,22.6C85.02,21.9 84.17,20.79 83.63,20.09C83.09,19.4 82.88,19.12 82.33,18.43C81.77,17.75 80.88,16.65 80.32,15.97C79.76,15.29 79.42,14.89 78.96,14.35C78.5,13.81 78.15,13.41 77.56,12.74C76.98,12.08 76.03,11.02 75.43,10.37C74.83,9.71 74.58,9.45 73.97,8.81C73.35,8.16 72.35,7.14 71.73,6.5C71.1,5.87 70.71,5.5 70.2,5C69.68,4.5 69.3,4.13 68.64,3.52C67.98,2.91 66.92,1.94 66.25,1.35C65.58,0.75 65.3,0.51 64.61,-0.07C63.92,-0.65 62.81,-1.57 62.11,-2.14C61.41,-2.7 60.97,-3.04 60.4,-3.48C59.83,-3.92 59.39,-4.25 58.66,-4.78C57.92,-5.32 56.74,-6.16 55.99,-6.68C55.24,-7.2 54.94,-7.4 54.17,-7.9C53.4,-8.39 52.16,-9.17 51.37,-9.65C50.59,-10.13 50.11,-10.4 49.47,-10.77C48.83,-11.13 48.35,-11.41 47.53,-11.84C46.71,-12.28 45.38,-12.96 44.55,-13.37C43.71,-13.79 43.37,-13.95 42.51,-14.33C41.65,-14.72 40.27,-15.31 39.39,-15.68C38.52,-16.04 37.98,-16.24 37.26,-16.5C36.54,-16.77 36,-16.97 35.08,-17.28C34.16,-17.58 32.67,-18.05 31.72,-18.33C30.78,-18.6 30.4,-18.71 29.42,-18.95C28.43,-19.19 26.85,-19.54 25.83,-19.75C24.82,-19.96 24.19,-20.07 23.35,-20.2C22.5,-20.34 21.88,-20.45 20.76,-20.58C19.64,-20.71 17.81,-20.89 16.61,-20.98C15.41,-21.07 15.25,-21.02 13.57,-21.13C11.89,-21.25 8.77,-21.71 6.51,-21.69C4.25,-21.67 1.09,-21.11 0,-21Z"/>
+    <path id="cx-blade-s" d="M0,-27C3.13,-26.08 13.75,-24.97 18.78,-21.46C23.82,-17.95 27.97,-9.37 30.22,-5.95C32.48,-2.52 31.64,-2.72 32.31,-0.92C32.98,0.89 33.77,3.41 34.26,4.88C34.75,6.35 34.93,6.99 35.24,7.93C35.56,8.87 35.77,9.54 36.15,10.51C36.53,11.47 37.12,12.88 37.5,13.71C37.88,14.54 38.03,14.82 38.44,15.5C38.85,16.18 39.52,17.18 39.95,17.78C40.38,18.38 40.66,18.67 41.03,19.08C41.4,19.49 41.68,19.79 42.17,20.23C42.66,20.67 43.47,21.32 43.99,21.71C44.5,22.1 44.72,22.24 45.26,22.56C45.81,22.88 46.71,23.35 47.28,23.63C47.84,23.91 48.2,24.05 48.67,24.24C49.15,24.42 49.5,24.56 50.12,24.75C50.73,24.94 51.72,25.22 52.35,25.37C52.98,25.53 53.24,25.58 53.89,25.69C54.54,25.8 55.59,25.95 56.25,26.03C56.91,26.11 57.32,26.13 57.86,26.17C58.4,26.2 58.8,26.23 59.49,26.23C60.18,26.24 61.29,26.23 61.99,26.2C62.69,26.18 62.97,26.16 63.68,26.1C64.39,26.03 65.54,25.91 66.25,25.82C66.97,25.72 67.41,25.64 67.99,25.54C68.57,25.44 69,25.36 69.73,25.2C70.47,25.03 71.64,24.74 72.38,24.55C73.11,24.35 73.41,24.27 74.15,24.03C74.9,23.78 76.09,23.38 76.83,23.1C77.58,22.83 78.03,22.64 78.62,22.39C79.22,22.14 79.67,21.96 80.42,21.6C81.17,21.24 82.37,20.64 83.12,20.25C83.87,19.85 84.17,19.69 84.92,19.23C85.67,18.78 86.87,18.01 87.62,17.51C88.37,17.01 88.82,16.68 89.42,16.22C90.01,15.77 90.46,15.44 91.2,14.8C91.94,14.16 93.13,13.09 93.87,12.37C94.6,11.65 94.9,11.38 95.62,10.49C96.35,9.6 97.51,8.21 98.23,7.04C98.95,5.87 99.65,4.08 99.94,3.49L99.94,3.49C99.69,3.31 99.07,2.92 98.45,2.44C97.83,1.96 96.82,1.13 96.2,0.62C95.57,0.11 95.31,-0.11 94.67,-0.63C94.04,-1.15 93.01,-1.99 92.36,-2.52C91.72,-3.04 91.32,-3.35 90.8,-3.77C90.27,-4.19 89.88,-4.5 89.21,-5.02C88.55,-5.54 87.48,-6.36 86.8,-6.87C86.13,-7.38 85.86,-7.59 85.17,-8.09C84.48,-8.59 83.38,-9.39 82.68,-9.88C81.99,-10.38 81.56,-10.67 81,-11.06C80.43,-11.45 80.01,-11.74 79.29,-12.21C78.58,-12.69 77.42,-13.44 76.7,-13.91C75.97,-14.37 75.68,-14.56 74.94,-15.01C74.2,-15.46 73.01,-16.17 72.26,-16.61C71.51,-17.05 71.06,-17.3 70.45,-17.64C69.84,-17.98 69.39,-18.24 68.62,-18.65C67.84,-19.06 66.6,-19.7 65.82,-20.1C65.04,-20.5 64.73,-20.65 63.93,-21.03C63.14,-21.41 61.86,-22 61.05,-22.36C60.25,-22.72 59.76,-22.93 59.11,-23.2C58.46,-23.48 57.97,-23.69 57.14,-24.01C56.31,-24.33 54.98,-24.84 54.14,-25.15C53.31,-25.45 52.97,-25.57 52.12,-25.85C51.26,-26.14 49.89,-26.57 49.03,-26.83C48.17,-27.1 47.65,-27.24 46.95,-27.43C46.25,-27.62 45.73,-27.77 44.84,-27.98C43.95,-28.19 42.53,-28.52 41.63,-28.71C40.74,-28.9 40.38,-28.97 39.46,-29.13C38.55,-29.29 37.08,-29.53 36.16,-29.66C35.24,-29.8 34.68,-29.86 33.93,-29.94C33.18,-30.02 32.62,-30.09 31.67,-30.16C30.71,-30.23 29.18,-30.32 28.22,-30.36C27.25,-30.4 26.86,-30.41 25.87,-30.41C24.89,-30.41 23.29,-30.38 22.29,-30.34C21.28,-30.3 20.66,-30.26 19.84,-30.19C19.01,-30.13 18.4,-30.08 17.32,-29.96C16.25,-29.83 14.51,-29.59 13.39,-29.42C12.27,-29.25 12.03,-29.14 10.6,-28.92C9.17,-28.7 6.57,-28.43 4.8,-28.11C3.03,-27.79 0.8,-27.19 0,-27Z"/>
+    <g id="cx-rotor-s"><use href="#cx-blade-s"/><use href="#cx-blade-s" transform="rotate(72)"/><use href="#cx-blade-s" transform="rotate(144)"/><use href="#cx-blade-s" transform="rotate(216)"/><use href="#cx-blade-s" transform="rotate(288)"/></g>
+    <g id="cx-rotor"><use href="#cx-blade"/><use href="#cx-blade" transform="rotate(72)"/><use href="#cx-blade" transform="rotate(144)"/><use href="#cx-blade" transform="rotate(216)"/><use href="#cx-blade" transform="rotate(288)"/></g>
+    <path id="cx-g0" d="M50.96,2.6L50.96,2.6Q37.4,2.6 27.67,-2.19Q17.95,-6.99 11.85,-14.66Q5.75,-22.33 2.88,-31.37Q0,-40.41 0,-48.77L0,-48.77L0,-51.78Q0,-61.1 2.95,-70.14Q5.89,-79.18 12.05,-86.58Q18.22,-93.97 27.74,-98.42Q37.26,-102.88 50.27,-102.88L50.27,-102.88Q63.84,-102.88 73.9,-98.01Q83.97,-93.15 90,-84.32Q96.03,-75.48 97.26,-63.7L97.26,-63.7L77.67,-63.7Q76.58,-70.55 72.81,-75.27Q69.04,-80 63.29,-82.4Q57.53,-84.79 50.27,-84.79L50.27,-84.79Q42.88,-84.79 37.12,-82.26Q31.37,-79.73 27.53,-75.07Q23.7,-70.41 21.71,-64.11Q19.73,-57.81 19.73,-50.14L19.73,-50.14Q19.73,-42.74 21.71,-36.44Q23.7,-30.14 27.67,-25.41Q31.64,-20.68 37.47,-18.08Q43.29,-15.48 50.96,-15.48L50.96,-15.48Q62.19,-15.48 69.93,-21.03Q77.67,-26.58 79.32,-36.58L79.32,-36.58L98.9,-36.58Q97.53,-25.89 91.64,-16.99Q85.75,-8.08 75.48,-2.74Q65.21,2.6 50.96,2.6Z"/>
+    <path id="cx-g1" d="M173.15,0L158.08,0L158.08,-22.05L154.93,-22.05L154.93,-46.58Q154.93,-53.01 151.78,-56.16Q148.63,-59.32 142.05,-59.32L142.05,-59.32Q138.63,-59.32 133.84,-59.18Q129.04,-59.04 124.18,-58.84Q119.32,-58.63 115.48,-58.36L115.48,-58.36L115.48,-74.52Q118.63,-74.79 122.6,-75.07Q126.58,-75.34 130.75,-75.41Q134.93,-75.48 138.63,-75.48L138.63,-75.48Q150.14,-75.48 157.74,-72.47Q165.34,-69.45 169.25,-63.01Q173.15,-56.58 173.15,-46.16L173.15,-46.16L173.15,0ZM134.11,1.92L134.11,1.92Q126.03,1.92 119.93,-0.96Q113.84,-3.84 110.48,-9.18Q107.12,-14.52 107.12,-22.05L107.12,-22.05Q107.12,-30.27 111.16,-35.48Q115.21,-40.68 122.53,-43.29Q129.86,-45.89 139.73,-45.89L139.73,-45.89L156.99,-45.89L156.99,-34.52L139.45,-34.52Q132.88,-34.52 129.38,-31.3Q125.89,-28.08 125.89,-23.01L125.89,-23.01Q125.89,-17.95 129.38,-14.79Q132.88,-11.64 139.45,-11.64L139.45,-11.64Q143.42,-11.64 146.78,-13.08Q150.14,-14.52 152.4,-18.01Q154.66,-21.51 154.93,-27.53L154.93,-27.53L159.59,-22.19Q158.9,-14.38 155.82,-9.04Q152.74,-3.7 147.33,-0.89Q141.92,1.92 134.11,1.92Z"/>
+    <path id="cx-g2" d="M212.05,0L193.01,0L193.01,-74.38L208.08,-74.38L208.08,-42.88L207.67,-42.88Q207.67,-58.9 214.52,-67.12Q221.37,-75.34 234.66,-75.34L234.66,-75.34L237.4,-75.34L237.4,-58.77L232.19,-58.77Q222.6,-58.77 217.33,-53.63Q212.05,-48.49 212.05,-38.77L212.05,-38.77L212.05,0Z"/>
+    <path id="cx-g3" d="M287.12,0L273.15,0L287.26,-71.92L309.18,-71.92L325.48,0L310.41,0L293.84,-71.51L301.78,-71.51L287.12,0ZM282.6,0L267.53,0L267.4,-15.62L282.6,-15.62L282.6,0ZM277.4,0L259.86,0L239.59,-74.38L258.08,-74.38L277.4,0ZM330.27,0L315.21,0L315.21,-15.62L330.41,-15.62L330.27,0ZM337.67,0L321.23,0L338.36,-74.38L355.62,-74.38L337.67,0Z"/>
+    <path id="cx-g4" d="M404.93,2.6L404.93,2.6Q395.07,2.6 387.53,-0.55Q380,-3.7 374.79,-9.11Q369.59,-14.52 366.92,-21.37Q364.25,-28.22 364.25,-35.62L364.25,-35.62L364.25,-38.49Q364.25,-46.16 367.05,-53.08Q369.86,-60 375.14,-65.41Q380.41,-70.82 387.95,-73.9Q395.48,-76.99 404.93,-76.99L404.93,-76.99Q414.38,-76.99 421.92,-73.9Q429.45,-70.82 434.73,-65.41Q440,-60 442.74,-53.08Q445.48,-46.16 445.48,-38.49L445.48,-38.49L445.48,-35.62Q445.48,-28.22 442.81,-21.37Q440.14,-14.52 434.93,-9.11Q429.73,-3.7 422.19,-0.55Q414.66,2.6 404.93,2.6ZM404.93,-13.7L404.93,-13.7Q411.92,-13.7 416.71,-16.78Q421.51,-19.86 423.97,-25.14Q426.44,-30.41 426.44,-37.12L426.44,-37.12Q426.44,-43.97 423.9,-49.25Q421.37,-54.52 416.51,-57.6Q411.64,-60.68 404.93,-60.68L404.93,-60.68Q398.22,-60.68 393.36,-57.6Q388.49,-54.52 385.89,-49.25Q383.29,-43.97 383.29,-37.12L383.29,-37.12Q383.29,-30.41 385.82,-25.14Q388.36,-19.86 393.15,-16.78Q397.95,-13.7 404.93,-13.7Z"/>
+    <path id="cx-g5" d="M480.14,0L461.1,0L461.1,-74.38L476.16,-74.38L476.16,-42.88L475.75,-42.88Q475.75,-58.9 482.6,-67.12Q489.45,-75.34 502.74,-75.34L502.74,-75.34L505.48,-75.34L505.48,-58.77L500.27,-58.77Q490.68,-58.77 485.41,-53.63Q480.14,-48.49 480.14,-38.77L480.14,-38.77L480.14,0Z"/>
+    <path id="cx-g6" d="M507.4,0L528.22,0L606.35,-100L585.53,-100ZM508.49,-100L529.32,-100L605.25,0L584.43,0Z"/>
+    <g id="cx-word"><use href="#cx-g0"/><use href="#cx-g1"/><use href="#cx-g2"/><use href="#cx-g3"/><use href="#cx-g4"/><use href="#cx-g5"/><use href="#cx-g6"/></g>
+    <symbol id="cx-lockup" viewBox="0 0 852.35 184"><g transform="translate(92,92) scale(0.92) rotate(21.9494)"><use href="#cx-rotor"/></g><g transform="translate(246,142) scale(1)"><use href="#cx-word"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></symbol>
+  </defs>
+</svg>
+
+<!-- 1. Intro: at full scale, glyphs resolve into the wordmark while the rotor spools up inside its housing -->
+<div id="intro" aria-hidden="true">
+  <div class="ibg"></div>
+  <div class="stage">
+    <svg class="lk" viewBox="0 0 852.35 184" fill="currentColor">
+      <g id="i-asm" transform="translate(92,92)">
+        <g class="ticks" id="i-ticks"></g>
+        <circle class="housing" r="100"/>
+        <circle class="pressure" r="100" vector-effect="non-scaling-stroke"/>
+        <g id="i-rotor-s" transform="scale(0.92)">
+          <g id="i-rotor-rot" transform="rotate(21.9494)">
+            <g class="ghost" opacity="0"><use href="#cx-rotor"/></g>
+            <g class="ghost" opacity="0"><use href="#cx-rotor"/></g>
+            <g class="ghost" opacity="0"><use href="#cx-rotor"/></g>
+            <g class="ghost" opacity="0"><use href="#cx-rotor"/></g>
+            <g class="main"><use href="#cx-rotor"/></g>
+          </g>
+        </g>
+      </g>
+      <g id="i-word" transform="translate(246,142)">
+        <g class="ig"><use href="#cx-g0"/></g><g class="ig"><use href="#cx-g1"/></g><g class="ig"><use href="#cx-g2"/></g><g class="ig"><use href="#cx-g3"/></g><g class="ig"><use href="#cx-g4"/></g><g class="ig"><use href="#cx-g5"/></g><g class="ig"><use href="#cx-g6"/></g>
+        <g text-anchor="middle">
+          <text class="glyph-slot" x="49.5" y="0" opacity="0">#</text><text class="glyph-slot" x="140.1" y="0" opacity="0">R</text><text class="glyph-slot" x="215.2" y="0" opacity="0">0</text><text class="glyph-slot" x="297.6" y="0" opacity="0">%</text><text class="glyph-slot" x="404.9" y="0" opacity="0">7</text><text class="glyph-slot" x="483.3" y="0" opacity="0">2</text><text class="glyph-slot" x="556.9" y="0" opacity="0">*</text>
+        </g>
+      </g>
+    </svg>
+    <div class="intro-sub">
+      <p class="intro-tag"><span class="w"><span>Car</span></span> <span class="w"><span>care,</span></span> <span class="w"><span>booked</span></span> <span class="w"><span>properly.</span></span></p>
+      <div class="intro-roll"><span class="roll-win"><span class="roll-track"><span><i>For</i> Wash &amp; Detailing</span><span><i>For</i> Repairs &amp; Maintenance</span><span><i>For</i> Glass Repair &amp; Replacement</span><span><i>For</i> Tyres &amp; Wheel Alignment</span><span><i>For</i> Fines &amp; Vehicle Admin</span></span></span></div>
+    </div>
+  </div>
+  <div class="intro-skip">Click, scroll or press a key to skip</div>
+</div>
+
+<header class="nav">
+  <a href="#top" class="logo" aria-label="CarworX home"><svg viewBox="0 0 852.35 184" fill="currentColor" role="img" aria-label="CarworX"><use href="#cx-lockup"/></svg></a>
+  <nav class="links" aria-label="Sections"><a href="#how">How it works</a><a href="#glimpse">The app</a><a href="#fines">Fines &amp; admin</a><a href="#business">For businesses</a></nav>
+  <a href="/onboarding/checklist/index.html" class="pill light"><span>List your business</span><span class="arr" aria-hidden="true"><svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+  <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><i></i><i></i></button>
+</header>
+<div class="scrim" aria-hidden="true"></div>
+<div class="sheet" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <nav aria-label="Sections"><a href="#how">How it works<svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a><a href="#glimpse">The app<svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a><a href="#fines">Fines &amp; admin<svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a><a href="#business">For businesses<svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a></nav>
+  <div class="acts">
+    <a class="pill" href="/app.html#search/wash"><span>Find a service near you</span><span class="arr" aria-hidden="true"><svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+    <a class="pill light" href="/onboarding/checklist/index.html"><span>List your business</span><span class="arr" aria-hidden="true"><svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+  </div>
+</div>
+
+<main id="top">
+<!-- 2. Hero -->
+<section class="hero" aria-labelledby="h-hero" data-loop>
+  <div class="floats" aria-hidden="true">
+    <div class="obj o-note" data-depth="1.1" data-side="-1"><div class="obj-in"><div class="obj-body">
+      <div class="note"><p>Sat 9:00 wash, Rosebank</p><p>ask about the tyres too</p>
+        <svg viewBox="0 0 60 40" fill="none" stroke="#3a3326" stroke-width="2.4" stroke-linecap="round"><path d="M6 22c5 4 9 9 12 12 8-14 20-24 36-30"/></svg></div>
+    </div></div></div>
+
+    <div class="obj o-book" data-depth=".7" data-side="1"><div class="obj-in"><div class="obj-body">
+      <div class="tile"><div class="row"><span class="tick"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></span><div><b>Booking confirmed</b><small>Shine Studio · Rosebank</small></div></div>
+        <div class="meta"><span>Sat, 09:00</span><span>Paid to the business</span></div></div>
+    </div></div></div>
+
+    <div class="obj o-gauge" data-depth="1.4" data-side="-1"><div class="obj-in"><div class="obj-body">
+      <div class="dial gauge">
+        <svg viewBox="0 0 200 200">
+          <defs><linearGradient id="gArc" x1="0" x2="1"><stop offset="0" stop-color="#a9c0ff"/><stop offset="1" stop-color="#ff7a4d"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="86" fill="none" stroke="#fff" stroke-width="3"/>
+          <path d="M42.4 157.6A82 82 0 1 1 157.6 157.6" fill="none" stroke="url(#gArc)" stroke-width="6" stroke-linecap="round" opacity=".9" transform="translate(0,-4)"/>
+          <g stroke="#5b6470" stroke-width="1.5" stroke-linecap="round" id="gticks"></g>
+          <g class="needle-sweep"><g class="needle"><path d="M100 100 L100 34" stroke="#0d0f12" stroke-width="3" stroke-linecap="round" transform="rotate(30 100 100)"/></g></g>
+          <circle cx="100" cy="100" r="9" fill="#0d0f12"/><circle cx="100" cy="100" r="3" fill="#8a97a6"/>
+          <text x="100" y="146" text-anchor="middle" font-family="Geist Mono, monospace" font-size="22" font-weight="500" fill="#0d0f12">2.2</text>
+          <text x="100" y="168" text-anchor="middle" font-family="Geist Mono, monospace" font-size="15" fill="#5b6470" letter-spacing="1.5">BAR</text>
+        </svg>
+      </div>
+    </div></div></div>
+
+    <div class="obj o-timer" data-depth=".9" data-side="1"><div class="obj-in"><div class="obj-body">
+      <div class="dial"><span class="timer-crown"></span>
+        <svg viewBox="0 0 200 200" style="transform:rotate(-90deg)"><circle cx="100" cy="100" r="78" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="10"/><circle id="heroRing" cx="100" cy="100" r="78" fill="none" stroke="#ff3b0a" stroke-width="10" stroke-linecap="round" stroke-dasharray="490.1" stroke-dashoffset="0"/></svg>
+        <div class="read"><b id="heroClock">14:32</b><small><span class="wide">slot </span>held</small></div>
+      </div>
+    </div></div></div>
+
+    <div class="obj o-fob" data-depth="1.6" data-side="-1"><div class="obj-in"><div class="obj-body">
+      <svg viewBox="0 0 140 230" style="filter:var(--ds-3)">
+        <defs><linearGradient id="fobG" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#3a414b"/><stop offset=".5" stop-color="#1c2128"/><stop offset="1" stop-color="#0d0f12"/></linearGradient><linearGradient id="ringG" x1="0" x2="1"><stop offset="0" stop-color="#eef0f3"/><stop offset=".5" stop-color="#9aa4b0"/><stop offset="1" stop-color="#e3e6ea"/></linearGradient></defs>
+        <circle cx="70" cy="30" r="24" fill="none" stroke="url(#ringG)" stroke-width="5"/>
+        <rect x="58" y="44" width="24" height="22" rx="6" fill="#9aa4b0"/>
+        <rect x="26" y="60" width="88" height="160" rx="40" fill="url(#fobG)"/>
+        <rect x="30" y="64" width="80" height="60" rx="36" fill="rgba(255,255,255,.07)"/>
+        <g fill="#2b313a" stroke="rgba(255,255,255,.08)"><circle cx="70" cy="104" r="16"/><circle cx="70" cy="146" r="16"/><circle cx="70" cy="188" r="13"/></g>
+        <g fill="none" stroke="#c8ced6" stroke-width="2" stroke-linecap="round"><rect x="64" y="101" width="12" height="9" rx="2"/><path d="M66 101v-4a4 4 0 0 1 8 0v4"/><rect x="64" y="143" width="12" height="9" rx="2"/><path d="M66 143v-4a4 4 0 0 1 8 -1"/><path d="M64 190h12M66 186h8"/></g>
+      </svg>
+    </div></div></div>
+
+    <div class="obj o-receipt" data-depth="1.2" data-side="1"><div class="obj-in"><div class="obj-body">
+      <div class="receipt-wrap"><div class="receipt">
+        <h4>WRITTEN QUOTE</h4>
+        <div>Pieter · Pretoria East</div><hr>
+        <div class="ln2"><span>Brake pads</span><span>1 180</span></div>
+        <div class="ln2"><span>Discs, pair</span><span>1 640</span></div>
+        <div class="ln2"><span>Labour</span><span>660</span></div><hr>
+        <div class="ln2 tot"><span>TOTAL</span><span>R 3 480</span></div>
+        <div style="margin-top:4px;padding-bottom:28px;color:#5b6470">Valid 7 days</div>
+        <span class="stamp">APPROVED</span>
+      </div></div>
+    </div></div></div>
+  </div>
+
+  <div class="hero-copy">
+    <span class="badge" data-hero><i></i>Pilot · CarworX fee R0</span>
+    <h1 id="h-hero"><span class="ln"><span>Car care, booked properly.</span></span><span class="ln grey"><span>Nearby, and in writing.</span></span></h1>
+    <p class="sub" data-hero>Washes, repairs, glass and tyres from businesses near you, plus straight answers on fines and vehicle admin. You pay the business directly.</p>
+    <div class="cta" data-hero><a class="pill" href="/app.html#search/wash"><span>Find a service near you</span><span class="arr" aria-hidden="true"><svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a></div>
+  </div>
+
+  <ul class="keys" aria-label="Services">
+    <li class="key" data-k="wash"><a href="/app.html#search/wash"><span class="k-obj" aria-hidden="true"><svg viewBox="0 0 80 80">
+      <defs><linearGradient id="spT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe597"/><stop offset="1" stop-color="#f7c04f"/></linearGradient><linearGradient id="spS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaa73a"/><stop offset="1" stop-color="#cf8a22"/></linearGradient><radialGradient id="bub" cx=".34" cy=".3" r=".75"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#f1f5ff"/><stop offset="1" stop-color="#bccbff"/></radialGradient></defs>
+      <g class="ko-sponge"><rect x="12" y="42" width="56" height="24" rx="10" fill="url(#spS)"/><rect x="12" y="33" width="56" height="25" rx="10" fill="url(#spT)"/>
+        <g fill="#d99a32" opacity=".5"><ellipse cx="24" cy="44" rx="2.6" ry="1.7"/><ellipse cx="34" cy="49" rx="2" ry="1.4"/><ellipse cx="46" cy="43" rx="2.4" ry="1.6"/><ellipse cx="56" cy="50" rx="2" ry="1.4"/><ellipse cx="40" cy="40" rx="1.6" ry="1.1"/></g>
+        <rect x="18" y="36" width="28" height="4" rx="2" fill="#fff" opacity=".5"/></g>
+      <g class="ko-bubbles"><circle cx="30" cy="24" r="9" fill="url(#bub)"/><circle cx="47" cy="19" r="6.5" fill="url(#bub)"/><circle cx="57" cy="29" r="4.6" fill="url(#bub)"/><circle cx="19" cy="31" r="4" fill="url(#bub)"/>
+        <g fill="#fff"><circle cx="27" cy="21" r="2"/><circle cx="45" cy="17" r="1.4"/></g></g>
+    </svg></span><span class="k-n">01</span><span class="k-lb">Wash&nbsp;&amp; Detailing</span></a></li>
+
+    <li class="key" data-k="repairs"><a href="/app.html#search/repairs"><span class="k-obj" aria-hidden="true"><svg viewBox="0 0 80 80">
+      <defs><linearGradient id="wrG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6f8fa"/><stop offset=".45" stop-color="#bcc4ce"/><stop offset="1" stop-color="#7d8794"/></linearGradient>
+        <mask id="wrM"><rect x="-10" y="-10" width="100" height="100" fill="#fff"/><path d="M35.5 0h9v14a4.5 4.5 0 0 1-9 0z" fill="#000"/><circle cx="40" cy="66" r="4.4" fill="#000"/></mask></defs>
+      <g class="ko-wrench"><g transform="rotate(-45 40 40)">
+        <g mask="url(#wrM)" transform="translate(2 3)" fill="#5f6874" opacity=".35"><rect x="35" y="18" width="10" height="46" rx="5"/><circle cx="40" cy="15" r="12"/><circle cx="40" cy="66" r="9.5"/></g>
+        <g mask="url(#wrM)" fill="url(#wrG)"><rect x="35" y="18" width="10" height="46" rx="5"/><circle cx="40" cy="15" r="12"/><circle cx="40" cy="66" r="9.5"/></g>
+        <rect x="37.2" y="24" width="2.4" height="34" rx="1.2" fill="#fff" opacity=".7"/></g></g>
+    </svg></span><span class="k-n">02</span><span class="k-lb">Repairs&nbsp;&amp; Maintenance</span></a></li>
+
+    <li class="key" data-k="glass"><a href="/app.html#search/glass"><span class="k-obj" aria-hidden="true"><svg viewBox="0 0 80 80">
+      <defs><linearGradient id="gsG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6edff"/><stop offset="1" stop-color="#a9c0ff"/></linearGradient><clipPath id="gsC"><path d="M15 59 L22.5 25 Q40 19.5 57.5 25 L65 59 Q40 55 15 59Z"/></clipPath></defs>
+      <path d="M10 63 L19 21 Q40 14 61 21 L70 63 Q40 58.5 10 63Z" fill="#1c2128"/>
+      <path d="M15 59 L22.5 25 Q40 19.5 57.5 25 L65 59 Q40 55 15 59Z" fill="url(#gsG)"/>
+      <g clip-path="url(#gsC)"><rect x="18" y="0" width="6" height="80" fill="#fff" opacity=".55" transform="rotate(20 40 40)"/><rect class="glint" x="20" y="0" width="10" height="80" fill="#fff" opacity=".8"/></g>
+      <g stroke-linecap="round"><path d="M48 37l6-4M48 37l5 4.5M48 37l-2.5 6M48 37l-6-2M48 37l1-6.5" stroke="#fff" stroke-width="1.6"/><circle cx="48" cy="37" r="2.6" fill="#fff" stroke="#5b6470" stroke-width=".8"/></g>
+      <path d="M24 55 L43 48" stroke="#1c2128" stroke-width="2.6" stroke-linecap="round"/>
+    </svg></span><span class="k-n">03</span><span class="k-lb">Glass Repair&nbsp;&amp; Replacement</span></a></li>
+
+    <li class="key" data-k="tyres"><a href="/app.html#search/tyres"><span class="k-obj" aria-hidden="true"><svg viewBox="0 0 80 80">
+      <defs><radialGradient id="tyG" cx=".4" cy=".34" r=".75"><stop offset="0" stop-color="#4a525d"/><stop offset=".7" stop-color="#1c2128"/><stop offset="1" stop-color="#0d0f12"/></radialGradient><radialGradient id="rimG" cx=".38" cy=".32" r=".85"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#d3d9df"/><stop offset="1" stop-color="#8a95a3"/></radialGradient></defs>
+      <g class="ko-tyre"><circle cx="40" cy="40" r="30" fill="url(#tyG)"/><circle cx="40" cy="40" r="27.5" fill="none" stroke="#3a414b" stroke-width="4" stroke-dasharray="3 3.4"/>
+        <circle cx="40" cy="40" r="16" fill="url(#rimG)"/><circle cx="40" cy="40" r="16" fill="none" stroke="rgba(13,15,18,.25)"/>
+        <g fill="#6c7581"><circle cx="40" cy="31.5" r="2"/><circle cx="48.5" cy="40" r="2"/><circle cx="40" cy="48.5" r="2"/><circle cx="31.5" cy="40" r="2"/></g><circle cx="40" cy="40" r="4" fill="#8a95a3"/>
+        <path d="M18 30 A24 24 0 0 1 32 15" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/></g>
+    </svg></span><span class="k-n">04</span><span class="k-lb">Tyres&nbsp;&amp; Wheel Alignment</span></a></li>
+
+    <li class="key" data-k="fines"><a href="/app.html#fines"><span class="k-obj" aria-hidden="true"><svg viewBox="0 0 80 80">
+      <defs><radialGradient id="dG" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#ffe3d4"/></radialGradient></defs>
+      <g transform="rotate(10 54 40)"><rect x="40" y="14" width="30" height="46" rx="3" fill="#fff"/><rect x="40" y="14" width="30" height="9" rx="3" fill="#ff7a4d"/><path d="M45 31h20M45 37h15M45 43h18M45 49h11" stroke="#c9ccd2" stroke-width="2" stroke-linecap="round"/></g>
+      <g class="ko-disc"><circle cx="33" cy="45" r="22.5" fill="none" stroke="#d7d4ce" stroke-dasharray="1.6 2.4"/><circle cx="33" cy="45" r="20" fill="url(#dG)"/><circle cx="33" cy="45" r="20" fill="none" stroke="#ffb08a" stroke-width="2.5"/>
+        <circle cx="33" cy="45" r="14" fill="none" stroke="#a9c0ff" stroke-width="1.4" stroke-dasharray="3 2"/><path d="M25 42h16M27 47.5h12" stroke="#8a97a6" stroke-width="1.8" stroke-linecap="round"/></g>
+    </svg></span><span class="k-n">05</span><span class="k-lb">Fines&nbsp;&amp; Vehicle Admin</span></a></li>
+  </ul>
+</section>
+
+<!-- 3. Signature: one booking travels the steps, morphing note → confirmed tile → hold timer → receipt -->
+<section class="tl" id="how" aria-labelledby="h-how">
+  <div class="tl-pin">
+    <div class="wrap">
+      <div class="tl-head">
+        <div>
+          <span class="eyebrow">How it works<span class="wide"> · scroll to follow Thandi's booking</span></span>
+          <h2 class="h2" id="h-how"><span class="ln"><span>One booking, start to finish.</span></span><span class="ln grey"><span>Nothing instant, everything in writing.</span></span></h2>
+        </div>
+      </div>
+      <div class="tl-stage" aria-hidden="true">
+        <div class="tl-rail"><i class="tl-track"></i><i class="tl-fill"></i><b class="tl-dot on" style="left:0"></b><b class="tl-dot" style="left:33.333%"></b><b class="tl-dot" style="left:66.667%"></b><b class="tl-dot" style="left:100%"></b></div>
+        <span class="bk-ground"></span>
+        <div class="bk">
+          <div class="bk-face f0"><div class="fc"><p>Full wash, Sat 9:00</p><p>Shine Studio, Rosebank</p><span class="sent">Request sent</span></div></div>
+          <div class="bk-face f1"><div class="fc"><div class="row"><span class="tick"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></span><div><b>Accepted</b><small>Shine Studio · Sat 31 Oct, 09:00</small></div></div><div class="meta"><span>Replied in 1h07</span><span>Within 2 business hours</span></div></div></div>
+          <div class="bk-face f2"><div class="fc"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="84" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="10"/><circle id="tlRing" cx="100" cy="100" r="84" fill="none" stroke="#ff3b0a" stroke-width="10" stroke-linecap="round" stroke-dasharray="527.8" stroke-dashoffset="0"/></svg><div class="read"><b id="tlClock">15:00</b><small>slot held for you</small></div></div></div>
+          <div class="bk-face f3"><div class="fc">
+            <h4><span>PAID</span><span>DIRECTLY</span></h4>
+            <div class="rl">Shine Studio · Rosebank</div><hr class="rl">
+            <div class="ln2 rl"><span>Full wash &amp; valet</span><span>R 240</span></div>
+            <div class="ln2 rl"><span>CarworX fee, pilot</span><span>R 0</span></div><hr class="rl">
+            <div class="ln2 tot rl"><span>TOTAL</span><span>R 240</span></div>
+            <div class="rl" style="color:#5b6470">To Shine Studio, via a secure payment partner</div>
+            <div class="cx rl"><svg viewBox="0 0 200 200" fill="currentColor"><g transform="translate(100,100) scale(1) rotate(39.9698)"><use href="#cx-rotor-s"/></g></svg><span>CarworX never holds the money</span></div>
+          </div></div>
+        </div>
+      </div>
+      <ol class="tl-steps">
+        <li class="on"><span class="k">01</span><h3>Send a request</h3><p>Thandi asks Shine Studio in Rosebank for a full wash on Saturday at 09:00.</p></li>
+        <li><span class="k">02</span><h3>Accepted within 2 business hours</h3><p>The business has two business hours to accept. If they can't, she's free to ask someone else.</p></li>
+        <li><span class="k">03</span><h3>Held for 15 minutes</h3><p>Once they accept, the slot is hers for 15 minutes while she pays. Nobody else can take it.</p></li>
+        <li><span class="k">04</span><h3>Paid to the business directly</h3><p>On a secure payment partner's page, straight to Shine Studio. CarworX never holds it, and the pilot fee is R0.</p></li>
+      </ol>
+      <p class="sr" aria-live="polite" id="tlLive"></p>
+    </div>
+  </div>
+</section>
+
+<!-- Repairs: the written quote -->
+<section class="sec" id="quote-sec" aria-labelledby="h-quote" style="padding-top:var(--s8)">
+  <div class="wrap">
+    <div class="quote-blk" id="quote" data-loop>
+      <div>
+        <span class="eyebrow" data-reveal>Repairs</span>
+        <h3 id="h-quote" data-reveal>Repairs start with a written quote.</h3>
+        <p data-reveal>Pieter needs new brakes in Pretoria East. The workshop sends a written quote that stays valid for 7 days. He approves that exact quote, then pays. If they find extra work, they send a new quote for him to approve first.</p>
+      </div>
+      <div class="qcard" data-reveal>
+        <div class="hd"><div><b>Brake service quote</b><small>Van Wyk Motors · Pretoria East</small></div><span class="chip">Q-2381</span></div>
+        <ul class="qlines"><li><span>Front brake pads</span><span>R 1 180</span></li><li><span>Brake discs (pair)</span><span>R 1 640</span></li><li><span>Labour, 2 h</span><span>R 660</span></li></ul>
+        <div class="qtot"><small style="color:var(--muted)">Total</small><b>R 3 480</b></div>
+        <div class="days" id="days"><i><span>1</span></i><i><span>2</span></i><i><span>3</span></i><i><span>4</span></i><i><span>5</span></i><i><span>6</span></i><i><span>7</span></i></div>
+        <div class="days-cap"><span>Sent Wed 28 Oct</span><span>Valid until Wed 4 Nov</span></div>
+        <div class="approve">Approve this exact quote</div>
+        <div class="qfoot">Extra work needs a new quote you approve.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Micro-illustration interlude -->
+<section class="sec" id="fines" aria-labelledby="h-fines" style="padding-top:0">
+  <div class="wrap fines">
+    <div class="ill" data-reveal data-loop>
+      <svg viewBox="20 30 390 270" role="img" aria-label="Line drawing of a parked car with a fine tucked on the windscreen while the wipers sweep">
+        <g>
+          <path class="stroke thin breeze" d="M318 110c14-4 24-2 36 4M326 128c10-2 18 0 28 5" stroke="#8a97a6"/>
+          <path d="M120 196 L146 136 Q210 124 274 136 L300 196 Q210 188 120 196Z" fill="#e3eaff"/>
+          <path class="stroke" d="M70 262 Q62 218 86 206 L114 198 L144 132 Q210 118 276 132 L306 198 L334 206 Q358 218 350 262"/>
+          <path class="stroke" d="M120 196 L146 136 Q210 124 274 136 L300 196 Q210 188 120 196Z"/>
+          <path class="stroke thin" d="M164 140 l-10 24M180 137 l-6 14" stroke="#fff" stroke-width="3"/>
+          <path class="stroke" d="M114 198 L100 190 Q94 184 102 180 L118 184"/>
+          <path class="stroke" d="M306 198 L320 190 Q326 184 318 180 L302 184"/>
+          <ellipse class="stroke" cx="110" cy="226" rx="20" ry="10" fill="#fff4d6"/>
+          <ellipse class="stroke" cx="310" cy="226" rx="20" ry="10" fill="#fff4d6"/>
+          <rect class="stroke" x="168" y="220" width="84" height="18" rx="7"/>
+          <path class="stroke thin" d="M178 229h64"/>
+          <path class="stroke" d="M74 248 Q210 262 346 248"/>
+          <rect class="stroke" x="186" y="246" width="48" height="13" rx="3" fill="#fff"/>
+          <path class="stroke" d="M82 262 v16 q0 6 6 6 h22 q6 0 6 -6 v-14"/>
+          <path class="stroke" d="M304 264 v14 q0 6 6 6 h22 q6 0 6 -6 v-16"/>
+          <path class="stroke thin" d="M30 285 Q120 282 210 285 T392 284"/>
+          <g class="ticket"><path d="M270 146 L300 150 L296 182 L266 178Z" fill="#ffe3d4"/><path class="stroke thin" d="M270 146 L300 150 L296 182 L266 178Z"/><path class="stroke thin" d="M273 158h18M272 166h14" stroke-width="1.4"/></g>
+          <g class="wiper w1"><path class="stroke" d="M150 196 L214 190"/><circle cx="150" cy="196" r="3.5" fill="#0d0f12"/></g>
+          <g class="wiper w2"><path class="stroke" d="M246 196 L298 192"/><circle cx="246" cy="196" r="3.5" fill="#0d0f12"/></g>
+          <g class="qmark"><path class="stroke" d="M350 58 q0-16 18-16 q18 0 18 14 q0 10-12 14 q-6 2-6 10" /><circle cx="368" cy="92" r="2.6" fill="#0d0f12"/></g>
+          <path class="stroke thin" d="M44 70l8 4M50 56l3 8M60 50l-1 8" stroke="#ff7a4d"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <span class="eyebrow" data-reveal>Fines &amp; Vehicle Admin</span>
+      <h2 class="h2" id="h-fines"><span class="ln"><span>A fine on the&nbsp;windscreen?</span></span><span class="ln grey"><span>Straight answers, in plain words.</span></span></h2>
+      <p class="lede" data-reveal>Find out what a notice means, what your options are and what to do next. Licence renewals and vehicle admin, explained without the runaround.</p>
+      <ul class="qs" data-reveal><li>What does this notice mean?</li><li>What happens if I ignore it?</li><li>How do I renew my licence disc?</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Product glimpse -->
+<section class="sec glimpse" id="glimpse" aria-labelledby="h-glimpse">
+  <div class="wrap head">
+    <span class="eyebrow" data-reveal>The app</span>
+    <h2 class="h2" id="h-glimpse"><span class="ln"><span>Every screen says</span></span> <span class="ln grey"><span>what happens next.</span></span></h2>
+  </div>
+  <div class="gstage" id="gstage" role="region" aria-roledescription="carousel" aria-label="App screens. Use the left and right arrow keys to change screen." tabindex="0">
+    <span class="gblob b1"></span><span class="gblob b2"></span>
+
+    <article class="gcard" id="gs1" role="group" aria-roledescription="slide" aria-label="1 of 5: Search results"><div class="gscreen"><div class="sb"><span>09:41</span><span>5G</span></div>
+      <div class="srch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Wash near Rosebank</div>
+      <div class="chips"><span class="on">Wash &amp; Detailing</span><span>Open Sat</span><span>Mobile</span><span>4.5+</span></div>
+      <div class="gt" style="font-size:15px;margin:var(--s2) 2px 4px">12 businesses nearby</div>
+      <div class="res"><span class="th"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="#e3eaff"/><g fill="none" stroke="#0d0f12" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 37 Q7 31 12 30 L18 29 L23.5 22 Q31 20 38.5 22 L43 29 L47 30.5 Q49.5 32 48.5 37Z" fill="#fff"/><circle cx="17.5" cy="38" r="4.2" fill="#fff"/><circle cx="39.5" cy="38" r="4.2" fill="#fff"/><path d="M26 23.5 L25 29 M33 23 L34 29"/><path d="M42 9v7M38.5 12.5h7M14 11v5M11.5 13.5h5" stroke="#3d6dff"/></g></svg></span><div><b>Shine Studio</b><small>1.2 km · ★ 4.8</small><small>Replies in ~1 h</small></div><span class="pr">R 180</span></div>
+      <div class="res"><span class="th"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="#dff3ea"/><g fill="none" stroke="#0d0f12" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 39 V25 Q7 21 11 21 H31 L39 28 H45 Q49 28 49 32 V39Z" fill="#fff"/><path d="M31 21 V28 H39"/><circle cx="16" cy="40" r="4.2" fill="#fff"/><circle cx="40" cy="40" r="4.2" fill="#fff"/><circle cx="44" cy="13" r="4" stroke="#3d6dff"/><circle cx="36" cy="10" r="2.4" stroke="#3d6dff"/><circle cx="50" cy="20" r="2" stroke="#3d6dff"/></g></svg></span><div><b>Bubbles on Wheels</b><small>Comes to you</small><small>Band B travel +R 60</small></div><span class="pr">R 220</span></div>
+      <div class="res"><span class="th"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="#fff1bd"/><g fill="none" stroke="#0d0f12" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 26 h13 v4 q6 4 6 10 v7 q0 3 -3 3 h-19 q-3 0 -3 -3 v-7 q0 -6 6 -10z" fill="#fff"/><path d="M23 26 v-7 h10 l6 3 M33 19 v7"/><path d="M19 39 h18" stroke="#3d6dff"/></g><g fill="#3d6dff"><circle cx="44" cy="20" r="1.3"/><circle cx="47" cy="17" r="1.1"/><circle cx="48" cy="22" r="1.1"/><circle cx="51" cy="19" r="1"/></g></svg></span><div><b>Parkhurst Valet</b><small>2.9 km · ★ 4.6</small><small>Replies in ~2 h</small></div><span class="pr">R 160</span></div>
+      <div class="res"><span class="th"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="#ffe3d4"/><g fill="none" stroke="#0d0f12" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 28 h28 l-3.5 19 q-.5 3 -3.5 3 h-14 q-3 0 -3.5 -3z" fill="#fff"/><path d="M15 29 q13 -17 26 0"/><rect x="21" y="21" width="15" height="8" rx="3" fill="#ffd36e"/><circle cx="40" cy="16" r="3" stroke="#3d6dff"/><circle cx="46" cy="21" r="2" stroke="#3d6dff"/></g></svg></span><div><b>Rosebank Hand Wash</b><small>0.8 km · ★ 4.5</small><small>Replies in ~3 h</small></div><span class="pr">R 140</span></div>
+    </div></article>
+
+    <article class="gcard" id="gs2" role="group" aria-roledescription="slide" aria-label="2 of 5: Business listing"><div class="gscreen"><div class="sb"><span>09:42</span><span>5G</span></div>
+      <div class="hero-img"><svg viewBox="0 0 260 150" fill="none" stroke="#0d0f12" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".55"><path d="M40 112 Q36 92 52 86 L76 80 L96 58 Q130 50 172 58 L196 80 L214 86 Q228 92 224 112Z"/><circle cx="78" cy="114" r="12" fill="#fff"/><circle cx="186" cy="114" r="12" fill="#fff"/><path d="M110 40c3 4 5 7 5 9a5 5 0 0 1-10 0c0-2 2-5 5-9zM140 30c2 3 4 5 4 7a4 4 0 0 1-8 0c0-2 2-4 4-7z"/></svg></div>
+      <div class="gt">Shine Studio</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:-8px">Rosebank · ★ 4.8 (fictional) · Wash &amp; Detailing</div>
+      <div style="margin-top:var(--s2)">
+        <div class="svc"><span>Express wash</span><span>R 180</span></div>
+        <div class="svc"><span>Full wash &amp; valet</span><span>R 240</span></div>
+        <div class="svc"><span>Interior detail</span><span>R 650</span></div>
+      </div>
+      <div class="btn-s">Request a time</div>
+      <div class="fine-print">Replies within 2 business hours</div>
+    </div></article>
+
+    <article class="gcard" id="gs3" role="group" aria-roledescription="slide" aria-label="3 of 5: Quote approval"><div class="gscreen"><div class="sb"><span>10:15</span><span>5G</span></div>
+      <div class="eyebrow">Written quote · Q-2381</div>
+      <div class="gt">Approve Pieter's brake quote?</div>
+      <div class="svc"><span>Front brake pads</span><span>R 1 180</span></div>
+      <div class="svc"><span>Brake discs (pair)</span><span>R 1 640</span></div>
+      <div class="svc"><span>Labour, 2 h</span><span>R 660</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:var(--s2)"><span style="color:var(--muted)">Total</span><span style="font-size:30px;font-weight:300;letter-spacing:-.04em">R 3 480</span></div>
+      <div style="margin-top:var(--s2);padding:var(--s1) 12px;border-radius:var(--r-sm);background:var(--sky);font-size:12px;color:var(--blue-ink)">Valid 7 days, until Wed 4 Nov</div>
+      <div class="btn-s">Approve this exact quote</div>
+      <div class="fine-print">Extra work needs a new approved quote</div>
+    </div></article>
+
+    <article class="gcard" id="gs4" role="group" aria-roledescription="slide" aria-label="4 of 5: Payment hold"><div class="gscreen" style="text-align:center"><div class="sb"><span>09:58</span><span>5G</span></div>
+      <div class="gt" style="margin-top:var(--s2)">Slot held for you</div>
+      <div class="dial" style="margin:var(--s2) auto 0;width:168px;box-shadow:inset 0 2px 1px #fff,inset 0 -6px 12px rgba(13,15,18,.06),var(--sh-1)"><svg viewBox="0 0 200 200" style="transform:rotate(-90deg)"><circle cx="100" cy="100" r="84" fill="none" stroke="rgba(13,15,18,.07)" stroke-width="10"/><circle cx="100" cy="100" r="84" fill="none" stroke="#ff3b0a" stroke-width="10" stroke-linecap="round" stroke-dasharray="527.8" stroke-dashoffset="62"/></svg><div class="read"><b style="font-size:32px">13:16</b><small>left to pay</small></div></div>
+      <div style="margin-top:var(--s2);text-align:left">
+        <div class="svc"><span>Full wash &amp; valet</span><span>R 240</span></div>
+        <div class="svc"><span>CarworX fee (pilot)</span><span>R 0</span></div>
+      </div>
+      <div class="btn-s">Pay Shine Studio securely</div>
+      <div class="fine-print">On our payment partner's page. Paid straight to the business.</div>
+    </div></article>
+
+    <article class="gcard" id="gs5" role="group" aria-roledescription="slide" aria-label="5 of 5: Fines guidance"><div class="gscreen"><div class="sb"><span>11:03</span><span>5G</span></div>
+      <div class="eyebrow">Fines &amp; Vehicle Admin</div>
+      <div class="gt">You got a traffic fine. Here's what to do.</div>
+      <div class="res" style="display:block;padding:12px"><b>1 · Read the notice</b><small>We explain each part in plain words.</small></div>
+      <div class="res" style="display:block;padding:12px"><b>2 · Check your options</b><small>See what you can do and by when.</small></div>
+      <div class="res" style="display:block;padding:12px"><b>3 · Set a reminder</b><small>So a deadline doesn't sneak up on you.</small></div>
+      <div class="btn-s" style="background:#fff;color:var(--ink);box-shadow:var(--sh-1)">Ask a question</div>
+      <div class="fine-print">Guidance, not legal advice</div>
+    </div></article>
+  </div>
+  <div class="gtabs" role="tablist" aria-label="Choose a screen">
+    <button role="tab" aria-selected="true" aria-controls="gs1">Search</button><button role="tab" aria-selected="false" aria-controls="gs2">Listing</button><button role="tab" aria-selected="false" aria-controls="gs3">Quote</button><button role="tab" aria-selected="false" aria-controls="gs4">Payment</button><button role="tab" aria-selected="false" aria-controls="gs5">Fines</button>
+  </div>
+  <div class="marquee" aria-hidden="true" data-loop><div class="mq-track">
+    <span>Wash &amp; Detailing</span><span>Repairs &amp; Maintenance</span><span>Glass Repair &amp; Replacement</span><span>Tyres &amp; Wheel Alignment</span><span>Fines &amp; Vehicle Admin</span>
+    <span>Wash &amp; Detailing</span><span>Repairs &amp; Maintenance</span><span>Glass Repair &amp; Replacement</span><span>Tyres &amp; Wheel Alignment</span><span>Fines &amp; Vehicle Admin</span>
+  </div></div>
+</section>
+
+<!-- 5. For businesses + dashboard -->
+<section class="sec" id="business" aria-labelledby="h-biz" style="padding-top:0">
+  <div class="wrap">
+    <div class="biz-head">
+      <div>
+        <span class="eyebrow" data-reveal>For businesses</span>
+        <h2 class="h2" id="h-biz"><span class="ln"><span>List free during the pilot.</span></span><span class="ln grey"><span>R0 fee. Paid directly.</span></span></h2>
+        <p class="lede" data-reveal>Washes, workshops, glass fitters, tyre shops and mobile teams. Customers send requests, you accept the ones you can do, and every payment goes straight to you.</p>
+      </div>
+      <ul class="perks" data-reveal><li>Accept within 2 business hours</li><li>Written quotes, valid 7 days</li><li>Travel charge by distance band</li><li>CarworX fee: R0</li></ul>
+    </div>
+
+    <div class="dash-wrap" data-reveal>
+      <div class="dash-glow"></div>
+      <div class="dash" role="region" aria-label="Example business dashboard for Shine Studio with requests, payments, reply time and the R0 fee">
+        <div class="dbar">
+          <div class="who"><span class="av">SS</span><div><b>Shine Studio</b><small>Rosebank · Wash &amp; Detailing</small></div></div>
+          <div class="ptabs" id="dtabs"><button aria-selected="true" data-p="0">Requests</button><button aria-selected="false" data-p="1">Quotes</button><button aria-selected="false" data-p="2">Payments</button></div>
+        </div>
+        <div class="dgrid">
+          <div class="kpi"><small>Requests this week</small><span class="num" data-count="38">38</span><div class="foot"><div class="bar"><i style="--w:72%"></i></div>+9</div></div>
+          <div class="kpi"><small>Paid to you directly</small><span class="num"><sub>R</sub><span data-count="18420">18 420</span></span><div class="foot">This week · 31 bookings</div></div>
+          <div class="kpi"><small>Average reply</small><span class="num"><span data-count="67" data-fmt="hm">1h07</span></span><div class="foot"><div class="bar"><i style="--w:56%"></i></div>of 2 h</div></div>
+          <div class="kpi fee"><small>CarworX fee</small><span class="num"><sub>R</sub>0</span><div class="foot">Free during the pilot</div></div>
+        </div>
+        <div class="dmain">
+          <div class="chart">
+            <div class="ch"><b>Bookings</b><div class="ptabs" id="ctabs"><button aria-selected="true" data-r="0">Week</button><button aria-selected="false" data-r="1">Month</button></div></div>
+            <svg viewBox="0 0 600 220" id="chart">
+              <defs>
+                <linearGradient id="cLine" x1="0" x2="1"><stop offset="0" stop-color="#3d6dff"/><stop offset=".6" stop-color="#9a8cff"/><stop offset="1" stop-color="#ff5a24"/></linearGradient>
+                <linearGradient id="cFillH" x1="0" x2="1"><stop offset="0" stop-color="#3d6dff"/><stop offset="1" stop-color="#ff7a4d"/></linearGradient>
+                <linearGradient id="cFade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+                <mask id="cMask"><rect width="600" height="220" fill="url(#cFade)"/></mask>
+              </defs>
+              <g stroke="rgba(13,15,18,.06)"><path d="M0 55H600M0 110H600M0 165H600"/></g>
+              <path id="cArea" fill="url(#cFillH)" mask="url(#cMask)" d=""/>
+              <path id="cPath" fill="none" stroke="url(#cLine)" stroke-width="3" stroke-linecap="round" d=""/>
+              <circle id="cDot" r="6" fill="#fff" stroke="#ff5a24" stroke-width="3" cx="0" cy="0"/>
+            </svg>
+            <div class="xl" id="cx"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+          </div>
+          <div class="queue">
+            <div class="qpanel on" data-q="0">
+              <div class="qh">New requests <small>3 waiting</small></div>
+              <div class="qi"><span class="av">TN</span><div><b>Thandi N. · Full wash</b><span class="left">1h 12m to accept</span></div><div class="act"><span>Decline</span><span class="go">Accept</span></div></div>
+              <div class="qi"><span class="av">SK</span><div><b>Sipho K. · Mobile wash</b><small>Travel band B · +R 60</small></div><div class="act"><span>Decline</span><span class="go">Accept</span></div></div>
+              <div class="qi"><span class="av">LM</span><div><b>Lerato M. · Interior detail</b><span class="left">1h 48m to accept</span></div><div class="act"><span>Decline</span><span class="go">Accept</span></div></div>
+            </div>
+            <div class="qpanel" data-q="1">
+              <div class="qh">Quotes <small>valid 7 days</small></div>
+              <div class="qi"><span class="av">PV</span><div><b>Pieter v. · Paint correction</b><small>Approved · R 3 200</small></div><div class="act"><span class="go">Book</span></div></div>
+              <div class="qi"><span class="av">AN</span><div><b>Anele N. · Ceramic coat</b><small>Sent · 5 days left</small></div><div class="act"><span>View</span></div></div>
+              <div class="qi"><span class="av">JD</span><div><b>Johan D. · Headlight restore</b><small>Draft</small></div><div class="act"><span class="go">Send</span></div></div>
+            </div>
+            <div class="qpanel" data-q="2">
+              <div class="qh">Payments <small>straight to you</small></div>
+              <div class="qi"><span class="av">TN</span><div><b>Thandi N.</b><small>Full wash &amp; valet · paid</small></div><div class="act"><span>R 240</span></div></div>
+              <div class="qi"><span class="av">RB</span><div><b>Ruan B.</b><small>Express wash · paid</small></div><div class="act"><span>R 180</span></div></div>
+              <div class="qi"><span class="av">ZM</span><div><b>Zanele M.</b><small>Interior detail · paid</small></div><div class="act"><span>R 650</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="biz-cta" data-reveal>
+      <a class="pill" href="/onboarding/checklist/index.html"><span>List your business free</span><span class="arr" aria-hidden="true"><svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+      <small>No CarworX fee during the pilot. Set your own prices and travel bands.</small>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Closing band -->
+<section class="closing" id="start" aria-labelledby="h-close" data-loop>
+  <div class="wrap">
+    <div class="c-card">
+      <svg class="c-rotor" viewBox="0 0 200 200" fill="currentColor" aria-hidden="true"><g transform="translate(100,100) scale(1) rotate(21.9494)"><use href="#cx-rotor"/></g></svg>
+      <h2 class="h2" id="h-close"><span class="ln"><span>Your car's next visit,</span></span> <span class="ln grey"><span>booked properly.</span></span></h2>
+      <div class="c-cta">
+        <a class="pill" href="/app.html#search/wash"><span>Find a service near you</span><span class="arr" aria-hidden="true"><svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+        <a class="c-link" href="/onboarding/checklist/index.html">List your business free <span aria-hidden="true"><svg width="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h10M8 3l4 4-4 4"/></svg></span></a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- 7. Footer -->
+<footer>
+  <div class="wrap">
+    <svg class="flk" viewBox="0 0 852.35 184" fill="currentColor" role="img" aria-label="CarworX" data-reveal><use href="#cx-lockup"/></svg>
+    <div><span class="badge tag"><i></i>Concept, not final</span></div>
+    <div class="fine"><span>carworx.app · South Africa</span><span>Studio direction, pass 1 · All businesses, people, prices and ratings are fictional.</span></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const root = document.documentElement;
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const G = window.gsap && window.ScrollTrigger ? window.gsap : null;
+  const motion = !!G && !RM;
+  if (G) G.registerPlugin(ScrollTrigger);
+  if (motion) root.classList.add('motion', 'hero-wait');
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  let heroVis = true, tlVis = false;
+  // per-frame writers go through these, so unchanged values never invalidate style
+  const css = (el, p, v) => { const c = el.__c || (el.__c = {}); if (c[p] !== v) { c[p] = v; el.style[p] = v; } };
+  const attr = (el, p, v) => { const c = el.__a || (el.__a = {}); if (c[p] !== v) { c[p] = v; el.setAttribute(p, v); } };
+  const text = (el, v) => { if (el.__t !== v) { el.__t = v; el.textContent = v; } };
+  const svgEl = (n, a) => { const e = document.createElementNS('http://www.w3.org/2000/svg', n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+
+  /* ---------- gauge ticks ---------- */
+  const ticks = $('#gticks');
+  for (let i = 0; i <= 20; i++) {
+    const a = (-135 + i * 13.5) * Math.PI / 180, r1 = i % 5 ? 70 : 64, r2 = 76;
+    ticks.appendChild(svgEl('line', { x1: 100 + r1 * Math.sin(a), y1: 100 - r1 * Math.cos(a), x2: 100 + r2 * Math.sin(a), y2: 100 - r2 * Math.cos(a) }));
+  }
+
+  /* ---------- live hero hold timer ---------- */
+  const heroRing = $('#heroRing'), heroClock = $('#heroClock');
+  let heroLeft = 14 * 60 + 32;
+  const tickHero = () => {
+    if (heroVis) {
+      heroClock.textContent = mmss(heroLeft);
+      heroRing.setAttribute('stroke-dashoffset', (490.1 * (1 - heroLeft / 900)).toFixed(1));
+    }
+    heroLeft = heroLeft > 0 ? heroLeft - 1 : 900;
+  };
+  tickHero(); if (!RM) setInterval(tickHero, 1000);
+
+  /* ---------- intro: full-scale glyph resolve + Turbine spool inside a concentric housing ---------- */
+  // Rotor physics follow brand/motion/timeline.mjs: lag-surge-brake spool, 1.8° overshoot, damped spring to rest.
+  const REST = 21.9494, TURNS = 3, OVER = 1.8;
+  const TABLE = (() => { const n = 1024, c = new Float64Array(n + 1);
+    for (let i = 1; i <= n; i++) { const u = (i - .5) / n; c[i] = c[i - 1] + Math.pow(u, 2.2) * Math.pow(1 - u, 1.3); }
+    for (let i = 0; i <= n; i++) c[i] /= c[n]; return c; })();
+  const spool = (u) => { const x = clamp(u) * 1024, i = Math.floor(x), f = x - i; return i >= 1024 ? 1 : TABLE[i] + (TABLE[i + 1] - TABLE[i]) * f; };
+  const SP = [0.3, 2.0];
+  const rotorAngle = (t) => t < SP[1]
+    ? REST - (TURNS * 360 + OVER) * (1 - spool((t - SP[0]) / (SP[1] - SP[0]))) + OVER
+    : REST + OVER * Math.exp(-6.5 * (t - SP[1])) * Math.cos(2 * Math.PI * 1.7 * (t - SP[1]));
+  const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
+  const lerp = (a, b, k) => a + (b - a) * k;
+
+  const intro = $('#intro'), stage = $('#intro .stage');
+  const asm = $('#i-asm'), rotS = $('#i-rotor-s'), rotRot = $('#i-rotor-rot'), word = $('#i-word');
+  const ghosts = $$('#i-rotor-rot .ghost');
+  const slots = $$('.glyph-slot'), igs = $$('#intro .ig');
+  const housing = $('#intro .housing'), pressure = $('#intro .pressure');
+  const tickWrap = $('#i-ticks'), tickEls = [];
+  for (let i = 0; i < 72; i++) {
+    const a = i * 5 * Math.PI / 180, r1 = i % 6 ? 106 : 104, r2 = i % 6 ? 110 : 114;
+    tickEls.push(tickWrap.appendChild(svgEl('line', { x1: (r1 * Math.sin(a)).toFixed(2), y1: (-r1 * Math.cos(a)).toFixed(2), x2: (r2 * Math.sin(a)).toFixed(2), y2: (-r2 * Math.cos(a)).toFixed(2), opacity: 0 })));
+  }
+  const HC = 2 * Math.PI * 100;
+  housing.setAttribute('stroke-dasharray', HC.toFixed(1));
+  const RES = [0.8, 0.9, 0.99, 1.09, 1.19, 1.28, 1.4];
+  const CH = '0123456789R#%&*+=<>/{}[]?$@ABCDEHKMNPRSTVWXZ'.split('');
+  // Layout: L = 1 is the horizontal lockup (export transforms); L = 0 is the stacked export, mapped into the same frame.
+  const STACK = innerWidth < 600, K = 1.15;
+  let L = STACK ? 0 : 1;
+  if (STACK) stage.classList.add('stacked');
+  const T_END = 2.95;
+
+  function drawIntro(t) {
+    // where the two halves sit (stacked export: mark at 303.18,160 ×1.6, wordmark at 0,480; centred on the horizontal frame)
+    const ax = lerp(426.18, 92, L), ay = lerp(92 - 80 * K, 92, L), as = lerp(1.6 * K / 0.92, 1, L);
+    const wx = lerp(426.18 - 303.18 * K, 246, L), wy = lerp(92 + 240 * K, 142, L), ws = lerp(K, 1, L);
+    asm.setAttribute('transform', `translate(${ax.toFixed(2)},${ay.toFixed(2)}) scale(${as.toFixed(4)})`);
+    word.setAttribute('transform', `translate(${wx.toFixed(2)},${wy.toFixed(2)}) scale(${ws.toFixed(4)})`);
+    // glyph slots: fade in, scramble, resolve to the outlined glyph
+    slots.forEach((s, i) => {
+      const on = clamp((t - 0.05 - i * 0.04) / 0.2), r = clamp((t - RES[i]) / 0.14);
+      s.setAttribute('opacity', (on * (1 - r)).toFixed(3));
+      if (t < RES[i]) s.textContent = CH[(Math.floor(t * 22) * 7 + i * 13 + Math.floor(t * 9) * i) % CH.length];
+      const g = clamp((t - RES[i] + 0.04) / 0.42), e = easeOutCubic(g);
+      igs[i].setAttribute('opacity', e.toFixed(3));
+      igs[i].setAttribute('transform', `translate(0 ${((1 - e) * 26).toFixed(2)})`);
+    });
+    // housing ring and ticks draw around the seat; they stay concentric with the rotor and fade once it seats
+    const ringOut = 1 - clamp((t - 2.0) / 0.45);
+    housing.setAttribute('stroke-dashoffset', (HC * (1 - easeOutCubic(clamp(t / 0.6)))).toFixed(1));
+    housing.setAttribute('opacity', ringOut.toFixed(3));
+    tickEls.forEach((el, i) => el.setAttribute('opacity', (clamp((t - 0.08 - i * 0.008) / 0.12) * ringOut * (i % 6 ? .55 : 1)).toFixed(3)));
+    // rotor grows into its housing while it spools up, then seats with a damped spring
+    const grow = easeOutCubic(clamp((t - 0.3) / 1.2));
+    rotS.setAttribute('transform', `scale(${(0.92 * (0.5 + 0.5 * grow)).toFixed(4)})`);
+    rotS.setAttribute('opacity', clamp((t - 0.3) / 0.3).toFixed(3));
+    const a = rotorAngle(t);
+    rotRot.setAttribute('transform', `rotate(${a.toFixed(3)})`);
+    // motion blur: trailing copies spread by angular speed
+    const v = Math.abs(a - rotorAngle(t - 1 / 60));
+    const spread = Math.min(16, v * 0.9);
+    ghosts.forEach((gh, k) => {
+      gh.setAttribute('transform', `rotate(${(-(k + 1) * spread / 4).toFixed(2)})`);
+      gh.setAttribute('opacity', (spread > .4 ? 0.28 - k * 0.05 : 0).toFixed(3));
+    });
+    // pressure ring leaves the rotor as it seats
+    const p = clamp((t - 2.0) / 0.8);
+    pressure.setAttribute('transform', `scale(${(1 + 2 * easeOutCubic(p)).toFixed(4)})`);
+    pressure.setAttribute('opacity', (p > 0 && p < 1 ? 0.5 * (1 - p) : 0).toFixed(3));
+  }
+
+  function heroIn() {
+    root.classList.remove('hero-wait');
+    if (!motion) return;
+    const far = Math.min(innerWidth * .32, 460);
+    const tl = G.timeline({ defaults: { ease: 'expo.out' } });
+    tl.fromTo('.hero h1 .ln>span', { yPercent: 105 }, { yPercent: 0, duration: 1.2, stagger: .1 }, 0)
+      .fromTo('.hero [data-hero]', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.1, stagger: .05 }, .1)
+      .fromTo('.obj', { opacity: 0 }, { opacity: 1, duration: .5, stagger: .05 }, 0)
+      .fromTo('.obj-in', { x: (i, el) => +el.parentNode.dataset.side * far, y: 40, scale: .7, rotation: (i) => [-14, 10, -8, 12, 18, -10][i] },
+        { x: 0, y: 0, scale: 1, rotation: 0, duration: 1.6, ease: 'elastic.out(1,.75)', stagger: .06 }, 0)
+      .fromTo('.key', { opacity: 0, y: 48 }, { opacity: 1, y: 0, duration: 1, ease: 'back.out(1.7)', stagger: .06 }, .3);
+  }
+
+  function finishIntro() {
+    root.classList.remove('intro-on', 'logo-wait'); root.classList.add('intro-done');
+    if (root.classList.contains('hero-wait')) heroIn();
+    if (G) ScrollTrigger.refresh();
+  }
+
+  function runIntro() {
+    const hashT = /intro=([\d.]+)/.exec(location.hash);
+    if (!G || /skip/.test(location.hash)) { L = 1; drawIntro(9); finishIntro(); return; }
+    if (RM) {
+      // Reduced motion: the intro becomes a still of the settled lockup, then fades away.
+      drawIntro(9); root.classList.add('intro-on');
+      const done = () => { G.to(intro, { opacity: 0, duration: .4, onComplete: finishIntro }); };
+      const id = setTimeout(done, 1400); intro.addEventListener('click', () => { clearTimeout(id); done(); }, { once: true });
+      return;
+    }
+    root.classList.add('intro-on', 'logo-wait');
+    const st = { t: 0 };
+    const tl = G.timeline({ onComplete: handoff });
+    tl.to(st, { t: T_END, duration: T_END, ease: 'none', onUpdate: () => drawIntro(st.t) }, 0)
+      .fromTo('.intro-tag .w>span', { yPercent: 110 }, { yPercent: 0, duration: .8, stagger: .07, ease: 'expo.out' }, 1.5)
+      .fromTo('.intro-roll', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .6, ease: 'expo.out' }, 1.8)
+      .to('.roll-track', { y: '-1.3em', duration: .26, ease: 'power3.inOut' }, 2.0)
+      .to('.roll-track', { y: '-2.6em', duration: .26, ease: 'power3.inOut' }, 2.24)
+      .to('.roll-track', { y: '-3.9em', duration: .26, ease: 'power3.inOut' }, 2.48)
+      .fromTo('.intro-skip', { opacity: 0 }, { opacity: 1, duration: .5 }, .4);
+    drawIntro(0);
+    if (hashT) { tl.pause(+hashT[1]); drawIntro(+hashT[1]); return; } // used for stills
+    const skip = () => { if (tl.progress() < 1) tl.timeScale(5); };
+    ['wheel', 'touchstart', 'keydown', 'click'].forEach((e) => addEventListener(e, skip, { once: true, passive: true }));
+
+    function handoff() {
+      // FLIP: the full-scale lockup shrinks into the nav while the hero objects spring in from the edges.
+      const lk = $('#intro .lk'), nav = $('.nav .logo svg');
+      const a = lk.getBoundingClientRect(), b = nav.getBoundingClientRect();
+      const s = b.width / a.width, lay = { l: L };
+      const ht = G.timeline({ onComplete: finishIntro });
+      ht.to('.intro-sub,.intro-skip', { opacity: 0, y: -12, duration: .3, ease: 'power2.in' }, 0)
+        .to(lay, { l: 1, duration: .55, ease: 'expo.inOut', onUpdate: () => { L = lay.l; drawIntro(T_END + 1); } }, 0)
+        .to(lk, { x: b.left - a.left, y: b.top - a.top, scale: s, duration: .9, ease: 'expo.inOut' }, .05)
+        .fromTo('.nav', { opacity: 0 }, { opacity: 1, duration: .5, ease: 'power1.out' }, .2)
+        .to('#intro .ibg', { opacity: 0, duration: .45, ease: 'power1.out' }, .4)
+        .add(() => { root.classList.remove('intro-on'); heroIn(); }, .3);
+    }
+  }
+  runIntro();
+
+  /* ---------- hero objects: depth parallax (pointer + scroll) ---------- */
+  const hero = $('.hero');
+  const objs = $$('.obj');
+  let mx = 0, my = 0, cx = 0, cy = 0, scales = [];
+  const readScales = () => { scales = objs.map((o) => parseFloat(getComputedStyle(o).getPropertyValue('--s')) || 1); };
+  readScales(); addEventListener('resize', readScales);
+  addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; if (heroVis) kick(); }, { passive: true });
+  const placeObjs = () => {
+    cx += (mx - cx) * .06; cy += (my - cy) * .06;
+    const sy = Math.min(scrollY, innerHeight * 1.2);
+    objs.forEach((o, i) => {
+      const d = +o.dataset.depth, side = +o.dataset.side;
+      const x = cx * 34 * d + side * sy * .08 * d, y = cy * 26 * d - sy * .22 * d;
+      css(o, 'transform', `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) scale(${scales[i]})`);
+    });
+    return Math.abs(mx - cx) + Math.abs(my - cy) > .001;
+  };
+  placeObjs();
+
+  /* ---------- service keys: the matching floating object reacts ---------- */
+  $$('.key').forEach((k) => {
+    const a = $('a', k), on = () => { hero.dataset.hot = k.dataset.k; }, off = () => { delete hero.dataset.hot; };
+    a.addEventListener('pointerenter', on); a.addEventListener('pointerleave', off);
+    a.addEventListener('focus', on); a.addEventListener('blur', off);
+  });
+
+  /* ---------- signature: the booking travels the timeline, morphing as it goes ---------- */
+  const tlSec = $('#how'), tlStage = $('.tl-stage'), bk = $('.bk'), ground = $('.bk-ground');
+  const faces = $$('.bk-face'), fcs = faces.map((f) => f.firstElementChild);
+  const tlSteps = $$('.tl-steps li'), tlDots = $$('.tl-dot'), tlFill = $('.tl-fill');
+  const tlRing = $('#tlRing'), tlClock = $('#tlClock'), rLines = $$('.f3 .rl');
+  const SHAPES = [{ w: 208, h: 208, rot: -4 }, { w: 312, h: 136, rot: 2 }, { w: 220, h: 220, rot: 0 }, { w: 248, h: 300, rot: -2 }];
+  const STOPS = [.125, .375, .625, .875];
+  const tlLive = $('#tlLive');
+  let pT = 0, pC = 0, lastP = -1, lastOn = 0;
+  const smooth01 = (x) => x * x * (3 - 2 * x);
+  // Only transforms and opacity are written here: the four faces cross-fade while scaling toward one shared size,
+  // and each face's content is counter-scaled so its text never stretches.
+  function drawBooking(p) {
+    const i = Math.min(2, Math.floor(p)), f = p - i, A = SHAPES[i], B = SHAPES[i + 1];
+    const mix = (k) => A[k] + (B[k] - A[k]) * f;
+    const mobile = innerWidth <= 900, W = tlStage.clientWidth;
+    const bs = mobile ? Math.min(.86, (W - 24) / 330) : 1;
+    const x = mobile ? W / 2 : W * (STOPS[i] + (STOPS[i + 1] - STOPS[i]) * f);
+    const lift = RM ? 0 : Math.sin(Math.PI * f);
+    const w = mix('w'), h = mix('h');
+    css(bk, 'transform', `translate3d(${x.toFixed(1)}px,${(-lift * 40).toFixed(1)}px,0) rotate(${(mix('rot') - lift * 5).toFixed(2)}deg) scale(${(bs * (1 + lift * .05)).toFixed(3)})`);
+    css(ground, 'transform', `translate3d(${x.toFixed(1)}px,0,0) scaleX(${(w / 200 * bs * (1 - lift * .25)).toFixed(3)})`);
+    css(ground, 'opacity', (1 - lift * .55).toFixed(3));
+    faces.forEach((el, k) => {
+      const S = SHAPES[k], sx = w / S.w, sy = h / S.h, d = Math.abs(p - k), cs = 1 - Math.min(d, 1) * .12;
+      const o = clamp(1 - d * 2.4);
+      css(el, 'opacity', o.toFixed(3));
+      if (o > 0) { css(el, 'transform', `translate(-50%,-50%) scale(${sx.toFixed(4)},${sy.toFixed(4)})`); css(fcs[k], 'transform', `scale(${(cs / sx).toFixed(4)},${(cs / sy).toFixed(4)})`); }
+    });
+    css(tlFill, 'transform', `scaleX(${(p / 3).toFixed(4)})`);
+    tlDots.forEach((d, k) => d.classList.toggle('on', p >= k - .02));
+    const on = Math.round(p); tlSteps.forEach((s, k) => s.classList.toggle('on', k === on));
+    if (on !== lastOn) { lastOn = on; tlLive.textContent = `Step ${on + 1} of 4. ${$('h3', tlSteps[on]).textContent}. ${$('p', tlSteps[on]).textContent}`; }
+    // the hold counts down as you scroll through step 3
+    const secs = 900 - Math.round(clamp((p - 1.7) / 1.1) * 74);
+    text(tlClock, mmss(secs));
+    attr(tlRing, 'stroke-dashoffset', (527.8 * (1 - secs / 900)).toFixed(1));
+    // the receipt prints line by line on arrival
+    rLines.forEach((el, j) => { const v = RM ? (p > 2.5 ? 1 : 0) : clamp((p - 2.45 - j * .05) / .2); css(el, 'opacity', v.toFixed(3)); css(el, 'transform', `translateY(${((1 - v) * 6).toFixed(1)}px)`); });
+  }
+  const readTimeline = () => {
+    const r = tlSec.getBoundingClientRect();
+    if (r.bottom < -200 || r.top > innerHeight + 200) return false;
+    const s = clamp(-r.top / (r.height - innerHeight));
+    const x = clamp(s * 3.3 - .15, 0, 3), i = Math.min(2, Math.floor(x)), f = x - i;
+    pT = i + smooth01(clamp((f - .22) / .56));
+    return true;
+  };
+  drawBooking(0);
+
+  /* ---------- product glimpse carousel (Lightspark-style focus) ---------- */
+  const gstage = $('#gstage'), cards = $$('.gcard'), tabs = $$('.gtabs button');
+  const N = cards.length;
+  let pos = 0, target = 0, vel = 0, dragging = false, dx0 = 0, pos0 = 0, hover = false, inView = false, lastMove = 0, moved = 0;
+  const wrapD = (d) => ((d % N) + N * 1.5) % N - N / 2;
+  const spacing = () => innerWidth < 760 ? Math.min(240, innerWidth * .62) : 320;
+  const now = () => performance.now() / 1000;
+  const layoutCards = () => {
+    const sp = spacing(), t = now();
+    cards.forEach((c, i) => {
+      const d = wrapD(i - pos), a = Math.abs(d);
+      // neighbours read as depth: gentle scale, a little blur, mostly opaque
+      const sc = 1 - Math.min(a, 2) * .1;
+      const bl = Math.round(Math.min(a, 2) * 1.2 * 5) / 5;
+      const op = clamp(1 - Math.max(0, a - 1) * .3);
+      const y = a * 28 + (RM ? 0 : Math.sin(t * .8 + i * 1.7) * 6 * Math.min(a, 1));
+      css(c, 'transform', `translate3d(${(d * sp).toFixed(1)}px,${y.toFixed(1)}px,0) scale(${sc.toFixed(3)}) rotate(${(d * -1.6).toFixed(2)}deg)`);
+      css(c, 'filter', bl > .2 ? `blur(${bl.toFixed(1)}px) saturate(${(1 - Math.min(a, 2) * .06).toFixed(2)})` : 'none');
+      css(c, 'opacity', op.toFixed(2));
+      css(c, 'zIndex', String(100 - Math.round(a * 10)));
+      attr(c, 'aria-hidden', a > .5 ? 'true' : 'false');
+    });
+    const ai = ((Math.round(target) % N) + N) % N;
+    tabs.forEach((b, i) => attr(b, 'aria-selected', String(i === ai)));
+  };
+  const goTo = (i) => { const cur = ((Math.round(target) % N) + N) % N; target = Math.round(target) + wrapD(i - cur); lastMove = now(); };
+  tabs.forEach((b, i) => b.addEventListener('click', () => goTo(i)));
+  cards.forEach((c, i) => c.addEventListener('click', () => { if (moved < 6 && Math.abs(wrapD(i - pos)) > .4) goTo(i); }));
+  gstage.addEventListener('pointerdown', (e) => { kick(); dragging = true; moved = 0; dx0 = e.clientX; pos0 = pos; gstage.setPointerCapture(e.pointerId); });
+  gstage.addEventListener('pointermove', (e) => { if (!dragging) return; moved = Math.max(moved, Math.abs(e.clientX - dx0)); target = pos = pos0 - (e.clientX - dx0) / spacing(); vel = 0; });
+  const endDrag = (e) => {
+    if (!dragging) return; dragging = false;
+    // a short swipe still turns one card
+    const dx = e && e.clientX !== undefined ? e.clientX - dx0 : 0;
+    target = Math.abs(dx) > 40 && Math.abs(pos - pos0) < .5 ? Math.round(pos0) - Math.sign(dx) : Math.round(pos);
+    lastMove = now();
+  };
+  gstage.addEventListener('pointerup', endDrag); gstage.addEventListener('pointercancel', endDrag);
+  gstage.addEventListener('pointerenter', () => hover = true); gstage.addEventListener('pointerleave', () => hover = false);
+  new IntersectionObserver((es) => { if (es[0].isIntersecting && !inView) lastMove = now(); inView = es[0].isIntersecting; kick(); }).observe(gstage);
+  addEventListener('keydown', (e) => { if (!inView) return; if (e.key === 'ArrowRight') { target = Math.round(target) + 1; } if (e.key === 'ArrowLeft') { target = Math.round(target) - 1; } });
+  layoutCards();
+
+  /* ---------- dashboard: tabs, chart morph, counters ---------- */
+  const DATA = [[6, 4, 7, 5, 8, 14, 9], [22, 28, 25, 34, 30, 41, 38]];
+  const LABELS = [['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7']];
+  const cPath = $('#cPath'), cArea = $('#cArea'), cDot = $('#cDot'), cxl = $('#cx');
+  let cur = DATA[0].slice(), draw = motion ? 0 : 1;
+  const pts = (vals) => { const mx = Math.max(...vals) * 1.15; return vals.map((v, i) => [i * 100, 210 - (v / mx) * 190]); };
+  const smooth = (p) => { let d = `M${p[0][0]},${p[0][1]}`;
+    for (let i = 0; i < p.length - 1; i++) { const p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p2;
+      d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)},${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)},${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0]},${p2[1].toFixed(1)}`; }
+    return d; };
+  const renderChart = () => {
+    const p = pts(cur), d = smooth(p);
+    cPath.setAttribute('d', d); cArea.setAttribute('d', `${d} L600,220 L0,220Z`);
+    const Lp = cPath.getTotalLength();
+    cPath.style.strokeDasharray = Lp; cPath.style.strokeDashoffset = Lp * (1 - draw);
+    const pt = cPath.getPointAtLength(Lp * draw);
+    cDot.setAttribute('cx', pt.x); cDot.setAttribute('cy', pt.y);
+    cArea.style.opacity = draw;
+  };
+  renderChart();
+  const setRange = (r) => {
+    $$('#ctabs button').forEach((b, i) => b.setAttribute('aria-selected', String(i === r)));
+    cxl.innerHTML = LABELS[r].map((l) => `<span>${l}</span>`).join('');
+    const from = cur.slice(), to = DATA[r], o = { k: 0 };
+    const step = () => { cur = from.map((v, i) => v + (to[i] - v) * o.k); renderChart(); };
+    if (G && !RM) G.to(o, { k: 1, duration: 1, ease: 'expo.inOut', onUpdate: step }); else { o.k = 1; step(); }
+  };
+  $$('#ctabs button').forEach((b, i) => b.addEventListener('click', () => setRange(i)));
+  $$('#dtabs button').forEach((b, i) => b.addEventListener('click', () => {
+    $$('#dtabs button').forEach((x, j) => x.setAttribute('aria-selected', String(i === j)));
+    $$('.qpanel').forEach((p, j) => p.classList.toggle('on', i === j));
+  }));
+
+  /* ---------- scroll choreography ---------- */
+  if (motion) {
+    ScrollTrigger.batch('[data-reveal]', {
+      start: 'top 88%', once: true,
+      onEnter: (els) => G.to(els, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.1, ease: 'expo.out', stagger: .08 }),
+    });
+    $$('.h2').forEach((h) => G.to($$('.ln>span', h), { yPercent: 0, y: 0, duration: 1.2, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: h, start: 'top 85%', once: true } }));
+    // the quote's 7-day validity fills as you read
+    const days = $$('#days i');
+    ScrollTrigger.create({ trigger: '#quote', start: 'top 75%', end: 'bottom 60%', scrub: .6,
+      onUpdate: (s) => days.forEach((d, i) => d.style.setProperty('--f', clamp(s.progress * 7 - i).toFixed(3))) });
+    // dashboard: chart draws, numbers count up, the glow breathes with scroll
+    ScrollTrigger.create({ trigger: '.dash', start: 'top 75%', once: true, onEnter: () => {
+      const o = { k: 0 };
+      G.to(o, { k: 1, duration: 1.8, ease: 'expo.out', onUpdate: () => { draw = o.k; renderChart(); } });
+      $$('.dash [data-count]').forEach((el) => {
+        const n = +el.dataset.count, c = { v: 0 };
+        G.to(c, { v: n, duration: 1.8, ease: 'expo.out', onUpdate: () => {
+          el.textContent = el.dataset.fmt === 'hm' ? `${Math.floor(c.v / 60)}h${String(Math.round(c.v % 60)).padStart(2, '0')}` : fmt(c.v);
+        } });
+      });
+    } });
+    G.fromTo('.dash-glow', { scale: .9, rotate: -4 }, { scale: 1.05, rotate: 3, ease: 'none', scrollTrigger: { trigger: '.dash-wrap', start: 'top bottom', end: 'bottom top', scrub: true } });
+    G.fromTo('.gblob.b1', { x: -60 }, { x: 60, ease: 'none', scrollTrigger: { trigger: '#glimpse', start: 'top bottom', end: 'bottom top', scrub: true } });
+    G.fromTo('.gblob.b2', { x: 60 }, { x: -60, ease: 'none', scrollTrigger: { trigger: '#glimpse', start: 'top bottom', end: 'bottom top', scrub: true } });
+    G.fromTo('.ill svg', { scale: 1.08 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '.ill', start: 'top bottom', end: 'center center', scrub: true } });
+  } else {
+    $$('#days i').forEach((d) => d.style.setProperty('--f', 1));
+  }
+
+  /* ---------- compact menu (900 px and below): frosted sheet, focus trap, Esc to close ---------- */
+  const menuBtn = $('.menu-btn'), sheet = $('#menu'), scrim = $('.scrim');
+  const setMenu = (open, focusBack) => {
+    sheet.classList.toggle('open', open); scrim.classList.toggle('open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    root.classList.toggle('menu-open', open);
+    if (open) $('a', sheet).focus(); else if (focusBack) menuBtn.focus();
+  };
+  menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true', true));
+  scrim.addEventListener('click', () => setMenu(false, true));
+  $$('a', sheet).forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', (e) => {
+    if (!sheet.classList.contains('open')) return;
+    if (e.key === 'Escape') { e.preventDefault(); setMenu(false, true); return; }
+    if (e.key !== 'Tab') return;
+    const items = [menuBtn, ...$$('a', sheet)], first = items[0], last = items[items.length - 1];
+    if (!items.includes(document.activeElement)) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  matchMedia('(min-width: 901px)').addEventListener('change', (m) => { if (m.matches) setMenu(false); });
+
+  /* ---------- one rAF loop for the springy bits; it sleeps when nothing it drives is moving or on screen ---------- */
+  let running = false;
+  function kick() { if (!running) { running = true; requestAnimationFrame(loop); } }
+  function loop() {
+    let busy = false;
+    if (!RM && heroVis && placeObjs()) busy = true;
+    // booking timeline: eased toward the scroll position (reduced motion snaps to whole steps)
+    if (tlVis && readTimeline()) {
+      pC = RM ? Math.round(pT) : (Math.abs(pT - pC) < .0005 ? pT : pC + (pT - pC) * .16);
+      if (pC !== lastP) { drawBooking(pC); lastP = pC; }
+      if (pC !== pT) busy = true;
+    }
+    // carousel: damped spring toward the target card, autoplay while visible
+    if (!dragging) {
+      if (!RM && inView && !hover && now() - lastMove > 3.6) { target = Math.round(target) + 1; lastMove = now(); }
+      if (RM) pos = target; else { vel += (target - pos) * .075; vel *= .74; pos += vel; }
+    }
+    if (inView || dragging) { layoutCards(); busy = true; }
+    if (busy) requestAnimationFrame(loop); else running = false;
+  }
+  // off-screen sections pause their CSS loops; the rAF loop only runs for what is visible
+  const loopIO = new IntersectionObserver((es) => {
+    es.forEach((e) => {
+      if (e.target.hasAttribute('data-loop')) e.target.classList.toggle('off', !e.isIntersecting);
+      if (e.target === hero) heroVis = e.isIntersecting;
+      if (e.target === tlSec) tlVis = e.isIntersecting;
+    });
+    kick();
+  }, { rootMargin: '120px 0px' });
+  $$('[data-loop]').forEach((el) => loopIO.observe(el)); loopIO.observe(tlSec);
+  addEventListener('scroll', kick, { passive: true });
+  addEventListener('resize', () => { lastP = -1; kick(); });
+  kick();
+})();
+</script>
+<script src="/home-links.js"></script></body>
+</html>

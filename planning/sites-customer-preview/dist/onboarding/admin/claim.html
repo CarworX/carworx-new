@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review a claim · CarworX admin (prototype)</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<link rel="stylesheet" href="admin.css">
+<meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/onboarding/preview.css"></head>
+<body class="cx-canvas">
+<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/checklist/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
+<div data-shell></div>
+<form data-flow novalidate>
+  <div class="rv-shell">
+    <aside class="rv-rail" data-only="section" aria-label="Review progress">
+      <p class="cx-eyebrow">Claim · <span data-c="listing"></span></p>
+      <ol class="cx-steps" data-rail>
+        <li data-for="claim"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="flag"></span></span><div><b>Claim</b><p>Who wants control</p></div></li>
+        <li data-for="evidence"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="doc"></span></span><div><b>Evidence</b><p>Email domain or a document</p></div></li>
+        <li data-for="access"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="team"></span></span><div><b>Current access</b><p>Who runs it now; disputes</p></div></li>
+        <li data-for="decision"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="eye"></span></span><div><b>Decision</b><p>Transfer, or reject</p></div></li>
+        <li data-for="confirm"><span class="k"><span class="n" aria-hidden="true"></span><span data-ic="tick"></span></span><div><b>Confirm</b><p>Recorded in the audit log</p></div></li>
+      </ol>
+      <a class="ob-link" href="index.html#claims">Back to claims</a>
+    </aside>
+    <div>
+      <div class="ob-segbar rv-top" data-segbar data-only="section" aria-label="Review progress"></div>
+      <section data-step id="c-claim" data-kind="section" data-section="claim" data-title="Claim" data-count>
+        <div class="rv-card"><div><p class="cx-eyebrow">Claim · sent <span data-c="sent"></span></p><h2 data-c="listing"></h2></div>
+          <dl class="ad-facts"><dt>Claimed by</dt><dd data-c="by"></dd><dt>Their role</dt><dd data-c="role"></dd><dt>Listing</dt><dd data-c="where"></dd></dl>
+          <p class="ad-only"><span data-ic="eye"></span><span>Approving moves control of the listing to the claimant. Anyone who has control now loses it, and they can dispute until you resolve it.</span></p>
+          <div data-actions></div></div>
+      </section>
+      <section data-step id="c-evidence" data-kind="section" data-section="evidence" data-title="Evidence" data-count>
+        <div class="rv-card"><h2>Evidence</h2><div data-c-evidence></div><div data-actions></div></div>
+      </section>
+      <section data-step id="c-access" data-kind="section" data-section="access" data-title="Current access" data-count>
+        <div class="rv-card"><h2>Current access</h2><div data-c-access></div><div data-actions></div></div>
+      </section>
+      <section data-step id="c-decision" data-kind="section" data-section="decision" data-title="Decision" data-count data-require="cdecision,cmethod,cwhy">
+        <div class="rv-card"><h2>Your decision</h2><div data-q="cdecision"></div>
+          <div data-if="cdecision=Transfer control to the claimant"><div data-q="cmethod"></div><div data-q="cnote" style="margin-top:14px"></div></div>
+          <div data-why><div data-q="cwhy"></div></div>
+          <div data-actions></div></div>
+      </section>
+      <section data-step id="c-confirm" data-kind="section" data-section="confirm" data-title="Confirm" data-count data-require="attest" data-cta="Confirm decision">
+        <div class="rv-card"><h2>Check and confirm</h2>
+          <dl class="ob-review"><div><dt>Decision</dt><dd data-bind="cdecision"></dd><button type="button" class="ob-link" data-change="cdecision">Change</button></div>
+            <div data-if="cdecision=Transfer control to the claimant"><dt>Checked by</dt><dd data-bind="cmethod"></dd><button type="button" class="ob-link" data-change="cmethod">Change</button></div>
+            <div data-why><dt>Why</dt><dd data-bind="cwhy"></dd><button type="button" class="ob-link" data-change="cwhy">Change</button></div></dl>
+          <div data-q="attest"></div>
+          <p class="ad-only"><span data-ic="eye"></span><span>Saved to the audit log with your name and the time (SAST). Both sides get an email.</span></p>
+          <div data-actions></div></div>
+      </section>
+      <section data-step id="c-done" data-skip>
+        <div class="rv-card"><div class="ob-status"><div class="ob-tickbig" data-ic="tick"></div><h2>Decision saved</h2>
+          <p class="t-lede"><b data-bind="cdecision"></b>. We've emailed both sides.</p>
+          <div class="ad-log"><span class="when">12 Nov 2026<br>09:05 SAST</span><span><b style="font-weight:500">Naledi Dube (admin)</b> · <span data-bind="cdecision"></span></span></div></div>
+          <div class="ob-actions"><a class="ob-link" href="index.html#audit">See the audit log</a><a class="cx-btn primary" href="index.html#claims" style="margin-left:auto">Next claim</a></div></div>
+      </section>
+    </div>
+  </div>
+</form>
+<script src="../_shared/kit.js"></script>
+<script src="../_shared/shell.js"></script>
+<script>
+  const { Q, ic, esc } = OB;
+  // ?claim=email (domain match, unmanaged listing) | doc (document, current owner disputes)
+  const DOC = new URLSearchParams(location.search).get("claim") === "doc";
+  const C = DOC
+    ? { listing: "Mzansi Mobile Mechanics", sent: "10 Nov 2026, 16:20 SAST", by: "Bongani Zulu · bongani@example.co.za", role: "Owner", where: "Comes to you · Ekurhuleni" }
+    : { listing: "Karoo Glass Fix", sent: "12 Nov 2026, 07:58 SAST", by: "Anele Mostert · anele@karooglass.co.za", role: "Owner", where: "Bellville, Cape Town" };
+  Q.cdecision = { t: "What happens to this claim?", type: "tiles", opts: DOC
+    ? [{ v: "Transfer control to the claimant", d: "Bongani takes control. Thabo loses access.", i: "flag" }, { v: "Keep the current owner", d: "Reject the claim and close the dispute.", i: "lock" }]
+    : [{ v: "Transfer control to the claimant", d: "Anele becomes the owner of this listing.", i: "flag" }, { v: "Reject the claim", d: "Nothing changes. Anele gets an email saying why.", i: "mail" }] };
+  Q.cmethod = { t: "How did you check?", type: "pick", opts: ["Phone call", "Video call", "Documents checked", "Business registry checked", "Site visit"] };
+  Q.cnote = { t: "Note", type: "text", ac: "off", opt: true, ph: "Optional, kept in the decision record", max: 500 };
+  Q.cwhy = { t: "Why", h: "Kept in the decision record and sent to the claimant.", type: "text", ac: "off", ph: "For example, the document didn't match the business name", max: 500 };
+  Q.attest = { t: "I checked this myself, and this record is accurate", type: "switch" };
+  const REJECT = Q.cdecision.opts[1].v;
+  document.querySelectorAll("[data-why]").forEach((e) => (e.dataset.if = `cdecision=${REJECT}`));
+  document.querySelectorAll("[data-actions]").forEach((el) => {
+    el.outerHTML = `<div class="ob-actions"><button type="button" class="ob-back" data-back>Back</button><span class="ob-keys"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span><button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button></div>`;
+  });
+  document.querySelector("[data-c-evidence]").innerHTML = DOC
+    ? `<dl class="ad-facts"><dt>Method</dt><dd>Will show an admin a document</dd><dt>Document</dt><dd>Utility bill, dated 3 October 2026</dd></dl><p class="ad-only">${ic("doc")}<span>Ask to see it on a video call, or by email to the support inbox. Nothing is uploaded to CarworX. Record a reference, never the document's contents or any ID number.</span></p>`
+    : `<dl class="ad-facts"><dt>Method</dt><dd>Business email</dd><dt>Sign-in email</dt><dd>anele@<b>karooglass.co.za</b> · confirmed</dd><dt>Listing website</dt><dd>karooglass.co.za</dd></dl><p class="ad-only">${ic("tick")}<span><b>Domain matches.</b> The claimant's confirmed email is at the business's own domain. Free-mail domains (Gmail and others) are refused automatically.</span></p>`;
+  document.querySelector("[data-c-access]").innerHTML = DOC
+    ? `<ul class="ob-checks"><li><span class="sh-av" style="width:32px;height:32px;font-size:12px">TK</span>Thabo Khumalo · Owner since 1 Sep 2026<small>active</small></li></ul><div class="ad-box" style="box-shadow:inset 0 0 0 1px var(--hair)"><h3><span class="cx-label err">Open dispute</span></h3><p>From <b>Thabo Khumalo</b>, 10 Nov 2026, 19:02 SAST: "I still run this business. Bongani left the company in October."</p></div>`
+    : `<ul class="ob-checks"><li><span class="dot"></span>Nobody manages this listing yet<small>imported</small></li></ul><p class="t-cap">No disputes.</p>`;
+  document.querySelectorAll("[data-c]").forEach((e) => (e.textContent = C[e.dataset.c]));
+  document.querySelectorAll("[data-ic]").forEach((e) => (e.innerHTML = ic(e.dataset.ic)));
+  SHELL.mount(document.querySelector("[data-shell]"), { role: "admin", current: "claims" });
+  const flow = OB.boot();
+  document.querySelector("#c-confirm").dataset.next = "c-done";
+</script>
+</body>
+</html>
