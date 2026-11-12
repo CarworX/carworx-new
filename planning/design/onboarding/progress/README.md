@@ -1,6 +1,6 @@
 # Segmented progress bar (proposal for the design system)
 
-**Status:** for owner approval, 2026-11-12 (SAST). Live in the stepper, live-preview and checklist concepts (`_shared/kit.css` `.ob-segbar`, `_shared/kit.js` `segbar()`).
+**Status:** **approved by the owner, 2026-11-12 (SAST)**, for the design system. Live in the stepper, live-preview and checklist concepts (`_shared/kit.css` `.ob-segbar`, `_shared/kit.js` `segbar()`).
 
 ## Look
 
