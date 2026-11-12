@@ -129,21 +129,26 @@ describe("response finalisation", () => {
   });
 
   it.each([
-    "/join",
-    "/join/opaque-invite",
-    "/provider",
-    "/provider/setup/team/role",
-  ])("never caches personal path %s or sends its URL as a referrer", (path) => {
-    const response = finalizeResponse(
-      new Request(`${APP}${path}`),
-      new Response("x", {
-        headers: { "Cache-Control": "public, max-age=600" },
-      }),
-      config,
-    );
-    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
-    expect(response.headers.get("Referrer-Policy")).toBe("no-referrer");
-  });
+    ["/join", "same-origin"],
+    ["/join/opaque-invite", "no-referrer"],
+    ["/provider", "same-origin"],
+    ["/provider/setup/team/role", "same-origin"],
+  ])(
+    "never caches personal path %s or sends its URL to another site",
+    (path, policy) => {
+      const response = finalizeResponse(
+        new Request(`${APP}${path}`),
+        new Response("x", {
+          headers: { "Cache-Control": "public, max-age=600" },
+        }),
+        config,
+      );
+      expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+      // The invite-token URL sends no referrer at all; other personal pages
+      // send one only to this origin, so no-JS form posts keep a real Origin.
+      expect(response.headers.get("Referrer-Policy")).toBe(policy);
+    },
+  );
 
   it("forces private, no-store on personal paths and when no policy was set", () => {
     const personal = finalizeResponse(

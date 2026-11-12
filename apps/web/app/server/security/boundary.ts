@@ -27,6 +27,8 @@ export const MAX_FORM_BYTES = 64 * 1024;
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const PERSONAL_PATHS = /^\/(?:auth|account|admin|org|provider|join)(?:[/.]|$)/;
+/** Personal URLs that carry a secret in the path: never sent as a referrer. */
+const TOKEN_PATHS = /^\/join\/[^/]+/;
 
 export interface SecurityContext {
   /**
@@ -196,11 +198,15 @@ export function finalizeResponse(
   // Personal pages never send a referrer to another site. `same-origin`, not
   // `no-referrer`: under no-referrer Chromium sends `Origin: null` on a
   // native (no-JavaScript) form post, which check 1 above must refuse.
+  // The one URL that carries a secret, /join/<invite token>, only stores the
+  // token and redirects to /join, so it has no form and sends no referrer.
   headers.set(
     "Referrer-Policy",
-    PERSONAL_PATHS.test(path)
-      ? "same-origin"
-      : "strict-origin-when-cross-origin",
+    TOKEN_PATHS.test(path)
+      ? "no-referrer"
+      : PERSONAL_PATHS.test(path)
+        ? "same-origin"
+        : "strict-origin-when-cross-origin",
   );
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
   if (!headers.has("Content-Security-Policy")) {

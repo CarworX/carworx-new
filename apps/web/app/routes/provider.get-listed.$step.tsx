@@ -300,7 +300,7 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
         </div>
       </PublicShell>
     );
-  const current = STEPS.indexOf(step);
+  const current = (STEPS as readonly string[]).indexOf(step);
   const title = RAIL[current]?.title ?? "Business";
   const previous = STEPS[current - 1];
   const work =

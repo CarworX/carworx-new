@@ -1,6 +1,6 @@
 import type { SignedIn } from "../auth/session.server";
 import { throwStatus } from "../auth/http.server";
-import { UUID } from "../server/providers/forms";
+import { SERVICE_OPTIONS, UUID } from "../server/providers/forms";
 import type { TeamRole } from "./forms";
 
 export interface TeamMembership {
@@ -69,14 +69,10 @@ export async function teamServices(signedIn: SignedIn, org: string) {
     .eq("organisation_id", org)
     .overrideTypes<{ service_slug: string }[], { merge: false }>();
   if (selected.error !== null) throwStatus(503, signedIn.headers);
-  const slugs = [...new Set(selected.data.map((s) => s.service_slug))];
-  if (slugs.length === 0) return [];
-  const services = await signedIn.supabase
-    .from("services")
-    .select("slug, name")
-    .in("slug", slugs)
-    .order("name")
-    .overrideTypes<{ slug: string; name: string }[], { merge: false }>();
-  if (services.error !== null) throwStatus(503, signedIn.headers);
-  return services.data;
+  const slugs = new Set(selected.data.map((s) => s.service_slug));
+  // Names come from the public catalogue list. The services table itself is
+  // admin-only under RLS, so a staff member could never read it.
+  return SERVICE_OPTIONS.filter((o) => slugs.has(o.slug))
+    .map((o) => ({ slug: o.slug, name: o.label }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }

@@ -2,6 +2,8 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
+-- Test-only (rolled back): let the harness switch to the capability role.
+grant mail_server to postgres with set true, inherit false;
 grant usage on schema extensions to mail_server;
 grant execute on all functions in schema extensions to mail_server;
 select plan(30);
