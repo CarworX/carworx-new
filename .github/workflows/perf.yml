@@ -57,7 +57,7 @@ jobs:
       - name: Install and build
         run: |
           pnpm install --frozen-lockfile
-          node --test perf/budgets.test.js
+          node --test perf/budgets.test.js perf/measure.test.js
           # The OS packages come from Ubuntu's mirrors, which can be unreachable
           # from runners; apt then spends ~10 minutes per attempt on DNS
           # timeouts. Cap each attempt at 4 minutes, try twice, then fall back
@@ -80,6 +80,8 @@ jobs:
           SUPABASE_PUBLISHABLE_KEY=local-synthetic-publishable-fixture
           VARS
           pnpm run build
+      - name: Verify support fallback in Chromium
+        run: SUPPORT_FALLBACK_REPORT="$RUNNER_TEMP/support-fallback.json" pnpm --filter @carworx/web exec node scripts/support-fallback-browser.ts
       - name: Measure five serial mobile runs per route
         run: |
           pnpm --filter @carworx/web exec vite preview --host 127.0.0.1 --port 8787 --strictPort > "$RUNNER_TEMP/k3-preview.log" 2>&1 &
@@ -91,6 +93,8 @@ jobs:
         if: always()
         with:
           name: k3-mobile-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/k3-summary.json
+          path: |
+            ${{ runner.temp }}/k3-summary.json
+            ${{ runner.temp }}/support-fallback.json
           retention-days: 7
           if-no-files-found: error

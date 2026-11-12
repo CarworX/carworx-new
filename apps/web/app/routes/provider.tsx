@@ -1,3 +1,4 @@
+import { mailtoHref } from "../ui/mailto";
 import { data, Link } from "react-router";
 
 import { field } from "../auth/forms";
@@ -13,6 +14,7 @@ import {
   parseReason,
   PROBLEM_TEXT,
   problemFrom,
+  sast,
   type Problem,
 } from "../server/providers/forms";
 import { Button, ButtonLink } from "../ui/Button";
@@ -62,6 +64,13 @@ interface Claim {
 const CLAIM_COLUMNS =
   "id, listing_public_id, organisation_id, claimant_id, status, evidence_kind, email_domain, created_at";
 
+function pageHref(claims: string | null, enquiries: string | null): string {
+  const query = new URLSearchParams();
+  if (claims !== null) query.set("claims", claims);
+  if (enquiries !== null) query.set("enquiries", enquiries);
+  return `/provider${query.size ? `?${query}` : ""}`;
+}
+
 const STATUS_COPY: Record<Listing["status"], string> = {
   draft: "Needs changes",
   submitted: "Waiting for review",
@@ -74,6 +83,15 @@ const STATUS_COPY: Record<Listing["status"], string> = {
  * JWT, so RLS decides what appears, and a revoked membership disappears on
  * the next request. Never selects or shows a mobile base or radius (A10).
  */
+interface Enquiry {
+  id: string;
+  listing_public_id: string;
+  sender_name: string;
+  sender_email: string;
+  message: string;
+  created_at: string;
+}
+
 export async function loader({ request, context }: Route.LoaderArgs) {
   const signedIn = await requireSignedIn(request, context.security);
   const db = signedIn.supabase;
@@ -81,6 +99,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const cursor = parseClaimCursor(url.searchParams.get("claims"));
   if (cursor === "invalid") throwStatus(404, signedIn.headers);
+  const enquiryCursor = parseClaimCursor(url.searchParams.get("enquiries"));
+  if (enquiryCursor === "invalid") throwStatus(404, signedIn.headers);
   const mine = await db
     .from("memberships")
     .select("id, organisation_id, user_id, role, status, created_at")
@@ -161,12 +181,31 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     .order("decided_at", { ascending: false })
     .overrideTypes<Decision[], { merge: false }>();
   if (decisions.error !== null) throwStatus(503, signedIn.headers);
+  // P2-5: enquiries visitors sent to my listings. RLS limits these to owners
+  // and managers. Both cursors keep their independent position when paged.
+  const enquiryQuery = db
+    .from("enquiries")
+    .select(
+      "id, listing_public_id, sender_name, sender_email, message, created_at",
+    );
+  if (enquiryCursor !== null)
+    enquiryQuery.or(
+      `created_at.lt."${enquiryCursor.at}",and(created_at.eq."${enquiryCursor.at}",id.lt.${enquiryCursor.id})`,
+    );
+  const enquiries = await enquiryQuery
+    .in("organisation_id", controlled)
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(CLAIMS_PAGE + 1)
+    .overrideTypes<Enquiry[], { merge: false }>();
+  if (enquiries.error !== null) throwStatus(503, signedIn.headers);
   const latest = new Map<string, Decision>();
   for (const d of decisions.data)
     if (!latest.has(d.listing_public_id)) latest.set(d.listing_public_id, d);
 
   const page = actionable.data.slice(0, CLAIMS_PAGE);
   const last = page.at(-1);
+  const lastEnquiry = enquiries.data.slice(0, CLAIMS_PAGE).at(-1);
   return data(
     {
       csrf: context.security.csrfToken,
@@ -191,11 +230,23 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           !controlled.includes(c.organisation_id) && c.status === "approved",
       ),
       mineClaims: own.data,
+      enquiries: enquiries.data.slice(0, CLAIMS_PAGE).map((e) => ({
+        ...e,
+        listing:
+          listings.data.find((l) => l.public_id === e.listing_public_id)
+            ?.display_name ?? "",
+      })),
       olderClaims:
         actionable.data.length > CLAIMS_PAGE && last !== undefined
           ? claimCursor(last)
           : null,
       claimsPaged: cursor !== null,
+      claimsCursor: url.searchParams.get("claims"),
+      enquiryCursor: url.searchParams.get("enquiries"),
+      olderEnquiries:
+        enquiries.data.length > CLAIMS_PAGE && lastEnquiry !== undefined
+          ? claimCursor(lastEnquiry)
+          : null,
     },
     { headers: signedIn.headers },
   );
@@ -467,16 +518,72 @@ export default function Provider({
           ))}
           <nav className="mt-4 flex flex-wrap gap-4" aria-label="More claims">
             {claimsPaged ? (
-              <Link to="/provider" data-claims-newest>
+              <Link
+                to={pageHref(null, loaderData.enquiryCursor)}
+                data-claims-newest
+              >
                 Back to the newest claims
               </Link>
             ) : null}
             {olderClaims !== null ? (
               <Link
-                to={`/provider?claims=${encodeURIComponent(olderClaims)}`}
+                to={pageHref(olderClaims, loaderData.enquiryCursor)}
                 data-claims-older
               >
                 Show older claims
+              </Link>
+            ) : null}
+          </nav>
+        </section>
+      ) : null}
+
+      {loaderData.enquiries.length > 0 || loaderData.enquiryCursor !== null ? (
+        <section className="mt-10" data-enquiries>
+          <h2 className="type-title">Enquiries</h2>
+          <p className="type-body-sm text-quiet mt-1">
+            Messages visitors sent from your listings. Reply by email. CarworX
+            deletes them after 12 months.
+          </p>
+          <ul className="mt-3 grid gap-3">
+            {loaderData.enquiries.map((e) => (
+              <li
+                key={e.id}
+                className="rounded-2xl bg-[var(--surface)] p-4"
+                data-enquiry={e.id}
+              >
+                <p className="type-body">
+                  <b>{e.sender_name}</b> ·{" "}
+                  <a className="cx-tlink" href={mailtoHref(e.sender_email)}>
+                    {e.sender_email}
+                  </a>
+                </p>
+                <p className="type-caption">
+                  {e.listing} · {sast(e.created_at)}
+                </p>
+                <p className="type-body mt-2 whitespace-pre-line">
+                  {e.message}
+                </p>
+              </li>
+            ))}
+          </ul>
+          <nav
+            aria-label="More enquiries"
+            className="mt-4 flex flex-wrap gap-4"
+          >
+            {loaderData.enquiryCursor !== null ? (
+              <Link to={pageHref(loaderData.claimsCursor, null)}>
+                Newest enquiries
+              </Link>
+            ) : null}
+            {loaderData.olderEnquiries !== null ? (
+              <Link
+                data-enquiries-older
+                to={pageHref(
+                  loaderData.claimsCursor,
+                  loaderData.olderEnquiries,
+                )}
+              >
+                Show older enquiries
               </Link>
             ) : null}
           </nav>

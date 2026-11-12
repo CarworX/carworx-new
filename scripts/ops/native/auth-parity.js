@@ -161,10 +161,41 @@ try {
     phase = "auth_integration";
     const privateDir = mkdtempSync(join(tmpdir(), "carworx-native-auth-"));
     const integration = join(privateDir, "integration.json");
-    await command(["run", "test:integration"], {
-      ...native,
-      CI_INTEGRATION_REPORT: integration,
-    });
+    try {
+      await command(["run", "test:integration"], {
+        ...native,
+        CI_INTEGRATION_REPORT: integration,
+      });
+    } catch {
+      // Publish only source-file basenames and assertion indices, never messages.
+      try {
+        const report = JSON.parse(readFileSync(integration, "utf8"));
+        statusSummary.integration_failures = report.testResults
+          .map((file) => ({
+            file:
+              /(?:^|\/)([a-z0-9-]+\.test\.tsx?)$/.exec(file.name)?.[1] ??
+              "unknown",
+            source_locations: file.assertionResults.flatMap((test) =>
+              test.status === "failed"
+                ? (test.failureMessages ?? []).flatMap((message) =>
+                    [
+                      ...message.matchAll(
+                        /integration\/([a-z0-9-]+\.test\.tsx?):(\d+):(\d+)/g,
+                      ),
+                    ].map((m) => `${m[1]}:${m[2]}:${m[3]}`),
+                  )
+                : [],
+            ),
+            failed_indices: file.assertionResults.flatMap((test, index) =>
+              test.status === "failed" ? [index] : [],
+            ),
+          }))
+          .filter((file) => file.failed_indices.length > 0);
+      } catch {
+        statusSummary.integration_report = "unavailable";
+      }
+      throw Error("Integration failed");
+    }
     statusSummary.integration = validateVitest(
       JSON.parse(readFileSync(integration, "utf8")),
     );

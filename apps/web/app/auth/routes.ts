@@ -24,4 +24,8 @@ export const authRoutes: RouteConfigEntry[] = [
   route("admin/claims", "routes/admin.claims.tsx"),
   route("admin/claims/:id", "routes/admin.claims.$id.tsx"),
   route("admin/audit", "routes/admin.audit.tsx"),
+  // P2-5 (Claude 22): private demand capture and support cases, aal2 only.
+  route("admin/demand", "routes/admin.demand.tsx"),
+  route("admin/support", "routes/admin.support.tsx"),
+  route("admin/support/:id", "routes/admin.support.$id.tsx"),
 ];
