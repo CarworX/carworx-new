@@ -14,9 +14,9 @@
   const LINKS = {
     driver: [["Find a service", "#search"], ["Bookings", "#bookings"], ["History", "#history"]],
     staff: [["Today", "#today"], ["Requests", "#requests"], ["History", H("history/index.html?as=staff"), "history"]],
-    manager: [["Today", "#today"], ["Requests", "#requests"], ["History", H("history/index.html?as=manager"), "history"], ["Team", "#team"], ["Listing", "#listing"]],
-    admin: [["Today", H("admin/index.html#today"), "today"], ["Applications", H("admin/index.html#applications"), "applications"], ["Claims", H("admin/index.html#claims"), "claims"], ["Businesses", H("admin/index.html#businesses"), "businesses"], ["Audit log", H("admin/index.html#audit"), "audit"]],
-    owner: [["Today", "#today"], ["Requests", "#requests"], ["History", H("history/index.html?as=owner"), "history"], ["Team", "#team"], ["Listing", "#listing"], ["Business settings", H("account/index.html?as=owner&tab=business"), "business"]],
+    manager: [["Today", "#today"], ["Requests", "#requests"], ["Earnings", H("earnings/index.html?as=manager"), "earnings"], ["History", H("history/index.html?as=manager"), "history"], ["Team", "#team"], ["Listing", "#listing"]],
+    admin: [["Today", H("admin/index.html#today"), "today"], ["Applications", H("admin/index.html#applications"), "applications"], ["Claims", H("admin/index.html#claims"), "claims"], ["Businesses", H("admin/index.html#businesses"), "businesses"], ["Money", H("admin/index.html#money"), "money"], ["Audit log", H("admin/index.html#audit"), "audit"]],
+    owner: [["Today", "#today"], ["Requests", "#requests"], ["Earnings", H("earnings/index.html?as=owner"), "earnings"], ["History", H("history/index.html?as=owner"), "history"], ["Team", "#team"], ["Listing", "#listing"], ["Business settings", H("account/index.html?as=owner&tab=business"), "business"]],
   };
   const acct = (role) => [
     ["Profile and settings", H(`account/index.html?as=${role}&tab=profile`), "profile"],

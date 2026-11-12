@@ -14,6 +14,7 @@
 <main class="ad-main" data-view></main>
 <script src="../_shared/kit.js"></script>
 <script src="../_shared/shell.js"></script>
+<script src="../_shared/money.js"></script>
 <script>
   /* Admin console. Every admin route needs two-step sign-in (aal2, D-042); non-admins get a 404.
      Synthetic, fictional data; times in SAST. */
@@ -57,6 +58,7 @@
         <a class="ad-kpi" href="#claims"><b>2</b><small>Claims · 1 disputed</small></a>
         <a class="ad-kpi" href="#businesses"><b>1</b><small>Suspended</small></a>
         <a class="ad-kpi" href="#applications"><b>1</b><small>Sent back, waiting on the business</small></a></div>
+      <a class="ad-row" href="#money" style="grid-template-columns:1fr auto"><span style="display:grid;gap:4px"><small>Booking value, past month · all businesses</small><b style="font:500 26px/30px var(--font-sans);letter-spacing:-.03em" data-glance></b><span data-glance-d></span></span><span class="r" style="grid-column:auto"><span>Open Money</span></span></a>
       <div class="ad-split"><section class="ad-box"><h2>Next up</h2><div class="ad-rows">
         ${CLAIMS.filter((c) => c.st === "Disputed").map((c) => row(`claim.html?claim=${c.id}`, c.ini, c.name, `Claim by ${c.by} · ${c.how}`, c.st, c.since)).join("")}
         ${APPS.filter((a) => a.st === "Waiting").sort((a, b) => (a.since > b.since ? 1 : -1)).map((a) => row(`review.html?app=${a.id}`, a.ini, a.name, `${a.where} · ${a.mode}`, a.st, a.since)).join("")}</div></section>
@@ -72,8 +74,10 @@
           <label class="field" style="display:grid;gap:6px;font:500 13px var(--font-sans)">Reason (kept in the decision record)<input class="ob-input" data-reason placeholder="${sus ? "For example, duplicate removed" : "For example, duplicate of another listing"}"></label>
           <p class="ob-err" role="alert" data-reason-err></p>
           <div><button type="button" class="cx-btn ${sus ? "primary" : "outlined"} sm" data-suspend="${b.id}">${sus ? "Restore" : "Suspend"}</button></div></section></div>
+      <section class="ad-box" style="background:transparent;box-shadow:none;padding:0"><h2>Earnings</h2><div data-money-one></div></section>
       <section class="ad-box"><h2>People with access</h2><ul class="ob-checks">${b.people.map(([n, r]) => `<li><span class="sh-av" style="width:32px;height:32px;font-size:12px">${n.split(" ").map((w) => w[0]).join("")}</span>${esc(n)} · ${r}<small><button type="button" class="ob-link" style="font-size:13px">Remove access</button></small></li>`).join("")}</ul><p class="t-cap">Removing access is recorded. Use it for former staff, or when a claim moves control.</p></section>
       <section class="ad-box"><h2>Decisions</h2><div class="ad-rows">${AUDIT.filter((x) => x[3].includes(b.name)).map(log).join("") || '<p class="t-cap">Approved 9 Nov 2026, 09:40 SAST by Naledi Dube · Site visit</p>'}</div></section>`; },
+    money: () => head("Admin", "Money", "Booking value across every business, at a glance. Money goes straight to businesses; CarworX fees are R0 in the pilot.") + `<div data-money-platform></div>`,
     audit: () => head("Admin", "Audit log", "Every admin decision and sign-in, and every dispute. Read-only: entries can't be edited or deleted.") + bar("audit", ["All", "Applications", "Claims", "Disputes", "Suspensions", "Access", "Admin sign-ins"]) + more(true) + `<div class="ad-rows">${AUDIT.filter((x) => !filt.audit || filt.audit === "All" || x[1] === filt.audit).map(log).join("") || empty()}</div>`,
   };
   function row(href, ini, name, sub, st, right) {
@@ -90,7 +94,10 @@
     const nav = view === "business" ? "businesses" : view;
     if (mounted !== nav) { SHELL.mount(document.querySelector("[data-shell]"), { role: "admin", current: nav }); mounted = nav; }
     document.querySelector("[data-view]").innerHTML = (V[view] || V.today)(arg);
-    document.title = `${{ today: "Today", applications: "Applications", claims: "Claims", businesses: "Businesses", business: "Business", audit: "Audit log" }[view] || "Today"} · CarworX admin (prototype)`;
+    const gl = document.querySelector("[data-glance]"); if (gl) { const g = MONEY.glance("platform", 3); gl.textContent = g.value; document.querySelector("[data-glance-d]").innerHTML = g.delta; }
+    const mp = document.querySelector("[data-money-platform]"); if (mp) MONEY.mount(mp, { scope: "platform", seed: 3 });
+    const mo = document.querySelector("[data-money-one]"); if (mo) { const b = BIZ.find((x) => x.id === arg) || BIZ[0]; MONEY.mount(mo, { scope: "one", name: b.name, seed: b.id.charCodeAt(0) + b.id.charCodeAt(1) }); }
+    document.title = `${{ today: "Today", applications: "Applications", claims: "Claims", businesses: "Businesses", business: "Business", money: "Money", audit: "Audit log" }[view] || "Today"} · CarworX admin (prototype)`;
   }
   window.addEventListener("hashchange", () => { render(); scrollTo(0, 0); });
   document.addEventListener("click", (e) => {

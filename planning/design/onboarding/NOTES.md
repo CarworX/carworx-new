@@ -146,3 +146,21 @@ For review, the role is set in the address only: `account/index.html?as=driver|s
 4. **Email fallback.** If someone has trouble with their authenticator app, they can get a sign-in code **by email** instead (`account/sign-in.html`: "Trouble with your app? Email me a code instead"). The setup's last step is now "Your backup": email backup on, with recovery codes optional.
 
 *Security trade-off for the build plan:* if the password reset also goes to the same email, an email code makes the second step only as strong as the email account. Mitigations to consider: email codes only after the correct password, 10-minute single-use codes with rate limits, and an email alert "someone signed in with an email code". Supabase Auth's MFA factors are TOTP and phone, so the email code is custom work (for example the existing email OTP, used as a step-up).
+
+## Money: earnings for businesses, Money for admins (owner, 2026-11-12, SAST)
+
+One shared component (`_shared/money.js`, styles in `kit.css`), designed with the dataviz method: stat tiles for the figures, a column chart for change over time, ranked bars for breakdowns, and a table view.
+- **At a glance:** an all-time hero figure ("Earned on CarworX, all time"; for admins, "Booking value through CarworX, all time").
+- **Period:** one filter bar above everything: **Past week · Past month · Past year · Custom** (calendar From and To). Every tile, the chart and the breakdowns use the same period, so the numbers always agree. A reversed custom range is caught.
+- **Change vs the previous period of the same length:** past week vs the 7 days before it, past month vs the previous 30 days, past year vs the previous 365 days, custom vs the same length just before. Each tile shows an **arrow, a sign and a percentage** (green up, red down, grey no change), so it is never colour alone, plus the previous value. With nothing in the previous period it says "New this period".
+- **Chart:** columns per day (31 days or fewer), per week (120 days or fewer) or per month, drawn at the card's real width. Every column has a hover **and keyboard** tooltip (value first, then date and bookings). "Show as table" gives the same numbers without the chart. Studio blue passes the palette validator against both the surface and the canvas.
+
+| Who | Where | What they see |
+|---|---|---|
+| Owner, manager | Menu → **Earnings** ([`earnings/`](earnings/index.html)) | Earned, completed bookings, average booking (each with its change); earned per day, week or month; by service; by team member |
+| CarworX admin | Today: past-month booking value with its change → **Money** ([`admin/#money`](admin/index.html#money)) | Booking value, **CarworX fees (R0 in the pilot)**, completed bookings, active businesses (with changes); booking value over time; top businesses (open one to see its record); by service category |
+| CarworX admin | A business's record ([`admin/#business=KG`](admin/index.html#business=KG)) | That business's earnings, same period controls |
+
+*Honest framing:* money goes straight to each business through the payment partner, and CarworX never holds it. So "how much CarworX has made" is its **fees**, which are R0 during the pilot. The admin view therefore leads with **booking value** (the total customers paid businesses) and shows fees separately. The figures need bookings and the payment partner's records (Phase 3); the prototype uses synthetic data as if bookings had run since November 2024.
+
+*For the owner to confirm:* staff don't see Earnings (only owners and managers do).
