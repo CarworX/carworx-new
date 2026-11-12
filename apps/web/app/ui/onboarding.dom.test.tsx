@@ -6,7 +6,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AccountMenu } from "./NavBar";
-import { FilterBar } from "./ScrollBar";
+import { FilterBar, TabBar } from "./ScrollBar";
 import { SegmentedProgress } from "./SegmentedProgress";
 
 (
@@ -215,5 +215,63 @@ describe("AccountMenu", () => {
       document.body.dispatchEvent(new Event("pointerdown", { bubbles: true }));
     });
     expect(q(".cx-acct-drop").hidden).toBe(true);
+  });
+});
+
+function Tabs() {
+  const [t, setT] = useState("a");
+  return (
+    <TabBar
+      label="Sections"
+      current={t}
+      onSelect={setT}
+      tabs={["a", "b", "c"].map((x) => ({ id: x, label: x }))}
+    />
+  );
+}
+
+describe("TabBar keyboard", () => {
+  const key = (el: Element | undefined, k: string) => {
+    if (!el) throw new Error("missing tab");
+    act(() => {
+      el.dispatchEvent(new KeyboardEvent("keydown", { key: k, bubbles: true }));
+    });
+  };
+  it("has one Tab stop and moves with arrows, Home and End", () => {
+    act(() => {
+      root.render(<Tabs />);
+    });
+    const tabs = () => all('[role="tab"]');
+    expect(tabs().map((t) => t.tabIndex)).toEqual([0, -1, -1]);
+    key(tabs()[0], "ArrowRight");
+    expect(tabs()[1]?.getAttribute("aria-selected")).toBe("true");
+    expect(document.activeElement).toBe(tabs()[1]);
+    expect(tabs().map((t) => t.tabIndex)).toEqual([-1, 0, -1]);
+    key(tabs()[1], "End");
+    expect(document.activeElement).toBe(tabs()[2]);
+    key(tabs()[2], "ArrowRight"); // wraps
+    expect(tabs()[0]?.getAttribute("aria-selected")).toBe("true");
+    key(tabs()[0], "ArrowLeft"); // wraps back
+    expect(document.activeElement).toBe(tabs()[2]);
+  });
+
+  it("link tabs move focus only; Enter follows the link", () => {
+    act(() => {
+      root.render(
+        <TabBar
+          label="Sections"
+          current="a"
+          tabs={[
+            { id: "a", label: "A", href: "/a" },
+            { id: "b", label: "B", href: "/b" },
+          ]}
+        />,
+      );
+    });
+    const tabs = all('[role="tab"]');
+    key(tabs[0], "ArrowRight");
+    expect(document.activeElement).toBe(tabs[1]);
+    expect(tabs[0]?.getAttribute("aria-selected")).toBe("true");
+    expect(tabs[1]?.tabIndex).toBe(-1);
   });
 });

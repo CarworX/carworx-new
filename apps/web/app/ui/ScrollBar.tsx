@@ -3,6 +3,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type KeyboardEvent,
   type RefObject,
 } from "react";
 
@@ -137,6 +138,36 @@ export function TabBar({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const fades = useEdgeFades(ref, current);
+  // Roving tabindex: one Tab stop (the selected tab); arrows, Home and End
+  // move between tabs. Button tabs select as focus moves (like PeriodTabs);
+  // link tabs only move focus, and Enter follows the link.
+  const sel = Math.max(
+    0,
+    tabs.findIndex((t) => t.id === current),
+  );
+  const onKeyDown = (i: number) => (e: KeyboardEvent<HTMLElement>) => {
+    const last = tabs.length - 1;
+    const n =
+      e.key === "ArrowRight"
+        ? i === last
+          ? 0
+          : i + 1
+        : e.key === "ArrowLeft"
+          ? i === 0
+            ? last
+            : i - 1
+          : e.key === "Home"
+            ? 0
+            : e.key === "End"
+              ? last
+              : -1;
+    if (n < 0) return;
+    e.preventDefault();
+    const next = tabs[n];
+    if (next && !next.href) onSelect?.(next.id);
+    const sib = e.currentTarget.parentElement?.children[n];
+    if (sib instanceof HTMLElement) sib.focus();
+  };
   return (
     <div
       ref={ref}
@@ -144,13 +175,15 @@ export function TabBar({
       role="tablist"
       aria-label={label}
     >
-      {tabs.map((t) =>
+      {tabs.map((t, i) =>
         t.href ? (
           <a
             key={t.id}
             role="tab"
             href={t.href}
             aria-selected={t.id === current}
+            tabIndex={i === sel ? 0 : -1}
+            onKeyDown={onKeyDown(i)}
           >
             {t.label}
           </a>
@@ -160,7 +193,9 @@ export function TabBar({
             type="button"
             role="tab"
             aria-selected={t.id === current}
+            tabIndex={i === sel ? 0 : -1}
             onClick={() => onSelect?.(t.id)}
+            onKeyDown={onKeyDown(i)}
           >
             {t.label}
           </button>
