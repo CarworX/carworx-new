@@ -1,6 +1,6 @@
 # Status
 
-**2026-11-12 (SAST) — onboarding redesign:** the owner approved the onboarding, admin, settings and money designs (#72; Codex `REVIEW: APPROVE @949b420`) and decided D-088 to D-090. [Claude 23](claude/23-onboarding-redesign-build-plan.md) is the build plan (slices O1–O8). Revised for Codex 31 (`REVIEW: CHANGES @addb968`): admin "both" labels, the team two-step and fallback contract, location provenance, and "both" in search. It is held unmerged until Codex 30 is complete, then needs a new exact-head review. No product code yet.
+**2026-11-12 (SAST) — onboarding redesign:** the owner approved the onboarding, admin, settings and money designs (#72; Codex `REVIEW: APPROVE @949b420`) and decided D-088 to D-090. [Claude 23](claude/23-onboarding-redesign-build-plan.md) is the build plan (slices O1–O8). Revised for Codex 31 (`REVIEW: CHANGES @addb968`): admin "both" labels, the team two-step and fallback contract, location provenance, and "both" in search. Codex 31's re-review corrections (Worker uses the same predicate, Google-only recovery, coarse vs exact eligibility) are addressed. It awaits Codex's exact-head re-review. No product code yet.
 
 **2026-11-11 UTC — Codex 23 follow-up:** Claude's #57 locking correction
 `d2390c2` independently checked with four real concurrency cases and 572

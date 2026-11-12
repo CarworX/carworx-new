@@ -112,7 +112,7 @@ Codex 31 closed the earlier open items into contracts: §7 (admin labels), §8 (
 **Scope.** The policy covers managers and/or staff. **Owners are always exempt** (D-089). A change takes effect on the next request.
 
 **Enforcement, in two places, from one predicate:**
-- **Worker:** organisation loaders and actions require `supabase.auth.mfa.getAuthenticatorAssuranceLevel()` with `currentLevel = 'aal2'`, **or** a valid fallback proof.
+- **Worker:** organisation loaders and actions call the **same canonical predicate**, `private.org_mfa_satisfied(org)`, through an RPC under the signed-in user's own JWT. The Worker keeps **no second, stricter rule** (Codex 31 re-review). Membership and role authorisation stay a separate check (`private.has_org_role`). So an aal1 owner, a role the policy doesn't cover, and everyone under the `optional` policy pass in both layers.
 - **Database (direct API and RPC):** `private.org_mfa_satisfied(org uuid)` is added beside `private.has_org_role` in org-scoped RLS policies and in every org RPC. It is true when any of these holds:
   - the caller is the owner;
   - the policy doesn't cover the caller's role;
@@ -127,14 +127,28 @@ Codex 31 closed the earlier open items into contracts: §7 (admin labels), §8 (
 - Revoked on sign-out, password change, new factor enrolment or a recovery-code reset.
 - Consulted **only** by `org_mfa_satisfied`. It is never a native aal2 JWT.
 
-**Who may use the email fallback.** Only accounts with a **password** identity, after the correct password in the same session. **Google-only accounts may not** (owner, 2026-11-12). They use recovery codes or a second authenticator device.
+**Who may use the email fallback.** Only accounts with a **password** identity, after the correct password in the same session. **Google-only accounts may not** (owner, 2026-11-12). They use recovery codes, a second authenticator device, or the reset path below.
+
+**Recovery codes (everyone).** Codes are hashed and single use. Redeeming one needs a **fresh first sign-in** in the same session:
+- **Password accounts:** the password, re-entered now.
+- **Google-only accounts:** a **fresh Google sign-in**, meaning a new OAuth round trip with the session's `auth_time` no more than 5 minutes old.
+
+A code **only removes TOTP factors**, and that is audited. The person then re-enrols and reaches aal2 natively. A code never grants aal2.
+
+**No codes left (documented reset path):**
+- **Staff or manager:** an owner or manager of their organisation asks for a factor reset, and an admin completes it.
+- **Owner:** an admin resets it after an out-of-band identity check.
+
+Both paths are audited, and both end with native re-enrolment.
 
 **Admins (native aal2 only).**
 - `requireAdmin` and `private.require_admin()` read only the JWT `aal` and never consult `mfa_stepups`. Admins have no email fallback.
-- **Recovery codes (everyone):** redeeming one with the password removes the TOTP factors (server-side Supabase admin API, audited). The person re-enrols and reaches aal2 natively. A code never grants aal2.
+- **Admin recovery codes:** these follow the same rule, so they need a fresh first sign-in and only remove factors (server-side Supabase admin API, audited). They never grant aal2.
 - **Another-admin reset:** an aal2 admin removes the locked-out admin's factors after an out-of-band identity check. The reset is audited, and the admin re-enrols.
 
 **Tests:**
+- Both layers (Worker and direct RPC/RLS): under the optional policy, allowed; owner exempt, allowed; uncovered role, allowed; covered role at aal1 with no proof, refused; covered role at aal2 or with a valid proof, allowed.
+- Recovery: a password account redeems a code; a Google-only account redeems one after a fresh Google sign-in; a Google-only account with a stale `auth_time` is refused; the email fallback is refused for Google-only accounts; an admin's code resets factors but grants no aal2; a used code is refused on replay.
 - pgTAP: direct RPC and RLS with an aal1 JWT under a policy are refused; a proof from another session, an expired proof, a revoked proof and a replayed code are each refused; a policy change applies at once; the owner exemption holds; admin functions ignore proofs.
 - Worker integration: the same cases through the routes.
 
@@ -153,7 +167,9 @@ Mapbox temporary geocoding results may not be stored (https://docs.mapbox.com/ap
 - fixed-group 3-decimal and mobile-group 2-decimal rounding (`p2_2_search.sql`);
 - the `catalogue_server` scoped capability (D-081);
 - the limiter (30 a minute per IP, 60 per 10 minutes per cookie, fail closed);
-- the private exact-coverage recheck in `private.mobile_eligible_ids`.
+- `private.mobile_eligible_ids` as **coarse discovery eligibility**: `api.search_listings` calls it with the mobile point already rounded to 2 decimals (`20261110190000_p2_3_category_search.sql`).
+
+**Not an existing guard (Codex 31 re-review).** PLAN A9's **private exact-address recheck** (the customer's unrounded service address checked against the private radius before a quote or booking is accepted) is a **later booking dependency (Phase 3)**. The Phase 3 acceptance contract: a case that is in at the rounded point but out at the exact address is refused at booking, and there is no unrestricted public exact-eligibility endpoint.
 
 **Membership** (deterministic and deduplicated):
 - A both-listing is in the **fixed group** when its **premises** is within the selected radius, ranked in premises distance buckets as today.
