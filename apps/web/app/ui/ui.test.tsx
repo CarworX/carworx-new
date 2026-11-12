@@ -16,6 +16,13 @@ import { biAngle, pulseFront } from "./states/ripple";
 import { SkeletonCard, SkeletonGroup } from "./states/Skeleton";
 import { StepDial } from "./states/StepDial";
 import { StepList } from "./StepList";
+import { ChoiceTiles, PickChips } from "./Choice";
+import { DayToggles, TIMES } from "./DayToggles";
+import { TabBar } from "./ScrollBar";
+import { SegmentedProgress } from "./SegmentedProgress";
+import { addPhrase } from "./StarterPhrases";
+import { StepRail } from "./StepRail";
+import { Switch } from "./Switch";
 
 const html = (el: React.ReactElement) => renderToStaticMarkup(el);
 const count = (s: string, re: RegExp) => (s.match(re) ?? []).length;
@@ -286,5 +293,151 @@ describe("D-041 states", () => {
     const back = pulseFront(0.8, false); // step 1 (odd): tips → hub, held at the hub
     expect(out).toBeCloseTo(102, 5);
     expect(back).toBeCloseTo(19, 5);
+  });
+});
+
+describe("Claude 23 O1 onboarding components", () => {
+  it("SegmentedProgress is a labelled progressbar, visible text hidden", () => {
+    const h = html(
+      <SegmentedProgress
+        step={2}
+        total={6}
+        name="Location"
+        label="Application progress"
+      />,
+    );
+    expect(h).toContain('role="progressbar"');
+    expect(h).toContain('aria-valuenow="3"');
+    expect(h).toContain('aria-valuemax="6"');
+    expect(h).toContain('aria-valuetext="Step 3 of 6: Location"');
+    expect(h).toContain('class="segrow" aria-hidden="true"');
+    expect(count(h, /class="seg on"/g)).toBe(3);
+    expect(h).toContain("cx-segbar still"); // first paint draws in place
+  });
+
+  it("ChoiceTiles and PickChips use real radios or checkboxes in a fieldset", () => {
+    const one = html(
+      <ChoiceTiles
+        legend="Where?"
+        name="mode"
+        required
+        options={[
+          { value: "fixed", title: "They come to me", icon: "bay" },
+          { value: "mobile", title: "I go to them" },
+        ]}
+      />,
+    );
+    expect(one).toContain("<fieldset");
+    expect(one).toContain("<legend");
+    expect(count(one, /type="radio"/g)).toBe(2);
+    const many = html(
+      <PickChips
+        legend="Offer"
+        name="svc"
+        multiple
+        defaultValue={["b"]}
+        error="Pick at least one."
+        options={[
+          { value: "a", label: "A" },
+          { value: "b", label: "B" },
+        ]}
+      />,
+    );
+    expect(count(many, /type="checkbox"/g)).toBe(2);
+    expect(count(many, /checked=""/g)).toBe(1);
+    expect(many).toContain('role="alert"');
+    expect(many).toContain("cx-pick multi");
+  });
+
+  it("Switch is a checkbox with role=switch", () => {
+    const h = html(<Switch name="adult" label="I am 18 or older" />);
+    expect(h).toContain('type="checkbox"');
+    expect(h).toContain('role="switch"');
+  });
+
+  it("TabBar uses tablist and tab roles, one selected", () => {
+    const h = html(
+      <TabBar
+        label="Sections"
+        current="b"
+        tabs={[
+          { id: "a", label: "A" },
+          { id: "b", label: "B", href: "/b" },
+        ]}
+      />,
+    );
+    expect(h).toContain('role="tablist"');
+    expect(count(h, /role="tab"/g)).toBe(2);
+    expect(count(h, /aria-selected="true"/g)).toBe(1);
+  });
+
+  it("StepRail marks done steps and the current step", () => {
+    const h = html(
+      <StepRail
+        label="Steps"
+        current={1}
+        steps={[
+          { icon: "user", title: "You", body: "a" },
+          { icon: "bay", title: "Business", body: "b" },
+          { icon: "pin", title: "Location", body: "c" },
+        ]}
+      />,
+    );
+    expect(count(h, /class="done"/g)).toBe(1);
+    expect(h).toContain('aria-current="step"');
+    expect(h).toContain("(done)");
+  });
+
+  it("DayToggles defaults to Mon–Fri, 08:00–17:00", () => {
+    const h = html(<DayToggles legend="Days" />);
+    expect(count(h, /checked=""/g)).toBe(5);
+    expect(h).toContain('name="opens"');
+    expect(TIMES[0]).toBe("05:00");
+    expect(TIMES.at(-1)).toBe("22:00");
+  });
+
+  it("addPhrase adds a sentence once and respects the limit", () => {
+    expect(addPhrase("", "Eco-friendly.", 200)).toBe("Eco-friendly.");
+    expect(addPhrase("We wash.", "Eco-friendly.", 200)).toBe(
+      "We wash. Eco-friendly.",
+    );
+    expect(addPhrase("We wash. Eco-friendly.", "Eco-friendly.", 200)).toBe(
+      "We wash. Eco-friendly.",
+    );
+    expect(addPhrase("x".repeat(195), "Eco-friendly.", 200)).toBe(
+      "x".repeat(195),
+    );
+  });
+
+  it("the account menu has settings, security and a POST sign-out", () => {
+    const h = html(
+      <NavBar
+        items={[{ href: "/", label: "Home" }]}
+        account={{
+          name: "Test Owner",
+          sub: "Owner",
+          initials: "TO",
+          links: [
+            { href: "/account", label: "Profile and settings" },
+            {
+              href: "/account/security",
+              label: "Security and two-step sign-in",
+            },
+          ],
+          csrf: "tok",
+        }}
+      />,
+    );
+    expect(count(h, /Profile and settings/g)).toBe(2); // dropdown and sheet
+    expect(count(h, /Security and two-step sign-in/g)).toBe(2);
+    expect(count(h, /<form[^>]*action="\/auth\/sign-out"[^>]*>/g)).toBe(2);
+    expect(h).toContain('value="tok"');
+    expect(count(h, /method="post"/g)).toBe(2);
+    expect(h).not.toMatch(/href="\/auth\/sign-out"/);
+  });
+
+  it("NavBar without an account renders no account menu", () => {
+    const h = html(<NavBar items={[{ href: "/", label: "Home" }]} />);
+    expect(h).not.toContain("cx-acct");
   });
 });
