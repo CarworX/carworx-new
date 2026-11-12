@@ -25,6 +25,37 @@
           { "name": "SEARCH_LIMITER", "class_name": "SearchLimiter" },
         ],
       },
+      "hyperdrive": [
+        {
+          "binding": "CATALOGUE_DB",
+          "id": "OWNER_SETS_STAGING_CATALOGUE_DB_HYPERDRIVE_ID",
+        },
+        {
+          "binding": "FORMS_DB",
+          "id": "OWNER_SETS_STAGING_FORMS_DB_HYPERDRIVE_ID",
+        },
+      ],
+    },
+    "production": {
+      "name": "carworx-web-production",
+      "workers_dev": false,
+      "preview_urls": false,
+      "vars": { "CARWORX_ENV": "production" },
+      "durable_objects": {
+        "bindings": [
+          { "name": "SEARCH_LIMITER", "class_name": "SearchLimiter" },
+        ],
+      },
+      "hyperdrive": [
+        {
+          "binding": "CATALOGUE_DB",
+          "id": "OWNER_SETS_PRODUCTION_CATALOGUE_DB_HYPERDRIVE_ID",
+        },
+        {
+          "binding": "FORMS_DB",
+          "id": "OWNER_SETS_PRODUCTION_FORMS_DB_HYPERDRIVE_ID",
+        },
+      ],
     },
   },
 }
