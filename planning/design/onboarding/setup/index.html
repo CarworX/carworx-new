@@ -35,8 +35,8 @@
 </style>
 </head>
 <body class="cx-canvas">
+<div data-shell></div>
 <form data-flow novalidate>
-  <div data-screen="nav" data-label="Phase 2 · finish setup"></div>
   <main>
     <div class="taskhead" data-only="task">
       <div class="row"><button type="button" class="ob-link" data-go="hub">All setup tasks</button></div>
@@ -110,7 +110,7 @@
       <div class="card"><div class="ob-status"><div class="ob-tickbig" data-ic="tick"></div>
         <h2 data-if="invHow=Email invite">Invite sent</h2><h2 data-if="invHow=Share a link">Link ready</h2>
         <p class="t-lede"><span data-bind="invEmail" data-empty="The person you send the link to"></span> joins as <b data-bind="invRole"></b> once they sign in with their own CarworX account. You can cancel the invite any time.</p></div>
-        <div class="ob-actions"><button type="button" class="cx-btn primary" data-next data-cta="Back to your team">Back to your team</button></div></div>
+        <div class="ob-actions"><a class="ob-link" href="../staff/index.html">See what they'll see</a><button type="button" class="cx-btn primary" data-next data-cta="Back to your team">Back to your team</button></div></div>
     </section>
 
     <!-- Who gets the booking -->
@@ -130,6 +130,7 @@
   <input type="hidden" name="sent" value="">
 </form>
 <script src="../_shared/kit.js"></script>
+<script src="../_shared/shell.js"></script>
 <script>
   OB.Q.solo = { t: "It's just me for now", h: "You can invite people later.", type: "switch" };
   document.querySelectorAll("[data-actions]").forEach((el) => {
@@ -159,6 +160,7 @@
     if (e.detail.id === "i-sent") { form.elements.sent.value = "yes"; flow.update(); }
   });
   document.querySelectorAll("[data-ic]").forEach((e) => (e.innerHTML = OB.ic(e.dataset.ic)));
+  SHELL.mount(document.querySelector("[data-shell]"), { role: "owner", current: "today" });
   const flow = OB.boot();
   // Email and link both end on the confirmation.
   form.querySelector("#i-email").dataset.next = "i-sent";

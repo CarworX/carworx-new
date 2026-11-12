@@ -541,7 +541,7 @@
       <p class="t-lede">An admin checked your <span data-if="path=new">application</span><span data-if="path=claim">claim</span>. These labels now show on your listing.</p>
       <div class="ob-dashgrid"><section class="ob-panel"><h3>Your labels</h3><div class="lbls" data-labels="live" style="display:flex;gap:6px;flex-wrap:wrap"></div><p class="t-cap">Only checks an admin actually did. Premises visited is for fixed premises only.</p></section>
       <section class="ob-panel" data-if="path=new"><h3>Your listing</h3><div data-screen="card" data-live></div></section>
-      <section class="ob-panel"><h3>Next</h3><ul class="ob-checks"><li><span class="dot"></span>Turn on booking requests</li><li><span class="dot"></span>Invite your team</li><li><span class="dot"></span>Add a cover photo</li></ul></section></div></div>`,
+      <section class="ob-panel"><h3>Next: finish setup</h3><ul class="ob-checks"><li><span class="dot"></span>Invite your team</li><li><span class="dot"></span>Who gets the booking</li><li><span class="dot"></span>Add a cover photo</li></ul><a class="cx-btn primary sm" href="../setup/index.html" style="justify-self:start">Finish setup</a></section></div></div>`,
     card: (el) =>
       `<article class="ob-card" aria-label="Listing preview"><div class="top"><span class="av" data-bind="initials" aria-hidden="true">?</span><div><h3 data-bind="name" data-empty="Your business name"></h3><p class="m"><span data-bind="publicWhere" data-empty="Your area"></span></p></div></div>
       <div class="svcs" data-chips="services"><span class="empty">Your services</span></div>
@@ -953,6 +953,8 @@
       if (byId(id) && id !== cur.id) go(id);
     });
     maps(form, update);
+    // "Save and exit" goes to this flow's own first step.
+    form.querySelectorAll("[data-restart]").forEach((x) => (x.href = "#" + steps[0].id));
     const start = location.hash.slice(1);
     const first = byId(start) ? start : steps[0].id;
     // Deep links (for screenshots) can preset answers: #step?mode=I go to them&path=claim

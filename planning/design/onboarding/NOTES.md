@@ -164,3 +164,19 @@ One shared component (`_shared/money.js`, styles in `kit.css`), designed with th
 *Honest framing:* money goes straight to each business through the payment partner, and CarworX never holds it. So "how much CarworX has made" is its **fees**, which are R0 during the pilot. The admin view therefore leads with **booking value** (the total customers paid businesses) and shows fees separately. The figures need bookings and the payment partner's records (Phase 3); the prototype uses synthetic data as if bookings had run since November 2024.
 
 **Decided by the owner (2026-11-12):** only **owners and managers** see Earnings. Staff don't.
+
+## How it all connects (2026-11-12)
+
+```
+Board (index.html) ── every prototype below
+Phase 1 · Get approved (concepts 1–5) → submitted → waiting → "You're live" ──[Finish setup]──▶ Phase 2
+Phase 2 · Finish setup (setup/, the owner's Today) → Team invite ──[See what they'll see]──▶ Staff join (staff/)
+Signed-in menu (_shared/shell.js), by role:
+  Owner/manager: Today → setup hub · Requests → later/ · Earnings → earnings/ · History → history/ · Team → setup#t-team · Listing → account Business
+  Staff:         Today → staff home · Requests → later/ · History → history/?as=staff
+  Driver:        Find a service · Bookings · History → later/ (driver round)
+  Admin:         Today · Applications → review.html · Claims → claim.html · Businesses → record · Money · Audit log (admin/)
+  Everyone:      avatar → Profile and settings · Security (two-step) · Sign out (account/)
+```
+
+`later/` stands in for screens from a later round (booking requests in Phase 3, driver screens), so no menu link is dead. A crawler opens every page from the board and follows every link, including hidden menu links: 47 pages, 91 links, no missing files, every `#step` link lands, no page errors, and no unlinked pages.

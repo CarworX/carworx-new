@@ -11,13 +11,15 @@
     admin: { name: "Naledi Dube", ini: "ND", sub: "CarworX admin" },
   };
   const H = (p) => ROOT + p;
+  const later = (what, role) => H(`later/index.html?what=${what}&as=${role}`);
   const LINKS = {
-    driver: [["Find a service", "#search"], ["Bookings", "#bookings"], ["History", "#history"]],
-    staff: [["Today", "#today"], ["Requests", "#requests"], ["History", H("history/index.html?as=staff"), "history"]],
-    manager: [["Today", "#today"], ["Requests", "#requests"], ["Earnings", H("earnings/index.html?as=manager"), "earnings"], ["History", H("history/index.html?as=manager"), "history"], ["Team", "#team"], ["Listing", "#listing"]],
+    driver: [["Find a service", later("search", "driver"), "search"], ["Bookings", later("bookings", "driver"), "bookings"], ["History", later("driver-history", "driver"), "driver-history"]],
+    staff: [["Today", H("staff/index.html?demo=1#home"), "today"], ["Requests", later("requests", "staff"), "requests"], ["History", H("history/index.html?as=staff"), "history"]],
+    manager: [["Today", H("setup/index.html#hub"), "today"], ["Requests", later("requests", "manager"), "requests"], ["Earnings", H("earnings/index.html?as=manager"), "earnings"], ["History", H("history/index.html?as=manager"), "history"], ["Team", H("setup/index.html#t-team"), "team"], ["Listing", H("account/index.html?as=manager&tab=business"), "listing"]],
     admin: [["Today", H("admin/index.html#today"), "today"], ["Applications", H("admin/index.html#applications"), "applications"], ["Claims", H("admin/index.html#claims"), "claims"], ["Businesses", H("admin/index.html#businesses"), "businesses"], ["Money", H("admin/index.html#money"), "money"], ["Audit log", H("admin/index.html#audit"), "audit"]],
-    owner: [["Today", "#today"], ["Requests", "#requests"], ["Earnings", H("earnings/index.html?as=owner"), "earnings"], ["History", H("history/index.html?as=owner"), "history"], ["Team", "#team"], ["Listing", "#listing"], ["Business settings", H("account/index.html?as=owner&tab=business"), "business"]],
+    owner: [["Today", H("setup/index.html#hub"), "today"], ["Requests", later("requests", "owner"), "requests"], ["Earnings", H("earnings/index.html?as=owner"), "earnings"], ["History", H("history/index.html?as=owner"), "history"], ["Team", H("setup/index.html#t-team"), "team"], ["Listing", H("account/index.html?as=owner&tab=business"), "listing"], ["Business settings", H("account/index.html?as=owner&tab=business"), "business"]],
   };
+
   const acct = (role) => [
     ["Profile and settings", H(`account/index.html?as=${role}&tab=profile`), "profile"],
     ["Security and two-step sign-in", H(`account/index.html?as=${role}&tab=security`), "security"],

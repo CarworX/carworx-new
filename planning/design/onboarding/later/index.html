@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coming later · CarworX (prototype)</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+  main { max-width: 640px; margin: 0 auto; padding: 8vh 16px 60px; }
+  .card { display: grid; gap: 14px; padding: 26px; border-radius: var(--radius-xl); background: var(--surface); box-shadow: var(--sh-2); }
+  .card h1 { font: 500 32px/36px var(--font-sans); letter-spacing: -.03em; }
+  .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+</style>
+</head>
+<body class="cx-canvas">
+<div data-shell></div>
+<main><div class="card"><span class="cx-label info" style="justify-self:start">Later</span><h1 data-h></h1><p class="t-body" data-p></p><div class="acts" data-acts></div></div></main>
+<script src="../_shared/kit.js"></script>
+<script src="../_shared/shell.js"></script>
+<script>
+  // Menu items whose screens belong to a later design round, so no menu link is ever dead.
+  const q = new URLSearchParams(location.search);
+  const as = q.get("as") || "owner", what = q.get("what") || "requests";
+  const T = {
+    requests: ["Requests", "Booking requests arrive here when bookings open (Phase 3). Each one has 2 business hours to be accepted; then the slot is held 15 minutes while the customer pays the business directly."],
+    search: ["Find a service", "Driver screens (search, listings, booking) are designed in their own round, not this one."],
+    bookings: ["Your bookings", "Driver bookings arrive with Phase 3, and are designed in the driver round."],
+    "driver-history": ["Your history", "A driver's past bookings follow the same read-only History pattern as businesses. They are designed in the driver round."],
+  }[what] || ["Coming later", "This screen belongs to a later design round."];
+  document.title = `${T[0]} · coming later · CarworX (prototype)`;
+  document.querySelector("[data-h]").textContent = T[0];
+  document.querySelector("[data-p]").textContent = T[1];
+  const back = as === "driver" ? [["Profile and settings", "../account/index.html?as=driver"]] : as === "staff" ? [["Your home", "../staff/index.html?demo=1#home"], ["History", "../history/index.html?as=staff"]] : [["Finish setup", "../setup/index.html#hub"], ["History", `../history/index.html?as=${as}`]];
+  document.querySelector("[data-acts]").innerHTML = back.map(([t, h], i) => `<a class="cx-btn ${i ? "outlined" : "primary"} sm" href="${h}">${t}</a>`).join("");
+  SHELL.mount(document.querySelector("[data-shell]"), { role: as, current: what });
+</script>
+</body>
+</html>

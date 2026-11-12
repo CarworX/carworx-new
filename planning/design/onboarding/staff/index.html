@@ -25,6 +25,7 @@
 </style>
 </head>
 <body class="cx-canvas">
+<div data-shell hidden></div>
 <form data-flow novalidate>
   <div data-screen="nav" data-label="Staff join"></div>
   <main>
@@ -90,6 +91,7 @@
   <input type="hidden" name="pick"><input type="hidden" name="contact"><input type="hidden" name="joinRole"><input type="hidden" name="mfareq"><input type="hidden" name="mfaWho">
 </form>
 <script src="../_shared/kit.js"></script>
+<script src="../_shared/shell.js"></script>
 <script>
   document.querySelectorAll("[data-actions]").forEach((el) => {
     el.outerHTML = `<div class="ob-actions"><button type="button" class="ob-back" data-back>Back</button><span class="ob-keys"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span><button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button></div>`;
@@ -105,6 +107,12 @@
   const role = form.elements.joinRole.value;
   form.elements.mfareq.value = (tm === "all" || (tm === "managers" && role === "Manager")) ? "yes" : "";
   form.elements.mfaWho.value = tm === "all" ? "everyone on the team" : "managers";
+  form.addEventListener("ob:step", (e) => {
+    const home = e.detail.id === "home", sh = document.querySelector("[data-shell]");
+    if (home && sh.hidden) { SHELL.mount(sh, { role: form.elements.joinRole.value === "Manager" ? "manager" : "staff", current: "today" }); }
+    sh.hidden = !home;
+    form.querySelector(".ob-navwrap").hidden = home;
+  });
   const flow = OB.boot();
   // The last join step (name, or days when the business assigns) finishes on the staff home.
   const last = () => (form.elements.mfareq.value ? "s-mfa" : form.elements.pick.value === "customer" ? "s-name" : "s-days");
