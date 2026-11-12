@@ -31,12 +31,23 @@ export function createMailDatabase(connectionString: string): MailDatabase {
       if (rows[0] === undefined) throw new Error("mail_database_unavailable");
       return rows[0].id;
     },
+    async purge() {
+      return (
+        (
+          await query<{ count: number }>(
+            "select private.purge_expired_mail() as count",
+            [],
+          )
+        )[0]?.count ?? 0
+      );
+    },
     async claim(limit) {
       return (
         (
-          await query<ClaimedMail>("select * from private.claim_mail($1)", [
-            limit,
-          ])
+          await query<ClaimedMail>(
+            "select id,logical_key,template,encrypted_payload,expires_at::text as expires_at,lease_token,attempts from private.claim_mail($1)",
+            [limit],
+          )
         )[0] ?? null
       );
     },

@@ -32,6 +32,7 @@ export interface MailDatabase {
     expiresAt: string,
   ): Promise<string>;
   claim(dailyLimit: number): Promise<ClaimedMail | null>;
+  purge(): Promise<number>;
   finish(
     id: string,
     lease: string,
@@ -171,14 +172,17 @@ async function open(
     job.encrypted_payload,
   );
   if (parts === null || !KEY.test(job.logical_key)) return null;
+  const iv = parts[1];
+  const ciphertext = parts[2];
+  if (iv === undefined || ciphertext === undefined) return null;
   const bytes = await crypto.subtle.decrypt(
     {
       name: "AES-GCM",
-      iv: unb64(parts[1]!),
+      iv: unb64(iv),
       additionalData: encoder.encode(`${job.logical_key}:${job.template}`),
     },
     await cipherKey(config.encryptionKey),
-    unb64(parts[2]!),
+    unb64(ciphertext),
   );
   const m = message(JSON.parse(decoder.decode(bytes)) as unknown, now, config);
   return m?.kind === job.template &&

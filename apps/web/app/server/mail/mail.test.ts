@@ -47,6 +47,7 @@ function database() {
       return Promise.resolve(job.id);
     },
     claim: () => Promise.resolve(job),
+    purge: () => Promise.resolve(0),
     finish(_id, _lease, result, providerId) {
       results.push({ result, providerId });
       if (result !== "retry") job = null;
