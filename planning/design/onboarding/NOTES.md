@@ -163,4 +163,4 @@ One shared component (`_shared/money.js`, styles in `kit.css`), designed with th
 
 *Honest framing:* money goes straight to each business through the payment partner, and CarworX never holds it. So "how much CarworX has made" is its **fees**, which are R0 during the pilot. The admin view therefore leads with **booking value** (the total customers paid businesses) and shows fees separately. The figures need bookings and the payment partner's records (Phase 3); the prototype uses synthetic data as if bookings had run since November 2024.
 
-*For the owner to confirm:* staff don't see Earnings (only owners and managers do).
+**Decided by the owner (2026-11-12):** only **owners and managers** see Earnings. Staff don't.

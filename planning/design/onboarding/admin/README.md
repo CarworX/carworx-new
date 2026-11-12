@@ -12,6 +12,6 @@
 
 **A10 in admin.** Admins see a mobile business's private base and radius on the review's Location step, under a blue **"Admin only"** note. Customers still only see "Comes to you" and the metro.
 
-**Recommendation for the owner to confirm: no email-code fallback for admins.** Owners and staff may get a sign-in code by email; admins can approve, suspend and move control of any business, so their second step stays the authenticator app. Their backup is recovery codes, and a lost app is reset by **another admin** who checks it's them first. The owner can overrule this.
+**Decided by the owner (2026-11-12): no email-code fallback for admins.** Owners and staff may get a sign-in code by email; admins can approve, suspend and move control of any business, so their second step stays the authenticator app. Their backup is recovery codes, and a lost app is reset by **another admin** who checks it's them first.
 
 **Not designed yet:** support cases and enquiries (P2-5) and demand requests. These are natural next tabs in the same console.
