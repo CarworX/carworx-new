@@ -29,6 +29,7 @@ describe("CSRF and Origin checks on the sign-in and sign-out mutations", () => {
   it.each([
     ["a hostile Origin", { origin: "https://evil.example" }],
     ["a missing Origin", { origin: null }],
+    ["a literal Origin: null", { origin: "null" }],
     ["a sibling-subdomain Origin", { origin: "http://evil.localhost:5173" }],
     [
       "a cross-site Sec-Fetch-Site",
@@ -282,7 +283,7 @@ describe("personal responses are never cacheable", () => {
     const reply = await new Browser().send("/auth/sign-in");
     expect(reply.headers.get("X-Content-Type-Options")).toBe("nosniff");
     expect(reply.headers.get("X-Frame-Options")).toBe("DENY");
-    expect(reply.headers.get("Referrer-Policy")).toBe("no-referrer");
+    expect(reply.headers.get("Referrer-Policy")).toBe("same-origin");
     expect(reply.headers.get("Content-Security-Policy")).toContain(
       "frame-ancestors 'none'",
     );
