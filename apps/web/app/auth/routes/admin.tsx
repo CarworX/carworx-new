@@ -55,6 +55,9 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
       <nav aria-label="Admin tools">
         <ul>
           <li>
+            <a href="/admin/today">Today</a>
+          </li>
+          <li>
             <a href="/admin/listings?status=submitted">Review queue</a>
           </li>
           <li>

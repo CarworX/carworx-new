@@ -125,6 +125,23 @@ describe("response finalisation", () => {
     ).toBe("private, no-store");
   });
 
+  it.each([
+    "/join",
+    "/join/opaque-invite",
+    "/provider",
+    "/provider/setup/team/role",
+  ])("never caches personal path %s or sends its URL as a referrer", (path) => {
+    const response = finalizeResponse(
+      new Request(`${APP}${path}`),
+      new Response("x", {
+        headers: { "Cache-Control": "public, max-age=600" },
+      }),
+      config,
+    );
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(response.headers.get("Referrer-Policy")).toBe("no-referrer");
+  });
+
   it("forces private, no-store on personal paths and when no policy was set", () => {
     const personal = finalizeResponse(
       new Request(`${APP}/account`),

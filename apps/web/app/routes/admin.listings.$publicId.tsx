@@ -1,17 +1,16 @@
 import { data, Form } from "react-router";
 
+import { ApplicationReview } from "../admin-onboarding/ApplicationReview";
 import { field } from "../auth/forms";
 import { throwRedirect, throwStatus } from "../auth/http.server";
 import { CsrfField } from "../auth/ui";
 import { requireAdmin } from "../server/providers/admin.server";
 import {
-  LABELS,
   parseDecision,
   parseId,
   parseReason,
   PROBLEM_TEXT,
   problemFrom,
-  REVIEW_METHODS,
   sast,
   SERVICE_OPTIONS,
   UUID,
@@ -20,7 +19,7 @@ import {
 import { AdminShell } from "../ui/admin/AdminShell";
 import { Button } from "../ui/Button";
 import { StatusLabel } from "../ui/Chip";
-import { TextField, Choice } from "../ui/Field";
+import { TextField } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/admin.listings.$publicId";
 
@@ -253,61 +252,7 @@ export default function AdminListing({
       </dl>
 
       {l.status === "submitted" ? (
-        <div className="mt-8 grid max-w-[65ch] gap-8">
-          <Form method="post" className="grid gap-4" data-form="approve">
-            <h2 className="type-title">Approve</h2>
-            <CsrfField token={csrf} />
-            <input type="hidden" name="intent" value="decide" />
-            <input type="hidden" name="decision" value="approve" />
-            <div className="cx-field">
-              <label htmlFor="method">How did you check it?</label>
-              <select id="method" name="method" className="cx-input" required>
-                {REVIEW_METHODS.map((m) => (
-                  <option key={m.value} value={m.value}>
-                    {m.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <fieldset className="cx-field">
-              <legend>Labels to show</legend>
-              {LABELS.filter(
-                (x) => l.mode !== "mobile" || x.value !== "premises_visited",
-              ).map((x) => (
-                <Choice key={x.value} name="labels" value={x.value}>
-                  {x.label}
-                </Choice>
-              ))}
-            </fieldset>
-            <TextField
-              label="Evidence reference (needed with any label)"
-              name="evidence"
-              maxLength={200}
-              hint="Where the evidence is kept. Never paste ID numbers or documents."
-            />
-            <div>
-              <Button type="submit" variant="primary">
-                Approve and publish
-              </Button>
-            </div>
-          </Form>
-          <Form method="post" className="grid gap-4" data-form="reject">
-            <h2 className="type-title">Send back</h2>
-            <CsrfField token={csrf} />
-            <input type="hidden" name="intent" value="decide" />
-            <input type="hidden" name="decision" value="reject" />
-            <TextField
-              label="What the provider needs to change"
-              name="reason"
-              required
-              minLength={5}
-              maxLength={500}
-            />
-            <div>
-              <Button type="submit">Send back to the provider</Button>
-            </div>
-          </Form>
-        </div>
+        <ApplicationReview csrf={csrf} business={l} />
       ) : null}
 
       {l.status === "live" || l.status === "suspended" ? (

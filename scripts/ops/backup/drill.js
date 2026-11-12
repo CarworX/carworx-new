@@ -56,6 +56,8 @@ const tables = [
   "public.memberships",
   "public.audit_log",
   "private.platform_admins",
+  "private.mail_outbox",
+  "private.mail_delivery_events",
 ];
 const bucket = "k4-private";
 const files = ["tenant-a.bin", "tenant-b.bin"];
@@ -232,7 +234,12 @@ function sql(config, stage, statement) {
 function inventory(config) {
   return Object.fromEntries(
     tables.map((table) => {
-      const order = table === "private.platform_admins" ? "user_id" : "id";
+      const order =
+        table === "private.platform_admins"
+          ? "user_id"
+          : table === "private.mail_delivery_events"
+            ? "provider_id"
+            : "id";
       const rows = sql(
         config,
         "inventory-" + table,

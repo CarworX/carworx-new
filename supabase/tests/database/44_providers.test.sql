@@ -10,6 +10,27 @@ create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 grant execute on all functions in schema extensions to anon, authenticated;
 
+-- Test fixture adapter for the retired one-shot RPC. Each call exercises the
+-- actual draft/submit contracts with explicit age and probing consent. It is
+-- invoker-only and exists solely inside this rolled-back test transaction.
+create function pg_temp.submit_application(
+  p_business_name text, p_service_slug text, p_mode text, p_metro text,
+  p_description text, p_address text, p_lat double precision,
+  p_lng double precision, p_radius_km integer
+) returns uuid language plpgsql security invoker set search_path = '' as $$
+begin
+  perform public.provider_save_draft(jsonb_build_object(
+    'step', 5, 'business_name', p_business_name,
+    'service_slugs', jsonb_build_array(p_service_slug), 'mode', p_mode,
+    'metro', p_metro, 'description', p_description, 'public_address', p_address,
+    'pin', jsonb_build_object('lat', p_lat, 'lng', p_lng, 'source', 'tap'),
+    'radius_km', p_radius_km, 'applicant_role', 'owner'));
+  return public.provider_submit(true, true, 'onboarding-v1');
+end $$;
+grant usage on schema pg_temp to anon, authenticated;
+grant execute on function pg_temp.submit_application(text,text,text,text,text,text,double precision,double precision,integer)
+  to anon, authenticated;
+
 insert into auth.users (id, email, email_confirmed_at) values
   ('b4000000-0000-4000-8000-000000000001', 'pia.applicant@example.test', now()),
   ('b4000000-0000-4000-8000-000000000002', 'cal.claimant@claimco.test', now()),
@@ -29,15 +50,15 @@ select plan(107);
 -- ===== Application ==========================================================
 set local role anon;
 set local request.jwt.claims = '{"role":"anon"}';
-select throws_ok($$select public.provider_apply('Pia Motors','p24-fixed','fixed','Gauteng','Synthetic fixed applicant','1 Synthetic Road',-26.1,28.0,null)$$,
+select throws_ok($$select pg_temp.submit_application('Pia Motors','p24-fixed','fixed','Gauteng','Synthetic fixed applicant','1 Synthetic Road',-26.1,28.0,null)$$,
   '42501', null, 'anon cannot apply');
 
 reset role;
 set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
-select ok((select set_config('t.fixed', public.provider_apply('Pia Motors (synthetic)','p24-fixed','fixed','Gauteng','Synthetic fixed applicant','1 Synthetic Road, Exampleville',-26.1,28.0,null)::text, true)) is not null,
+select ok((select set_config('t.fixed', pg_temp.submit_application('Pia Motors (synthetic)','p24-fixed','fixed','Gauteng','Synthetic fixed applicant','1 Synthetic Road, Exampleville',-26.1,28.0,null)::text, true)) is not null,
   'signed-in aal1 person applies (fixed premises)');
-select throws_ok($$select public.provider_apply('Pia Two','p24-fixed','fixed','Gauteng','Synthetic second application','2 Synthetic Road',-26.1,28.0,null)$$,
+select throws_ok($$select pg_temp.submit_application('Pia Two','p24-fixed','fixed','Gauteng','Synthetic second application','2 Synthetic Road',-26.1,28.0,null)$$,
   'P0001', 'application_pending', 'one pending application per applicant');
 select throws_ok($$update public.listings set status = 'live' where public_id = current_setting('t.fixed')::uuid$$,
   '42501', null, 'applicant cannot write status directly');
@@ -49,18 +70,18 @@ select is((select count(*)::int from public.listing_public where public_id = cur
 reset role;
 set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000005","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
-select throws_ok($$select public.provider_apply('Max','p24-fixed','fixed','Gauteng','Synthetic outside SA','1 Road',-33.9,10.0,null)$$, '22023', null, 'pin outside South Africa rejected');
-select throws_ok($$select public.provider_apply('Max','p24-fixed','fixed','Gauteng','Synthetic fixed radius','1 Road',-26.1,28.0,10)$$, '22023', null, 'fixed premises with a radius rejected');
-select throws_ok($$select public.provider_apply('Max','p24-mobile','mobile','Gauteng','Synthetic no radius',null,-26.1,28.0,null)$$, '22023', null, 'mobile without a radius rejected');
-select throws_ok($$select public.provider_apply('Max','p24-mobile','mobile','Gauteng','Synthetic huge radius',null,-26.1,28.0,101)$$, '22023', null, 'mobile radius above 100 km rejected');
-select throws_ok($$select public.provider_apply('Max','no-such-service','fixed','Gauteng','Synthetic bad service','1 Road',-26.1,28.0,null)$$, '22023', null, 'unknown service rejected');
-select throws_ok($$select public.provider_apply('Max','p24-fixed','fixed','Gauteng',E'Synthetic line one\x01line two','1 Road',-26.1,28.0,null)$$, '22023', null, 'control characters other than line breaks rejected in a description');
-select throws_ok($$select public.provider_apply(E'Max\x01','p24-fixed','fixed','Gauteng','Synthetic control char','1 Road',-26.1,28.0,null)$$, '22023', null, 'control characters rejected');
+select throws_ok($$select pg_temp.submit_application('Max','p24-fixed','fixed','Gauteng','Synthetic outside SA','1 Road',-33.9,10.0,null)$$, '22023', null, 'pin outside South Africa rejected');
+select throws_ok($$select pg_temp.submit_application('Max','p24-fixed','fixed','Gauteng','Synthetic fixed radius','1 Road',-26.1,28.0,10)$$, 'P0001', 'draft_incomplete', 'fixed premises with a radius rejected');
+select throws_ok($$select pg_temp.submit_application('Max','p24-mobile','mobile','Gauteng','Synthetic no radius',null,-26.1,28.0,null)$$, 'P0001', 'draft_incomplete', 'mobile without a radius rejected');
+select throws_ok($$select pg_temp.submit_application('Max','p24-mobile','mobile','Gauteng','Synthetic huge radius',null,-26.1,28.0,101)$$, '22023', null, 'mobile radius above 100 km rejected');
+select throws_ok($$select pg_temp.submit_application('Max','no-such-service','fixed','Gauteng','Synthetic bad service','1 Road',-26.1,28.0,null)$$, '22023', null, 'unknown service rejected');
+select throws_ok($$select pg_temp.submit_application('Max','p24-fixed','fixed','Gauteng',E'Synthetic line one\x01line two','1 Road',-26.1,28.0,null)$$, '22023', null, 'control characters other than line breaks rejected in a description');
+select throws_ok($$select pg_temp.submit_application(E'Max\x01','p24-fixed','fixed','Gauteng','Synthetic control char','1 Road',-26.1,28.0,null)$$, '22023', null, 'control characters rejected');
 
 reset role;
 set local request.jwt.claims = '{"sub":"b4000000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
-select ok((select set_config('t.mobile', public.provider_apply('Gus Mobile (synthetic)','p24-mobile','mobile','Gauteng',E'Synthetic mobile applicant\r\nComes to you',null,-26.05,28.05,20)::text, true)) is not null,
+select ok((select set_config('t.mobile', pg_temp.submit_application('Gus Mobile (synthetic)','p24-mobile','mobile','Gauteng',E'Synthetic mobile applicant\r\nComes to you',null,-26.05,28.05,20)::text, true)) is not null,
   'signed-in person applies (mobile, private base)');
 
 reset role;
@@ -127,7 +148,7 @@ select is((select reason from public.listing_decisions where listing_public_id =
 -- A fresh application while the rejected one is a draft is fine, but then the
 -- draft cannot also go back into the queue (rolled back to keep later state).
 savepoint resubmit_limit;
-select ok(public.provider_apply('Gus Second (synthetic)','p24-fixed','fixed','Gauteng','Synthetic second business','3 Synthetic Road',-26.1,28.0,null) is not null,
+select ok(pg_temp.submit_application('Gus Second (synthetic)','p24-fixed','fixed','Gauteng','Synthetic second business','3 Synthetic Road',-26.1,28.0,null) is not null,
   'a rejected applicant may apply again');
 select throws_ok($$select public.provider_resubmit(current_setting('t.mobile')::uuid,'Gus Mobile (synthetic)','Synthetic mobile applicant, clearer details')$$,
   'P0001', 'application_pending', 'resubmission respects the one-pending-application limit');
@@ -345,7 +366,7 @@ select is_empty($$select details from public.audit_log where details::text ~* '(
   'audit details carry no reasons, notes, domains, references or coordinates');
 select is_empty($$
   select p.oid::regprocedure::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-  where n.nspname = 'public' and p.proname in ('provider_apply','provider_resubmit','claim_listing','dispute_claim',
+  where n.nspname = 'public' and p.proname in ('provider_resubmit','claim_listing','dispute_claim',
     'admin_decide_application','admin_set_suspension','admin_decide_claim','admin_resolve_dispute')
     and (p.prosecdef or p.prorettype not in ('uuid'::regtype, 'void'::regtype)
       or has_function_privilege('anon', p.oid, 'execute') or not has_function_privilege('authenticated', p.oid, 'execute'))

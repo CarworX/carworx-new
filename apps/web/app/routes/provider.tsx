@@ -1,3 +1,4 @@
+import { SetupHub } from "../team/Hub";
 import { mailtoHref } from "../ui/mailto";
 import { data, Link } from "react-router";
 
@@ -337,7 +338,11 @@ export default function Provider({
   );
   return (
     <PublicShell signedIn>
-      <h1 className="type-display-lg">Your business</h1>
+      <h1 className="type-display-lg">
+        {orgs.length > 0 && orgs.every((org) => org.role === "staff")
+          ? "Your work"
+          : "Your business"}
+      </h1>
       {notice ? (
         <div className="mt-4 max-w-[65ch]" data-notice={notice}>
           <StatusNote tone="ok" title={NOTICE[notice][0]}>
@@ -369,6 +374,11 @@ export default function Provider({
       {orgs.map((org) => (
         <section key={org.id} className="mt-10" data-org={org.id}>
           <h2 className="type-title">{org.name}</h2>
+          <SetupHub
+            org={org.id}
+            role={org.role}
+            live={org.listings.some((listing) => listing.status === "live")}
+          />
           {org.listings.map((l) => (
             <article
               key={l.public_id}
