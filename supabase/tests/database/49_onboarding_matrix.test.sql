@@ -49,8 +49,8 @@ insert into public.listing_hours(listing_public_id,organisation_id,day,opens,clo
   ('b9500000-0000-4000-8000-000000000001','b9100000-0000-4000-8000-00000000000a',1,'08:00','17:00');
 insert into public.staff_profiles(membership_id,organisation_id,first_name) values
   ('b9200000-0000-4000-8000-000000000003','b9100000-0000-4000-8000-00000000000a','Sid');
-insert into public.invites(organisation_id,role,token_hash,created_by) values
-  ('b9100000-0000-4000-8000-00000000000a','staff',extensions.digest('o2m-token','sha256'),'b9000000-0000-4000-8000-000000000001');
+insert into public.invites(organisation_id,role,token_hash,created_by,control_generation) values
+  ('b9100000-0000-4000-8000-00000000000a','staff',extensions.digest('o2m-token','sha256'),'b9000000-0000-4000-8000-000000000001',1);
 insert into public.provider_applications(user_id,business_name) values ('b9000000-0000-4000-8000-000000000001','Olga draft (synthetic)');
 
 select plan(140);

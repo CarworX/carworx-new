@@ -20,14 +20,16 @@ insert into auth.users (id, email, email_confirmed_at) values
   ('b8000000-0000-4000-8000-000000000006', 'ivy.invitee@example.test', now()),
   ('b8000000-0000-4000-8000-000000000007', 'ian.invitee@example.test', now()),
   ('b8000000-0000-4000-8000-000000000008', 'ola.other@example.test', now()),
-  ('b8000000-0000-4000-8000-000000000009', 'ada.admin@example.test', now());
+  ('b8000000-0000-4000-8000-000000000009', 'ada.admin@example.test', now()),
+  ('b8000000-0000-4000-8000-00000000000a', 'cy.claimant@example.test', now()),
+  ('b8000000-0000-4000-8000-00000000000b', 'zed.newcomer@example.test', now());
 -- Own catalogue fixtures: recovery CI (K4) runs without the seed.
 insert into public.categories(slug, name) values ('o2-cat', 'O2 test category (synthetic)');
 insert into public.services(slug, category_slug, name) values
   ('o2-wash', 'o2-cat', 'O2 wash (synthetic)'), ('o2-valet', 'o2-cat', 'O2 valet (synthetic)'), ('o2-polish', 'o2-cat', 'O2 polish (synthetic)');
 insert into private.platform_admins (user_id) values ('b8000000-0000-4000-8000-000000000009');
 
-select plan(78);
+select plan(85);
 
 -- ===== Mode 'both' shape ====================================================
 insert into public.organisations(id, name) values ('b8100000-0000-4000-8000-0000000000f1', 'Shape fixture (synthetic)');
@@ -227,8 +229,52 @@ set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000005","r
 set local role authenticated;
 select throws_ok($$select public.accept_invite(current_setting('tests.sam_token'))$$, 'P0001', 'already_member', 'an active member cannot re-join through an invite');
 reset role;
-insert into public.invites(organisation_id, role, token_hash, created_by)
-  select o2.bo_org, 'staff', extensions.digest('o2-filler-' || g, 'sha256'), 'b8000000-0000-4000-8000-000000000001'
+-- Codex P1 on #79: an invite dies when its creator loses the role, or when
+-- control of the organisation changes (claim approved, dispute reversed).
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000004","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(set_config('tests.mel_token', public.create_invite((select bo_org from o2), 'staff', null), true) is not null, 'Mel makes a staff invite');
+reset role;
+update public.memberships set status = 'revoked' where user_id = 'b8000000-0000-4000-8000-000000000004';
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-00000000000b","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.accept_invite(current_setting('tests.mel_token'))$$, 'P0001', 'invite_invalid',
+  'an invite dies when its creator loses their role');
+reset role;
+update public.memberships set status = 'active' where user_id = 'b8000000-0000-4000-8000-000000000004';
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(set_config('tests.pre_transfer', public.create_invite((select bo_org from o2), 'manager', null), true) is not null,
+  'the owner makes a manager invite before a transfer');
+reset role;
+create temporary table gen as select control_generation as before from public.organisations o join o2 on o.id = o2.bo_org;
+-- A transfer as admin_decide_claim does it: the old team is revoked and the
+-- claimant becomes owner. Then reversed, as admin_resolve_dispute does it.
+update public.memberships set status = 'revoked' where organisation_id = (select bo_org from o2) and status = 'active';
+insert into public.memberships(organisation_id, user_id, role, status)
+  select bo_org, 'b8000000-0000-4000-8000-00000000000a'::uuid, 'owner', 'active' from o2;
+update public.memberships set status = 'revoked' where user_id = 'b8000000-0000-4000-8000-00000000000a';
+update public.memberships set status = 'active' where organisation_id = (select bo_org from o2) and user_id <> 'b8000000-0000-4000-8000-00000000000a';
+select ok((select o.control_generation > g.before from public.organisations o join o2 on o.id = o2.bo_org, gen g),
+  'a change of control starts a new generation');
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-00000000000b","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.accept_invite(current_setting('tests.pre_transfer'))$$, 'P0001', 'invite_invalid',
+  'an invite made before a change of control cannot be redeemed after it, even once the owner is restored');
+reset role;
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select ok(set_config('tests.post_transfer', public.create_invite((select bo_org from o2), 'staff', null), true) is not null,
+  'the restored owner makes a new invite');
+reset role;
+set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-00000000000b","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select is(public.accept_invite(current_setting('tests.post_transfer')), (select bo_org from o2), 'an invite from the current generation works');
+reset role;
+
+insert into public.invites(organisation_id, role, token_hash, created_by, control_generation)
+  select o2.bo_org, 'staff', extensions.digest('o2-filler-' || g, 'sha256'), 'b8000000-0000-4000-8000-000000000001',
+    (select control_generation from public.organisations where id = o2.bo_org)
   from o2, generate_series(1, 49) g;
 set local request.jwt.claims = '{"sub":"b8000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
 set local role authenticated;

@@ -278,7 +278,10 @@ alter table public.organisations
   add column offer_anyone boolean not null default false,
   add column staff_contact_visibility text not null default 'booking_only'
     check (staff_contact_visibility in ('phone','first_name','booking_only')),
-  add column team_mfa_policy text not null default 'optional' check (team_mfa_policy in ('optional','managers','everyone'));
+  add column team_mfa_policy text not null default 'optional' check (team_mfa_policy in ('optional','managers','everyone')),
+  -- Bumped whenever ownership changes (claims, dispute reversals, any owner
+  -- membership change). An invite only works in the generation it was made in.
+  add column control_generation integer not null default 0;
 
 -- A composite key for staff_profiles' organisation-bound foreign key.
 alter table public.memberships add constraint memberships_id_org_key unique (id, organisation_id);
@@ -354,6 +357,7 @@ create table public.invites (
   token_hash bytea not null unique check (length(token_hash) = 32),
   email text check (length(email) <= 254),
   created_by uuid not null references auth.users(id),
+  control_generation integer not null,
   created_at timestamptz not null default now(),
   expires_at timestamptz not null default now() + interval '7 days',
   used_at timestamptz,
@@ -685,37 +689,71 @@ begin
     raise exception 'invite_limit' using errcode = 'P0001';
   end if;
   v_token := pg_catalog.rtrim(pg_catalog.translate(pg_catalog.encode(extensions.gen_random_bytes(32), 'base64'), '+/', '-_'), '=');
-  insert into public.invites(organisation_id, role, token_hash, email, created_by)
-    values (p_org, p_role, private.invite_token_hash(v_token), v_email, v_uid);
+  insert into public.invites(organisation_id, role, token_hash, email, created_by, control_generation)
+    values (p_org, p_role, private.invite_token_hash(v_token), v_email, v_uid,
+      (select o.control_generation from public.organisations o where o.id = p_org));
   return v_token;
 end $$;
 
--- Unknown, expired, used and wrong-email tokens all fail the same way.
+-- Unknown, expired, used and wrong-email tokens all fail the same way, and so
+-- does an invite whose authority is gone: ownership changed since it was made
+-- (claim approved, dispute reversed: Codex P1 on #79), or its creator no
+-- longer holds the role that could make it. Lock order as P2-4: the
+-- organisation row first, then the invite, then memberships.
 create function private.accept_invite(p_token text) returns uuid
 language plpgsql volatile security definer set search_path = '' as $$
-declare v_uid uuid := auth.uid(); v_i public.invites; v_email text; v_m public.memberships;
+declare v_uid uuid := auth.uid(); v_org uuid; v_i public.invites; v_email text; v_m public.memberships; v_gen integer;
 begin
   if v_uid is null then raise exception 'not_allowed' using errcode = '42501'; end if;
   if p_token is null or p_token !~ '^[A-Za-z0-9_-]{43}$' then raise exception 'invite_invalid' using errcode = 'P0001'; end if;
+  select i.organisation_id into v_org from public.invites i where i.token_hash = private.invite_token_hash(p_token);
+  if not found then raise exception 'invite_invalid' using errcode = 'P0001'; end if;
+  select o.control_generation into v_gen from public.organisations o where o.id = v_org for update;
   select * into v_i from public.invites where token_hash = private.invite_token_hash(p_token) for update;
-  if not found or v_i.used_at is not null or v_i.expires_at <= now() then
+  if not found or v_i.used_at is not null or v_i.expires_at <= now() or v_i.control_generation <> v_gen
+     or not exists (select from public.memberships c
+                    where c.organisation_id = v_org and c.user_id = v_i.created_by and c.status = 'active'
+                      and (c.role = 'owner' or (c.role = 'manager' and v_i.role = 'staff'))) then
     raise exception 'invite_invalid' using errcode = 'P0001';
   end if;
   if v_i.email is not null then
     select pg_catalog.lower(u.email) into v_email from auth.users u where u.id = v_uid and u.email_confirmed_at is not null;
     if v_email is distinct from v_i.email then raise exception 'invite_invalid' using errcode = 'P0001'; end if;
   end if;
-  perform from public.organisations where id = v_i.organisation_id for update;
-  select * into v_m from public.memberships where organisation_id = v_i.organisation_id and user_id = v_uid for update;
+  select * into v_m from public.memberships where organisation_id = v_org and user_id = v_uid for update;
   if found and v_m.status = 'active' then raise exception 'already_member' using errcode = 'P0001'; end if;
   if found then
     update public.memberships set role = v_i.role, status = 'active' where id = v_m.id;
   else
-    insert into public.memberships(organisation_id, user_id, role, status) values (v_i.organisation_id, v_uid, v_i.role, 'active');
+    insert into public.memberships(organisation_id, user_id, role, status) values (v_org, v_uid, v_i.role, 'active');
   end if;
   update public.invites set used_at = now(), used_by = v_uid where id = v_i.id;
-  return v_i.organisation_id;
+  return v_org;
 end $$;
+
+-- Any change that touches an owner membership (added, removed, revoked,
+-- restored, promoted or demoted) starts a new control generation, which
+-- voids every invite made before it. Fires for client writes and for the
+-- P2-4 claim and dispute functions alike.
+create function private.bump_control_generation() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  if tg_op = 'INSERT' then
+    if new.role = 'owner' then
+      update public.organisations set control_generation = control_generation + 1 where id = new.organisation_id;
+    end if;
+  elsif tg_op = 'DELETE' then
+    if old.role = 'owner' then
+      update public.organisations set control_generation = control_generation + 1 where id = old.organisation_id;
+    end if;
+  elsif (old.role = 'owner' or new.role = 'owner') and (old.role, old.status) is distinct from (new.role, new.status) then
+    update public.organisations set control_generation = control_generation + 1 where id = new.organisation_id;
+  end if;
+  return null;
+end $$;
+revoke all on function private.bump_control_generation() from public, anon, authenticated, service_role;
+create trigger memberships_control_generation after insert or update or delete on public.memberships
+  for each row execute function private.bump_control_generation();
 
 -- The owner sets everything; a manager only who gets the booking.
 create function private.set_team_settings(p_org uuid, p jsonb) returns void
