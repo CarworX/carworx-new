@@ -59,20 +59,20 @@
         <div data-screen="card"></div>
       </details>
       <div class="q" style="margin-top:16px">
-        <div class="prog" data-only="build"><div class="ob-bar" data-progress role="progressbar" aria-label="Application progress" aria-valuemin="0" aria-valuemax="100"><i></i></div><span data-progress-label></span></div>
+        <div class="ob-segbar" data-segbar data-only="build" aria-label="Application progress"></div>
 
         <section data-step id="welcome" data-cta="Start building">
           <div class="q"><p class="cx-eyebrow">For businesses · R0 during the pilot</p><h2>Build your listing and watch it appear.</h2><p class="t-lede">Every answer shows up on the right, exactly as drivers will see it in search. Nothing goes public until a CarworX admin has checked it.</p></div>
         </section>
-        <section data-step id="path" data-kind="build" data-count data-require="path"><div class="q"><h2>Start here</h2><div data-q="path"></div></div></section>
-        <section data-step id="basics" data-kind="build" data-count data-if="path=new" data-require="name,role"><div class="q"><h2>The basics</h2><div data-q="name"></div><div data-q="role"></div></div></section>
-        <section data-step id="services" data-kind="build" data-count data-if="path=new" data-require="services"><div class="q"><h2>Your services</h2><div data-q="services"></div></div></section>
-        <section data-step id="where" data-kind="build" data-count data-if="path=new" data-require="mode,metro,pin,base"><div class="q"><h2>Where you work</h2><div data-q="mode"></div><div data-q="metro"></div><div data-q="pin"></div><div data-q="base"></div></div></section>
-        <section data-step id="hours" data-kind="build" data-count data-if="path=new" data-require="days,staff"><div class="q"><h2>Hours and team</h2><div data-q="hours"></div><div data-q="staff"></div><div data-q="since"></div></div></section>
-        <section data-step id="about" data-kind="build" data-count data-if="path=new" data-require="about"><div class="q"><h2>One line about you</h2><div data-q="about"></div></div></section>
-        <section data-step id="claim" data-kind="build" data-count data-if="path=claim" data-require="claimListing,role"><div class="q"><h2>Find your listing</h2><div data-q="claimListing"></div><div data-q="role"></div></div></section>
-        <section data-step id="proof" data-kind="build" data-count data-if="path=claim" data-require="evidence,doc,docDate"><div class="q"><h2>Show it's yours</h2><div data-q="evidence"></div><div data-q="doc"></div><div data-q="docDate"></div></div></section>
-        <section data-step id="checks" data-kind="build" data-count data-require="adult,consent"><div class="q"><h2>Two quick checks</h2><div data-q="adult"></div><div data-q="consent"></div></div></section>
+        <section data-step id="path" data-title="Start" data-kind="build" data-count data-require="path"><div class="q"><h2>Start here</h2><div data-q="path"></div></div></section>
+        <section data-step id="basics" data-title="Basics" data-kind="build" data-count data-if="path=new" data-require="name,role"><div class="q"><h2>The basics</h2><div data-q="name"></div><div data-q="role"></div></div></section>
+        <section data-step id="services" data-title="Services" data-kind="build" data-count data-if="path=new" data-require="services"><div class="q"><h2>Your services</h2><div data-q="services"></div></div></section>
+        <section data-step id="where" data-title="Where you work" data-kind="build" data-count data-if="path=new" data-require="mode,metro,pin,base"><div class="q"><h2>Where you work</h2><div data-q="mode"></div><div data-q="metro"></div><div data-q="pin"></div><div data-q="base"></div></div></section>
+        <section data-step id="hours" data-title="Hours and team" data-kind="build" data-count data-if="path=new" data-require="days,staff"><div class="q"><h2>Hours and team</h2><div data-q="hours"></div><div data-q="staff"></div><div data-q="since"></div></div></section>
+        <section data-step id="about" data-title="About you" data-kind="build" data-count data-if="path=new" data-require="about"><div class="q"><h2>One line about you</h2><div data-q="about"></div></div></section>
+        <section data-step id="claim" data-title="Your listing" data-kind="build" data-count data-if="path=claim" data-require="claimListing,role"><div class="q"><h2>Find your listing</h2><div data-q="claimListing"></div><div data-q="role"></div></div></section>
+        <section data-step id="proof" data-title="Proof" data-kind="build" data-count data-if="path=claim" data-require="evidence,doc,docDate"><div class="q"><h2>Show it's yours</h2><div data-q="evidence"></div><div data-q="doc"></div><div data-q="docDate"></div></div></section>
+        <section data-step id="checks" data-title="Checks" data-kind="build" data-count data-require="adult,consent"><div class="q"><h2>Two quick checks</h2><div data-q="adult"></div><div data-q="consent"></div></div></section>
         <section data-step id="review" data-kind="build" data-cta="Send for review"><div class="q"><h2>Looks good?</h2><p class="t-body">This is your listing, ready to send. The labels arrive once an admin has checked you.</p><div data-if="path=new" class="yours"><div data-screen="card"></div></div><div data-screen="review"></div></div></section>
         <section data-step id="submitted" data-cta="Go to your dashboard"><div data-screen="submitted"></div></section>
         <section data-step id="waiting"><div data-screen="waiting"></div></section>

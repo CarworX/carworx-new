@@ -48,8 +48,8 @@
   <div data-screen="nav" data-label="Concept 5 · checklist"></div>
   <main>
     <div class="taskhead" data-only="task">
-      <div class="row"><button type="button" class="ob-link" data-go="hub">All tasks</button><span data-progress-label></span></div>
-      <div class="ob-bar" data-progress role="progressbar" aria-label="Task progress" aria-valuemin="0" aria-valuemax="100"><i></i></div>
+      <div class="row"><button type="button" class="ob-link" data-go="hub">All tasks</button></div>
+      <div class="ob-segbar" data-segbar aria-label="Task progress"></div>
     </div>
 
     <section data-step id="welcome" data-cta="Get set up">
@@ -77,23 +77,23 @@
     </section>
 
     <!-- Details -->
-    <section data-step id="d-name" data-kind="task" data-group="details" data-count data-require="name"><div class="card"><h2>Details</h2><div data-q="name"></div><div data-actions></div></div></section>
-    <section data-step id="d-services" data-kind="task" data-group="details" data-count data-require="services"><div class="card"><h2>Details</h2><div data-q="services"></div><div data-actions></div></div></section>
-    <section data-step id="d-about" data-kind="task" data-group="details" data-count data-require="about" data-next="hub" data-cta="Done"><div class="card"><h2>Details</h2><div data-q="about"></div><div data-q="since"></div><div data-actions></div></div></section>
+    <section data-step id="d-name" data-title="Details · Name" data-kind="task" data-group="details" data-count data-require="name"><div class="card"><h2>Details</h2><div data-q="name"></div><div data-actions></div></div></section>
+    <section data-step id="d-services" data-title="Details · Services" data-kind="task" data-group="details" data-count data-require="services"><div class="card"><h2>Details</h2><div data-q="services"></div><div data-actions></div></div></section>
+    <section data-step id="d-about" data-title="Details · About you" data-kind="task" data-group="details" data-count data-require="about" data-next="hub" data-cta="Done"><div class="card"><h2>Details</h2><div data-q="about"></div><div data-q="since"></div><div data-actions></div></div></section>
     <!-- Location -->
-    <section data-step id="l-mode" data-kind="task" data-group="location" data-count data-require="mode,metro"><div class="card"><h2>Location</h2><div data-q="mode"></div><div data-q="metro"></div><div data-actions></div></div></section>
-    <section data-step id="l-where" data-kind="task" data-group="location" data-count data-require="pin,base"><div class="card"><h2>Location</h2><div data-q="pin"></div><div data-q="base"></div><div data-actions></div></div></section>
-    <section data-step id="l-hours" data-kind="task" data-group="location" data-count data-require="days" data-next="hub" data-cta="Done"><div class="card"><h2>Location</h2><div data-q="hours"></div><div data-actions></div></div></section>
+    <section data-step id="l-mode" data-title="Location · How you work" data-kind="task" data-group="location" data-count data-require="mode,metro"><div class="card"><h2>Location</h2><div data-q="mode"></div><div data-q="metro"></div><div data-actions></div></div></section>
+    <section data-step id="l-where" data-title="Location · Where" data-kind="task" data-group="location" data-count data-require="pin,base"><div class="card"><h2>Location</h2><div data-q="pin"></div><div data-q="base"></div><div data-actions></div></div></section>
+    <section data-step id="l-hours" data-title="Location · Hours" data-kind="task" data-group="location" data-count data-require="days" data-next="hub" data-cta="Done"><div class="card"><h2>Location</h2><div data-q="hours"></div><div data-actions></div></div></section>
     <!-- Listing (claim) -->
-    <section data-step id="c-listing" data-kind="task" data-group="listing" data-count data-require="claimListing" data-next="hub" data-cta="Done"><div class="card"><h2>Your listing</h2><div data-q="claimListing"></div><div data-actions></div></div></section>
+    <section data-step id="c-listing" data-title="Your listing" data-kind="task" data-group="listing" data-count data-require="claimListing" data-next="hub" data-cta="Done"><div class="card"><h2>Your listing</h2><div data-q="claimListing"></div><div data-actions></div></div></section>
     <!-- Proof -->
-    <section data-step id="p-evidence" data-kind="task" data-group="proof" data-count data-if="path=claim" data-require="evidence"><div class="card"><h2>Proof</h2><div data-q="evidence"></div><div data-actions></div></div></section>
-    <section data-step id="p-doc" data-kind="task" data-group="proof" data-count data-if="path=claim&evidence=Show an admin a document" data-require="doc,docDate"><div class="card"><h2>Proof</h2><div data-q="doc"></div><div data-q="docDate"></div><div data-actions></div></div></section>
-    <section data-step id="p-adult" data-kind="task" data-group="proof" data-count data-require="adult" data-next="hub" data-cta="Done"><div class="card"><h2>Proof</h2><div data-q="adult"></div>
+    <section data-step id="p-evidence" data-title="Proof · Evidence" data-kind="task" data-group="proof" data-count data-if="path=claim" data-require="evidence"><div class="card"><h2>Proof</h2><div data-q="evidence"></div><div data-actions></div></div></section>
+    <section data-step id="p-doc" data-title="Proof · Document" data-kind="task" data-group="proof" data-count data-if="path=claim&evidence=Show an admin a document" data-require="doc,docDate"><div class="card"><h2>Proof</h2><div data-q="doc"></div><div data-q="docDate"></div><div data-actions></div></div></section>
+    <section data-step id="p-adult" data-title="Proof · Checks" data-kind="task" data-group="proof" data-count data-require="adult" data-next="hub" data-cta="Done"><div class="card"><h2>Proof</h2><div data-q="adult"></div>
       <div class="ob-panel" style="box-shadow:inset 0 0 0 1px var(--hair)"><h3>What the admin checks</h3><ul class="ob-checks"><li><span class="dot"></span>Identity checked</li><li><span class="dot"></span>Business details checked</li><li data-if="mode=They come to me"><span class="dot"></span>Premises visited (fixed premises only)</li></ul><p class="t-cap">By phone, documents or a visit. Each check they do becomes a label on your listing.</p></div>
       <div data-actions></div></div></section>
     <!-- Team -->
-    <section data-step id="t-role" data-kind="task" data-group="team" data-count data-require="role,staff" data-next="hub" data-cta="Done"><div class="card"><h2>Team</h2><div data-q="role"></div><div data-if="path=new"><div data-q="staff"></div></div><p class="ob-private"><span data-ic="team"></span><span>You can invite managers and staff once you're approved.</span></p><div data-actions></div></div></section>
+    <section data-step id="t-role" data-title="Team" data-kind="task" data-group="team" data-count data-require="role,staff" data-next="hub" data-cta="Done"><div class="card"><h2>Team</h2><div data-q="role"></div><div data-if="path=new"><div data-q="staff"></div></div><p class="ob-private"><span data-ic="team"></span><span>You can invite managers and staff once you're approved.</span></p><div data-actions></div></div></section>
 
     <section data-step id="send" data-require="consent" data-cta="Send for review" data-skip><div class="card"><h2>Check and send</h2><div data-screen="review"></div><div data-q="consent"></div><div data-actions></div></div></section>
     <section data-step id="submitted" data-next="waiting" data-skip><div class="card"><div data-screen="submitted"></div><div class="ob-actions"><button type="button" class="cx-btn primary" data-go="waiting" style="margin-left:auto">Go to your dashboard</button></div></div></section>

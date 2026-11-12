@@ -550,6 +550,72 @@ select.ob-input {
   transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* segmented progress (owner pick 2026-11-12): glides forward and back */
+.ob-segbar {
+  display: grid;
+  gap: 10px;
+}
+.ob-segbar .segrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  overflow: hidden;
+}
+.ob-segbar .segname {
+  font: 500 15px/20px var(--font-sans);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.ob-segbar .segcount {
+  font: 500 13px/20px var(--font-mono);
+  color: var(--muted);
+}
+.ob-segbar .segs {
+  display: flex;
+  gap: 6px;
+}
+.ob-segbar .seg {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--canvas-2);
+  overflow: hidden;
+}
+.ob-segbar .seg i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ink);
+  /* clip-path keeps the rounded leading edge while it glides (scaleX would squash it) */
+  clip-path: inset(0 100% 0 0 round var(--radius-pill));
+  transition: clip-path 420ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.ob-segbar .seg.on i {
+  clip-path: inset(0 0 0 0 round var(--radius-pill));
+}
+.ob-segbar.still .seg i {
+  transition: none;
+}
+.ob-segbar .fwd {
+  animation: seg-in-fwd 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.ob-segbar .back {
+  animation: seg-in-back 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes seg-in-fwd {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes seg-in-back {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
 /* actions */
 .ob-actions {
   display: flex;

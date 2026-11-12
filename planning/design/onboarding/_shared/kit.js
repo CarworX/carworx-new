@@ -593,6 +593,9 @@
             ? `${i + 1} of ${counted.length}`
             : el.dataset.progressLabel || "";
       });
+      const name =
+        cur.dataset.title || cur.querySelector("h2")?.textContent.trim() || "";
+      form.querySelectorAll("[data-segbar]").forEach((el) => segbar(el, i, counted.length, name));
       const sec = cur.dataset.section;
       form.querySelectorAll("[data-rail]").forEach((rail) => {
         const items = [...rail.querySelectorAll("[data-for]")];
@@ -606,6 +609,62 @@
       });
     }
 
+    // Segmented progress: one segment per counted step. Forward fills the next segment(s)
+    // left to right; back drains them right to left; a multi-step jump chains them in order.
+    function segbar(el, at, n, name) {
+      let row = el.querySelector(".segs");
+      if (!row) {
+        el.innerHTML = `<div class="segrow"><span class="segname" aria-hidden="true"></span><span class="segcount" aria-hidden="true"></span></div><div class="segs"></div>`;
+        row = el.querySelector(".segs");
+        el.setAttribute("role", "progressbar");
+        el.setAttribute("aria-valuemin", "0");
+      }
+      const prev = el._at;
+      const fresh = el._n !== n;
+      if (!fresh && prev === at && el._name === name) return;
+      if (fresh) {
+        row.innerHTML = Array.from({ length: n }, () => '<span class="seg"><i></i></span>').join("");
+        el.classList.add("still");
+      }
+      const segs = [...row.children];
+      const dur = 420;
+      const from = fresh || prev == null ? at : prev;
+      const span = Math.abs(at - from);
+      const per = span > 1 ? Math.min(dur * 0.55, 640 / span) : 0;
+      segs.forEach((sg, k) => {
+        const on = k <= at;
+        let d = 0;
+        if (at > from && k > from && k <= at) d = (k - from - 1) * per; // forward: left to right
+        if (at < from && k > at && k <= from) d = (from - k) * per; // back: right to left
+        sg.firstChild.style.transitionDelay = d + "ms";
+        sg.classList.toggle("on", on);
+        sg.classList.toggle("now", k === at);
+      });
+      el.setAttribute("aria-valuemax", n);
+      el.setAttribute("aria-valuenow", at + 1);
+      el.setAttribute("aria-valuetext", `Step ${at + 1} of ${n}${name ? ": " + name : ""}`);
+      const nm = el.querySelector(".segname");
+      const ct = el.querySelector(".segcount");
+      const dir = at >= from ? "fwd" : "back";
+      if (nm.textContent !== name || ct.textContent !== `${at + 1} of ${n}`) {
+        nm.textContent = name;
+        ct.textContent = `${at + 1} of ${n}`;
+        if (!fresh && prev != null && prev !== at) {
+          [nm, ct].forEach((x) => {
+            x.classList.remove("fwd", "back");
+            void x.offsetWidth;
+            x.classList.add(dir);
+          });
+        }
+      }
+      if (fresh) {
+        void el.offsetWidth;
+        el.classList.remove("still");
+      }
+      el._at = at;
+      el._n = n;
+      el._name = name;
+    }
     function show(id, focus = true) {
       const st = byId(id);
       if (!st) return;
