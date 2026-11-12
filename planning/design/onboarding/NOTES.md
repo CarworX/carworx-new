@@ -58,6 +58,7 @@ The owner liked **2 · Guided stepper**, **3 · Live preview** and **5 · Setup 
 |---|---|---|
 | Frame | 5 · Checklist | Welcome → new or claim → "Get set up" hub with tasks (Details, Location, Proof, Team). Resumable; any order; becomes the business dashboard after approval |
 | Inside each task | 2 · Stepper | Named steps with the `StepList` rail on desktop and a segmented bar on phones; Next/Back on every page |
+| Progress indicator | 2 · Stepper (phone view) | **Owner's pick (2026-11-12):** the segmented bar. One segment per step (done and current in ink, upcoming in `canvas-2`), the step name on the left and "3 of 6" in mono on the right. Use it at every width and inside every checklist task, in place of the thin bar from concepts 1 and 3. Screenshot: `stepper/shots/03-location-both.png` |
 | Feedback | 3 · Live preview | The public listing card builds beside the questions (docked on phones) and sits on the hub; makes A10's public vs private line visible |
 | Shared, unchanged | All | Pick-don't-type controls (2 typed fields, 0 for a claim), "pick one or both" for where you serve customers, the 18+ toggle (no date of birth), the submitted, waiting and live states |
 
