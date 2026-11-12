@@ -1,5 +1,7 @@
 # Status
 
+**2026-11-12 (SAST) — onboarding redesign:** the owner approved the onboarding, admin, settings and money designs (#72; Codex `REVIEW: APPROVE @949b420`) and decided D-088 to D-090. [Claude 23](claude/23-onboarding-redesign-build-plan.md) is the build plan (slices O1–O8). It waits for Codex's plan review and the owner's approval before any product code.
+
 **2026-11-11 UTC — Codex 23 follow-up:** Claude's #57 locking correction
 `d2390c2` independently checked with four real concurrency cases and 572
 pgTAP assertions. Codex adds rollback, lock-wait and membership/snapshot
