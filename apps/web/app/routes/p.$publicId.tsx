@@ -99,6 +99,11 @@ export default function ListingPage({
           <StatusNote title="Visit the workshop.">
             {listing.public_address} · {listing.metro}
           </StatusNote>
+        ) : listing.mode === "both" ? (
+          <StatusNote title="Visit the workshop, or it comes to you.">
+            {listing.public_address} · {listing.metro}. It also serves an area
+            nearby; the provider confirms your exact address before any booking.
+          </StatusNote>
         ) : (
           <StatusNote title="Comes to you.">
             Serves an area in {listing.metro}. Coverage is approximate; the

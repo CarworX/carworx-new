@@ -673,7 +673,9 @@ async function drill() {
     const restoreFile = join(root, "restore.sql");
     writeFileSync(restoreFile, dataSql);
     // The local DB login cannot disable managed Auth triggers. Only suspend
-    // app audit generation while replaying the original audit rows.
+    // app audit generation while replaying the original audit rows, and the
+    // O2 control-generation trigger, which would otherwise bump the restored
+    // organisations.control_generation as each owner membership is replayed.
     run("restore", "psql", [
       "-Xq",
       "--single-transaction",
@@ -681,11 +683,11 @@ async function drill() {
       "ON_ERROR_STOP=1",
       restored.DB_URL,
       "-c",
-      "alter table public.organisations disable trigger organisations_audit; alter table public.memberships disable trigger memberships_audit;",
+      "alter table public.organisations disable trigger organisations_audit; alter table public.memberships disable trigger memberships_audit; alter table public.memberships disable trigger memberships_control_generation;",
       "-f",
       restoreFile,
       "-c",
-      "alter table public.organisations enable trigger organisations_audit; alter table public.memberships enable trigger memberships_audit;",
+      "alter table public.organisations enable trigger organisations_audit; alter table public.memberships enable trigger memberships_audit; alter table public.memberships enable trigger memberships_control_generation;",
     ]);
     assert.deepEqual(inventory(restored), manifest.tables);
     assert.equal(sha(schema(restored)), manifest.payloads["schema.txt"].sha256);

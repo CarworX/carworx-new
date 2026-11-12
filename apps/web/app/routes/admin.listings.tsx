@@ -24,7 +24,7 @@ interface Row {
   public_id: string;
   display_name: string;
   metro: string;
-  mode: "fixed" | "mobile";
+  mode: "fixed" | "mobile" | "both";
   status: Status;
   submitted_at: string | null;
   created_at: string;
@@ -83,8 +83,12 @@ export default function AdminListings({ loaderData }: Route.ComponentProps) {
                 {r.display_name}
               </a>
               <p className="type-body mt-1">
-                {r.mode === "fixed" ? "Workshop" : "Mobile"} · {r.metro} ·{" "}
-                {status === "submitted" ? "sent" : "created"}{" "}
+                {r.mode === "fixed"
+                  ? "Workshop"
+                  : r.mode === "both"
+                    ? "Workshop + mobile"
+                    : "Mobile"}{" "}
+                · {r.metro} · {status === "submitted" ? "sent" : "created"}{" "}
                 {(r.submitted_at ?? r.created_at).slice(0, 10)}
               </p>
             </li>

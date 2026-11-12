@@ -34,7 +34,7 @@ interface Listing {
   display_name: string;
   description: string;
   metro: string;
-  mode: "fixed" | "mobile";
+  mode: "fixed" | "mobile" | "both";
   status: "draft" | "submitted" | "live" | "suspended";
   provenance_kind: string;
   service_slug: string;
@@ -238,7 +238,9 @@ export default function AdminListing({
         <dd>
           {l.mode === "fixed"
             ? `Workshop: ${l.address ?? ""} · ${l.metro}`
-            : `Comes to customers in ${l.metro} (service area kept private)`}
+            : l.mode === "both"
+              ? `Workshop: ${l.address ?? ""} · ${l.metro}, and comes to customers (service area kept private)`
+              : `Comes to customers in ${l.metro} (service area kept private)`}
         </dd>
         <dt className="type-label">Source</dt>
         <dd>
@@ -270,7 +272,7 @@ export default function AdminListing({
             <fieldset className="cx-field">
               <legend>Labels to show</legend>
               {LABELS.filter(
-                (x) => l.mode === "fixed" || x.value !== "premises_visited",
+                (x) => l.mode !== "mobile" || x.value !== "premises_visited",
               ).map((x) => (
                 <Choice key={x.value} name="labels" value={x.value}>
                   {x.label}
