@@ -414,7 +414,7 @@ try {
     (await admin.getByText(visitorEmail).count()) === 1,
   );
   await shot(admin, "09-admin-demand");
-  // A real-browser post from an admin page (no-referrer): must use <Form>.
+  // A real-browser post from an admin page (Referrer-Policy: same-origin).
   const demandId = psql(
     `select id from public.demand_requests where email = '${visitorEmail}'`,
   );

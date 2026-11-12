@@ -19,7 +19,8 @@ import { CSRF_FIELD, csrfTokenMatches, issueCsrfToken } from "./csrf";
  *   - may only set cookies with Secure; HttpOnly; SameSite=Lax; Path=/ and
  *     the __Host-cx- prefix, and may only redirect to this origin or to the
  *     Supabase authorize endpoint. Anything else fails closed with a 500;
- *   - gets the baseline security headers.
+ *   - gets the baseline security headers. Personal paths use
+ *     `Referrer-Policy: same-origin`, so no-JS form posts keep a real Origin.
  */
 export const PRIVATE_NO_STORE = "private, no-store";
 export const MAX_FORM_BYTES = 64 * 1024;
@@ -192,10 +193,13 @@ export function finalizeResponse(
   const path = new URL(request.url).pathname;
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("X-Frame-Options", "DENY");
+  // Personal pages never send a referrer to another site. `same-origin`, not
+  // `no-referrer`: under no-referrer Chromium sends `Origin: null` on a
+  // native (no-JavaScript) form post, which check 1 above must refuse.
   headers.set(
     "Referrer-Policy",
     PERSONAL_PATHS.test(path)
-      ? "no-referrer"
+      ? "same-origin"
       : "strict-origin-when-cross-origin",
   );
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
