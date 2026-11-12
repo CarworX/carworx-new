@@ -699,10 +699,29 @@ async function drill() {
     manifest.storageObjects = JSON.parse(
       sql(origin, "export-objects", OBJECTS_SQL),
     ).map((object, index) => ({ ...object, path: "object-" + index }));
+    // Empty tables need no COPY (some platform tables, e.g. Storage vector
+    // indexes, aren't writable by the restore login). They are still in the
+    // inventory, so the restore proves they are empty there too.
+    const dumped = tables.filter((t) => manifest.tables[t].count > 0);
+    manifest.dumpedTables = dumped;
+    const blocked = JSON.parse(
+      sql(
+        origin,
+        "restore-privileges",
+        "select coalesce(jsonb_agg(t), '[]') from unnest(array[" +
+          dumped.map((t) => "'" + t + "'").join(",") +
+          "]::text[]) t where not has_table_privilege(current_user, t::regclass, 'insert');",
+      ),
+    );
+    assert.deepEqual(
+      blocked,
+      [],
+      "BK-1: non-empty tables the restore can't write",
+    );
     run("export", "pg_dump", [
       "--format=custom",
       "--data-only",
-      ...tables.flatMap((table) => ["-t", table]),
+      ...dumped.flatMap((table) => ["-t", table]),
       ...sequences.flatMap((sequence) => ["-t", sequence]),
       "-f",
       join(bundle, "database.dump"),
