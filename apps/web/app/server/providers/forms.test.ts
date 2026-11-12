@@ -248,3 +248,19 @@ describe("parsePage", () => {
       expect(parsePage(bad)).toBeNull();
   });
 });
+
+describe("O2 onboarding problem keys", () => {
+  it("maps every new database key to fixed text", () => {
+    for (const key of [
+      "no_draft",
+      "draft_incomplete",
+      "consent_required",
+      "invite_invalid",
+      "invite_limit",
+      "not_yet_available",
+    ] as const) {
+      expect(problemFrom({ code: "P0001", message: key })).toBe(key);
+      expect(PROBLEM_TEXT[key].length).toBeGreaterThan(10);
+    }
+  });
+});

@@ -9,7 +9,7 @@ export interface PublicListing {
   display_name: string;
   description: string;
   metro: string;
-  mode: "fixed" | "mobile";
+  mode: "fixed" | "mobile" | "both";
   service_slug: string;
   service_name: string;
   category_slug: string;

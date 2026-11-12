@@ -207,6 +207,8 @@ function baseItem(row: SearchRow) {
 }
 export type MobileItem = ReturnType<typeof baseItem> & {
   coverage: "approximate";
+  /** A both-business: it also has public premises (O2). Never a distance. */
+  also_premises: boolean;
 };
 export type FixedItem = ReturnType<typeof baseItem> & {
   public_address: string | null;
@@ -226,7 +228,11 @@ function fixedItem(row: SearchRow): FixedItem {
   };
 }
 function mobileItem(row: SearchRow): MobileItem {
-  return { ...baseItem(row), coverage: "approximate" };
+  return {
+    ...baseItem(row),
+    coverage: "approximate",
+    also_premises: row.mode === "both",
+  };
 }
 
 async function page(

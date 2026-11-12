@@ -55,6 +55,12 @@ export type Problem =
   | "claim_superseded"
   | "transfer_disputed"
   | "case_not_open"
+  | "no_draft"
+  | "draft_incomplete"
+  | "consent_required"
+  | "invite_invalid"
+  | "invite_limit"
+  | "not_yet_available"
   | "unavailable";
 
 export const PROBLEM_TEXT: Record<Problem, string> = {
@@ -80,6 +86,14 @@ export const PROBLEM_TEXT: Record<Problem, string> = {
   case_not_open: "This support case is already closed.",
   transfer_disputed:
     "This business's last transfer is under dispute. Resolve that dispute first.",
+  no_draft: "Start your application first.",
+  draft_incomplete: "A few steps still need answers before you can send this.",
+  consent_required: "Please confirm the statements before you send this.",
+  invite_invalid:
+    "This invite link doesn't work. It may have expired or been used. Ask for a new one.",
+  invite_limit:
+    "You have 50 open invites. Wait for some to be used or to expire, then try again.",
+  not_yet_available: "That option isn't available yet.",
   unavailable: "Something went wrong on our side. Try again in a minute.",
 };
 

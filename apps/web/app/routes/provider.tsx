@@ -42,7 +42,7 @@ interface Listing {
   display_name: string;
   description: string;
   status: "draft" | "submitted" | "live" | "suspended";
-  mode: "fixed" | "mobile";
+  mode: "fixed" | "mobile" | "both";
 }
 interface Decision {
   listing_public_id: string;
@@ -393,7 +393,9 @@ export default function Provider({
               <p className="type-body">
                 {l.mode === "fixed"
                   ? "Customers visit your workshop."
-                  : "You go to customers. Your base and distance stay private."}
+                  : l.mode === "both"
+                    ? "Customers visit your workshop, and you also go to them. Your service distance stays private."
+                    : "You go to customers. Your base and distance stay private."}
               </p>
               {l.decision?.reason ? (
                 <p className="type-body" data-decision={l.decision.decision}>

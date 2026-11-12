@@ -89,10 +89,39 @@ describe("GET /api/search handler", () => {
       distance_kind: "straight-line",
     });
     for (const item of body.mobile.items) {
-      expect(item).toMatchObject({ coverage: "approximate" });
+      expect(item).toMatchObject({
+        coverage: "approximate",
+        also_premises: false,
+      });
       expect(Object.keys(item)).not.toContain("public_latitude");
       expect(Object.keys(item)).not.toContain("distance_km");
     }
+  });
+
+  it("marks a both-business in the mobile group, with no location or distance (O2)", async () => {
+    const both: SearchRow = {
+      ...row(1, "mobile"),
+      mode: "both",
+      display_name: "Synthetic both",
+    };
+    const r = await get("?lat=-33.9&lng=18.4", {
+      search: (args: SearchArgs) =>
+        Promise.resolve(args.group === "mobile" ? [both] : []),
+    });
+    const body = r.body as unknown as {
+      mobile: { items: Record<string, unknown>[] };
+    };
+    expect(body.mobile.items[0]).toMatchObject({
+      display_name: "Synthetic both",
+      also_premises: true,
+      coverage: "approximate",
+    });
+    expect(Object.keys(body.mobile.items[0] ?? {})).not.toContain(
+      "public_address",
+    );
+    expect(Object.keys(body.mobile.items[0] ?? {})).not.toContain(
+      "distance_km",
+    );
   });
 
   it("pages each group through its own cursor without gaps or duplicates", async () => {

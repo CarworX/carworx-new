@@ -30,14 +30,22 @@ export function ListingResult({
 }) {
   const key = topCategoryOf(listing.category_slug)?.key ?? "repairs";
   const thumb = SERVICES.find((s) => s.key === key)?.object ?? "";
+  const hasDistance =
+    listing.distance_km !== undefined && listing.distance_km !== null;
+  // A both-business (premises and comes to you) found through its service
+  // area shows no distance: only that it comes to you and has premises.
   const where =
     listing.mode === "mobile"
       ? matched
         ? `Comes to you · ${listing.metro} · serves your area (approximate)`
         : `Comes to you · ${listing.metro}`
-      : listing.distance_km !== undefined && listing.distance_km !== null
-        ? `${listing.metro} · ${listing.distance_km.toFixed(1)} km straight-line`
-        : listing.metro;
+      : listing.mode === "both" && !hasDistance
+        ? matched
+          ? `Comes to you · serves your area (approximate) · also has premises in ${listing.metro}`
+          : `Comes to you · also has premises in ${listing.metro}`
+        : hasDistance
+          ? `${listing.metro} · ${(listing.distance_km ?? 0).toFixed(1)} km straight-line`
+          : listing.metro;
   return (
     <ResultCard
       name={listing.display_name}
