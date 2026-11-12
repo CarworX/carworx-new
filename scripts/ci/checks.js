@@ -223,6 +223,7 @@ const commands = {
     command(process.execPath, [
       "--test",
       "scripts/ci/core.test.js",
+      "scripts/ci/workflow-gate.test.js",
       "scripts/ci/auth-fixture.test.js",
       "scripts/ci/future-stages.test.js",
     ]),
