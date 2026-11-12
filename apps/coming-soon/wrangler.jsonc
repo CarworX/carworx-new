@@ -1,0 +1,19 @@
+// CarworX "coming soon" page: an assets-only Worker (no script). It serves
+// carworx.app and www.carworx.app until the real app (carworx-web) takes
+// the domain over at launch (G-PROD). See README.md. The owner publishes it;
+// agents don't deploy.
+{
+  "$schema": "../web/node_modules/wrangler/config-schema.json",
+  "name": "carworx-coming-soon",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "404-page",
+  },
+  "routes": [
+    { "pattern": "carworx.app", "custom_domain": true },
+    { "pattern": "www.carworx.app", "custom_domain": true },
+  ],
+}
