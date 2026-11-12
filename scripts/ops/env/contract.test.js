@@ -29,20 +29,65 @@ test("standalone final Agent trailer ignores quotations and code examples", () =
   f.reviews[0].body = `REVIEW: APPROVE @${sha}\n> Agent: claude\nAgent: codex`;
   assert.throws(() => verify(f));
 });
-test("source config keeps local and staging separate without public previews", () => {
-  const config = JSON.parse(
+function sourceConfig() {
+  return JSON.parse(
     // This committed fixture has no comments; Prettier adds JSONC trailing commas.
     readFileSync(
       new URL("../../../apps/web/wrangler.jsonc", import.meta.url),
       "utf8",
     ).replace(/,\s*([}\]])/g, "$1"),
   );
+}
+// A real Hyperdrive ID (32 hex) or a placeholder the owner must replace.
+const HYPERDRIVE_ID = /^(?:[a-f0-9]{32}|OWNER_SETS_[A-Z_]+_HYPERDRIVE_ID)$/;
+test("source config keeps local, staging and production separate without public previews", () => {
+  const config = sourceConfig();
   assert.equal(config.workers_dev, false);
   assert.equal(config.preview_urls, false);
   assert.equal(config.vars?.CARWORX_DEV_PAGES, undefined);
-  assert.equal(config.env.production, undefined);
+  assert.equal(config.vars?.CARWORX_ENV, "local");
+  assert.equal(config.hyperdrive, undefined);
+  assert.deepEqual(Object.keys(config.env).sort(), ["production", "staging"]);
   assert.equal(config.env.staging.name, "carworx-web-staging");
   assert.equal(config.env.staging.vars.CARWORX_DEV_PAGES, "1");
+  assert.equal(config.env.staging.vars.CARWORX_ENV, "staging");
+});
+test("production config is isolated, has no dev pages and no staging controls (P-1)", () => {
+  const prod = sourceConfig().env.production;
+  assert.equal(prod.name, "carworx-web-production");
+  assert.equal(prod.workers_dev, false);
+  assert.equal(prod.preview_urls, false);
+  // Exactly one var: dev pages and staging-only settings must be absent.
+  assert.deepEqual(prod.vars, { CARWORX_ENV: "production" });
+  assert.equal(prod.version_metadata, undefined);
+  assert.equal(prod.routes, undefined);
+  assert.equal(prod.route, undefined);
+  assert.deepEqual(prod.durable_objects.bindings, [
+    { name: "SEARCH_LIMITER", class_name: "SearchLimiter" },
+  ]);
+  // The production build must never pass the staging packaging gate.
+  assert.throws(
+    () => validateBuild(prod, { worker: "carworx-web-staging" }),
+    /isolated staging/,
+  );
+});
+test("staging and production bind both Hyperdrive configs with distinct owner IDs (P-2)", () => {
+  const { staging, production } = sourceConfig().env;
+  const ids = [];
+  for (const env of [staging, production]) {
+    assert.deepEqual(
+      env.hyperdrive.map((b) => b.binding),
+      ["CATALOGUE_DB", "FORMS_DB"],
+    );
+    for (const b of env.hyperdrive) {
+      assert.deepEqual(Object.keys(b).sort(), ["binding", "id"]);
+      assert.match(b.id, HYPERDRIVE_ID);
+      ids.push(b.id);
+    }
+  }
+  assert.equal(new Set(ids).size, ids.length);
+  for (const b of staging.hyperdrive) assert.doesNotMatch(b.id, /PRODUCTION/);
+  for (const b of production.hyperdrive) assert.doesNotMatch(b.id, /STAGING/);
 });
 function fixture() {
   return {
