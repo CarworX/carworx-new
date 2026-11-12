@@ -27,6 +27,9 @@
   @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
   .ob-actions { padding-top: 20px; border-top: 1px solid var(--hair); }
   .segtop { margin-bottom: 16px; }
+  /* ?rail=off: bar only, for the owner's desktop A/B (2026-11-12) */
+  .norail .rail { display: none; }
+  .norail .shell { grid-template-columns: minmax(0, 760px); justify-content: center; }
   .hero { display: grid; gap: 18px; max-width: 560px; }
   .hero h1 { font: 500 56px/58px var(--font-sans); letter-spacing: -.04em; }
   @media (max-width: 860px) {
@@ -133,6 +136,7 @@
     el.outerHTML = `<div class="ob-actions"><button type="button" class="ob-back" data-back>Back</button><span class="ob-keys"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span><button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button></div>`;
   });
   document.querySelectorAll("[data-ic]").forEach((e) => (e.outerHTML = OB.ic(e.dataset.ic)));
+  if (new URLSearchParams(location.search).get("rail") === "off") document.body.classList.add("norail");
   const form = document.querySelector("[data-flow]");
   // Steps sit in the right-hand column; welcome and the status screens span both.
   form.addEventListener("ob:step", (e) => {

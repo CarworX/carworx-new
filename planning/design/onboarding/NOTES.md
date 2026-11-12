@@ -64,6 +64,22 @@ The owner liked **2 · Guided stepper**, **3 · Live preview** and **5 · Setup 
 
 Open for the build plan: server-side drafts for "stop and come back" (today's prototype uses localStorage), and whether Team invites stay "after approval".
 
+## Two-phase onboarding and staff (owner, 2026-11-12, SAST)
+
+**Owner decisions**
+1. **Managers can invite people** (as well as owners). Only the owner changes payment settings.
+2. **Two separate experiences for owners.** Phase 1 **Get approved** is as short as possible (the flow above). Phase 2 **Finish setup** opens after approval: add staff and configure how the business works.
+3. **The owner decides in Phase 2** whether the **customer** or an **owner/manager** picks the staff member for a booking, and **what staff can see** about customers.
+
+**Prototypes**
+- [`setup/`](setup/index.html), Phase 2 "Finish setup": approved screen → hub (progress ring) with four tasks: **Team** (invite: role → email or one-time link/QR → sent; team list with pending invites; or "It's just me for now"), **Who gets the booking** ("The customer picks", optionally with "Anyone available", or "We assign"), **What staff can see** (name and phone / first name only / booking details only), and **Cover photo**. "Later" cards (prices and durations, get paid, travel charges) show what opens with bookings in Phase 3. The listing stays live whatever is unfinished.
+- [`staff/`](staff/index.html), staff join: invite (one-time, expires in 7 days) → sign in with **their own** account → 2–3 short steps (services they work on, days they work, and their **first name only if the business lets customers pick**) → staff home (requests, what they can and can't do, their details). Demo switches: `?pick=customer|assign&contact=phone|first|none&role=Staff|Manager`.
+- Both use the approved gliding segmented bar.
+
+**Typed fields:** an invite is 1 typed field (email), or 0 with a link. A staff join is 0 typed fields, or 1 (first name) when customers pick.
+
+**Open:** whether the desktop stepper keeps the step rail beside the bar (A/B in `progress/desktop-A-bar-and-rail.png` and `desktop-B-bar-only.png`).
+
 ## Recommendation (before the owner's pick)
 
 **Use 5 as the frame, 1 inside the tasks, and 3's card on the hub.** The checklist is the only concept that is resumable by design, and its hub becomes the business dashboard after approval (team, photos, booking requests), so the build gets two screens from one. Inside each task, concept 1's one-question screens keep phones calm. Concept 3's live card on the hub shows people what they are building. If one concept must be picked unchanged, pick **2 (stepper)**: it is the cheapest to build from today's form and the clearest about where you are.

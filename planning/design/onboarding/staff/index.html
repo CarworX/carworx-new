@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Staff join · CarworX onboarding</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<link rel="stylesheet" href="../_shared/hub.css">
+<style>
+  /* Staff never register a business: invite → own sign-in → 2–3 short steps → staff home. */
+  .invite { display: grid; gap: 18px; max-width: 560px; padding-top: 4vh; }
+  .invite h1 { font: 500 40px/44px var(--font-sans); letter-spacing: -.035em; }
+  .biz { display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--sh-1); }
+  .biz .av { width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--ink); color: var(--white); display: grid; place-items: center; font: 500 16px var(--font-sans); flex: none; }
+  .biz b { display: block; font: 500 16px var(--font-sans); }
+  .biz small { font: 400 13px var(--font-sans); color: var(--muted); }
+  .row2 { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .perm { list-style: none; padding: 0; display: grid; gap: 8px; }
+  .perm li { display: flex; gap: 10px; align-items: center; font: 400 14px var(--font-sans); }
+  .perm .no { color: var(--muted); }
+  .nothing { padding: 20px; border-radius: var(--radius-lg); background: rgba(255,255,255,.6); box-shadow: inset 0 0 0 1px var(--hair); display: grid; gap: 6px; }
+  @media (max-width: 640px) { .invite h1 { font-size: 30px; line-height: 34px; } }
+</style>
+</head>
+<body class="cx-canvas">
+<form data-flow novalidate>
+  <div data-screen="nav" data-label="Staff join"></div>
+  <main>
+    <div class="taskhead" data-only="task"><div class="ob-segbar" data-segbar aria-label="Joining progress"></div></div>
+
+    <section data-step id="invite">
+      <div class="invite">
+        <p class="cx-eyebrow">Team invite · expires 19 Nov 2026</p>
+        <h1>Sipho invited you to join the team</h1>
+        <div class="biz"><span class="av">SB</span><span><b>Shine Bay Car Wash</b><small>Saxonwold, Johannesburg · Live on CarworX</small></span></div>
+        <p class="t-body">You'll join as <b data-bind="joinRole"></b>. You don't register a business. Just sign in with your own account and answer a few quick questions.</p>
+        <div class="row2"><button type="button" class="cx-btn primary" data-go="signin">Accept invite</button><button type="button" class="ob-link">Not you? Decline</button></div>
+        <p class="ob-private"><span data-ic="lock"></span><span>This invite works once. If someone else opens it first, Sipho can cancel it and send a new one.</span></p>
+      </div>
+    </section>
+
+    <section data-step id="signin">
+      <div class="card"><h2>Sign in with your own account</h2>
+        <p class="t-body">Use your own email so your work is recorded as yours. Never use the owner's login.</p>
+        <div class="ob-tiles" style="grid-template-columns:1fr">
+          <button type="button" class="ob-tile" data-go="s-services"><span class="ic" data-ic="user"></span><b>I have a CarworX account</b><small>Sign in, then join.</small></button>
+          <button type="button" class="ob-tile" data-go="s-services"><span class="ic" data-ic="plus"></span><b>I'm new to CarworX</b><small>Create an account with your email, then join.</small></button>
+        </div>
+        <p class="t-cap">Prototype: both continue without a real sign-in.</p>
+        <div class="ob-actions"><button type="button" class="ob-back" data-back>Back</button></div></div>
+    </section>
+
+    <section data-step id="s-services" data-title="Your work" data-kind="task" data-group="join" data-count data-require="myServices"><div class="card"><h2>Joining Shine Bay Car Wash</h2><div data-q="myServices"></div><div data-actions></div></div></section>
+    <section data-step id="s-days" data-title="Your days" data-kind="task" data-group="join" data-count data-require="myDays"><div class="card"><h2>Joining Shine Bay Car Wash</h2><div data-q="myDays"></div><div data-actions></div></div></section>
+    <section data-step id="s-name" data-title="How customers see you" data-kind="task" data-group="join" data-count data-if="pick=customer" data-require="firstName" data-cta="Join the team"><div class="card"><h2>Joining Shine Bay Car Wash</h2><div data-q="firstName"></div><div data-actions></div></div></section>
+
+    <section data-step id="home" data-skip>
+      <div class="hubhead"><div><p class="cx-eyebrow">Shine Bay Car Wash · <span data-bind="joinRole"></span></p><h1>You're on the team<span data-bind="firstName" data-prefix=", "></span></h1></div></div>
+      <div class="ob-dashgrid">
+        <section class="ob-panel"><h3>Your requests</h3><div class="nothing"><b>Nothing yet</b><p class="t-cap">Booking requests show here once bookings open. You'll have the business's 2 business hours to respond.</p></div></section>
+        <section class="ob-panel"><h3>What you can do</h3><ul class="perm">
+          <li><span data-ic="tick"></span>Handle the requests you're given</li>
+          <li data-if="contact=Name and phone number"><span data-ic="tick"></span>See the customer's name and phone number</li>
+          <li data-if="contact=First name only"><span data-ic="tick"></span>See the customer's first name</li>
+          <li class="no"><span data-ic="lock"></span>Edit the listing (owners and managers)</li>
+          <li class="no"><span data-ic="lock"></span>Payment settings (owner only)</li>
+        </ul><p class="t-cap">Sipho set what you can see. Ask them if you need more.</p></section>
+        <section class="ob-panel"><h3>Your details</h3><ul class="ob-checks">
+          <li class="done"><span class="dot" data-ic="tick"></span><span data-bind="myServices"></span></li>
+          <li class="done"><span class="dot" data-ic="tick"></span><span data-bind="myDays"></span></li>
+          <li class="done" data-if="pick=customer"><span class="dot" data-ic="tick"></span>Customers see you as <b data-bind="firstName"></b></li>
+        </ul><button type="button" class="ob-link" data-go="s-services">Edit</button></section>
+      </div>
+      <p class="ob-private" style="margin-top:16px"><span data-ic="eye"></span><span data-if="pick=customer">This business lets customers pick who they get, so your first name shows on its listing.</span><span data-if="pick!=customer">The business assigns bookings, so customers don't see your name on the listing.</span></p>
+    </section>
+  </main>
+  <!-- Set by the business in Phase 2 (demo: ?pick=customer|assign&contact=phone|first|none&role=Staff|Manager) -->
+  <input type="hidden" name="pick"><input type="hidden" name="contact"><input type="hidden" name="joinRole">
+</form>
+<script src="../_shared/kit.js"></script>
+<script>
+  document.querySelectorAll("[data-actions]").forEach((el) => {
+    el.outerHTML = `<div class="ob-actions"><button type="button" class="ob-back" data-back>Back</button><span class="ob-keys"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span><button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button></div>`;
+  });
+  document.querySelectorAll("[data-ic]").forEach((e) => (e.innerHTML = OB.ic(e.dataset.ic)));
+  const q = new URLSearchParams(location.search);
+  const form = document.querySelector("[data-flow]");
+  form.elements.pick.value = q.get("pick") || "customer";
+  form.elements.contact.value = { phone: "Name and phone number", first: "First name only", none: "Booking details only" }[q.get("contact") || "first"];
+  form.elements.joinRole.value = q.get("role") || "Staff";
+  const flow = OB.boot();
+  // The last join step (name, or days when the business assigns) finishes on the staff home.
+  const last = () => (form.elements.pick.value === "customer" ? "s-name" : "s-days");
+  form.querySelector("#" + last()).dataset.next = "home";
+  if (last() === "s-days") form.querySelector("#s-days").dataset.cta = "Join the team";
+  // Name prefix for the greeting.
+  form.addEventListener("ob:change", () => form.querySelectorAll("[data-prefix]").forEach((el) => { if (!el.classList.contains("empty") && el.textContent) el.textContent = el.dataset.prefix + el.textContent.replace(/^, /, ""); }));
+  if (q.get("demo")) {
+    form.querySelectorAll('[name="myServices"]')[0].checked = true;
+    form.querySelectorAll('[name="myDays"]').forEach((i, n) => (i.checked = n < 5));
+    form.querySelector('[name="firstName"]').value = "Lerato";
+    flow.update();
+  }
+</script>
+</body>
+</html>

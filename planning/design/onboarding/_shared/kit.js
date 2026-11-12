@@ -220,6 +220,88 @@
       ],
       if: "evidence=Show an admin a document",
     },
+    // ---- Phase 2: finish setup (after approval) ----
+    invRole: {
+      t: "What will they do?",
+      h: "Owners and managers can invite people. Only the owner can change payment settings.",
+      type: "tiles",
+      opts: tiles([
+        ["Manager", "Edits the listing, handles requests and invites people.", "user"],
+        ["Staff", "Handles the requests they're given. Can't edit the listing.", "team"],
+      ]),
+    },
+    invHow: {
+      t: "How should we invite them?",
+      type: "tiles",
+      opts: tiles([
+        ["Email invite", "We email them a link. Typed field: their email.", "mail"],
+        ["Share a link", "A one-time link or QR code you send yourself. Nothing to type.", "flag"],
+      ]),
+    },
+    invEmail: {
+      t: "Their email address",
+      h: "They sign in with their own account. Never share your login.",
+      type: "text",
+      it: "email",
+      ac: "email",
+      ph: "For example, lerato@example.co.za",
+      max: 254,
+      if: "invHow=Email invite",
+    },
+    assign: {
+      t: "Who picks the staff member for a booking?",
+      h: "You can change this any time.",
+      type: "tiles",
+      opts: tiles([
+        ["The customer picks", "Customers see your team's first names and choose who they get.", "user"],
+        ["We assign", "An owner or manager assigns each booking. Customers book the business.", "store"],
+      ]),
+    },
+    anyone: {
+      t: "Also offer \"Anyone available\"",
+      h: "Customers who don't mind who they get can book sooner.",
+      type: "switch",
+    },
+    contact: {
+      t: "What can staff see about a customer?",
+      h: "Owners and managers always see full details. Share only what staff need (POPIA).",
+      type: "tiles",
+      opts: tiles([
+        ["Name and phone number", "Staff can call the customer about their booking.", "user"],
+        ["First name only", "Staff see who's coming, but not how to contact them.", "eye"],
+        ["Booking details only", "Service, time and place. No customer details.", "lock"],
+      ]),
+    },
+    cover: {
+      t: "Pick a cover photo",
+      h: "Prototype: synthetic swatches stand in for your photos.",
+      type: "pick",
+      opts: ["Bay at sunrise", "Foam wash", "Workshop floor"],
+    },
+    // ---- Staff join ----
+    myServices: {
+      t: "What do you work on?",
+      chat: "What do you work on?",
+      h: "From Shine Bay Car Wash's services. Pick all that apply.",
+      type: "pick",
+      multi: true,
+      opts: ["Wash & Detailing", "Glass Repair & Replacement"],
+    },
+    myDays: {
+      t: "Which days do you work?",
+      h: "Within the business's opening days.",
+      type: "pick",
+      multi: true,
+      opts: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    },
+    firstName: {
+      t: "Your first name, as customers see it",
+      h: "Shown because this business lets customers pick who they get. First name only.",
+      type: "text",
+      ac: "given-name",
+      ph: "For example, Lerato",
+      max: 40,
+    },
     docDate: {
       t: "Document date",
       type: "date",
@@ -252,7 +334,7 @@
         k,
         q,
         (id, desc) =>
-          `<input class="ob-input" id="${fid}" name="${k}" maxlength="${q.max}" autocomplete="organization" placeholder="${esc(q.ph)}"${desc}>`,
+          `<input class="ob-input" id="${fid}" name="${k}" type="${q.it || "text"}" maxlength="${q.max}" autocomplete="${q.ac || "organization"}" placeholder="${esc(q.ph)}"${desc}>`,
         fid,
       );
     },
@@ -708,6 +790,8 @@
     }
     const MSG = {
       name: "Add your business name (at least 2 letters).",
+      invEmail: "Add their email address.",
+      firstName: "Add your first name.",
       consent: "Tick this to send.",
       adult: "You need to be 18 or older to list a business.",
       pin: "Drop a pin on the map, or use your location.",

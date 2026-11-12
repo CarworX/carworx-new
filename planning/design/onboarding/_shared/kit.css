@@ -851,3 +851,10 @@ select.ob-input {
 .cx-steps .cx-actor.you {
   background: var(--ink);
 }
+button.ob-tile {
+  border: 0;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
