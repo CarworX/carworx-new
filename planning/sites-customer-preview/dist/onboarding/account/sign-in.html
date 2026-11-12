@@ -18,7 +18,7 @@
 </style>
 <meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/onboarding/preview.css"></head>
 <body class="cx-canvas">
-<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/checklist/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
+<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/phase1/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
 <main>
   <img class="logo" src="../_shared/carworx-lockup-horizontal-ink.svg" alt="CarworX">
   <div class="card" data-state="app">
@@ -38,14 +38,25 @@
   <p class="t-cap" style="text-align:center;margin-top:16px">Prototype: any 6 digits work; nothing is sent.</p>
 </main>
 <script>
+  const qs = new URLSearchParams(location.search);
+  const adminAccount = qs.has("admin") || qs.getAll("as").includes("admin");
+  const googleOnly = qs.getAll("provider").includes("google");
+  const emailEligible = !adminAccount && !googleOnly;
+  const roleName = ["driver", "staff", "manager", "owner", "admin"].includes(qs.get("as")) ? qs.get("as") : "owner";
+  const withProvider = (href) => {
+    if (!googleOnly) return href;
+    const split = href.split("#");
+    return split[0] + (split[0].includes("?") ? "&" : "?") + "provider=google" + (split[1] ? "#" + split[1] : "");
+  };
   const card = document.querySelector(".card"), h = card.querySelector("[data-h]"), sub = card.querySelector("[data-sub]"), err = card.querySelector("[data-err]"), code = card.querySelector("#code");
   const set = (st) => {
+    if (st === "email" && !emailEligible) st = "app";
     card.dataset.state = st;
     code.value = ""; err.textContent = "";
     if (card.querySelector("[data-email]")) card.querySelector("[data-email]").hidden = st === "email";
     card.querySelector("[data-back]").hidden = st !== "email";
     if (st === "email") { h.textContent = "Check your email"; sub.textContent = "In this preview, no email is sent. The live service would send a 6-digit code to s***o@example.co.za. It works for 10 minutes. Didn't get it? You can send another in 60 seconds."; }
-    else if (st === "done") { h.textContent = "You're signed in"; sub.textContent = "Demo sign-in complete. No real session was created."; const next = document.createElement("a"); next.className = "cx-btn primary wide"; next.textContent = "Continue to example workspace"; const role = new URLSearchParams(location.search); next.href = role.has("admin") ? "../admin/index.html#today" : role.get("as") === "staff" ? "../staff/index.html?demo=1#home" : role.get("as") === "driver" ? "/app.html#search/wash" : "../setup/index.html#hub"; card.append(next); card.querySelectorAll("input, [data-verify], .alt, label").forEach((x) => (x.hidden = true)); }
+    else if (st === "done") { h.textContent = "You're signed in"; sub.textContent = "Demo sign-in complete. No real session was created."; const next = document.createElement("a"); next.className = "cx-btn primary wide"; next.textContent = "Continue to example workspace"; next.href = withProvider(adminAccount ? "../admin/index.html#today" : roleName === "staff" ? "../staff/index.html?demo=1#home" : roleName === "driver" ? "/app.html#search/wash" : "../setup/index.html#hub"); card.append(next); card.querySelectorAll("input, [data-verify], .alt, label").forEach((x) => (x.hidden = true)); }
     else { h.textContent = "Enter the code from your authenticator app"; sub.textContent = "Open Microsoft Authenticator, Google Authenticator or the app you set up, and find CarworX."; }
     h.focus();
   };
@@ -55,20 +66,18 @@
   const verify = () => (/^\d{6}$/.test(code.value) ? set("done") : ((err.textContent = "Enter the 6 digits."), code.focus()));
   card.querySelector("[data-verify]").onclick = verify;
   code.onkeydown = (e) => e.key === "Enter" && verify();
-  const qs = new URLSearchParams(location.search);
-  if (qs.get("admin")) {
+  if (adminAccount) {
     // Admins: authenticator app only (no email fallback); a second admin resets a lost app.
     card.querySelector(".cx-eyebrow").textContent = "CarworX admin · step 2 of 2 · naledi@example.co.za";
     card.querySelector("[data-email]").outerHTML = `<p class="t-cap">Lost your app and your recovery codes? Ask another admin to reset two-step sign-in. They'll check it's you first.</p>`;
   }
-  const googleOnly = qs.get("provider") === "google";
   if (googleOnly && card.querySelector("[data-email]")) card.querySelector("[data-email]").remove();
-  if (qs.get("state") === "email" && !qs.has("admin") && !googleOnly) set("email");
+  if (qs.get("state") === "email" && emailEligible) set("email");
   card.querySelector("[data-recovery]").onclick = () => {
     h.textContent = "Use a recovery code"; sub.textContent = "Preview only: a real recovery code would remove your old factors and require a fresh setup. This demo changes no factors.";
     code.maxLength = 32; code.placeholder = "Example recovery code"; code.value = ""; code.removeAttribute("inputmode");
     card.querySelector("[data-verify]").textContent = "Preview factor reset";
-    card.querySelector("[data-verify]").onclick = () => { h.textContent = "Set up two-step sign-in again"; sub.textContent = "Demo factor reset complete. No real account was changed and no aal2 session was granted."; code.hidden = true; card.querySelector(".alt").hidden = true; card.querySelector("[data-verify]").hidden = true; const setup = document.createElement("a"); setup.className = "cx-btn primary wide"; setup.href = "index.html?as=" + (qs.has("admin") ? "admin" : "owner") + "&tab=security"; setup.textContent = "Open example security settings"; card.append(setup); };
+    card.querySelector("[data-verify]").onclick = () => { h.textContent = "Set up two-step sign-in again"; sub.textContent = "Demo factor reset complete. No real account was changed and no aal2 session was granted."; code.hidden = true; card.querySelector(".alt").hidden = true; card.querySelector("[data-verify]").hidden = true; const setup = document.createElement("a"); setup.className = "cx-btn primary wide"; setup.href = withProvider("index.html?as=" + (adminAccount ? "admin" : roleName) + "&tab=security"); setup.textContent = "Open example security settings"; card.append(setup); };
     code.onkeydown = null; code.focus();
   };
 </script>

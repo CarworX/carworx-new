@@ -67,7 +67,7 @@
 </style>
 <meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/onboarding/preview.css"></head>
 <body class="cx-canvas">
-<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/checklist/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
+<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/phase1/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
 <div data-shell></div>
 <main>
   <div class="head"><p class="cx-eyebrow">Shine Bay Car Wash</p><h1>History</h1><p class="t-cap" data-scope></p></div>
@@ -169,7 +169,7 @@
     else if (t.hasAttribute("data-close")) { sel = null; render(); }
   });
   const q = new URLSearchParams(location.search);
-  as = q.get("as") || "owner"; tab = q.get("tab") || "bookings"; sel = q.get("b"); filt = q.get("f") || "All";
+  as = SHELL.roleOf(q.get("as")); tab = q.get("tab") || "bookings"; sel = q.get("b"); filt = q.get("f") || "All";
   render();
   if (q.get("menu")) document.querySelector("[data-sh-menu]").click();
 </script>

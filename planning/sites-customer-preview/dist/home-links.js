@@ -1,1 +1,1 @@
-document.querySelectorAll('a').forEach(a=>{if(a.textContent.trim().startsWith('Find a service near you')) a.href='/app.html#search/wash';if(a.textContent.trim().startsWith('List your business')) a.href='/onboarding/checklist/index.html'});
+document.querySelectorAll('a').forEach(a=>{if(a.textContent.trim().startsWith('Find a service near you')) a.href='/app.html#search/wash';if(a.textContent.trim().startsWith('List your business')) a.href='/onboarding/phase1/index.html'});

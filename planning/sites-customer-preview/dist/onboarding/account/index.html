@@ -38,7 +38,7 @@
 </style>
 <meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/onboarding/preview.css"></head>
 <body class="cx-canvas">
-<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/checklist/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
+<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/phase1/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
 <div data-shell></div>
 <main>
   <div class="who"><span class="sh-av" data-ini></span><div><p class="cx-eyebrow" data-sub></p><h1>Profile and settings</h1></div></div>
@@ -52,11 +52,19 @@
   // Synthetic key matching qr-demo.svg (prototype only; real keys are made per person at setup).
   const KEY = "TZ6R SLLE FYUB XYHA 7KHU PKX4 OUBK XUX4";
   const q = new URLSearchParams(location.search);
-  let as = q.get("as") || "owner", tab = q.get("tab") || "profile";
-  const teamMfa = q.get("teamMfa") || "optional";
+  let as = SHELL.roleOf(q.get("as")), tab = q.get("tab") || "profile";
+  const googleOnly = q.getAll("provider").includes("google");
+  const teamMfa = ["optional", "managers", "all"].includes(q.get("teamMfa")) ? q.get("teamMfa") : "optional";
   const admin = () => as === "admin";
+  const emailEligible = () => !admin() && !googleOnly;
+  const signInHref = () => {
+    const params = new URLSearchParams({ as });
+    if (admin()) params.set("admin", "1");
+    if (googleOnly) params.set("provider", "google");
+    return "sign-in.html?" + params;
+  };
   const required = () => admin() || (as === "manager" && teamMfa !== "optional") || (as === "staff" && teamMfa === "all");
-  const mfa = { on: q.get("mfa") === "on", step: q.get("mfastep") ? +q.get("mfastep") : -1, method: "Authenticator app" };
+  const mfa = { on: q.get("mfa") === "on", step: q.has("mfastep") && Number.isInteger(Number(q.get("mfastep"))) && Number(q.get("mfastep")) >= 0 && Number(q.get("mfastep")) < 4 ? Number(q.get("mfastep")) : -1, method: "Authenticator app" };
   const biz = () => as === "owner" || as === "manager";
   const TABS = () => [["profile", "Profile"], ["security", "Security"], ["notifications", "Notifications"], ["privacy", "Privacy and data"], ...(as === "staff" ? [["work", "Your work"]] : []), ...(biz() ? [["business", "Business"]] : [])];
   const sw = (name, label, hint, on) => `<label class="ob-switch"><span><span class="ob-qt">${label}</span>${hint ? `<span class="ob-qh" style="display:block;font-weight:400">${hint}</span>` : ""}</span><input type="checkbox" role="switch" name="${name}"${on ? " checked" : ""}><span class="track" aria-hidden="true"></span></label>`;
@@ -88,7 +96,7 @@
     if (name === "Get an authenticator app") body = `<p>Use any authenticator app on your phone, for example <b>Microsoft Authenticator</b> or <b>Google Authenticator</b>. Already have one? Carry on.</p><p class="t-cap">The app makes a new 6-digit code every 30 seconds. CarworX never sees your phone.</p>`;
     if (name === "Scan your code") body = `<p>In your app, choose <b>Add account</b>, then scan this code.</p><img class="qrimg" src="qr-demo.svg" alt="QR code to add CarworX to your authenticator app" width="220" height="220"><p class="t-cap">This code is yours alone. It's made fresh when you set up, works for your account only, and isn't shown again.</p><details class="manual"><summary>Can't scan? Type the key instead</summary><p class="key">${KEY}</p><p class="t-cap">Account: CarworX · time-based</p></details>`;
     if (name === "Enter the code") body = `<label class="field">The 6-digit code from your app<input class="ob-input otp" name="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="••••••"></label><p class="ob-err" role="alert" data-otperr></p>`;
-    if (name === "Your backup" && admin()) body = `<p>Admins can't use an email code instead. Keep these single-use recovery codes somewhere safe. If you lose your app and your codes, another admin can reset two-step sign-in for you after checking it's you.</p><div class="codes">${["4F7K-29QD", "M8X2-LP4T", "Q3ZR-71VN", "B6HW-X0CJ", "T9EA-5KMS", "R2YU-8DGF", "H5NB-3QWL", "C7PV-6ZRT"].map((c) => `<span>${c}</span>`).join("")}</div>`;
+    if (name === "Your backup" && !emailEligible()) body = `<p>${admin() ? "Admins" : "Google-only accounts"} can't use an email code instead. Keep these single-use recovery codes somewhere safe. If you lose your app and your codes, ${admin() ? "another admin can reset two-step sign-in for you after checking it's you." : "use a recovery code after a fresh Google sign-in."}</p><div class="codes">${["4F7K-29QD", "M8X2-LP4T", "Q3ZR-71VN", "B6HW-X0CJ", "T9EA-5KMS", "R2YU-8DGF", "H5NB-3QWL", "C7PV-6ZRT"].map((c) => `<span>${c}</span>`).join("")}</div>`;
     else if (name === "Your backup") body = `<p>If your app gives trouble (new phone, lost phone), you can get a sign-in code by <b>email</b> instead.</p><div class="line"><span>Email backup<small>${SHELL.WHO[as].name.split(" ")[0].toLowerCase().replace(/^./, (c) => c)}@example.co.za · verified</small></span><span class="cx-label">On</span></div><details class="manual"><summary>Also make recovery codes (optional)</summary><p class="t-cap">Single-use codes for when you can't reach your app or your email.</p><div class="codes">${["4F7K-29QD", "M8X2-LP4T", "Q3ZR-71VN", "B6HW-X0CJ", "T9EA-5KMS", "R2YU-8DGF", "H5NB-3QWL", "C7PV-6ZRT"].map((c) => `<span>${c}</span>`).join("")}</div></details>`;
     return `<div class="box" data-mfabox><h2>Set up two-step sign-in</h2><div class="ob-segbar" data-mfaseg aria-label="Two-step sign-in setup"></div>${body}
       <div class="acts"><button type="button" class="ob-back" data-mfa-back>${i === 0 ? "Cancel" : "Back"}</button><button type="button" class="cx-btn primary" data-mfa-next>${i === S.length - 1 ? "Turn on" : "Next"}</button></div></div>`;
@@ -104,11 +112,11 @@
     security: () => `<div class="box"><h2>Two-step sign-in ${mfa.on ? '<span class="cx-label">On</span>' : '<span class="cx-label warn">Off</span>'}</h2>
         <p>${mfa.on ? "Authenticator app · added 12 Nov 2026. Each new sign-in asks for a code from it." : "Adds a 6-digit code from an authenticator app (such as Microsoft Authenticator or Google Authenticator) when you sign in, so a stolen password isn't enough."}</p>
         <p class="t-cap">${admin() ? "<b>Required for every CarworX admin.</b> Admin pages won't open without it." : required() ? `<b>Required by Shine Bay Car Wash</b> for ${as === "manager" ? "managers" : "everyone on the team"}. Sipho decides this.` : { owner: "Recommended. You decide whether your managers and staff must use it, under Business.", manager: "Recommended. Optional at Shine Bay Car Wash.", staff: "Recommended. Optional at Shine Bay Car Wash.", driver: "Recommended." }[as]}</p>${required() && !mfa.on ? `<p class="ob-err" style="color:var(--warn)">Turn it on to keep using Shine Bay Car Wash's business tools.</p>` : ""}
-        ${mfa.on ? `${admin() ? `<div class="line"><span>Email backup<small>Not available for admin accounts</small></span><span class="ob-lbl-off">Off</span></div>` : `<div class="line"><span>Email backup<small>Get a sign-in code by email if your app gives trouble</small></span><span class="cx-label">On</span></div>`}<div class="line"><span>Recovery codes<small>${admin() ? "8 single-use codes · your only backup" : "Optional single-use codes"}</small></span><button type="button" class="ob-link">${admin() ? "Make new codes" : "Make codes"}</button></div>${required() ? `<div class="line"><span>Turn off two-step sign-in<small>${admin() ? "Required for admins" : "Required by your business"}</small></span><span class="ob-lbl-off">Required</span></div>` : `<div class="line"><span>Turn off two-step sign-in</span><button type="button" class="ob-link danger" data-mfa-off>Turn off</button></div>`}` : mfa.step < 0 ? `<div><button type="button" class="cx-btn primary sm" data-mfa-start>Turn on two-step sign-in</button></div>` : ""}
+        ${mfa.on ? `${!emailEligible() ? `<div class="line"><span>Email backup<small>Not available for ${admin() ? "admin" : "Google-only"} accounts</small></span><span class="ob-lbl-off">Off</span></div>` : `<div class="line"><span>Email backup<small>Get a sign-in code by email if your app gives trouble</small></span><span class="cx-label">On</span></div>`}<div class="line"><span>Recovery codes<small>${admin() ? "8 single-use codes · your only backup" : "Optional single-use codes"}</small></span><button type="button" class="ob-link">${admin() ? "Make new codes" : "Make codes"}</button></div>${required() ? `<div class="line"><span>Turn off two-step sign-in<small>${admin() ? "Required for admins" : "Required by your business"}</small></span><span class="ob-lbl-off">Required</span></div>` : `<div class="line"><span>Turn off two-step sign-in</span><button type="button" class="ob-link danger" data-mfa-off>Turn off</button></div>`}` : mfa.step < 0 ? `<div><button type="button" class="cx-btn primary sm" data-mfa-start>Turn on two-step sign-in</button></div>` : ""}
       </div>
       ${!mfa.on && mfa.step >= 0 ? mfaFlow() : ""}
       <div class="box"><h2>Signing in</h2>
-        <div class="line"><span>What sign-in looks like<small>${admin() ? "A code from your authenticator app" : "App code, or an email code if your app gives trouble"}</small></span><a class="ob-link" href="sign-in.html${admin() ? "?admin=1" : ""}">Preview</a></div>
+        <div class="line"><span>What sign-in looks like<small>${!emailEligible() ? "A code from your authenticator app" : "App code, or an email code if your app gives trouble"}</small></span><a class="ob-link" href="${signInHref()}">Preview</a></div>
         <div class="line"><span>Password<small>Last changed 3 Nov 2026</small></span><button type="button" class="ob-link">Change</button></div>
 </div>
       <div class="box"><h2>Where you're signed in</h2>

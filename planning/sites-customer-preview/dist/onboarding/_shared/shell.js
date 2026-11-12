@@ -10,7 +10,16 @@
     owner: { name: "Sipho Dlamini", ini: "SD", sub: "Owner · Shine Bay Car Wash" },
     admin: { name: "Naledi Dube", ini: "ND", sub: "CarworX admin" },
   };
-  const H = (p) => ROOT + p;
+  const roleOf = (value) => Object.hasOwn(WHO, value) ? value : "owner";
+  const googleOnly = new URLSearchParams(typeof location === "undefined" ? "" : location.search).getAll("provider").includes("google");
+  const H = (p) => {
+    if (googleOnly && /\.html(?:[?#]|$)/.test(p)) {
+      const url = new URL(p, ROOT);
+      url.searchParams.set("provider", "google");
+      return url.href;
+    }
+    return ROOT + p;
+  };
   const later = (what, role) => H(`later/index.html?what=${what}&as=${role}`);
   const LINKS = {
     driver: [["Find a service", "/app.html#search/wash", "search"], ["Bookings", "/app.html#bookings", "bookings"], ["History", "/app.html#bookings", "driver-history"]],
@@ -25,6 +34,7 @@
     ["Security and two-step sign-in", H(`account/index.html?as=${role}&tab=security`), "security"],
   ];
   function mount(el, { role, current }) {
+    role = roleOf(role);
     const w = WHO[role];
     const cur = (k) => (k === current ? ' aria-current="page"' : "");
     const links = LINKS[role];
@@ -83,5 +93,5 @@
       if (!drop.hidden && !e.target.closest(".sh-acct")) toggle(drop, me, false);
     });
   }
-  window.SHELL = { mount, WHO };
+  window.SHELL = { mount, WHO, roleOf };
 })();

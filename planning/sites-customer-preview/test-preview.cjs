@@ -28,9 +28,9 @@ for (const route of ['search/wash', 'search/repairs', 'search/glass', 'search/ty
   assert(!app.innerHTML.includes('NaN'), route);
 }
 location.hash = '#apply'; listeners.hashchange();
-assert.equal(redirects.pop(), '/onboarding/checklist/index.html');
+assert.equal(redirects.pop(), '/onboarding/phase1/index.html');
 location.hash = '#applied'; listeners.hashchange();
-assert.equal(redirects.pop(), '/onboarding/checklist/index.html#submitted');
+assert.equal(redirects.pop(), '/onboarding/phase1/index.html#submitted');
 location.hash = '#search/wash'; listeners.hashchange();
 listeners.submit({ preventDefault() {}, target: { id: 'search-form', location: '<script>' } });
 assert(app.innerHTML.includes('&lt;script&gt;'));
@@ -70,6 +70,7 @@ function element() { return { hidden: true, addEventListener() {}, querySelector
 const shellWindow = {};
 vm.runInNewContext(fs.readFileSync('dist/onboarding/_shared/shell.js', 'utf8'), {
   window: shellWindow,
+  URLSearchParams, URL, location: { search: "" },
   document: { currentScript: { src: 'https://preview.test/onboarding/_shared/shell.js' }, addEventListener() {} }
 });
 for (const role of ['driver', 'staff', 'manager', 'owner', 'admin']) {
@@ -95,10 +96,13 @@ function signIn(search) {
   vm.runInNewContext(signScript, { URLSearchParams, location: { search }, document: { querySelector(s) { return s === '.card' ? card : input; }, createElement() { return {}; } } });
   return { nodes, input, appended };
 }
-for (const query of ['?admin=1&state=email', '?provider=google&state=email']) {
+for (const query of ['?admin=1&state=email', '?admin=&state=email', '?admin=&admin=1&state=email', '?admin=1&admin=&state=email', '?as=admin&state=email', '?as=staff&as=admin&state=email', '?provider=google&state=email', '?provider=&provider=google&state=email', '?provider=google&provider=&state=email']) {
   const s = signIn(query);
   assert(s.nodes['[data-email]'].removed, query);
   assert.notEqual(s.nodes['[data-h]'].textContent, 'Check your email', query);
+  // Even a retained handler cannot switch an ineligible account into email mode.
+  s.nodes['[data-email]'].onclick();
+  assert.notEqual(s.nodes['[data-h]'].textContent, 'Check your email', query + ' handler');
 }
 const email = signIn('?state=email');
 assert.equal(email.nodes['[data-h]'].textContent, 'Check your email');
@@ -112,9 +116,82 @@ recovery.nodes['[data-recovery]'].onclick(); recovery.nodes['[data-verify]'].onc
 assert(recovery.nodes['[data-sub]'].textContent.includes('no aal2 session was granted'));
 assert.equal(recovery.appended.at(-1).href, 'index.html?as=admin&tab=security');
 
+
+// Render the actual account/later/history scripts for hostile and restricted queries.
+function previewScreen(file, search) {
+  const nodes = {};
+  function node() {
+    return { innerHTML: '', textContent: '', hidden: false, dataset: {}, style: {},
+      addEventListener() {}, setAttribute() {}, focus() {},
+      querySelector() { return node(); }, querySelectorAll() { return []; },
+      classList: { add() {}, remove() {}, toggle() {} } };
+  }
+  const doc = {
+    title: '', currentScript: { src: 'https://preview.test/onboarding/_shared/shell.js' },
+    addEventListener() {}, querySelectorAll() { return []; },
+    querySelector(selector) {
+      if (selector === '[data-mfaseg]') return null;
+      return nodes[selector] ||= node();
+    }
+  };
+  const win = {};
+  vm.runInNewContext(fs.readFileSync('dist/onboarding/_shared/shell.js', 'utf8'), {
+    window: win, document: doc, URL, URLSearchParams, location: { search }
+  });
+  const escape = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+  const ctx = vm.createContext({
+    document: doc, window: win, SHELL: win.SHELL,
+    OB: { ic: () => '<svg aria-hidden="true"></svg>', esc: escape },
+    URL, URLSearchParams, location: { search }, requestAnimationFrame(fn) { fn(); }
+  });
+  const html = fs.readFileSync(file, 'utf8');
+  const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
+  vm.runInContext(script, ctx);
+  return { nodes, ctx, html };
+}
+for (const query of ['?as=owner&provider=google&tab=security&mfa=on', '?as=owner&provider=&provider=google&tab=security&mfa=on', '?as=admin&tab=security&mfa=on']) {
+  const screen = previewScreen('dist/onboarding/account/index.html', query);
+  const html = screen.nodes['[data-panel]'].innerHTML;
+  assert(html.includes('Email backup') && html.includes('Not available for'), query);
+  assert(!html.includes('Get a sign-in code by email if your app gives trouble'), query);
+  const href = html.match(/href="(sign-in\.html[^"]+)"/)[1];
+  const url = new URL(href, 'https://preview.test/onboarding/account/');
+  if (query.includes('provider')) {
+    assert.equal(url.searchParams.get('provider'), 'google', query);
+    assert(screen.nodes['[data-shell]'].innerHTML.includes('provider=google'), query + ' menu');
+  } else assert(url.searchParams.has('admin'), query);
+}
+const googleBackup = previewScreen('dist/onboarding/account/index.html', '?as=owner&provider=google&tab=security&mfa=on&mfastep=3');
+const backup = vm.runInContext('mfaFlow()', googleBackup.ctx);
+assert(backup.includes("Google-only accounts") && backup.includes("can't use an email code"), 'Google-only recovery eligibility');
+assert(!backup.includes('Email backup<small>'), 'Google-only setup cannot offer email backup');
+
+const attack = '"><img src=x onerror=alert(1)>';
+for (const file of ['dist/onboarding/later/index.html', 'dist/onboarding/history/index.html', 'dist/onboarding/account/index.html']) {
+  for (const role of [attack, '__proto__', 'toString', 'unknown-role']) {
+    const result = previewScreen(file, '?as=' + encodeURIComponent(role));
+    const rendered = Object.values(result.nodes).map(n => n.innerHTML).join('');
+    assert(!rendered.includes('onerror=') && !rendered.includes('<img src=x'), file + ' role injection');
+    assert(!rendered.includes('undefined'), file + ' unknown role');
+  }
+}
+const googleRecovery = signIn('?as=manager&provider=google');
+googleRecovery.nodes['[data-recovery]'].onclick();
+googleRecovery.nodes['[data-verify]'].onclick();
+assert.equal(googleRecovery.appended.at(-1).href, 'index.html?as=manager&tab=security&provider=google');
+
+const phase = fs.readFileSync('dist/onboarding/phase1/index.html', 'utf8');
+assert(phase.includes('data-rail') && phase.includes('data-segbar'), 'approved desktop rail and gliding bar');
+assert(phase.includes('data-screen="card"'), 'live listing preview');
+assert(!phase.includes('id="send"') && /id="check"[^>]*data-require="adult,consent"/.test(phase), 'five-step application retains acknowledgements');
+const kit = fs.readFileSync('dist/onboarding/_shared/kit.js', 'utf8');
+assert(kit.includes('../setup/index.html'), 'live screen links to setup');
+assert(fs.readFileSync('dist/onboarding/setup/index.html', 'utf8').includes('../staff/index.html'), 'invite preview links to staff');
+
+
 const home = fs.readFileSync('dist/index.html', 'utf8');
 assert(home.includes('/app.html#search/wash'));
-assert(home.includes('/onboarding/checklist/index.html'));
+assert(home.includes('/onboarding/phase1/index.html'));
 assert(home.includes('PRIVATE INTERACTIVE PREVIEW'));
 assert(!home.includes('cdnjs.cloudflare.com') && !home.includes('fonts.googleapis.com'));
 for (const n of ['wash-detailing', 'repairs-maintenance', 'glass-repair', 'tyres-alignment']) assert(fs.existsSync(`dist/assets/studio/objects/carworx-object-${n}.svg`));

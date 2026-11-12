@@ -15,7 +15,7 @@
 </style>
 <meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/onboarding/preview.css"></head>
 <body class="cx-canvas">
-<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/checklist/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
+<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/phase1/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
 <div data-shell></div>
 <main><div class="card"><span class="cx-label info" style="justify-self:start">Later</span><h1 data-h></h1><p class="t-body" data-p></p><div class="acts" data-acts></div></div></main>
 <script src="../_shared/kit.js"></script>
@@ -23,7 +23,9 @@
 <script>
   // Menu items whose screens belong to a later design round, so no menu link is ever dead.
   const q = new URLSearchParams(location.search);
-  const as = q.get("as") || "owner", what = q.get("what") || "requests";
+  const as = SHELL.roleOf(q.get("as"));
+  const candidate = q.get("what") || "requests";
+  const what = ["requests", "search", "bookings", "driver-history"].includes(candidate) ? candidate : "unknown";
   const T = {
     requests: ["Requests", "Booking requests arrive here when bookings open (Phase 3). Each one has 2 business hours to be accepted; then the slot is held 15 minutes while the customer pays the business directly."],
     search: ["Find a service", "Driver screens (search, listings, booking) are designed in their own round, not this one."],
