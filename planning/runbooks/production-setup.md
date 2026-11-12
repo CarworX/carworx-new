@@ -19,7 +19,7 @@ owner ─► 1 region chosen ─► 2 Supabase project ─► 3 migrations ─�
 | Phase 1 closed (A1–A7 on staging) | G-PROD requires it (D-074) | **Open.** Staging promotion is still blocked |
 | Region decided | Supabase can't move a project between regions later; the latency run decides London or Frankfurt | **Open.** See [latency-region.md](latency-region.md) |
 | The POPIA section 72 assessment approved | The region is a cross-border transfer | **Draft** in the legal PR |
-| A reviewed production config PR | The repo has **no production configuration yet** (gap P-1 below) | **Not started** |
+| A reviewed production config PR | `wrangler.jsonc` now has a `production` environment with placeholder Hyperdrive IDs (gaps P-1, P-2 below) | **Shape done.** The owner's Hyperdrive IDs still go in by a reviewed PR (step 6) |
 | Free-plan room | Only two active free projects are allowed; staging already uses one | Check before step 2 |
 
 ## 1. Known gaps in the repo (must be fixed by reviewed PRs, not by hand)
@@ -28,8 +28,8 @@ These were found while writing this runbook by reading `apps/web/wrangler.jsonc`
 
 | ID | Gap | Why it matters | Who fixes |
 |---|---|---|---|
-| **P-1** | `wrangler.jsonc` has a default (local) and a `staging` environment, **no `production`** | A production build would pick up `CARWORX_ENV=local` | Agent PR (config owner), reviewed |
-| **P-2** | No environment declares the **`CATALOGUE_DB` Hyperdrive binding**, staging included | Search and the listing pages return "unavailable" without it | Agent PR; the owner supplies the Hyperdrive ID (not secret) |
+| **P-1** | ~~`wrangler.jsonc` has a default (local) and a `staging` environment, **no `production`**~~ **Fixed** (2026-11-12): `env.production` exists, pinned by `scripts/ops/env/contract.test.js` | A production build would pick up `CARWORX_ENV=local` | Agent PR (config owner), reviewed |
+| **P-2** | ~~No environment declares the **`CATALOGUE_DB` Hyperdrive binding**, staging included~~ **Fixed in shape** (2026-11-12): staging and production bind `CATALOGUE_DB` and `FORMS_DB` to placeholder IDs `OWNER_SETS_<ENV>_<BINDING>_HYPERDRIVE_ID`. A deploy fails until the owner's real IDs replace them | Search, the listing pages and the forms return "unavailable" without them | Agent PR; the owner supplies the Hyperdrive IDs (not secret) |
 | **P-3** | ~~`readServerConfig` recognises only `local` and `staging`~~ **Fixed** (2026-11-12): `CARWORX_ENV=production` is recognised and fails closed. It throws (500 on every mutation) if `APP_ORIGIN` or `SUPABASE_URL` is missing, not HTTPS or loopback, or if any staging/local control in §7.2 is set. Dev pages are always closed, Auth email stays `unavailable` until P-4, Turnstile test keys are refused. Unknown modes stay `null` | Production Auth email and sign-up behaviour must be reviewed for the `null` case before launch | Agent review, Bundle A/B owners |
 | **P-4** | There is **no production Auth email path**. K2 built a staging-only hook Worker (`carworx-auth-email-staging`) | Sign-up confirmation and password reset need a sender. Supabase's built-in sender isn't for production use | Agents propose (hook or custom SMTP), the owner decides |
 | **P-5** | The Turnstile names aren't fixed yet (Bundle B) | The form secret must be named before Bundle B ships | Bundle B fixes; this runbook uses proposed names |
@@ -89,16 +89,18 @@ Fixes P-1 and P-2. The proposed shape, for review only (don't copy it by hand):
 | Worker name | `carworx-web-production` |
 | `vars` | `CARWORX_ENV=production`, **no** `CARWORX_DEV_PAGES` (K2 README: "production must omit it") |
 | Durable Object | `SEARCH_LIMITER` → class `SearchLimiter`, migration tag `search-limiter-v1` (already in the file) |
-| Hyperdrive | `CATALOGUE_DB` → the owner's production Hyperdrive ID |
+| Hyperdrive | `CATALOGUE_DB` and `FORMS_DB` → the owner's production Hyperdrive IDs (placeholders in the file now) |
 | `workers_dev`, `preview_urls` | `false`, as staging |
 | Route | Custom domain `carworx.app`, attached by the owner in the dashboard, as guide 11 step 4 does for staging |
 
-## 6. Hyperdrive for `CATALOGUE_DB` (owner)
+## 6. Hyperdrive for `CATALOGUE_DB` and `FORMS_DB` (owner)
+
+Two configurations, one per scoped login: `catalogue_server` (search and listings, D-081) and `forms_server` (visitor forms, Claude 22). Set a `forms_server` password the same way as step 4.1 (`connection limit 5` is already in the migration). Do steps 1 to 3 below for each.
 
 1. Cloudflare dashboard → **Hyperdrive → Create configuration**, or `wrangler hyperdrive create carworx-catalogue-production --connection-string="postgres://catalogue_server:<password>@<host>:<port>/postgres" --caching-disabled`.
 2. **Caching must be off.** Hyperdrive caches by default, for 60 seconds, and "does not purge or invalidate cached read query results when your application writes" ([Query caching](https://developers.cloudflare.com/hyperdrive/concepts/query-caching/), read 2026-11-10). Caching would keep a suspended listing visible. The `--caching-disabled` flag is documented in [Wrangler Hyperdrive commands](https://developers.cloudflare.com/workers/wrangler/commands/hyperdrive/), read 2026-11-10.
 3. **Which host: an open question (OQ-1).** Cloudflare's Supabase page says to use the **Direct connection** string, not the pooled one ([Hyperdrive + Supabase](https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/postgres-database-providers/supabase/), read 2026-11-10). Supabase says the free plan's direct connection is **IPv6 only**, and the shared pooler is IPv4 ([Connecting to Postgres](https://supabase.com/docs/guides/database/connecting-to-postgres), read 2026-11-10). Claude 19 §9 assumed the pooler. **Try the direct connection on staging first.** If Hyperdrive can't reach it, use the shared pooler in **session mode** and record why. Don't buy the IPv4 add-on (it's paid).
-4. Copy the Hyperdrive **ID** (not secret) into the config PR (step 5).
+4. Copy each Hyperdrive **ID** (not secret) into the config PR (step 5). It replaces `OWNER_SETS_PRODUCTION_CATALOGUE_DB_HYPERDRIVE_ID` and `OWNER_SETS_PRODUCTION_FORMS_DB_HYPERDRIVE_ID` in `apps/web/wrangler.jsonc`. Staging has its own two placeholders; never reuse a staging ID.
 
 ## 7. Worker secrets and variables (owner)
 
@@ -116,7 +118,8 @@ Set with `wrangler secret put <NAME> --env production` or in the dashboard ([Sec
 | `SEARCH_LIMITER_SALT` | secret | 32+ random characters, keys the limiter | `.env.example`, D-081 |
 | `MAPBOX_SERVER_TOKEN` | secret | Server-only Mapbox token: geocoding plus `styles:tiles` | `.env.example`, D-084 |
 | `SEARCH_LIMITER` | Durable Object binding | Class `SearchLimiter`, SQLite | `wrangler.jsonc`, D-081 |
-| `CATALOGUE_DB` | Hyperdrive binding | Caching **off**, as `catalogue_server` | `.env.example`, D-081 |
+| `CATALOGUE_DB` | Hyperdrive binding | Caching **off**, as `catalogue_server` | `wrangler.jsonc`, `.env.example`, D-081 |
+| `FORMS_DB` | Hyperdrive binding | Caching **off**, as `forms_server` | `wrangler.jsonc`, `.env.example`, Claude 22 |
 | `TURNSTILE_SITE_KEY` | var (public) | **Proposed name**, fixed by Bundle B (gap P-5) | Claude 17 §3 |
 | `TURNSTILE_SECRET_KEY` | secret | **Proposed name**, fixed by Bundle B (gap P-5) | Claude 17 §3 |
 

@@ -324,3 +324,5 @@ Owner approved the next K2 interfaces and waived the pre-build Claude agreement 
 - Open #77 also changes STATUS: reconcile its owner directions on review/rebase. This cleanup does not approve pending onboarding decisions or change the baton. No merge, deployment or service probe performed. Review the draft PR before incorporation.
 - Publication refresh: main advanced to 7ec5eb7 as #77/#79 merged. Preserved D-088–D-090 unchanged, updated the compact status and archived the latest main status verbatim. Current startup comparison: 77110 → 4960 UTF-8 bytes (94% less); the earlier figures above describe the initial base.
 - Reconciled the expected STATUS merge conflict using the compact summary that already includes #77/#79. Git reported lefthook unavailable; hooks were not verified. Manual documentation checks remain the evidence for this change.
+
+- 2026-11-12 (SAST) — Claude: D-091 records the owner granting both agents full build and merge authority, with reviews after merge, and the lane split (Codex: #84 onboarding and #83 Sites; Claude: review #84, launch gaps, O7, O8, P-4).
