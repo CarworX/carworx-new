@@ -113,3 +113,25 @@ Each booking opens a timeline with an actor chip and the time in SAST: request �
 - No server drafts, emails or admin screens (admin concepts come next).
 - Concepts 1, 2, 3 and 4 do not save between visits; only 5 shows that.
 - Screenshots are synthetic (`<concept>/shots/`, 390 × 844 at 2×, plus one desktop thumbnail each).
+
+## Owner rules, 2026-11-12 (SAST): no stacked buttons; settings and sign-out for every user
+
+**1. Nothing stacks, for any CarworX user.** Every group of chips, picks, filters or tabs is **one unified pill bar on one line** that **scrolls sideways** when it doesn't fit, like the tabs bar. There is no second row. The bar is `.ob-picks` / `.cx-tabs` / `.ob-scrollrow` in `_shared/kit.css`, wired by `bars()` in `kit.js`.
+- **Swipe** on touch, a trackpad, or the mouse wheel (turned into sideways scroll); **Tab** brings the focused item into view.
+- A **fade on the edge with more** shows there are other options; the chosen item scrolls into view.
+- It applies to services, roles, team size, documents, starter phrases, staff days, History filters and tabs, settings tabs, and the label rows on listing cards. Large choice tiles (for example "They come to me" / "I go to them") are cards, not buttons in a row, so they still list down the page.
+
+**2. Every user's menu has settings and Sign out** ([`account/`](account/index.html), shared menu in `_shared/shell.js`). Desktop: an avatar button opens Profile and settings, Security and two-step sign-in, and Sign out. Phone: the same items sit at the bottom of the menu sheet.
+
+| Settings tab | Driver | Staff | Manager | Owner |
+|---|---|---|---|---|
+| Profile (name, verified email, optional mobile, photo) | ✓ | ✓ (photo shown if customers pick staff) | ✓ | ✓ |
+| Security: **two-step sign-in** (authenticator app or passkey, recovery codes), password, passkey sign-in, signed-in devices and "sign out of all other devices" | Recommended | Recommended | Strongly recommended | **Required before changing payment settings** (when payments open) |
+| Notifications (email now; SMS and WhatsApp later; news and offers off unless turned on) | Bookings, quotes | Requests, assigned to me | Requests, team changes | Requests, team changes |
+| Privacy and data (download my data, what I agreed to, delete account) | ✓ | ✓ | ✓ | ✓ (must transfer ownership or close the listing first) |
+| Your work (services, days, leave the team) | — | ✓ | — | — |
+| Business (team and roles, who gets the booking, listing details, leave) | — | — | ✓ | ✓ plus what staff can see, payments (later), transfer ownership, close the listing |
+
+The two-step setup uses the approved gliding bar (method → scan → code → recovery codes; a passkey skips the code). A wrong code or unticked "I've saved my codes" blocks the next step. "Sign out" confirms on screen and points to Security to sign out everywhere.
+
+*For the owner to confirm:* making two-step sign-in **required** for owners before payment settings (it is shown that way), and transfer of ownership only to a manager with two-step sign-in on.

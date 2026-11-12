@@ -937,3 +937,256 @@ button.ob-tile {
   align-items: center;
   margin-top: 10px;
 }
+
+/* ---------- One unified, swipeable bar (owner rule, 2026-11-12) ----------
+ * Chip, pick, filter and tab groups never wrap onto a second line, for any user.
+ * They sit in one pill bar that scrolls sideways (swipe, trackpad, Shift+wheel,
+ * mouse wheel, or Tab to focus). Edge fades show there is more. */
+.ob-picks,
+.cx-tabs,
+.ob-scrollrow,
+.lbls,
+.ob-card .svcs {
+  display: flex !important;
+  flex-wrap: nowrap;
+  gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 8px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.ob-picks::-webkit-scrollbar,
+.cx-tabs::-webkit-scrollbar,
+.ob-scrollrow::-webkit-scrollbar,
+.lbls::-webkit-scrollbar,
+.ob-card .svcs::-webkit-scrollbar {
+  display: none;
+}
+.ob-picks,
+.cx-tabs {
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--surface);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.ob-picks > *,
+.cx-tabs > *,
+.ob-scrollrow > *,
+.lbls > *,
+.ob-card .svcs > * {
+  flex: none;
+  scroll-snap-align: start;
+}
+/* Items inside the bar: no individual outline; selected = ink, like the tabs. */
+.ob-picks .ob-pick,
+.ob-picks .cx-chip {
+  min-height: 40px;
+  padding: 0 16px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  font: 500 14px var(--font-sans);
+}
+.ob-picks .ob-pick:hover,
+.ob-picks .cx-chip:hover {
+  background: rgba(13, 15, 18, 0.05);
+  color: var(--ink);
+}
+.ob-picks .ob-pick:has(input:checked),
+.ob-picks .cx-chip[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--white);
+}
+.cx-tabs > * {
+  min-height: 40px;
+}
+/* Edge fades only on the side that has more. */
+.ob-more-r {
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+}
+.ob-more-l {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px);
+  mask-image: linear-gradient(90deg, transparent, #000 40px);
+}
+.ob-more-l.ob-more-r {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+}
+
+/* ---------- signed-in menu (shell.js): every role can reach settings and sign out ---------- */
+.sh-nav {
+  gap: 8px;
+}
+.sh-links {
+  display: flex;
+  gap: 2px;
+  list-style: none;
+  margin: 0 0 0 12px;
+  padding: 0;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.sh-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  font: 500 14px var(--font-sans);
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sh-links a[aria-current] {
+  color: var(--ink);
+  background: rgba(13, 15, 18, 0.06);
+}
+.sh-acct {
+  position: relative;
+  margin-left: auto;
+}
+.sh-me {
+  border: 0;
+  padding: 0;
+  background: none;
+  border-radius: 50%;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+}
+.sh-av {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--white);
+  display: inline-grid;
+  place-items: center;
+  font: 500 13px var(--font-sans);
+  flex: none;
+}
+.sh-drop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 40;
+  width: 280px;
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--sh-3);
+  display: grid;
+}
+.sh-who {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px 10px;
+}
+.sh-who b {
+  display: block;
+  font: 500 15px var(--font-sans);
+}
+.sh-who small {
+  font: 400 13px var(--font-sans);
+  color: var(--muted);
+}
+.sh-drop > a,
+.sh-sheet > a,
+.sh-out {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  font: 500 15px var(--font-sans);
+  color: var(--ink);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+}
+.sh-drop > a:hover,
+.sh-sheet > a:hover,
+.sh-out:hover,
+.sh-drop > a[aria-current],
+.sh-sheet > a[aria-current] {
+  background: var(--canvas);
+}
+.sh-out {
+  width: 100%;
+  color: var(--err);
+}
+.sh-sheet small {
+  font: 400 12px var(--font-mono);
+  color: var(--muted);
+}
+.sh-sheet hr {
+  border: 0;
+  border-top: 1px solid var(--hair);
+  margin: 6px 4px;
+}
+.sh-menubtn {
+  display: none;
+}
+.sh-sheet {
+  position: fixed;
+  inset: 76px 12px auto;
+  z-index: 40;
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--sh-3);
+  display: grid;
+  max-height: calc(100dvh - 96px);
+  overflow-y: auto;
+}
+.sh-signedout {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(242, 241, 238, 0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.sh-signedout > div {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  max-width: 340px;
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--sh-3);
+}
+.sh-signedout h2 {
+  font: 500 26px/30px var(--font-sans);
+  letter-spacing: -0.02em;
+}
+@media (max-width: 1060px) {
+  .sh-links,
+  .sh-acct {
+    display: none;
+  }
+  .sh-menubtn {
+    display: inline-flex;
+    margin-left: auto;
+  }
+}
+.sh-drop .sh-who {
+  display: grid;
+  gap: 2px;
+}

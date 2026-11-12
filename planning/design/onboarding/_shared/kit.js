@@ -800,6 +800,7 @@
           h.focus({ preventScroll: true });
         }
       }
+      requestAnimationFrame(() => bars(st));
       form.dispatchEvent(new CustomEvent("ob:step", { detail: { id, step: st, s } }));
     }
     function go(id) {
@@ -1127,7 +1128,61 @@
       form.querySelectorAll("[data-map]").forEach((m) => m._place(0.48, 0.42));
   }
 
+  // ---------- swipeable bars ----------
+  // Every chip/tab/filter group is one row that scrolls sideways. Fades mark the side
+  // with more; a vertical wheel scrolls it sideways; focus and the chosen item stay in view.
+  const BAR = ".ob-picks, .cx-tabs, .ob-scrollrow, .lbls, .ob-card .svcs";
+  function fade(el) {
+    const max = el.scrollWidth - el.clientWidth;
+    el.classList.toggle("ob-more-l", el.scrollLeft > 2);
+    el.classList.toggle("ob-more-r", max - el.scrollLeft > 2);
+  }
+  function toChosen(el) {
+    const on = el.querySelector('input:checked, [aria-pressed="true"], [aria-selected="true"]');
+    if (!on) return;
+    const item = on.closest(".ob-picks > *, .cx-tabs > *, .ob-scrollrow > *") || on;
+    const l = item.offsetLeft - el.offsetLeft;
+    if (l < el.scrollLeft || l + item.offsetWidth > el.scrollLeft + el.clientWidth)
+      el.scrollLeft = Math.max(0, l - 8);
+  }
+  function bar(el) {
+    // Re-rendered contents: bring the chosen item into view again.
+    const sig = el.children.length + ":" + (el.firstElementChild?.textContent || "");
+    if (el._bar) {
+      if (el._sig !== sig) (el._sig = sig), toChosen(el);
+      return fade(el);
+    }
+    el._bar = true;
+    el._sig = sig;
+    el.addEventListener("scroll", () => fade(el), { passive: true });
+    el.addEventListener(
+      "wheel",
+      (e) => {
+        if (el.scrollWidth <= el.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+        const max = el.scrollWidth - el.clientWidth;
+        if ((e.deltaY < 0 && el.scrollLeft <= 0) || (e.deltaY > 0 && el.scrollLeft >= max)) return;
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+      },
+      { passive: false },
+    );
+    el.addEventListener("focusin", (e) => {
+      const item = e.target.closest(".ob-picks > *, .cx-tabs > *, .ob-scrollrow > *, .lbls > *") || e.target;
+      item.scrollIntoView({ block: "nearest", inline: "nearest" });
+    });
+    toChosen(el);
+    fade(el);
+  }
+  function bars(root = document) {
+    root.querySelectorAll(BAR).forEach(bar);
+  }
+  // Keep new or re-rendered bars wired (pages that re-render, step changes, resizes).
+  new MutationObserver(() => bars()).observe(document.documentElement, { childList: true, subtree: true });
+  window.addEventListener("resize", () => bars());
+  document.addEventListener("DOMContentLoaded", () => bars());
+
   window.OB = {
+    bars,
     Q,
     matches,
     ic,

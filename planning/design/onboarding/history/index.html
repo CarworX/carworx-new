@@ -22,7 +22,8 @@
   .demo { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .demo .cx-seg { min-width: 300px; }
   .head h1 { font: 500 40px/44px var(--font-sans); letter-spacing: -.035em; }
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+  .filters { display: grid; gap: 10px; }
+  .filters .ob-scrollrow { gap: 8px; align-items: end; padding-bottom: 2px; }
   .filters .ob-input { min-height: 44px; font-size: 14px; width: auto; }
   .filters label { display: grid; gap: 4px; font: 500 12px var(--font-sans); color: var(--muted); }
   .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -69,12 +70,7 @@
 </style>
 </head>
 <body class="cx-canvas">
-<div class="ob-navwrap"><nav class="cx-nav" aria-label="Business menu">
-  <a class="logo" href="../index.html" aria-label="CarworX concepts board"><img src="../_shared/carworx-lockup-horizontal-ink.svg" alt="CarworX"></a>
-  <ul class="nav-links" data-links></ul>
-  <button type="button" class="cx-btn outlined sm menubtn" aria-expanded="false" aria-controls="sheet" data-menu>Menu</button>
-</nav></div>
-<div class="sheet" id="sheet" hidden data-sheet></div>
+<div data-shell></div>
 <main>
   <div class="demo"><span class="ob-demo">Demo · view as</span>
     <fieldset class="cx-seg" aria-label="View as">
@@ -87,6 +83,7 @@
   <div data-panel></div>
 </main>
 <script src="../_shared/kit.js"></script>
+<script src="../_shared/shell.js"></script>
 <script>
   const { ic, esc } = OB;
   const P = { SD: ["Sipho", "Owner"], AN: ["Ayanda", "Manager"], LM: ["Lerato", "Staff"], TK: ["Thabo", "Staff"] };
@@ -116,10 +113,11 @@
   const mine = (b) => b.staff === "LM" || b.was === "LM";
   const visible = () => B.filter((b) => (lead() || mine(b)) && (filt === "All" || (filt === "Reassigned" ? b.was : b.st === filt)));
 
+  let mounted = null;
   function links() {
-    const L = [["Today", "today"], ["Requests", "requests"], ["History", "history"], ...(lead() ? [["Team", "team"], ["Listing", "listing"]] : []), ...(as === "owner" ? [["Settings", "settings"]] : [])];
-    document.querySelector("[data-links]").innerHTML = L.map(([t, k]) => `<li><a href="#${k}"${k === "history" ? ' aria-current="page"' : ""}>${t}</a></li>`).join("");
-    document.querySelector("[data-sheet]").innerHTML = L.map(([t, k]) => `<a href="#${k}"${k === "history" ? ' aria-current="page"' : ""}>${t}${k === "history" ? "<small>you're here</small>" : ""}</a>`).join("") + `<p class="t-cap" style="padding:8px 14px">${lead() ? "Owners and managers see the whole business." : "Staff see their own bookings."}</p>`;
+    if (mounted === as) return;
+    mounted = as;
+    SHELL.mount(document.querySelector("[data-shell]"), { role: as, current: "history" });
   }
   function tabs() {
     const T = [["bookings", "Bookings"], ["assign", "Assignments"], ...(lead() ? [["team", "Team changes"]] : [])];
@@ -161,9 +159,9 @@
       <div class="kpis"><div class="kpi"><b>${done}</b><small>Completed</small></div><div class="kpi"><b>${list.filter((b) => b.st !== "Completed").length}</b><small>Cancelled or declined</small></div><div class="kpi"><b>${list.filter((b) => b.was).length}</b><small>Reassigned</small></div></div>
       <div class="filters" style="margin-top:14px">
         <div class="ob-picks" role="group" aria-label="Status">${["All", "Completed", "Cancelled", "Declined", "Reassigned"].map((f) => `<button type="button" class="cx-chip" aria-pressed="${f === filt}" data-filt="${f}">${f}</button>`).join("")}</div>
-        <label>From<input class="ob-input" type="date" value="2026-11-09" min="2026-10-01" max="2026-11-12"></label>
+        <div class="ob-scrollrow" role="group" aria-label="More filters"><label>From<input class="ob-input" type="date" value="2026-11-09" min="2026-10-01" max="2026-11-12"></label>
         <label>To<input class="ob-input" type="date" value="2026-11-11" min="2026-10-01" max="2026-11-12"></label>
-        ${lead() ? `<label>Team member<select class="ob-input"><option>Everyone</option><option>Ayanda</option><option>Lerato</option><option>Thabo</option></select></label><button type="button" class="cx-btn outlined sm">Download CSV</button>` : ""}
+        ${lead() ? `<label>Team member<select class="ob-input"><option>Everyone</option><option>Ayanda</option><option>Lerato</option><option>Thabo</option></select></label><button type="button" class="cx-btn outlined sm">Download CSV</button>` : ""}</div>
       </div>
       <div class="split${sel ? " open" : ""}" style="margin-top:6px">
         <div class="list">${days.map((d) => `<p class="day">${d}</p><div class="rows">${list.filter((b) => b.day === d).map((b) => `<button type="button" class="rowb" data-b="${b.id}" aria-pressed="${sel === b.id}"><span class="t">${b.t}</span><span><b>${esc(b.svc)}</b><small>${esc(custName(b.cust))} · ${b.staff ? `<span class="who"><span class="mini">${b.staff}</span>${b.staff === "LM" && !lead() ? "You" : P[b.staff][0]}</span>` : "Not assigned"}${b.was ? (lead() ? ` · was ${P[b.was][0]}` : b.staff !== "LM" ? " · moved from you" : "") : ""}</small></span><span class="r">${label(b.st)}<span>${b.price}</span></span></button>`).join("")}</div>`).join("") || '<p class="t-cap">Nothing matches these filters.</p>'}</div>
@@ -177,14 +175,13 @@
     else if (t.dataset.filt) { filt = t.dataset.filt; render(); }
     else if (t.dataset.b) { sel = t.dataset.b; render(); document.querySelector(".detail h2")?.setAttribute("tabindex", "-1"); document.querySelector(".detail h2")?.focus(); }
     else if (t.hasAttribute("data-close")) { sel = null; render(); }
-    else if (t.hasAttribute("data-menu")) { const s = document.querySelector("[data-sheet]"); s.hidden = !s.hidden; t.setAttribute("aria-expanded", String(!s.hidden)); }
   });
   document.addEventListener("change", (e) => { if (e.target.name === "as") { as = e.target.value; sel = null; filt = "All"; render(); } });
   const q = new URLSearchParams(location.search);
   as = q.get("as") || "owner"; tab = q.get("tab") || "bookings"; sel = q.get("b"); filt = q.get("f") || "All";
   document.querySelector(`[name=as][value=${as}]`).checked = true;
   render();
-  if (q.get("menu")) document.querySelector("[data-menu]").click();
+  if (q.get("menu")) document.querySelector("[data-sh-menu]").click();
 </script>
 </body>
 </html>
