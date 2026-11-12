@@ -2,6 +2,7 @@
 
 **Purpose:** one place to see what stands between today and the free site going live. G-PROD is in PLAN §18; who does what is in Claude 17 §4.
 **State as of:** 2026-11-10 (SAST), `main` at `b899190`, with Bundle C draft PRs #56 (runbooks), #58 (legal) and #59 (owner guides) open.
+**2026-11-12 (SAST) addition:** G3 records the owner-deferred support mailbox setup. Other item states retain the historical snapshot above; they were not re-audited in this update.
 **Rule:** an item closes only on its evidence. A draft, a plan or a local run is never a pass.
 
 **Legend:** ✅ done · 🟡 drafted, waiting on review or approval · 🔴 open · ⛔ blocked by another item
@@ -12,9 +13,9 @@
 |---|---|
 | ✅ Done | 0 |
 | 🟡 Drafted | 10 |
-| 🔴 Open | 14 |
+| 🔴 Open | 15 |
 | ⛔ Blocked | 6 |
-| **Total** | **30** |
+| **Total** | **31** |
 
 ```
 Phase 1 closed ─► production project ─► backups (BK-1) ─► A7 on final schema ─┐
@@ -88,6 +89,7 @@ Each stays **open until evidenced**; never counted as a pass from screenshots (D
 |---|---|---|---|---|---|
 | G1 | Turnstile widgets made (needed by Bundle B forms) | Claude 17 §5 | Owner ([guide 12](../owner-guides/12-turnstile.md)) | Sitekeys sent; secret set | 🟡 Guide in #59 |
 | G2 | **Owner-run release** of the approved `main` commit, with smoke checks passing | PLAN §12, §18 | Owner | Version ID, SHA and smoke receipt (runbook §9–10) | ⛔ everything above |
+| G3 | Create and verify planned `support@carworx.app`; configure the non-widget contact before launch | [Owner decision/backlog](../codex/support-mail-launch-backlog.md), [#74](https://github.com/CarworX/carworx-new/issues/74) | Owner; Codex assists when authorised | Domain control, monitored inbox/operator, verified inbound/reply test, `SUPPORT_CONTACT_EMAIL` set, no-JS/blocked-widget launch smoke and owner sign-off | 🔴 Planned, not created; due before G-PROD, not an immediate Bundle B implementation blocker |
 
 ## How to update this file
 
