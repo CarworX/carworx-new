@@ -1235,4 +1235,522 @@
       transform: none;
     }
   }
+
+  /* ---------- onboarding redesign (Claude 23 O1; designs #72) ---------- */
+
+  /* Segmented progress: glides forward (fill) and back (drain); jumps chain. */
+  .cx-segbar {
+    display: grid;
+    gap: 10px;
+    font-family: var(--font-sans);
+  }
+  .cx-segbar .segrow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    overflow: hidden;
+  }
+  .cx-segbar .segname {
+    font: 500 15px/20px var(--font-sans);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .cx-segbar .segcount {
+    font: 500 13px/20px var(--font-mono);
+    color: var(--muted);
+  }
+  .cx-segbar .segs {
+    display: flex;
+    gap: 6px;
+  }
+  .cx-segbar .seg {
+    flex: 1;
+    height: 6px;
+    border-radius: var(--radius-pill);
+    background: var(--canvas-2);
+    overflow: hidden;
+  }
+  /* clip-path keeps the rounded leading edge while it glides (scaleX squashes it). */
+  .cx-segbar .seg i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--ink);
+    clip-path: inset(0 100% 0 0 round var(--radius-pill));
+    transition: clip-path 420ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .cx-segbar .seg.on i {
+    clip-path: inset(0 0 0 0 round var(--radius-pill));
+  }
+  .cx-segbar.still .seg i {
+    transition: none;
+  }
+  .cx-segbar .fwd {
+    animation: cx-seg-in-fwd 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .cx-segbar .back {
+    animation: cx-seg-in-back 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @keyframes cx-seg-in-fwd {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  @keyframes cx-seg-in-back {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Step rail (desktop option A): done steps turn ink. */
+  .cx-rail > li {
+    padding: 12px;
+  }
+  .cx-rail > li.done .k {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .cx-rail > li.done .k .n {
+    color: var(--steel);
+  }
+
+  /* Filter and tab bars: one line, scroll sideways, fades on the side with more. */
+  .cx-filterbar,
+  .cx-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 8px;
+    scrollbar-width: none;
+  }
+  .cx-filterbar {
+    padding: 4px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid var(--surface);
+    box-shadow: inset 0 0 0 1px var(--hair);
+  }
+  .cx-filterbar::-webkit-scrollbar,
+  .cx-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .cx-filterbar > *,
+  .cx-tabs > * {
+    flex: none;
+    scroll-snap-align: start;
+  }
+  .cx-filterbar .cx-chip {
+    min-height: 40px;
+    padding: 0 16px;
+    background: transparent;
+    box-shadow: none;
+    color: var(--muted);
+    font: 500 14px var(--font-sans);
+  }
+  .cx-filterbar .cx-chip:hover {
+    background: rgba(13, 15, 18, 0.05);
+    color: var(--ink);
+  }
+  .cx-filterbar .cx-chip[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .cx-tabs > * {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  .more-r {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      #000 calc(100% - 40px),
+      transparent
+    );
+    mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+  }
+  .more-l {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px);
+    mask-image: linear-gradient(90deg, transparent, #000 40px);
+  }
+  .more-l.more-r {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 40px,
+      #000 calc(100% - 40px),
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 40px,
+      #000 calc(100% - 40px),
+      transparent
+    );
+  }
+
+  /* Choice tiles and pick chips (native inputs; setup chips wrap). */
+  .cx-choice {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    gap: 10px;
+  }
+  .cx-choice > legend {
+    padding: 0;
+    margin-bottom: 6px;
+  }
+  .cx-tiles {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
+  .cx-tile-pick {
+    position: relative;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    column-gap: 14px;
+    row-gap: 2px;
+    align-items: center;
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--control-edge);
+    cursor: pointer;
+  }
+  .cx-tile-pick.multi {
+    padding-right: 44px;
+  }
+  .cx-tile-pick .ic {
+    grid-row: span 2;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: var(--canvas);
+    display: grid;
+    place-items: center;
+  }
+  .cx-tile-pick b {
+    font: 500 16px/22px var(--font-sans);
+  }
+  .cx-tile-pick small {
+    font: 400 13px/18px var(--font-sans);
+    color: var(--muted);
+  }
+  .cx-tile-pick:has(input:checked) {
+    box-shadow:
+      inset 0 0 0 2px var(--ink),
+      var(--sh-2);
+  }
+  .cx-tile-pick:has(input:checked) .ic {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .cx-tile-pick.multi::after,
+  .cx-pick.multi::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1.5px var(--control-edge);
+  }
+  .cx-tile-pick.multi::after {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+  }
+  .cx-tile-pick.multi:has(input:checked)::after,
+  .cx-pick.multi:has(input:checked)::before {
+    box-shadow: none;
+    background: var(--white);
+    /* a tick, drawn with two borders */
+    border: solid var(--ink);
+    border-width: 0 2px 2px 0;
+    width: 6px;
+    height: 11px;
+    border-radius: 0;
+    transform: rotate(45deg) translate(-1px, -2px);
+    margin: 0 5px 0 5px;
+  }
+  .cx-tile-pick.multi:has(input:checked)::after {
+    background: none;
+  }
+  .cx-picks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cx-pick {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--control-edge);
+    font: 500 14px var(--font-sans);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .cx-pick:has(input:checked) {
+    background: var(--ink);
+    color: var(--white);
+    box-shadow: none;
+  }
+  .cx-pick.multi:has(input:checked)::before {
+    border-color: var(--white);
+    background: none;
+  }
+  .cx-pick:has(input:disabled) {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .cx-tile-pick input,
+  .cx-pick input,
+  .cx-day input,
+  .cx-switch input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+  .cx-tile-pick:has(input:focus-visible),
+  .cx-pick:has(input:focus-visible),
+  .cx-day:has(input:focus-visible),
+  .cx-switch:has(input:focus-visible) .track {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  /* Switch */
+  .cx-switch {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 56px;
+    padding: 8px 8px 8px 16px;
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--hair);
+    cursor: pointer;
+    font-family: var(--font-sans);
+  }
+  .cx-switch .txt {
+    display: grid;
+    gap: 2px;
+  }
+  .cx-switch .t {
+    font: 500 15px var(--font-sans);
+  }
+  .cx-switch .h {
+    font: 400 13px/18px var(--font-sans);
+    color: var(--muted);
+  }
+  .cx-switch .track {
+    flex: none;
+    position: relative;
+    width: 52px;
+    height: 32px;
+    border-radius: var(--radius-pill);
+    /* G1: controls keep a white fill so the edge clears 3:1. */
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1.5px var(--control-edge);
+    transition: background 0.2s;
+  }
+  .cx-switch .track::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--control-edge);
+    transition:
+      transform 0.2s,
+      background 0.2s;
+  }
+  .cx-switch:has(input:checked) .track {
+    background: var(--ink);
+    box-shadow: none;
+  }
+  .cx-switch:has(input:checked) .track::after {
+    background: var(--surface);
+    transform: translateX(20px);
+  }
+
+  /* Opening hours */
+  .cx-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  .cx-day {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 48px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--control-edge);
+    font: 500 13px var(--font-mono);
+    cursor: pointer;
+  }
+  .cx-day:has(input:checked) {
+    background: var(--ink);
+    color: var(--white);
+    box-shadow: none;
+  }
+  .cx-times {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .cx-count {
+    justify-self: end;
+    font: 400 12px var(--font-mono);
+    color: var(--muted);
+  }
+
+  /* Account menu: settings, security and sign-out for every signed-in user. */
+  .cx-acct {
+    position: relative;
+  }
+  .cx-nav .cx-acct {
+    margin-left: auto;
+  }
+  .cx-acct-me {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+  .cx-acct .av,
+  .cx-acct-sheet .av {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--white);
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    font: 500 13px var(--font-sans);
+  }
+  .cx-acct-drop {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    z-index: 40;
+    width: 280px;
+    padding: 8px;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--sh-3);
+    display: grid;
+  }
+  .cx-acct-drop[hidden] {
+    display: none;
+  }
+  .cx-acct .who,
+  .cx-acct-sheet .who {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 8px 12px 10px;
+  }
+  .cx-acct-sheet .who {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .cx-acct .who b,
+  .cx-acct-sheet .who b {
+    display: block;
+    font: 500 15px var(--font-sans);
+  }
+  .cx-acct .who small,
+  .cx-acct-sheet .who small {
+    font: 400 13px var(--font-sans);
+    color: var(--muted);
+  }
+  .cx-acct-drop .row {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 12px;
+    border-radius: var(--radius-sm);
+    font: 500 15px var(--font-sans);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .cx-acct-drop .row:hover {
+    background: var(--canvas);
+  }
+  .cx-acct-sheet {
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--hair);
+  }
+  .cx-acct-sheet ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cx-acct-out {
+    margin: 0;
+  }
+  .cx-acct-out button {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    text-align: left;
+    font: 500 15px var(--font-sans);
+    color: var(--err);
+    cursor: pointer;
+  }
+  .cx-acct-out button:hover {
+    background: var(--canvas);
+  }
+  /* In the nav, phones get the same items at the bottom of the sheet. */
+  @media (max-width: 1060px) {
+    .cx-nav .cx-acct {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cx-segbar .seg i,
+    .cx-switch .track,
+    .cx-switch .track::after {
+      transition: none;
+    }
+    .cx-segbar .fwd,
+    .cx-segbar .back {
+      animation: none;
+    }
+  }
 }

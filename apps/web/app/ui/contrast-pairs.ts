@@ -118,4 +118,41 @@ export const PAIRS: readonly Pair[] = [
   { where: "receipt stamp", fg: "blue-ink", bg: "#fffdf9", kind: "text" },
   { where: "KPI number", fg: "ink", bg: "surface", kind: "large" },
   { where: "ripple caption", fg: "muted", bg: "canvas", kind: "text" },
+  // ---- onboarding redesign (Claude 23 O1) ----
+  { where: "segmented progress fill", fg: "ink", bg: "canvas-2", kind: "ui" },
+  {
+    where: "segmented progress count",
+    fg: "muted",
+    bg: "canvas",
+    kind: "text",
+  },
+  {
+    where: "filter bar, unselected",
+    fg: "muted",
+    bg: "canvas",
+    via: "frost",
+    kind: "text",
+  },
+  { where: "filter bar, selected", fg: "white", bg: "ink", kind: "text" },
+  {
+    where: "choice tile and pick edge",
+    fg: "control-edge",
+    bg: "surface",
+    kind: "ui",
+  },
+  { where: "choice tile hint", fg: "muted", bg: "surface", kind: "text" },
+  {
+    where: "picked chip, day, switch on",
+    fg: "white",
+    bg: "ink",
+    kind: "text",
+  },
+  {
+    where: "switch track edge and knob (off)",
+    fg: "control-edge",
+    bg: "surface",
+    kind: "ui",
+  },
+  { where: "account menu, Sign out", fg: "err", bg: "surface", kind: "text" },
+  { where: "account avatar initials", fg: "white", bg: "ink", kind: "text" },
 ];

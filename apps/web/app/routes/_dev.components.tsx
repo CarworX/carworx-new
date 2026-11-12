@@ -26,7 +26,7 @@ import { Icon } from "../ui/Icon";
 import { ICON_NAMES } from "../ui/icons.generated";
 import { KpiCard, PeriodTabs } from "../ui/Kpi";
 import { usePrefersReducedMotion } from "../ui/motion";
-import { NavBar } from "../ui/NavBar";
+import { AccountMenu, NavBar } from "../ui/NavBar";
 import { EmptyState, StatusNote } from "../ui/Note";
 import { ResultCard } from "../ui/ResultCard";
 import { ServiceKeyRows, ServiceKeys } from "../ui/ServiceKeys";
@@ -40,6 +40,13 @@ import {
 } from "../ui/states/Skeleton";
 import { StepDial } from "../ui/states/StepDial";
 import { StepList } from "../ui/StepList";
+import { ChoiceTiles, PickChips } from "../ui/Choice";
+import { DayToggles } from "../ui/DayToggles";
+import { FilterBar, TabBar } from "../ui/ScrollBar";
+import { SegmentedProgress } from "../ui/SegmentedProgress";
+import { StarterPhrases } from "../ui/StarterPhrases";
+import { StepRail } from "../ui/StepRail";
+import { Switch } from "../ui/Switch";
 import type { Route } from "./+types/_dev.components";
 import { DEV_HEADERS, devPagesEnabled } from "./_dev.guard";
 
@@ -765,6 +772,14 @@ export default function DevComponents() {
           </Section>
 
           <Section
+            id="onboarding"
+            eyebrow="Onboarding · Claude 23 O1"
+            title="Get approved, then finish setup"
+          >
+            <OnboardingDemo />
+          </Section>
+
+          <Section
             id="contrast"
             eyebrow="Checks · G15"
             title="Contrast, measured"
@@ -811,6 +826,189 @@ export default function DevComponents() {
           </Section>
         </main>
       </div>
+    </div>
+  );
+}
+
+const APPLY_STEPS = [
+  { icon: "user", title: "You", body: "Your name and how we reach you." },
+  { icon: "bay", title: "Business", body: "Trading name and what you offer." },
+  { icon: "pin", title: "Location", body: "Where you serve customers." },
+  { icon: "clock", title: "Hours", body: "When you are open." },
+  { icon: "doc", title: "Details", body: "A short line about you." },
+  { icon: "check", title: "Send", body: "Check and send for approval." },
+] as const;
+
+const FILTERS = [
+  { value: "all", label: "All" },
+  { value: "pending", label: "Waiting for review" },
+  { value: "more", label: "Needs more info" },
+  { value: "approved", label: "Approved" },
+  { value: "declined", label: "Declined" },
+  { value: "claims", label: "Listing claims" },
+  { value: "paused", label: "Paused" },
+];
+
+const TABS = [
+  { id: "today", label: "Today" },
+  { id: "upcoming", label: "Upcoming" },
+  { id: "history", label: "History" },
+  { id: "earnings", label: "Earnings" },
+  { id: "staff", label: "Staff" },
+  { id: "settings", label: "Settings" },
+];
+
+function OnboardingDemo() {
+  const [step, setStep] = useState(2);
+  const [filter, setFilter] = useState("all");
+  const [tab, setTab] = useState("today");
+  return (
+    <div className="grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">
+      <Panel title="Segmented progress and the desktop rail">
+        <SegmentedProgress
+          step={step}
+          total={APPLY_STEPS.length}
+          name={APPLY_STEPS[step]?.title ?? ""}
+          label="Application progress"
+        />
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={step === 0}
+            onClick={() => {
+              setStep(Math.max(0, step - 1));
+            }}
+          >
+            Back
+          </Button>
+          <Button
+            size="sm"
+            disabled={step === APPLY_STEPS.length - 1}
+            onClick={() => {
+              setStep(Math.min(APPLY_STEPS.length - 1, step + 1));
+            }}
+          >
+            Next
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setStep(step === 0 ? APPLY_STEPS.length - 1 : 0);
+            }}
+          >
+            Jump to {step === 0 ? "last" : "first"}
+          </Button>
+        </div>
+        <div className="mt-6">
+          <StepRail
+            steps={APPLY_STEPS}
+            current={step}
+            label="Application steps"
+          />
+        </div>
+      </Panel>
+      <Panel title="One-line bars (swipe sideways, never stack)">
+        <FilterBar
+          label="Filter applications"
+          options={FILTERS}
+          value={filter}
+          onChange={setFilter}
+        />
+        <div className="mt-4">
+          <TabBar
+            label="Business sections"
+            tabs={TABS}
+            current={tab}
+            onSelect={setTab}
+          />
+        </div>
+        <div className="mt-6 flex justify-end">
+          <AccountMenu
+            account={{
+              name: "Thandi Mokoena",
+              sub: "Owner · Shine Bay Car Wash",
+              initials: "TM",
+              links: [
+                { href: "#profile", label: "Profile and settings" },
+                { href: "#security", label: "Security and two-step sign-in" },
+              ],
+              csrf: "dev-only",
+            }}
+          />
+        </div>
+      </Panel>
+      <Panel title="Choice tiles (pick one or both)">
+        <ChoiceTiles
+          legend="Where do you serve customers?"
+          hint="Pick one or both."
+          name="mode"
+          multiple
+          defaultValue={["fixed"]}
+          options={[
+            {
+              value: "fixed",
+              title: "They come to me",
+              description: "Customers visit your premises.",
+              icon: "bay",
+            },
+            {
+              value: "mobile",
+              title: "I go to them",
+              description: "You travel to the customer.",
+              icon: "car",
+            },
+          ]}
+        />
+      </Panel>
+      <Panel title="Pick chips (setup chips wrap)">
+        <PickChips
+          legend="What do you offer?"
+          name="services"
+          multiple
+          defaultValue={["wash"]}
+          options={[
+            { value: "wash", label: "Car wash" },
+            { value: "valet", label: "Full valet" },
+            { value: "detail", label: "Detailing" },
+            { value: "polish", label: "Polish and wax" },
+            { value: "interior", label: "Interior clean" },
+            { value: "engine", label: "Engine bay" },
+            { value: "tyres", label: "Tyre shine", disabled: true },
+          ]}
+        />
+      </Panel>
+      <Panel title="Switch">
+        <div className="grid gap-3">
+          <Switch
+            name="adult"
+            label="I am 18 or older"
+            hint="You must be an adult to list a business."
+          />
+          <Switch
+            name="choose_staff"
+            label="Customers pick their staff member"
+            hint="Off: the owner or a manager assigns staff."
+            defaultChecked
+          />
+        </div>
+      </Panel>
+      <Panel title="Opening hours and starter phrases">
+        <DayToggles legend="Which days are you open?" />
+        <div className="mt-6">
+          <StarterPhrases
+            label="A short line about you"
+            hint="Tap a phrase to add it."
+            name="about"
+            phrases={[
+              "Family-run since 2014.",
+              "Eco-friendly products.",
+              "Card and cash welcome.",
+            ]}
+          />
+        </div>
+      </Panel>
     </div>
   );
 }
