@@ -5,6 +5,22 @@ Ideas the owner wants **later**, not in the current release. Each entry says why
 | ID | Feature | Status | Added |
 |---|---|---|---|
 | F-01 | Upload a price list (photo or PDF) to auto-fill a listing | Deferred until after the directory launch (D-094) | 2026-11-13 (SAST) |
+| F-02 | "Pay later" (B4 deferred payment) | Deferred from the first booking build | D-031, PLAN §7 |
+| F-03 | Integrated traffic-fines lookup | Waits on its own gate (G-FINES) and partner outreach | D-003, D-013 |
+| F-04 | WhatsApp and SMS notifications | Out of v1: email plus in-app first | D-014, PLAN §2 |
+| F-05 | Bulk import of business listings | Deferred: consent-based applications first | D-023, PLAN §2 |
+| F-06 | Native iPhone and Android apps | Out of v1: the installable web app (PWA) comes first | D-006, PLAN §2 |
+| F-07 | More languages (e.g. Afrikaans, isiZulu) | Out of v1: English only | PLAN §2 |
+| F-08 | Provider Pro subscription (about R149–R199 a month) | Second revenue test, after 3 months of commission | D-055, PLAN §17 |
+| F-09 | Sponsored provider card | Once an area's traffic is proven; needs G-REVENUE | D-029, D-056 |
+| F-10 | Fleet and small-business test | After launch | D-056, PLAN §17 |
+| F-11 | Brand sponsors on guides and in the newsletter | Later revenue test | D-056, PLAN §17 |
+| F-12 | Insurer claims and roadside dispatch | Out of v1 scope | PLAN §2 |
+| F-13 | Customer wallets or escrow | Out of v1: Paystack direct split instead | D-012, PLAN §2 |
+
+## Not pursued (owner said no)
+
+These are recorded so they aren't re-proposed by mistake: affiliate links ("I don't want us to milk our users"), Google or programmatic ads, customer booking fees or memberships, lead fees and credits, acquisition fees (D-056, PLAN §17). **Never:** selling personal data, pay-to-verify badges, or ads on sensitive flows or in transactional email.
 
 ## F-01 · Upload a price list to auto-fill a listing
 
@@ -36,3 +52,14 @@ Ideas the owner wants **later**, not in the current release. Each entry says why
 About 1–1.5 weeks of build and test: the upload screen, private storage, the extraction call, validation, the review screen and tests. Owner items: the AI provider choice, API key and spending cap, plus approval of the privacy-notice line and the s72 assessment.
 
 **Suggested first version:** hours and services only. Add prices when Phase 3 bookings go live.
+
+## F-02 to F-13 in brief
+
+- **F-02 Pay later (B4):** when used, a CarworX "payment due" action rechecks the quote, capacity, price and status, then starts the normal hosted split payment. It's exposure reduction, not funding; the refund and chargeback reserve (D-050) is still required.
+- **F-03 Fines lookup:** launch keeps labelled official referrals and never collects ID numbers. An integrated lookup needs partner terms (candidates: EasyPay, Syntell/PayCity, Fines SA), owner-approved outreach and its own gate. "No results" must never be shown as "no fines".
+- **F-04 WhatsApp/SMS:** each channel adds cost, consent records and template approval. It would go through the same outbox as email.
+- **F-05 Bulk import:** importing businesses without their consent would break D-023. A future import needs provenance, consent and claim flows.
+- **F-06 Native apps:** the PWA covers v1; native apps only if push notifications or app-store reach prove necessary.
+- **F-07 Languages:** needs translated legal texts (POPIA notices) as well as the interface.
+- **F-08 to F-11 Revenue tests:** each needs its own G-REVENUE approval (payer, price, refunds, stop criteria), in the order of PLAN §17.
+- **F-12 and F-13:** out of v1 scope. Revisit only with a separate plan and gate.
