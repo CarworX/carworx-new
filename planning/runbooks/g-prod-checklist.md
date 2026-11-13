@@ -2,6 +2,7 @@
 
 **Purpose:** one place to see what stands between today and the free site going live. G-PROD is in PLAN §18; who does what is in Claude 17 §4.
 **State as of:** 2026-11-10 (SAST), `main` at `b899190`, with Bundle C draft PRs #56 (runbooks), #58 (legal) and #59 (owner guides) open.
+**2026-11-13 (SAST) re-audit (Claude, `main` at `7550b1a`):** D-093 makes this checklist the launch plan: the directory goes live first, and Phase 3 is a later release. Re-audited rows: B2, B4, D2, E4 and E7. All other rows keep their earlier state until someone re-checks them.
 **2026-11-12 (SAST) addition:** G3 records the owner-deferred support mailbox setup. Other item states retain the historical snapshot above; they were not re-audited in this update.
 **Rule:** an item closes only on its evidence. A draft, a plan or a local run is never a pass.
 
@@ -11,9 +12,9 @@
 
 | | Count |
 |---|---|
-| ✅ Done | 0 |
-| 🟡 Drafted | 10 |
-| 🔴 Open | 15 |
+| ✅ Done | 2 |
+| 🟡 Drafted | 12 |
+| 🔴 Open | 11 |
 | ⛔ Blocked | 6 |
 | **Total** | **31** |
 
@@ -36,9 +37,9 @@ legal approved ─► IO registered ─► D-060 checks ─► repo gaps fixed �
 | # | Item | Source | Who | Evidence that closes it | Today |
 |---|---|---|---|---|---|
 | B1 | Production runbook reviewed | Claude 17 §4 | Claude drafts, coordinator and owner review | Merged runbook | 🟡 #56 |
-| B2 | Repo gaps P-1 to P-5 fixed (no production Wrangler env, no `CATALOGUE_DB` binding, no production mode, no production Auth email path, Turnstile names) | Runbook §1 | Agents, reviewed | Merged PRs | 🔴 |
+| B2 | Repo gaps P-1 to P-5 fixed (no production Wrangler env, no `CATALOGUE_DB` binding, no production mode, no production Auth email path, Turnstile names) | Runbook §1 | Agents, reviewed | Merged PRs | 🟡 P-1 to P-3 merged (#86, #87); P-4 production Auth email path is Codex #93/#94 (drafts); P-5 Turnstile names still open |
 | B3 | Supabase production project on the **free plan**, in the chosen region | D-044, PLAN §18 | Owner ([guide 14](../owner-guides/14-production-project.md)) | Receipt: project ref, region, migration count | ⛔ B2, C1, A1 |
-| B4 | Hyperdrive `CATALOGUE_DB` with **caching off**; direct-or-pooler question (OQ-1) answered | D-081, runbook §6 | Owner | Receipt: config ID, "caching disabled", connection type | ⛔ B3 |
+| B4 | Hyperdrive `CATALOGUE_DB` with **caching off**; direct-or-pooler question (OQ-1) answered | D-081, runbook §6 | Owner | Receipt: config ID, "caching disabled", connection type | ⛔ B3. Staging is done: three Hyperdrive configs with caching off over a **direct** connection, which answers OQ-1 (#96) |
 | B5 | Worker secrets set by name; staging-only names absent | Runbook §7 | Owner | `wrangler secret list` names in the receipt | ⛔ B3 |
 
 ## C. Latency and region (Claude 17 §4 row 3)
@@ -52,7 +53,7 @@ legal approved ─► IO registered ─► D-060 checks ─► repo gaps fixed �
 | # | Item | Source | Who | Evidence that closes it | Today |
 |---|---|---|---|---|---|
 | D1 | Backup and pause runbook reviewed | D-044 | Claude drafts, review | Merged runbook | 🟡 #56 |
-| D2 | **BK-1:** a hosted exporter that covers every table and Storage object, with a read-only login | Runbook §2 | Agents build, review | Merged PR, synthetic CI drill listing every Phase 2 table | 🔴 |
+| D2 | **BK-1:** a hosted exporter that covers every table and Storage object, with a read-only login | Runbook §2 | Agents build, review | Merged PR, synthetic CI drill listing every Phase 2 table | ✅ BK-1 #92 merged at `6c3844a`; the CI `recovery` drill passed on its exact head |
 | D3 | Production destinations, restore operator and encryption tool chosen (OQ-B1 to B3) | D-044, D-072 | Owner | Names (not keys) recorded | 🔴 |
 | D4 | Daily backup and keep-alive running at $0; the first week passes without a pause (OQ-B4) | D-044 | Owner | Seven daily ciphertext hashes from both copies; project still active after 7 days | ⛔ B3, D2 |
 | D5 | **A7 re-run on the final Phase 2 schema** passed on a staging restore | PLAN §3, §18 | Codex or Claude runs, owner holds keys | Sanitized receipt: counts, hashes, RLS TAP counts, TOTP | ⛔ D2 |
@@ -64,10 +65,10 @@ legal approved ─► IO registered ─► D-060 checks ─► repo gaps fixed �
 | E1 | Privacy notice approved and published | D-045, PLAN §9.2 | Claude drafts, owner approves | Owner's written OK; the page live in production | 🟡 #58. Waits on OQ-L1, L2, L3 |
 | E2 | Terms of use for the free site approved | D-045 | Claude drafts, owner approves | Owner's written OK; the page live | 🟡 #58 |
 | E3 | Retention schedule approved; the accountant colleague has noted the financial row | D-053, PLAN §9.3 | Claude drafts, accountant reviews, owner approves | Owner's written OK | 🟡 #58 |
-| E4 | Retention gaps fixed: limiter expiry (R-1), deletion jobs (R-2) | Retention schedule §3 | Agents | Merged PRs with tests | 🔴 |
+| E4 | Retention gaps fixed: limiter expiry (R-1), deletion jobs (R-2) | Retention schedule §3 | Agents | Merged PRs with tests | ✅ R-1 #88 and #91 (limiter alarm expiry), R-2 #89 (daily retention via `retention_server`), merged on green CI |
 | E5 | Section 72 assessment approved, with each vendor DPA confirmed in force (OQ-L4) | PLAN §4, §18 | Claude drafts, owner approves | Signed assessment; dates each DPA was accepted | 🟡 #58 |
 | E6 | Probing residual risk accepted in writing | PLAN §6.2 | Claude assesses, owner accepts | Signed acceptance in `probing-risk.md` | 🟡 #58 |
-| E7 | Provider onboarding shows the probing notice (M1) and records that it was shown | PLAN §6.2 | Bundle A | Merged PR plus a test | 🔴 |
+| E7 | Provider onboarding shows the probing notice (M1) and records that it was shown | PLAN §6.2 | Bundle A | Merged PR plus a test | 🟡 Onboarding shows the probing notice and stores `probing_notice_ack_at` and its version (#84); the dedicated test is still to add |
 | E8 | Incident plan approved and the tabletop drill done | PLAN §9.4 | Claude drafts, owner approves and drills | Signed plan; drill timings recorded here | 🟡 #58 |
 | E9 | Information Officer registered with the Information Regulator | D-043, PLAN §18 | Owner ([guide 13](../owner-guides/13-information-officer.md)) | Registration date and certificate number | 🔴 Waits on OQ-L1 |
 | E10 | Codex's independent cross-check of E1–E8 (D-045) | D-045 | Codex | `REVIEW:` record on the legal PR | 🔴 Codex unavailable (D-080) |
