@@ -61,3 +61,17 @@ The staging Worker now has a minute mail drain separate from the daily 01:17 UTC
 One item is drained per minute, with security/Auth priority and the unchanged global daily cap. This is bounded pilot capacity, not a throughput or actual-delivery claim. The existing retention fixture supplies its real cron explicitly and the schedule contract records the two staging triggers. No suite, cron, network send or deployment was run by Codex. The dispatcher must be configured and observed before activating the queued Auth hook.
 
 Reference checked 2026-11-13: [Cloudflare multiple cron triggers](https://developers.cloudflare.com/workers/examples/multiple-cron-triggers/).
+
+## Organisation enforcement follow-up
+
+The subsequent migration adds restrictive authenticated-role MFA guards on the 17 existing org-scoped tables. Existing membership/role, participant and native-admin policies still authorize access; this guard can only narrow them. Nonmembers keep only what their original public/participant policies permit. Catalogue projection/eligibility roles and grants are unchanged.
+
+Nine member operations now invoke the same canonical predicate after role authorization: resubmit, invite creation, settings, staff profile, team changes, controller disputes, direct membership-write guard, new-owner submit, and invite acceptance. Acceptance checks after the tentative membership insert; refusal rolls the whole transaction back before consuming the invite. Owner exemption remains intact. External claimant and visitor submissions do not obtain org-member privileges and retain their original participant checks.
+
+The canonical function is VOLATILE and uses wall-clock expiry checks so it sees a newly inserted membership and does not extend an expiring proof across a lock wait. The own-JWT wrapper remains the same predicate. Reference: [PostgreSQL function visibility](https://www.postgresql.org/docs/current/spi-visibility.html).
+
+A narrow own-identity RPC, my_org_memberships(p_org), returns only the caller's active membership fields plus the canonical mfa_satisfied boolean. It exposes no organisation name, settings, contacts, invites or other members. loadTeam uses this bootstrap metadata before protected org queries, and redirects unsatisfied callers to the existing MFA page. It adds no Worker AAL rule. Revoked/nonmembers still get 404.
+
+Remaining frontend integration for Claude: provider.tsx's organisation list and auth/routes/org.tsx (and any account org lookup) must use the same bootstrap/guard rather than interpret a protected membership read as no business. The team setup helper is connected; other routes must be checked before enabling policy writes. Required team_mfa_policy writes still raise not_yet_available. O8 recovery/reset and runtime/RLS evidence are also open.
+
+- 2026-11-13 UTC: prepared DB guard and team-helper source. No SQL, RLS, Worker suite, migration, policy activation or deployment was run. These changes remain unverified in the draft branch.
