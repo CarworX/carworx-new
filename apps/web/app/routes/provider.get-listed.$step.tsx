@@ -62,6 +62,8 @@ const path = (step: Step | "submitted") => `/provider/get-listed/${step}`;
 interface HoursReply {
   rows: DayRow[];
   problems: Record<number, string>;
+  /** New per response, so a repeated copy still resets edited fields. */
+  version: string;
   description: string;
 }
 const EMPTY_REPLY: GeoReply & { hours: HoursReply | null } = {
@@ -250,6 +252,7 @@ export async function action({ request, context, params }: Route.ActionArgs) {
           ...EMPTY_REPLY,
           hours: {
             rows: copyMonday(readRows(form)),
+            version: crypto.randomUUID(),
             problems: {},
             description,
           },
@@ -262,7 +265,12 @@ export async function action({ request, context, params }: Route.ActionArgs) {
         {
           ...EMPTY_REPLY,
           problem: "Check the opening hours below.",
-          hours: { rows: hours.rows, problems: hours.problems, description },
+          hours: {
+            rows: hours.rows,
+            problems: hours.problems,
+            description,
+            version: crypto.randomUUID(),
+          },
         },
         { status: 400, headers: signedIn.headers },
       );
@@ -554,7 +562,7 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
               {step === "about" ? (
                 <>
                   <OpeningHoursEditor
-                    key={JSON.stringify(actionData?.hours?.rows ?? null)}
+                    key={actionData?.hours?.version ?? "saved"}
                     legend="When are you open?"
                     rows={
                       actionData?.hours?.rows ??

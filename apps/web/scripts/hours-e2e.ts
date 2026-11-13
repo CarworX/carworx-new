@@ -177,6 +177,23 @@ async function shot(p: Page, name: string) {
   await p.screenshot({ path: join(OUT, `${name}.png`), fullPage: true });
 }
 
+/** Clicks "Copy Monday to weekdays" and waits for the action's response. */
+async function copyMonday(p: Page) {
+  const reply = p.waitForResponse(
+    (r) =>
+      r.request().method() === "POST" && r.url().includes("/provider/hours/"),
+  );
+  await p.getByRole("button", { name: "Copy Monday to weekdays" }).click();
+  await reply;
+  // Let React apply the new rows before reading the fields.
+  await p.waitForFunction(
+    () => !document.querySelector("[aria-busy]"),
+    undefined,
+    { timeout: 5_000 },
+  );
+  await p.waitForTimeout(200);
+}
+
 const org = randomUUID();
 const listing = randomUUID();
 const email = `hours-owner-${randomUUID().slice(0, 8)}@example.test`;
@@ -222,8 +239,7 @@ try {
 
   await p.getByLabel("Opens on Monday").selectOption("07:00");
   await p.getByLabel("Closes on Monday").selectOption("18:00");
-  await p.getByRole("button", { name: "Copy Monday to weekdays" }).click();
-  await p.waitForLoadState("networkidle");
+  await copyMonday(p);
   check(
     "Copy Monday sets Tuesday to Friday",
     (await p.getByLabel("Opens on Friday").inputValue()) === "07:00" &&
@@ -234,6 +250,15 @@ try {
     psql(
       `select count(*) from public.listing_hours where listing_public_id = '${listing}'`,
     ) === "0",
+  );
+  // Copying again with the same result must still reset an edited day.
+  await p.getByLabel("Opens on Tuesday").selectOption("10:00");
+  await p.getByRole("switch", { name: "Open on Wednesday" }).uncheck();
+  await copyMonday(p);
+  check(
+    "a second identical copy still resets edited days",
+    (await p.getByLabel("Opens on Tuesday").inputValue()) === "07:00" &&
+      (await p.getByRole("switch", { name: "Open on Wednesday" }).isChecked()),
   );
   await p.getByLabel("Closes on Saturday").selectOption("12:00");
   await shot(p, "2-editor-changed");

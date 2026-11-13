@@ -43,6 +43,8 @@ interface Reply {
   problem: string | null;
   rows: DayRow[] | null;
   problems: Record<number, string>;
+  /** New per response, so each redraw resets the uncontrolled fields. */
+  version: string;
 }
 
 export const meta: Route.MetaFunction = () => [
@@ -124,7 +126,13 @@ export async function action({ request, params, context }: Route.ActionArgs) {
   const { listing, role } = await load(signedIn, params.publicId);
   const reply = (body: Partial<Reply>, status = 200) =>
     data<Reply>(
-      { problem: null, rows: null, problems: {}, ...body },
+      {
+        problem: null,
+        rows: null,
+        problems: {},
+        version: crypto.randomUUID(),
+        ...body,
+      },
       { status, headers: signedIn.headers },
     );
   if (role === "staff")
@@ -231,7 +239,7 @@ export default function ListingHours({
               </StatusNote>
             ) : null}
             <OpeningHoursEditor
-              key={JSON.stringify(actionData?.rows ?? null)}
+              key={actionData?.version ?? "saved"}
               rows={actionData?.rows ?? rowsFromHours(d.hours)}
               problems={actionData?.problems}
             />
