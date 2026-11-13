@@ -9,6 +9,8 @@
  * odd answer is "unavailable", never a pass. The secret and the token are
  * never logged or returned.
  */
+import type { Environment } from "../security/config";
+
 export const SITEVERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 export const TOKEN_FIELD = "cf-turnstile-response";
@@ -41,7 +43,7 @@ export interface TurnstileSettings {
  */
 export function readTurnstile(
   env: { TURNSTILE_SITE_KEY?: unknown; TURNSTILE_SECRET_KEY?: unknown },
-  environment: "local" | "staging" | null,
+  environment: Environment | null,
 ): TurnstileSettings | undefined {
   const siteKey = env.TURNSTILE_SITE_KEY;
   const secretKey = env.TURNSTILE_SECRET_KEY;
