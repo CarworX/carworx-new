@@ -133,7 +133,7 @@ export async function fetchStaticMap(
   try {
     const response = await send(url, {
       headers: { Accept: "image/png" },
-      redirect: "error",
+      redirect: "manual", // Workers reject "error"; a 3xx is !ok and fails closed below.
       signal: AbortSignal.timeout(MAP_TIMEOUT_MS),
     });
     const type = response.headers.get("Content-Type") ?? "";
