@@ -12,8 +12,8 @@
 
 | | Count |
 |---|---|
-| ✅ Done | 2 |
-| 🟡 Drafted | 12 |
+| ✅ Done | 0 |
+| 🟡 Drafted | 14 |
 | 🔴 Open | 11 |
 | ⛔ Blocked | 6 |
 | **Total** | **31** |
@@ -53,7 +53,7 @@ legal approved ─► IO registered ─► D-060 checks ─► repo gaps fixed �
 | # | Item | Source | Who | Evidence that closes it | Today |
 |---|---|---|---|---|---|
 | D1 | Backup and pause runbook reviewed | D-044 | Claude drafts, review | Merged runbook | 🟡 #56 |
-| D2 | **BK-1:** a hosted exporter that covers every table and Storage object, with a read-only login | Runbook §2 | Agents build, review | Merged PR, synthetic CI drill listing every Phase 2 table | ✅ BK-1 #92 merged at `6c3844a`; the CI `recovery` drill passed on its exact head |
+| D2 | **BK-1:** a hosted exporter that covers every table and Storage object, with a read-only login | Runbook §2 | Agents build, review | Merged PR, synthetic CI drill listing every Phase 2 table | 🟡 #92 (`6c3844a`) makes the synthetic CI drill cover every table and Storage object. The read-only login pointed at a hosted project is **not built** yet (backup runbook §2) |
 | D3 | Production destinations, restore operator and encryption tool chosen (OQ-B1 to B3) | D-044, D-072 | Owner | Names (not keys) recorded | 🔴 |
 | D4 | Daily backup and keep-alive running at $0; the first week passes without a pause (OQ-B4) | D-044 | Owner | Seven daily ciphertext hashes from both copies; project still active after 7 days | ⛔ B3, D2 |
 | D5 | **A7 re-run on the final Phase 2 schema** passed on a staging restore | PLAN §3, §18 | Codex or Claude runs, owner holds keys | Sanitized receipt: counts, hashes, RLS TAP counts, TOTP | ⛔ D2 |
@@ -65,7 +65,7 @@ legal approved ─► IO registered ─► D-060 checks ─► repo gaps fixed �
 | E1 | Privacy notice approved and published | D-045, PLAN §9.2 | Claude drafts, owner approves | Owner's written OK; the page live in production | 🟡 #58. Waits on OQ-L1, L2, L3 |
 | E2 | Terms of use for the free site approved | D-045 | Claude drafts, owner approves | Owner's written OK; the page live | 🟡 #58 |
 | E3 | Retention schedule approved; the accountant colleague has noted the financial row | D-053, PLAN §9.3 | Claude drafts, accountant reviews, owner approves | Owner's written OK | 🟡 #58 |
-| E4 | Retention gaps fixed: limiter expiry (R-1), deletion jobs (R-2) | Retention schedule §3 | Agents | Merged PRs with tests | ✅ R-1 #88 and #91 (limiter alarm expiry), R-2 #89 (daily retention via `retention_server`), merged on green CI |
+| E4 | Retention gaps fixed: limiter expiry (R-1), deletion jobs (R-2) | Retention schedule §3 | Agents | Merged PRs with tests | 🟡 R-1 is fixed (#88, #91). R-2's daily job is built (#89) for forms and provider records, but other rows in the retention schedule, such as account-closure deletion, are still open |
 | E5 | Section 72 assessment approved, with each vendor DPA confirmed in force (OQ-L4) | PLAN §4, §18 | Claude drafts, owner approves | Signed assessment; dates each DPA was accepted | 🟡 #58 |
 | E6 | Probing residual risk accepted in writing | PLAN §6.2 | Claude assesses, owner accepts | Signed acceptance in `probing-risk.md` | 🟡 #58 |
 | E7 | Provider onboarding shows the probing notice (M1) and records that it was shown | PLAN §6.2 | Bundle A | Merged PR plus a test | 🟡 Onboarding shows the probing notice and stores `probing_notice_ack_at` and its version (#84); the dedicated test is still to add |
