@@ -36,7 +36,11 @@
   document.querySelector("[data-h]").textContent = T[0];
   document.querySelector("[data-p]").textContent = T[1];
   const back = as === "driver" ? [["Profile and settings", "../account/index.html?as=driver"]] : as === "staff" ? [["Your home", "../staff/index.html?demo=1#home"], ["History", "../history/index.html?as=staff"]] : [["Finish setup", "../setup/index.html#hub"], ["History", `../history/index.html?as=${as}`]];
-  document.querySelector("[data-acts]").innerHTML = back.map(([t, h], i) => `<a class="cx-btn ${i ? "outlined" : "primary"} sm" href="${h}">${t}</a>`).join("");
+  document.querySelector("[data-acts]").innerHTML = back.map(([t, h], i) => {
+    const url = new URL(h, location.href);
+    if (q.getAll("provider").includes("google")) url.searchParams.set("provider", "google");
+    return `<a class="cx-btn ${i ? "outlined" : "primary"} sm" href="${url.href}">${t}</a>`;
+  }).join("");
   SHELL.mount(document.querySelector("[data-shell]"), { role: as, current: what });
 </script>
 </body>
