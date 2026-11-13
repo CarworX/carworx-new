@@ -95,10 +95,10 @@ export function createPaystack(
       ))
   )
     throw new Error("payment_input_invalid");
-  async function call(
+  async function request(
     path: string,
     body?: Record<string, unknown>,
-  ): Promise<Record<string, unknown>> {
+  ): Promise<unknown> {
     try {
       const response = await fetcher("https://api.paystack.co" + path, {
         method: body === undefined ? "GET" : "POST",
@@ -117,12 +117,115 @@ export function createPaystack(
       const result = object(await boundedJson(response));
       if (result["status"] !== true)
         throw new Error("payment_provider_unavailable");
-      return object(result["data"]);
+      return result["data"];
     } catch {
       throw new Error("payment_provider_unavailable");
     }
   }
+  async function call(path: string, body?: Record<string, unknown>) {
+    return object(await request(path, body));
+  }
+  async function list(path: string) {
+    const v = await request(path);
+    if (!Array.isArray(v) || v.length > 20)
+      throw new Error("payment_provider_unavailable");
+    return v.map(object);
+  }
+  function refundRow(
+    d: Record<string, unknown>,
+    expected: {
+      reference: string;
+      providerId: string;
+      amountMinor: number;
+      refundId: string;
+    },
+  ) {
+    const tx = d["transaction"],
+      transaction = typeof tx === "object" && tx !== null ? object(tx) : null;
+    const tid = providerId(transaction?.["id"] ?? tx);
+    const marker = "carworx/" + expected.refundId;
+    if (
+      (d["domain"] ?? transaction?.["domain"]) !== "test" ||
+      tid !== expected.providerId ||
+      d["currency"] !== "ZAR" ||
+      d["amount"] !== expected.amountMinor ||
+      (d["merchant_note"] !== marker &&
+        d["reference"] !== "cxf_" + expected.refundId.replaceAll("-", "")) ||
+      ![
+        "pending",
+        "processing",
+        "processed",
+        "failed",
+        "needs-attention",
+      ].includes(String(d["status"]))
+    )
+      throw new Error("refund_verification_invalid");
+    return {
+      providerId: providerId(d["id"]),
+      amountMinor: expected.amountMinor,
+      status: String(d["status"]),
+      refundId: expected.refundId,
+    };
+  }
   return {
+    async refundStatus(
+      id: string,
+      expected: {
+        reference: string;
+        providerId: string;
+        amountMinor: number;
+        refundId: string;
+      },
+    ) {
+      if (!/^[1-9][0-9]{0,29}$/.test(id))
+        throw new Error("payment_input_invalid");
+      return refundRow(await call("/refund/" + id), expected);
+    },
+    async recoverRefund(expected: {
+      reference: string;
+      providerId: string;
+      amountMinor: number;
+      refundId: string;
+    }) {
+      const rows = await list(
+        "/refund?perPage=2&reference=" +
+          encodeURIComponent("cxf_" + expected.refundId.replaceAll("-", "")),
+      );
+      if (rows.length !== 1) throw new Error("refund_reconciliation_required");
+      return refundRow(rows[0]!, expected);
+    },
+    async disputeStatus(
+      id: string,
+      expected: { reference: string; providerId: string; amountMinor: number },
+    ) {
+      if (!/^[1-9][0-9]{0,29}$/.test(id))
+        throw new Error("payment_input_invalid");
+      const d = await call("/dispute/" + id),
+        t = object(d["transaction"]),
+        status = d["status"];
+      if (
+        d["domain"] !== "test" ||
+        t["domain"] !== "test" ||
+        t["reference"] !== expected.reference ||
+        providerId(t["id"]) !== expected.providerId ||
+        t["amount"] !== expected.amountMinor ||
+        t["currency"] !== "ZAR" ||
+        ![
+          "pending",
+          "awaiting-merchant-feedback",
+          "awaiting-bank-feedback",
+          "resolved",
+          "archived",
+        ].includes(String(status))
+      )
+        throw new Error("dispute_verification_invalid");
+      return {
+        providerId: providerId(d["id"]),
+        amountMinor: expected.amountMinor,
+        state:
+          status === "resolved" || status === "archived" ? "resolved" : "open",
+      };
+    },
     /** reference and subaccount MUST come from the durable money ledger. */
     async initialise(
       hold: PayableHold,
@@ -224,6 +327,7 @@ export function createPaystack(
         amount: amountMinor,
         currency: "ZAR",
         merchant_note: "carworx/" + refundId,
+        reference: "cxf_" + refundId.replaceAll("-", ""),
       });
       if (
         typeof d["status"] !== "string" ||

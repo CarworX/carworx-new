@@ -1,4 +1,10 @@
 import { createRequestHandler } from "react-router";
+import {
+  PAYMENT_WEBHOOK_PATH,
+  dispatchPaymentWebhook,
+  drainPaymentEvents,
+  reconcilePayments,
+} from "../app/server/payments/runtime.server";
 
 import { pgClient, runRetention } from "../app/server/retention/run";
 import {
@@ -38,6 +44,9 @@ export default {
     if (new URL(request.url).pathname === MAIL_WEBHOOK_PATH) {
       return dispatchMailWebhook(request, env);
     }
+    if (new URL(request.url).pathname === PAYMENT_WEBHOOK_PATH) {
+      return dispatchPaymentWebhook(request, env);
+    }
     // Every request passes the T5 boundary: Origin and CSRF checks before the
     // app runs, cache, cookie, redirect and security headers after it.
     return withSecurityBoundary(request, env, (checked, security) =>
@@ -49,6 +58,12 @@ export default {
   // marked failed.
   async scheduled(_controller, env, ctx) {
     ctx.waitUntil(drainScheduledMail(env));
+    ctx.waitUntil(
+      (async () => {
+        await reconcilePayments(env);
+        await drainPaymentEvents(env);
+      })(),
+    );
     const binding = (env as { RETENTION_DB?: { connectionString?: unknown } })
       .RETENTION_DB;
     const counts = await runRetention(binding, pgClient);
