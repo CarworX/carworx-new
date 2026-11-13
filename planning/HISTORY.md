@@ -332,3 +332,5 @@ Owner approved the finish plan and delegated implementation, Codex review and sa
 - 2026-11-12 (SAST) — Claude: D-091 records the owner granting both agents full build and merge authority, with reviews after merge, and the lane split (Codex: #84 onboarding and #83 Sites; Claude: review #84, launch gaps, O7, O8, P-4).
 
 - 2026-11-13 16:56 UTC — Codex: #97 ready-for-review CI reached RLS and failed; aligned 50_email_outbox capability assertion with migration cap 5 (was 3). Disposable native stack: all 30 O5 pgTAP assertions passed. No merge. Agent: codex
+
+- 2026-11-13 19:40 UTC — Codex: owner approved staging deployment and said proceed. Built main @299150c for staging and passed project-local Wrangler dry-run. Deployment blocked by Cloudflare reauthentication, signed-out local Wrangler, absent GitHub deploy settings and missing promotion evidence. No deployment or Phase 3 merge. Approval persists; see codex/43-staging-deploy-approval.md. Agent: codex
