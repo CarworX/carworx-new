@@ -30,6 +30,17 @@ The same **design** as the K4 drill ([restore-drill.md](restore-drill.md)), but 
 > - it's proven by the section 4 drill (counts and hashes for every table and object).
 >
 > Until BK-1 passes, production has **no backup**, and G-PROD stays blocked on this item.
+>
+> **BK-1 status, 2026-11-12 (SAST).** Coverage is built and proven on synthetic stacks; the hosted run is not.
+>
+> | Requirement | State |
+> |---|---|
+> | Discover every table and every Storage object | **Done.** `drill.js` reads the catalogue (`coverage.js`); no fixed list. Every object in every bucket is exported with its owner and metadata |
+> | Fail on a missing table or object | **Done.** Every table in `public`, `private`, `auth`, `storage`, `supabase_migrations` must be in the reviewed plan in `scripts/ops/backup/coverage.js`; an app table can't be excluded. A new table fails `coverage.test.js` and the drill until it's classified. The manifest must list exactly the exported tables |
+> | Proven by a drill | **Done (synthetic, CI and local).** The K4 recovery job loads the seed plus `scripts/ops/backup/fixture.sql` so **every** app table has rows, exports, restores into a second stack and compares counts and hashes for every exported table, then runs the full RLS suite on the restored data |
+> | Read-only login, pointed at a hosted project | **Not built.** The drill still runs only against its own throwaway stacks |
+>
+> Left out **by design** (listed in `coverage.js`): Auth sessions, refresh tokens, MFA challenges, one-time tokens and other in-flight credential state, so a restore never revives old sessions (people sign in again); in-progress multipart uploads; migration-history tables the target writes itself (compared separately).
 
 ```
 production project ──pg_dump (schemas, data, roles inventory)──┐
@@ -81,7 +92,7 @@ PLAN §3 says A7 is repeated after material schema changes. Phase 2 added catalo
 | Step | What | Evidence |
 |---|---|---|
 | 1 | Freeze the schema: the last Phase 2 migration is merged | Migration count and latest file name |
-| 2 | Run the **BK-1 exporter's** synthetic drill in CI on that `main` commit. The existing K4 drill alone isn't enough: it only covers Phase 1 tables | Green run link; the manifest lists every Phase 2 table |
+| 2 | Run the **BK-1** synthetic drill (the K4 recovery job, now covering every table) in CI on that `main` commit | Green run link; the summary's `tablesExported` matches the catalogue and `appRows` > 0 |
 | 3 | Seed **staging** with synthetic data across every Phase 2 table, plus two private Storage objects | Seed receipt |
 | 4 | Export staging through the route in section 2, encrypt and copy to both destinations | Ciphertext SHA-256 from **both** copies matches |
 | 5 | Restore into an isolated target (local native stack, or a third free project only while another is paused) | Counts and hashes match; object bytes match |
