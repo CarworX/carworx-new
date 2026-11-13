@@ -20,15 +20,16 @@ create function tests.put(p_k text, p_v uuid) returns void language sql security
   insert into tests.ids(k, v) values (p_k, p_v) on conflict (k) do update set v = excluded.v $$;
 create function tests.id(p_k text) returns uuid language sql stable security definer set search_path = '' as $$
   select v from tests.ids where k = p_k $$;
--- First Tue-Thu at least 14 days out that is not an SA public holiday, so
--- every slot is in the future and past the 2-business-hour accept window.
-create function tests.day() returns date language sql stable security definer set search_path = '' as $$
-  select d::date from generate_series(current_date + 14, current_date + 60, interval '1 day') d
-  where not private.is_public_holiday(d::date) and extract(isodow from d) between 2 and 4 order by d limit 1 $$;
-create function tests.at(p_hhmi text, p_plus_days int default 0) returns timestamptz language sql stable set search_path = '' as $$
-  select ((tests.day() + p_plus_days) + p_hhmi::time) at time zone 'Africa/Johannesburg' $$;
-create function tests.span(p_from text, p_to text, p_plus_days int default 0) returns tstzrange language sql stable set search_path = '' as $$
-  select tstzrange(tests.at(p_from, p_plus_days), tests.at(p_to, p_plus_days), '[)') $$;
+-- The n-th (0-based) day at least 14 days out that is not an SA public
+-- holiday, so every slot is in the future, past the 2-business-hour accept
+-- window, and never lands on a holiday whatever the run date.
+create function tests.day(p_n int default 0) returns date language sql stable security definer set search_path = '' as $$
+  select d::date from generate_series(current_date + 14, current_date + 90, interval '1 day') d
+  where not private.is_public_holiday(d::date) order by d offset p_n limit 1 $$;
+create function tests.at(p_hhmi text, p_n int default 0) returns timestamptz language sql stable set search_path = '' as $$
+  select (tests.day(p_n) + p_hhmi::time) at time zone 'Africa/Johannesburg' $$;
+create function tests.span(p_from text, p_to text, p_n int default 0) returns tstzrange language sql stable set search_path = '' as $$
+  select tstzrange(tests.at(p_from, p_n), tests.at(p_to, p_n), '[)') $$;
 -- Act as a signed-in user (call, then `set local role authenticated`).
 create function tests.act(p_user uuid, p_aal text default 'aal1') returns void language sql set search_path = '' as $$
   select null::void from (select set_config('request.jwt.claims',
