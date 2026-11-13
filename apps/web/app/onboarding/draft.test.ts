@@ -129,29 +129,36 @@ describe("provider draft allowlist", () => {
       ),
     ).toMatchObject({ public_address: null });
   });
-  it("requires valid opening hours and preserves a multiline description", () => {
+  it("saves each day's own hours and preserves a multiline description", () => {
     const input = {
       description: "Friendly local service\r\nAll makes welcome",
-      days: ["Mon", "Fri"],
-      opens: "08:00",
-      closes: "17:00",
+      "open-1": "on",
+      "opens-1": "08:00",
+      "closes-1": "17:00",
+      "open-6": "on",
+      "opens-6": "08:00",
+      "closes-6": "13:00",
+      // Sunday is closed: its times are ignored.
+      "opens-7": "09:00",
+      "closes-7": "08:00",
     };
     expect(parseStep(form(input), "about", services)).toEqual({
       description: "Friendly local service\nAll makes welcome",
       hours: [
         { day: 1, opens: "08:00", closes: "17:00" },
-        { day: 5, opens: "08:00", closes: "17:00" },
+        { day: 6, opens: "08:00", closes: "13:00" },
       ],
       step: 5,
     });
     expect(
-      parseStep(form({ ...input, closes: "07:00" }), "about", services),
+      parseStep(form({ ...input, "closes-6": "07:00" }), "about", services),
     ).toBeNull();
     expect(
-      parseStep(form({ ...input, days: ["Mon", "Mon"] }), "about", services),
-    ).toBeNull();
-    expect(
-      parseStep(form({ ...input, days: [] }), "about", services),
+      parseStep(
+        form({ description: input.description }),
+        "about",
+        services,
+      ),
     ).toBeNull();
   });
   it("does not skip missing prerequisites", () => {
