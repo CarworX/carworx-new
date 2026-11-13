@@ -39,7 +39,7 @@
           "id": "1f71d98c48984e25ba23c8d72365494d",
         },
       ],
-      "triggers": { "crons": ["17 1 * * *"] },
+      "triggers": { "crons": ["17 1 * * *", "* * * * *"] },
     },
     "production": {
       "name": "carworx-web-production",

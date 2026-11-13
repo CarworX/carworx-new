@@ -1,5 +1,5 @@
 import type { SignedIn } from "../auth/session.server";
-import { throwStatus } from "../auth/http.server";
+import { throwRedirect, throwStatus } from "../auth/http.server";
 import { SERVICE_OPTIONS, UUID } from "../server/providers/forms";
 import type { TeamRole } from "./forms";
 
@@ -41,16 +41,45 @@ export function privateHeaders(headers: Headers) {
 export async function loadTeam(signedIn: SignedIn, org: string | null) {
   privateHeaders(signedIn.headers);
   if (org === null || !UUID.test(org)) throwStatus(404, signedIn.headers);
-  const membership = await signedIn.supabase
-    .from("memberships")
-    .select("id, organisation_id, user_id, role, status")
-    .eq("organisation_id", org)
-    .eq("user_id", signedIn.user.id)
-    .eq("status", "active")
-    .maybeSingle()
-    .overrideTypes<TeamMembership | null, { merge: false }>();
-  if (membership.error !== null) throwStatus(503, signedIn.headers);
-  if (membership.data === null) throwStatus(404, signedIn.headers);
+  // Own membership metadata must be readable before org RLS admits data.
+  // mfa_satisfied is the canonical DB decision, never a second Worker AAL rule.
+  const result: { data: unknown; error: unknown } = await signedIn.supabase.rpc(
+    "my_org_memberships",
+    { p_org: org },
+  );
+  if (result.error !== null || !Array.isArray(result.data))
+    throwStatus(503, signedIn.headers);
+  if (result.data.length === 0) throwStatus(404, signedIn.headers);
+  if (result.data.length !== 1) throwStatus(503, signedIn.headers);
+  const value: unknown = result.data[0];
+  if (typeof value !== "object" || value === null)
+    throwStatus(503, signedIn.headers);
+  const row = value as Record<string, unknown>;
+  const id = row["id"],
+    organisationId = row["organisation_id"],
+    userId = row["user_id"],
+    role = row["role"];
+  if (
+    typeof id !== "string" ||
+    !UUID.test(id) ||
+    typeof organisationId !== "string" ||
+    organisationId.toLowerCase() !== org.toLowerCase() ||
+    typeof userId !== "string" ||
+    userId.toLowerCase() !== signedIn.user.id.toLowerCase() ||
+    (role !== "owner" && role !== "manager" && role !== "staff") ||
+    row["status"] !== "active" ||
+    typeof row["mfa_satisfied"] !== "boolean"
+  )
+    throwStatus(503, signedIn.headers);
+  if (!row["mfa_satisfied"])
+    throwRedirect("/auth/mfa?returnTo=%2Fprovider", signedIn.headers);
+  const membership: TeamMembership = {
+    id,
+    organisation_id: organisationId,
+    user_id: userId,
+    role,
+    status: "active",
+  };
   const organisation = await signedIn.supabase
     .from("organisations")
     .select("id, name, assign_mode, offer_anyone, staff_contact_visibility")
@@ -59,7 +88,7 @@ export async function loadTeam(signedIn: SignedIn, org: string | null) {
     .overrideTypes<TeamOrganisation | null, { merge: false }>();
   if (organisation.error !== null) throwStatus(503, signedIn.headers);
   if (organisation.data === null) throwStatus(404, signedIn.headers);
-  return { membership: membership.data, organisation: organisation.data };
+  return { membership, organisation: organisation.data };
 }
 
 export async function teamServices(signedIn: SignedIn, org: string) {

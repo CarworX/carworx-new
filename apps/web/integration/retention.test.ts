@@ -89,12 +89,12 @@ describe("R-2 retention cron (built Worker)", () => {
 
   it("fails the cron run without the binding or with the wrong login", async () => {
     const w = await worker();
-    await expect(w.scheduled({}, {}, ctx)).rejects.toThrow(
+    await expect(w.scheduled({ cron: "17 1 * * *" }, {}, ctx)).rejects.toThrow(
       "retention run failed: binding_missing",
     );
     await expect(
       w.scheduled(
-        {},
+        { cron: "17 1 * * *" },
         {
           RETENTION_DB: {
             connectionString: login("retention_server", "wrong"),

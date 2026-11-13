@@ -1,6 +1,7 @@
 // BK-1 backup coverage. Every table in the backed-up schemas must be in
 // exactly one class below, and every public or private table must be
-// exported: there is no way to leave application data out. A table that is
+// exported, except the three named session-bound security tables below.
+// These must never resurrect an old proof, receipt or challenge on restore. A table that is
 // new (a migration, #84's onboarding tables, or a Supabase upgrade adding an
 // auth/storage table) fails the drill and the unit test until it's classified
 // here in a reviewed PR.
@@ -15,6 +16,13 @@ export const SCHEMAS = [
   "supabase_migrations",
 ];
 const APP_SCHEMAS = new Set(["public", "private"]);
+
+// Explicit security exception only; ordinary private/public tables stay exported.
+export const TRANSIENT_SECURITY_TABLES = Object.freeze([
+  "private.mfa_stepups",
+  "private.primary_auth_receipts",
+  "private.mfa_email_challenges",
+]);
 
 /**
  * Platform tables outside public/private, by how the backup treats them.
@@ -81,7 +89,7 @@ export const DISCOVER_SEQUENCES_SQL = `select coalesce(jsonb_agg(n.nspname || '.
 
 /**
  * Splits discovered tables into classes. Throws, naming the tables, if any
- * is unclassified or if an app table is anything but exported.
+ * is unclassified. Only the named session-bound security tables may skip export.
  */
 export function classify(tables) {
   const plan = { export: [], objects: [], managed: [], ephemeral: [] };
@@ -89,6 +97,8 @@ export function classify(tables) {
   for (const table of [...new Set(tables)].sort()) {
     const schema = table.split(".")[0];
     if (!SCHEMAS.includes(schema)) unknown.push(table);
+    else if (TRANSIENT_SECURITY_TABLES.includes(table))
+      plan.ephemeral.push(table);
     else if (APP_SCHEMAS.has(schema)) plan.export.push(table);
     else if (PLATFORM[table]) plan[PLATFORM[table]].push(table);
     else unknown.push(table);
