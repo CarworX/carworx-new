@@ -95,7 +95,7 @@ Fixes P-1 and P-2. The proposed shape, for review only (don't copy it by hand):
 
 ## 6. Hyperdrive for `CATALOGUE_DB` and `FORMS_DB` (owner)
 
-Three configurations, one per scoped login: `catalogue_server` (search and listings, D-081), `forms_server` (visitor forms, Claude 22) and `retention_server` (the R-2 daily deletion cron; it can only run `public.run_retention()`). Set a `forms_server` and a `retention_server` password the same way as step 4.1 (connection limits 5 and 2 are already in the migrations). Do steps 1 to 3 below for each, and name the third `RETENTION_DB`.
+Three configurations, one per scoped login: `catalogue_server` (search and listings, D-081), `forms_server` (visitor forms, Claude 22) and `retention_server` (the R-2 daily deletion cron; it can only run `public.run_retention()`). Set a `forms_server` and a `retention_server` password the same way as step 4.1 (connection limits 5 and 5 are already in the migrations; Hyperdrive needs at least 5). Do steps 1 to 3 below for each, and name the third `RETENTION_DB`.
 
 1. Cloudflare dashboard → **Hyperdrive → Create configuration**, or `wrangler hyperdrive create carworx-catalogue-production --connection-string="postgres://catalogue_server:<password>@<host>:<port>/postgres" --caching-disabled`.
 2. **Caching must be off.** Hyperdrive caches by default, for 60 seconds, and "does not purge or invalidate cached read query results when your application writes" ([Query caching](https://developers.cloudflare.com/hyperdrive/concepts/query-caching/), read 2026-11-10). Caching would keep a suspended listing visible. The `--caching-disabled` flag is documented in [Wrangler Hyperdrive commands](https://developers.cloudflare.com/workers/wrangler/commands/hyperdrive/), read 2026-11-10.

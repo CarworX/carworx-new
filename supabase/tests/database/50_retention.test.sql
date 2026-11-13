@@ -51,7 +51,7 @@ select is_empty($$select p.oid::regprocedure from pg_proc p join pg_namespace n 
   and p.oid not in ('public.run_retention()'::regprocedure, 'private.run_retention()'::regprocedure)$$,
   'retention_server can execute nothing else in public, private or api');
 select is_empty($$select rolname from pg_roles where rolname = 'retention_server'
-  and not (rolcanlogin and rolconnlimit = 2 and not rolsuper and not rolbypassrls and not rolinherit and not rolcreaterole and not rolcreatedb)$$,
+  and not (rolcanlogin and rolconnlimit = 5 and not rolsuper and not rolbypassrls and not rolinherit and not rolcreaterole and not rolcreatedb)$$,
   'retention_server is a limited, non-inheriting login');
 select is_empty($$select 1 from pg_auth_members m join pg_roles r on r.oid = m.member where r.rolname = 'retention_server'$$,
   'retention_server is a member of no role');

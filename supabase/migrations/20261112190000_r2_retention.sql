@@ -77,4 +77,4 @@ grant execute on function private.run_retention(), public.run_retention() to ret
 
 -- The scoped server credential. No password ships here: private test tooling
 -- sets a synthetic one locally; the owner sets the hosted one with VALID UNTIL.
-alter role retention_server login connection limit 2;
+alter role retention_server login connection limit 5;
