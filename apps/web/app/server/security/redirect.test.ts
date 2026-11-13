@@ -13,6 +13,10 @@ describe("safeReturnTo", () => {
     "/org/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
     "/provider",
     "/provider/apply",
+    "/provider/get-listed/business",
+    "/provider/setup/team/role",
+    "/provider/setup/team/start?org=0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
+    "/join",
     "/provider/claim/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
   ])("accepts %s", (path) => {
     expect(safeReturnTo(path, APP)).toBe(path);
@@ -34,6 +38,11 @@ describe("safeReturnTo", () => {
     "/provider-evil",
     "/provider/elsewhere",
     "/provider/claim/not-a-listing",
+    "/join/secret-token",
+    "/provider/setup/team/start?org=not-a-uuid",
+    "/provider/setup/team/start?org=0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20&next=//evil.example",
+    "/join?token=secret-token",
+    "/provider/get-listed/not-a-step",
     "/org/../auth/sign-out",
     "",
     "account",

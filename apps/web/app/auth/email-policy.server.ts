@@ -20,6 +20,8 @@ export function emailDecision(
       ? "allow"
       : "unavailable";
   }
+  // Production has no Auth email sender yet (gap P-4), so it stays closed
+  // until that path is reviewed. An unknown mode (null) is closed too.
   if (
     config.environment !== "staging" ||
     !config.appOrigin.startsWith("https:") ||

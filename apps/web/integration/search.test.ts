@@ -56,6 +56,7 @@ interface Storage {
   get<T>(key: string): Promise<T | undefined>;
   put(key: string, value: unknown): Promise<void>;
   transaction<T>(fn: (txn: Storage) => Promise<T>): Promise<T>;
+  getAlarm(): Promise<number | null>;
   setAlarm(time: number): Promise<void>;
   deleteAlarm(): Promise<void>;
   deleteAll(): Promise<void>;
@@ -280,6 +281,7 @@ async function limiterNamespace(): Promise<LimiterNamespace> {
           },
           transaction: <T>(fn: (txn: Storage) => Promise<T>) => fn(storage),
           // Alarms are covered by the unit suite; the harness has no clock.
+          getAlarm: () => Promise.resolve(null),
           setAlarm: () => Promise.resolve(),
           deleteAlarm: () => Promise.resolve(),
           deleteAll: () => {

@@ -1,5 +1,6 @@
 import { data } from "react-router";
 
+import { QueueFilters } from "../admin-onboarding/QueueFilters";
 import { throwStatus } from "../auth/http.server";
 import { requireAdmin } from "../server/providers/admin.server";
 import { PAGE_SIZE, parsePage } from "../server/providers/forms";
@@ -11,13 +12,14 @@ export const meta: Route.MetaFunction = () => [
   { title: "Listings · Admin · CarworX" },
 ];
 
-const STATUSES = ["submitted", "live", "suspended", "draft"] as const;
+const STATUSES = ["submitted", "live", "suspended", "draft", "all"] as const;
 type Status = (typeof STATUSES)[number];
 const TITLES: Record<Status, string> = {
-  submitted: "Review queue",
-  live: "Live listings",
+  submitted: "Applications",
+  live: "Businesses",
   suspended: "Suspended listings",
   draft: "Returned to the provider",
+  all: "All applications and businesses",
 };
 
 interface Row {
@@ -25,7 +27,7 @@ interface Row {
   display_name: string;
   metro: string;
   mode: "fixed" | "mobile" | "both";
-  status: Status;
+  status: Exclude<Status, "all">;
   submitted_at: string | null;
   created_at: string;
 }
@@ -38,19 +40,22 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const status = STATUSES.find((s) => s === asked);
   const page = parsePage(url.searchParams.get("page"));
   if (status === undefined || page === null) throwStatus(404, admin.headers);
-  const { data: rows, error } = await admin.supabase
+  let query = admin.supabase
     .from("listings")
     .select(
       "public_id, display_name, metro, mode, status, submitted_at, created_at",
     )
-    .eq("status", status)
     .order(status === "submitted" ? "submitted_at" : "created_at", {
       ascending: true,
       nullsFirst: true,
     })
     .order("public_id")
-    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
-    .overrideTypes<Row[], { merge: false }>();
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  if (status !== "all") query = query.eq("status", status);
+  const { data: rows, error } = await query.overrideTypes<
+    Row[],
+    { merge: false }
+  >();
   if (error !== null) throwStatus(503, admin.headers);
   return data(
     {
@@ -67,6 +72,18 @@ export default function AdminListings({ loaderData }: Route.ComponentProps) {
   const { status, rows, page, more } = loaderData;
   return (
     <AdminShell title={TITLES[status]}>
+      <QueueFilters
+        label="Application and business status"
+        base="/admin/listings"
+        value={status}
+        options={[
+          { value: "submitted", label: "Waiting" },
+          { value: "draft", label: "Sent back" },
+          { value: "live", label: "Approved" },
+          { value: "suspended", label: "Suspended" },
+          { value: "all", label: "All" },
+        ]}
+      />
       {rows.length === 0 ? (
         <StatusNote title="Nothing here.">
           No listings in this state.
@@ -90,6 +107,7 @@ export default function AdminListings({ loaderData }: Route.ComponentProps) {
                     : "Mobile"}{" "}
                 · {r.metro} · {status === "submitted" ? "sent" : "created"}{" "}
                 {(r.submitted_at ?? r.created_at).slice(0, 10)}
+                {status === "all" ? ` · ${r.status}` : ""}
               </p>
             </li>
           ))}

@@ -2,6 +2,12 @@ import { createRequestHandler } from "react-router";
 
 import { pgClient, runRetention } from "../app/server/retention/run";
 import {
+  MAIL_WEBHOOK_PATH,
+  dispatchMailWebhook,
+  drainScheduledMail,
+} from "../app/server/mail/runtime.server";
+
+import {
   withSecurityBoundary,
   type SecurityContext,
 } from "../app/server/security/boundary";
@@ -27,15 +33,22 @@ const requestHandler = createRequestHandler(
 
 export default {
   fetch(request, env, ctx) {
+    // This exact endpoint uses raw-body Svix authentication instead of a browser
+    // CSRF token. All other requests retain the full T5 security boundary.
+    if (new URL(request.url).pathname === MAIL_WEBHOOK_PATH) {
+      return dispatchMailWebhook(request, env);
+    }
     // Every request passes the T5 boundary: Origin and CSRF checks before the
     // app runs, cache, cookie, redirect and security headers after it.
     return withSecurityBoundary(request, env, (checked, security) =>
       requestHandler(checked, { cloudflare: { env, ctx }, security }),
     );
   },
-  // R-2: the daily retention cron (wrangler.jsonc triggers). Logs counts
-  // only; any failure throws, so the cron run is marked failed.
-  async scheduled(_controller, env) {
+  // Cron (wrangler.jsonc triggers): R-2 retention, plus draining queued
+  // mail (O5). Retention logs counts only; any failure throws, so the run is
+  // marked failed.
+  async scheduled(_controller, env, ctx) {
+    ctx.waitUntil(drainScheduledMail(env));
     const binding = (env as { RETENTION_DB?: { connectionString?: unknown } })
       .RETENTION_DB;
     const counts = await runRetention(binding, pgClient);

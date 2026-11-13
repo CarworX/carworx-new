@@ -203,23 +203,49 @@ try {
   const owner = await user("owner");
   const provider = await page(browser);
   await signIn(provider, owner.email);
+  // The stepped application (Claude 23 O3): business → service → location
+  // → about → check. Location uses the device path (no Mapbox in this run),
+  // with a synthetic Johannesburg position granted to this context only.
+  await provider
+    .context()
+    .grantPermissions(["geolocation"], { origin: ORIGIN });
+  await provider
+    .context()
+    .setGeolocation({ latitude: -26.1201, longitude: 28.0601 });
+  const next = async () => {
+    await provider.getByRole("button", { name: "Save and continue" }).click();
+    await provider.waitForLoadState("networkidle");
+  };
   await provider.goto(`${ORIGIN}/provider/apply`);
+  await provider.waitForURL(/\/provider\/get-listed\/business/);
   await provider.getByLabel("Business name").fill("A12 Motors (synthetic)");
-  await provider.getByLabel("Main service").selectOption("service");
-  await provider.getByLabel("Customers come to my workshop").check();
-  await provider.getByLabel("Area or metro").fill("Gauteng");
-  await provider
-    .getByLabel("What you do")
-    .fill("Synthetic workshop for the A12 browser run");
-  await provider
-    .getByLabel("Workshop address (workshops only)")
-    .fill("12 Synthetic Avenue, Exampleville");
-  await provider.getByLabel("Latitude").fill("-26.1201");
-  await provider.getByLabel("Longitude").fill("28.0601");
   await shot(provider, "01-provider-apply");
-  await provider.getByText("These details are true").click();
-  await provider.getByRole("button", { name: "Send application" }).click();
-  await provider.waitForURL(/\/provider\?applied=1/);
+  await next();
+  await provider.waitForURL(/\/get-listed\/service/);
+  await provider.getByLabel("Mechanical service").check();
+  await provider.getByLabel(/They come to me/).check();
+  await next();
+  await provider.waitForURL(/\/get-listed\/location/);
+  await provider.getByLabel("Area or metro").selectOption("Johannesburg");
+  await provider
+    .getByLabel("Public premises address")
+    .fill("12 Synthetic Avenue, Exampleville");
+  await provider.getByRole("button", { name: "Use my location" }).click();
+  await provider
+    .getByRole("button", { name: "Continue to browser permission" })
+    .click();
+  await provider.getByText(/Location chosen \(your device\)/).waitFor();
+  await next();
+  await provider.waitForURL(/\/get-listed\/about/);
+  await provider
+    .getByLabel("A line about your business")
+    .fill("Synthetic workshop for the A12 browser run");
+  await next();
+  await provider.waitForURL(/\/get-listed\/check/);
+  await provider.getByText("I am 18 or older").click();
+  await provider.getByRole("button", { name: "Send for review" }).click();
+  await provider.waitForURL(/\/get-listed\/submitted/);
+  await provider.goto(`${ORIGIN}/provider`);
   const publicId =
     (await provider
       .locator("[data-listing]")
@@ -256,11 +282,20 @@ try {
   );
   await shot(admin, "03-admin-queue");
   await admin.goto(`${ORIGIN}/admin/listings/${publicId}`);
+  // Guided review (O4): Business → Location → Checks → Decision → Confirm.
+  const cont = () =>
+    admin.getByRole("button", { name: "Continue", exact: true }).click();
+  await cont();
+  await cont();
   await admin.getByLabel("How did you check it?").selectOption("site_visit");
   await admin.getByLabel("Identity checked").check();
   await admin.getByLabel("Premises visited").check();
   await admin.getByLabel(/Evidence reference/).fill("synthetic-a12-visit");
   await shot(admin, "04-admin-review");
+  await cont();
+  await admin.getByRole("radio", { name: "Approve and publish" }).check();
+  await cont();
+  await admin.getByLabel("I checked this myself").check();
   await admin.getByRole("button", { name: "Approve and publish" }).click();
   await admin.waitForURL(/done=1/);
   const visitor = await page(browser);
@@ -277,9 +312,15 @@ try {
   const claimer = await page(browser);
   await signIn(claimer, claimant.email);
   await claimer.goto(`${ORIGIN}/provider/claim/${publicId}`);
-  await claimer.getByLabel("I'll show an admin a document").check();
-  await claimer.getByLabel(/Document reference/).fill("Synthetic lease, March");
+  // Zero-typed claim (O3): Business → Proof (picks only) → Check → Send.
+  await claimer.getByRole("link", { name: "Continue to proof" }).click();
+  await claimer.getByLabel(/Business document/).check();
+  await claimer.getByLabel("Document type").selectOption("lease");
+  await claimer.getByLabel("Year").selectOption({ index: 1 });
+  await claimer.getByLabel("Month").selectOption({ index: 1 });
+  await claimer.getByLabel("Day").selectOption({ index: 1 });
   await shot(claimer, "06-claim");
+  await claimer.getByRole("button", { name: "Review claim" }).click();
   await claimer.getByRole("button", { name: "Send claim" }).click();
   await claimer.waitForURL(/claimed=1/);
   await provider.goto(`${ORIGIN}/provider`);
