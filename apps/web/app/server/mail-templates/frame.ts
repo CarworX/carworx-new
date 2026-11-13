@@ -210,7 +210,7 @@ export function renderEmail(email: Email, origin: string): Rendered {
   const after = (email.after ?? []).map(blockHtml).join("");
   const privacy = `${origin.replace(/\/$/, "")}/privacy`;
   const html = `<!doctype html>
-<html lang="en-ZA" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en-ZA">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
