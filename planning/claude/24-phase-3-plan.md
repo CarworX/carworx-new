@@ -130,7 +130,7 @@ Weeks are an order of work, not a promise; we move as fast as the build allows. 
 |---|---|
 | Building without tests hides bugs until late | Strong database constraints from the start (they're design, not tests); the test round is mandatory before anything reaches `main` |
 | The two lanes drift apart | One written contract (section 4); changes only by agreement on the plan PR |
-| Double-booking under load | Row lock plus overlap count in one transaction; A18 races N+1 holds in the test round |
+| Double-booking under load | Row lock plus peak simultaneous occupancy (§5 C1) in one transaction; A18 races N+1 holds in the test round |
 | A payment confirms an expired hold | `confirm_paid` refuses; late payments always go to reconciliation (A23) |
 | Phase 3 breaks the free site | Separate `phase-3` branch; existing suites still run in CI on every `phase-3` PR |
 | Real money or messages by mistake | Test keys only; no live keys exist until G-PAY; staging recipient policy blocks real email |
