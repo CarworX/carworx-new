@@ -12,7 +12,7 @@ function rows(value: unknown): Row[] {
   return value
     .slice(0, 100)
     .filter(
-      (r): r is Row =>
+      (r: unknown): r is Row =>
         typeof r === "object" &&
         r !== null &&
         Object.values(r).every(

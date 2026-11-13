@@ -139,18 +139,20 @@ export async function chargeEvent(
       : null;
   const provider = id(d["id"]),
     domain = d["domain"] ?? t?.["domain"];
+  const transactionId = id(tx);
   const reference =
     kind === "charge.success"
       ? d["reference"]
-      : (t?.["reference"] ?? (id(tx) !== null ? "provider:" + id(tx) : null));
+      : (t?.["reference"] ??
+        (transactionId !== null ? `provider:${transactionId}` : null));
   const amount = kind.startsWith("charge.dispute.")
     ? t?.["amount"]
     : d["amount"];
   const currency = kind.startsWith("charge.dispute.")
     ? t?.["currency"]
     : d["currency"];
-  const status =
-    kind === "charge.success" ? "success" : kind.split(".").at(-1)!;
+  const status = kind === "charge.success" ? "success" : kind.split(".").at(-1);
+  if (status === undefined) return null;
   if (
     (domain !== undefined && domain !== "test") ||
     (kind === "charge.success" &&
