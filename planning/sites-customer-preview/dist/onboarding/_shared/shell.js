@@ -10,7 +10,11 @@
     owner: { name: "Sipho Dlamini", ini: "SD", sub: "Owner · Shine Bay Car Wash" },
     admin: { name: "Naledi Dube", ini: "ND", sub: "CarworX admin" },
   };
-  const roleOf = (value) => Object.hasOwn(WHO, value) ? value : "owner";
+  const roleOf = (value) => value == null ? "owner" : Object.hasOwn(WHO, value) ? value : "driver";
+  const roleFromSearch = (query) => {
+    const values = query.getAll("as");
+    return values.length === 0 ? "owner" : values.length === 1 ? roleOf(values[0]) : "driver";
+  };
   const googleOnly = new URLSearchParams(typeof location === "undefined" ? "" : location.search).getAll("provider").includes("google");
   const H = (p) => {
     if (googleOnly && /\.html(?:[?#]|$)/.test(p)) {
@@ -93,5 +97,5 @@
       if (!drop.hidden && !e.target.closest(".sh-acct")) toggle(drop, me, false);
     });
   }
-  window.SHELL = { mount, WHO, roleOf };
+  window.SHELL = { mount, WHO, roleOf, roleFromSearch };
 })();

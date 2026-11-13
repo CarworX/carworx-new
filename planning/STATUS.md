@@ -1,5 +1,12 @@
 # Status
 
+Sites milestone (2026-11-13): CarworX ChatGPT Site **version 3** is published
+with refreshed journeys and a linked Progress page. Restricted access revision
+2 and the existing external viewer are preserved. Future refreshes are at
+completed-feature milestones, per owner instruction. [Publication evidence](codex/44-sites-milestone-publication.md).
+Directory staging approval persists, but private hostname/access and runtime
+readiness remain unconfigured; the live coming-soon Worker was not changed.
+
 Context cleanup: 2026-11-12 UTC, based on main `7ec5eb7`. This condenses existing records; it grants no authority and does not transfer the baton.
 
 ## Baton and scope

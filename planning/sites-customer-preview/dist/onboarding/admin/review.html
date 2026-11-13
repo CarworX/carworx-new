@@ -87,7 +87,8 @@
     mzansi: { name: "Mzansi Mobile Mechanics", ini: "MM", sent: "11 Nov 2026, 14:10 SAST", who: "Thabo Khumalo · Owner", services: "Mobile mechanic, Auto electrical", mode: ["I go to them"], metro: "Ekurhuleni", hours: "Mon–Fri · 07:00–18:00", team: "Just me", since: "—", about: "We come to your home or office. Free written quotes.", map: [{ x: 0.55, y: 0.45, kind: "base", r: 25 }] },
     jacaranda: { name: "Jacaranda Tyre & Align", ini: "JT", sent: "12 Nov 2026, 07:15 SAST", who: "Priya Naidoo · Manager", services: "Tyres & Wheel Alignment", mode: ["They come to me", "I go to them"], metro: "Tshwane (Pretoria)", area: "Hatfield", hours: "Mon–Sat · 07:30–17:30", team: "6–15", since: "12 June 2015", about: "Same-day fitment. Fleet work welcome.", map: [{ x: 0.35, y: 0.4, kind: "pin" }, { x: 0.62, y: 0.58, kind: "base", r: 20 }] },
   };
-  const A = APPS[new URLSearchParams(location.search).get("app")] || APPS.shine;
+  const selectedApp = new URLSearchParams(location.search).get("app");
+  const A = Object.hasOwn(APPS, selectedApp) ? APPS[selectedApp] : APPS.shine;
   const fixed = A.mode.includes("They come to me"), mobile = A.mode.includes("I go to them");
   // Questions for the review (real values from apps/web/app/server/providers/forms.ts).
   Q.method = { t: "How did you check this business?", h: "Recorded with your decision (D-023).", type: "pick", opts: ["Phone call", "Video call", "Documents checked", "Business registry checked", "Site visit"] };

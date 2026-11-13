@@ -6,4 +6,4 @@ From this directory run `node --check dist/app.js` and `node test-preview.cjs`. 
 
 Current source is being corrected for independent security review. Passing these checks does not establish real bookings, payments, account security, mail delivery or production readiness. See PR review and deployment records for exact source status.
 
-Publication uses the existing CarworX Sites project and preserves its current restricted audience. GitHub source publication is separate from a successful Sites deployment. The GitHub-only owner instruction currently leaves local packaging/deployment pending; do not claim this source is live.
+Publication uses the existing CarworX Sites project and preserves its current restricted audience. GitHub source publication is separate from a successful Sites deployment. The owner has authorized the current refresh and milestone-based future updates; follow [UPDATE-POLICY.md](UPDATE-POLICY.md). Record the verified deployed version before claiming a source revision is live.

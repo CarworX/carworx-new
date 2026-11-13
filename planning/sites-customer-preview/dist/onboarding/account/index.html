@@ -52,7 +52,7 @@
   // Synthetic key matching qr-demo.svg (prototype only; real keys are made per person at setup).
   const KEY = "TZ6R SLLE FYUB XYHA 7KHU PKX4 OUBK XUX4";
   const q = new URLSearchParams(location.search);
-  let as = SHELL.roleOf(q.get("as")), tab = q.get("tab") || "profile";
+  let as = SHELL.roleFromSearch(q), tab = q.get("tab") || "profile";
   const googleOnly = q.getAll("provider").includes("google");
   const teamMfa = ["optional", "managers", "all"].includes(q.get("teamMfa")) ? q.get("teamMfa") : "optional";
   const admin = () => as === "admin";

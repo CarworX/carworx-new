@@ -169,7 +169,7 @@
     else if (t.hasAttribute("data-close")) { sel = null; render(); }
   });
   const q = new URLSearchParams(location.search);
-  as = SHELL.roleOf(q.get("as")); tab = q.get("tab") || "bookings"; sel = q.get("b"); filt = q.get("f") || "All";
+  as = SHELL.roleFromSearch(q); tab = q.get("tab") || "bookings"; sel = q.get("b"); filt = q.get("f") || "All";
   render();
   if (q.get("menu")) document.querySelector("[data-sh-menu]").click();
 </script>

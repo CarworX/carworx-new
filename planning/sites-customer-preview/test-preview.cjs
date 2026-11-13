@@ -142,7 +142,7 @@ function previewScreen(file, search) {
   const ctx = vm.createContext({
     document: doc, window: win, SHELL: win.SHELL,
     OB: { ic: () => '<svg aria-hidden="true"></svg>', esc: escape },
-    URL, URLSearchParams, location: { search }, requestAnimationFrame(fn) { fn(); }
+    URL, URLSearchParams, location: { search, href: new URL(file.replace(/^dist\//, ''), 'https://preview.test/').href + search }, requestAnimationFrame(fn) { fn(); }
   });
   const html = fs.readFileSync(file, 'utf8');
   const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
@@ -176,6 +176,10 @@ for (const file of ['dist/onboarding/later/index.html', 'dist/onboarding/history
   }
 }
 const googleRecovery = signIn('?as=manager&provider=google');
+for (const query of ['?as=constructor', '?as=owner&as=admin', '?as=admin&as=driver', '?as=']) {
+  const screen = previewScreen('dist/onboarding/account/index.html', query);
+  assert.equal(screen.nodes['[data-sub]'].textContent, 'Driver', query);
+}
 googleRecovery.nodes['[data-recovery]'].onclick();
 googleRecovery.nodes['[data-verify]'].onclick();
 assert.equal(googleRecovery.appended.at(-1).href, 'index.html?as=manager&tab=security&provider=google');
@@ -194,5 +198,9 @@ assert(home.includes('/app.html#search/wash'));
 assert(home.includes('/onboarding/phase1/index.html'));
 assert(home.includes('PRIVATE INTERACTIVE PREVIEW'));
 assert(!home.includes('cdnjs.cloudflare.com') && !home.includes('fonts.googleapis.com'));
+assert(home.includes('/progress.html'), 'milestone update is discoverable from home');
+const progress = fs.readFileSync('dist/progress.html', 'utf8');
+assert(progress.includes('13 November 2026') && progress.includes('simulated actions'));
+for (const link of progress.matchAll(/href="([^"]+)"/g)) checkUrl(link[1], path.join(dist, 'progress.html'));
 for (const n of ['wash-detailing', 'repairs-maintenance', 'glass-repair', 'tyres-alignment']) assert(fs.existsSync(`dist/assets/studio/objects/carworx-object-${n}.svg`));
 console.log(`Passed: 17 customer routes, legacy redirects, escaped search, request/payment transitions, ${htmlCount} onboarding pages, ${checkedLinks} local URLs/assets, all 5 role menus, restricted fallback URLs, sign-in completion and factor-reset preview.`);

@@ -23,7 +23,7 @@
 <script>
   // Menu items whose screens belong to a later design round, so no menu link is ever dead.
   const q = new URLSearchParams(location.search);
-  const as = SHELL.roleOf(q.get("as"));
+  const as = SHELL.roleFromSearch(q);
   const candidate = q.get("what") || "requests";
   const what = ["requests", "search", "bookings", "driver-history"].includes(candidate) ? candidate : "unknown";
   const T = {
