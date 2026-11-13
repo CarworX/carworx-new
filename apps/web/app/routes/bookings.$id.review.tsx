@@ -2,14 +2,14 @@ import { data, Form } from "react-router";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
 import { Button, ButtonLink } from "../ui/Button";
+import { throwStatus } from "../auth/http.server";
 import { PublicShell } from "../ui/public/PublicShell";
 import type { Route } from "./+types/bookings.$id.review";
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 export async function loader({ request, params, context }: Route.LoaderArgs) {
   const a = await requireSignedIn(request, context.security);
   a.headers.set("Cache-Control", "private, no-store");
-  if (!UUID.test(params.id))
-    throw new Response(null, { status: 404, headers: a.headers });
+  if (!UUID.test(params.id)) throwStatus(404, a.headers);
   const r = await a.supabase.rpc("my_booking_review", { p_booking: params.id });
   return data(
     {

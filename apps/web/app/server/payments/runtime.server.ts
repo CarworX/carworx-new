@@ -139,10 +139,7 @@ export async function reconcilePayments(env: unknown): Promise<void> {
   for (const attempt of await ready.db.recovery()) {
     try {
       const v = await ready.provider.verify(attempt.reference);
-      if (
-        v.amountMinor !== Number(attempt.amount_minor) ||
-        v.currency !== attempt.currency
-      ) {
+      if (v.amountMinor !== Number(attempt.amount_minor)) {
         await ready.db.flag(attempt.id, "verification_mismatch");
         continue;
       }

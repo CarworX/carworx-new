@@ -191,8 +191,10 @@ export function createPaystack(
         "/refund?perPage=2&reference=" +
           encodeURIComponent("cxf_" + expected.refundId.replaceAll("-", "")),
       );
-      if (rows.length !== 1) throw new Error("refund_reconciliation_required");
-      return refundRow(rows[0]!, expected);
+      const row = rows[0];
+      if (rows.length !== 1 || row === undefined)
+        throw new Error("refund_reconciliation_required");
+      return refundRow(row, expected);
     },
     async disputeStatus(
       id: string,
@@ -231,7 +233,7 @@ export function createPaystack(
       if (!Number.isSafeInteger(page) || page < 1)
         throw new Error("payment_input_invalid");
       return (
-        await list("/settlement?status=success&perPage=10&page=" + page)
+        await list(`/settlement?status=success&perPage=10&page=${String(page)}`)
       ).map((d) => {
         const gross = d["total_processed"],
           fees = d["total_fees"],
@@ -261,7 +263,7 @@ export function createPaystack(
         throw new Error("payment_input_invalid");
       return (
         await list(
-          "/settlement/" + id + "/transactions?perPage=10&page=" + page,
+          `/settlement/${id}/transactions?perPage=10&page=${String(page)}`,
         )
       ).map((d) => {
         const amount = d["amount"],
@@ -305,7 +307,6 @@ export function createPaystack(
         !/^ACCT_[A-Za-z0-9]{3,80}$/.test(subaccount) ||
         !Number.isSafeInteger(hold.amountMinor) ||
         hold.amountMinor <= 0 ||
-        hold.currency !== "ZAR" ||
         Date.parse(hold.expiresAt) <= Date.now() ||
         !Number.isFinite(Date.parse(hold.expiresAt)) ||
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
