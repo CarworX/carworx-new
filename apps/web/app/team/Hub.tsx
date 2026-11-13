@@ -6,10 +6,13 @@ export function SetupHub({
   org,
   role,
   live,
+  hoursListing,
 }: {
   org: string;
   role: TeamRole | undefined;
   live: boolean;
+  /** A live listing whose opening hours the "Opening hours" task opens. */
+  hoursListing?: string | undefined;
 }) {
   if (role === "staff")
     return (
@@ -27,6 +30,17 @@ export function SetupHub({
     );
   if (!live) return null;
   const tasks = [
+    ...(hoursListing
+      ? [
+          {
+            task: "hours",
+            title: "Opening hours",
+            description: "Set each day's opening and closing times.",
+            allowed: true,
+            href: `/provider/hours/${hoursListing}`,
+          },
+        ]
+      : []),
     {
       task: "team",
       title: "Team",
@@ -75,7 +89,11 @@ export function SetupHub({
                 <ButtonLink
                   size="sm"
                   variant="outline"
-                  href={setupHref(org, task.task)}
+                  href={
+                    "href" in task && task.href
+                      ? task.href
+                      : setupHref(org, task.task)
+                  }
                 >
                   {task.task === "cover" ? "Details" : "Open"}
                 </ButtonLink>
