@@ -26,9 +26,13 @@ does not establish production, legal, spending or live-payment readiness.
 
 ## Access and readiness blockers
 
-- Cloudflare connector returns `UNAUTHORIZED`: connection requires
-  reauthentication. Local `wrangler whoami` reports not authenticated. Requested
-  that the owner reconnect Cloudflare; no credential value requested or read.
+- Cloudflare reconnection verified 2026-11-13 19:45 UTC. Read-only API access
+  works. The three recorded staging Hyperdrive configs have scoped logins,
+  point at the intended Supabase host and have caching disabled.
+- `carworx-web-staging` has no deployed version/settings; the Auth-email Worker
+  does not exist. No staging custom domain is attached. Cloudflare Access API
+  reports Access is not enabled. Asked for the approved staging hostname and
+  Access application; no renewed deployment approval requested.
 - GitHub repository secret/variable inventories are empty;
   `STAGING_APP_ORIGIN` is absent. The existing workflow also expects
   `STAGING_CLOUDFLARE_ACCOUNT_ID` and `STAGING_CLOUDFLARE_API_TOKEN`.
@@ -36,15 +40,31 @@ does not establish production, legal, spending or live-payment readiness.
   Worker-scoped token policy and hosted Auth-hook delivery evidence are null.
   Owner approval covers permission, not these missing verification facts.
   Do not flip the readiness flag or bypass the workflow checks.
-- No upload, deployment, DNS change, real email, provider transaction or
-  production operation occurred.
+- No directory Worker deployment, DNS change, real email, provider transaction
+  or public-domain release occurred. The separate restricted ChatGPT Site
+  was successfully updated to version 3; see the milestone note below.
 
 ## Resume
 
-After Cloudflare reconnects, verify the existing account, Worker, restricted
-staging URL, bindings, private configuration revisions and Auth-hook evidence.
+Complete the restricted staging URL/access setup, private configuration
+revisions and Auth-hook evidence with the already verified account/bindings.
 Complete the recorded readiness checks, deploy the pinned directory source,
 and verify the deployed version with hosted A1–A7 checks. Keep approved
 recipient values and credentials out of chat, Git and reports. Production
 setup, legal sign-offs, backup operations and owner device/accessibility checks
 remain G-PROD work; shared A23/A29/A35 E2E still waits for Phase 3 staging.
+
+## Sites milestone refresh
+
+Owner also requested a preview update now, then at meaningful completed-feature
+milestones. Published CarworX ChatGPT Site version 3 at
+https://carworx.gerrardlewu.chatgpt.site from Site source
+`d3fa09df63f187add507c9c66b8f31073b83ff2b`; deployment
+`appgdep_6af76baf46ec8191919aec47b6cabe60` succeeded. Readback confirms `custom`
+access revision 2 and one existing external visitor unchanged. The preview
+has refreshed journeys and a Progress page; actions remain simulated.
+
+GitHub preview source: `codex/sites-finish-remote` @`b88a8ca` (#83).
+Checks: 17 customer routes, 17 onboarding pages, 302 links/assets and
+representative desktop/mobile browser QA. Future updates follow the committed
+milestone policy; no timer or unattended monitoring service was created.

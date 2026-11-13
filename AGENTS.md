@@ -16,3 +16,7 @@ Shared rules for Claude Code and Codex; owner: Gerrard Lewu. Owner instructions 
 - Application changes: `claude/*` or `codex/*` branch, PR, `Agent:` commit trailer, green exact-head CI and independent formal review (D-073). Read D-080/D-085 before relying on any scoped interim exception; a self-check is never independent review. Draft CI skips pass no gate (D-086).
 - D-071 staging operations require their bounded authorization and verified targets. Accounts, production secrets/releases, outreach and spending need explicit owner authority. No new authority follows from this file.
 - D-087: never write the owner's personal email in commits, trailers, files, PRs or logs. Owner commits use `86560354+Gerrard-Lewu@users.noreply.github.com`; agents use their own noreply identities. Set a compliant local identity before committing.
+
+## Sites progress preview
+
+Owner instruction (2026-11-13): refresh the existing CarworX ChatGPT Site when a coherent feature/journey or a meaningful verified milestone is completed, not after every commit or minor edit. Follow `planning/sites-customer-preview/UPDATE-POLICY.md`; keep the current restricted audience and simulation labels. Record the deployed Site version separately from GitHub source and staging/production status. This is milestone-driven work, not a scheduled background service.
