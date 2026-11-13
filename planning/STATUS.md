@@ -1,29 +1,20 @@
 # Status
 
-Context cleanup: 2026-11-12 UTC, based on main `7ec5eb7`. This condenses existing records; it grants no authority and does not transfer the baton.
+Updated 2026-11-12 UTC. Owner authorized the finish plan in chat: Codex may build, use Codex workers/review, publish and safely merge without waiting for Claude. Latest execution choice: continue through GitHub only while local disk space is exhausted. See D-091 and [finish record](codex/35-autonomous-finish.md).
 
-## Baton and scope
+## Current work
 
-Claude builds Phase 2 under recorded interim authority D-080/D-085; Codex reviews. Read those decisions before relying on an exception. Phase 2 is local/CI and synthetic only; staging operations remain separately bounded by D-071/D-073.
+- Main includes foundations, Phase 2 Bundles A/B/C, onboarding designs #72, O1 #78, build plan #77 and O2 #79. CI regression #76 and context cleanup #81 were independently reviewed and merged on green exact-head CI during this task.
+- O3 provider steps, O4 admin flows, O5 encrypted email foundation, O6 team setup and account tabs are in progress on the Codex finish branch. These are not acceptance-complete or approved for merge yet. Remote Actions will provide pinned-runtime verification.
+- Sites preview changes exist locally but remain CHANGES: role/query handling, Google-only eligibility, reflected markup and main application entry need correction. Publication is pending security fixes and the packaging path; current restricted Site audience is preserved.
 
-Phase 1 foundations and P2-1/P2-2/P2-3 are merged. Phase 1 staging acceptance remains open. A local or CI pass is not hosted A1–A7 completion.
+## External blockers and gates
 
-## Open work and gates
+- C: exhausted; local WSL and browser/runtime writes failed. Automatic approval review rejected cleanup commands. Owner chose GitHub-only continuation; local personal files remain untouched.
+- Cloudflare connector requires reauthentication. Supabase connection lists CarworX MVP Dev; it has not been established as the approved staging target. No migrations or real sends were performed there.
+- Hosted A1–A7, real OAuth/mail, application-path timings, backup/restore, physical-device/accessibility evidence and G-PROD remain open.
+- G-LIVEPAY requirements remain open; payment implementation is test mode only. No live collection or public-domain cutover is claimed.
 
-- **Phase 1 staging:** last recorded promotion blockers are connector access, owner configuration and missing hosted evidence. Reverify current access before execution; this cleanup did not probe services. Application-path and direct-Auth timing, recipient restrictions, real OAuth/mail, hosted performance and A7 remain unverified. Use [Codex 19](codex/19-phase1-staging-completion.md) and [guide 11](owner-guides/11-staging-bootstrap.md).
-- **Phase 2 bundles:** D-085 assigns A (provider/admin) and C (launch readiness) first, then B after owner inspection/approval. Refresh live PR/owner records before selecting work; this summary does not assert that any bundle has cleared its gates.
-- **Reviews:** [Codex 23](codex/23-claim-concurrency.md) records concurrency evidence and follow-ups; exact-head review is still required. Historical checks are not approval of later heads.
-- **G-PROD:** Phase 1 hosted A1–A7, D-060 owner-only device/accessibility checks, privacy/Information Officer/retention and recovery evidence remain required.
-- **G-LIVEPAY** (formerly G-PAY): company/business bank, provider-paid fees, funded reserve/recovery and payment-provider confirmation remain gated (D-048–D-054, D-076). Revenue, fines integration, outreach and spending retain their separate owner gates.
+## Next
 
-## Repository snapshot
-
-On 2026-11-12, #77 (onboarding plan) and #79 (data model) merged; D-088–D-090 are now binding on main. [Claude 23](claude/23-onboarding-redesign-build-plan.md) covers slices O1–O8, after the Codex 30 Bundle B review gate. Refresh exact-head review records before continuing; this cleanup grants no slice approval. The old status statement “No product code yet” is superseded by merged #79.
-
-Open PR observed: #76 (CI regression). #80 (Coming Soon) is also merged; no deployment was verified here.
-
-## References and maintenance
-
-- Binding decisions: [DECISIONS](DECISIONS.md); planning procedure: [PROTOCOL](PROTOCOL.md); technical scope: [PLAN](PLAN.md). Search relevant IDs and later amendments.
-- The complete pre-cleanup status, including its turn log and prior checks, is preserved verbatim in [STATUS-ARCHIVE-2026-11-12](STATUS-ARCHIVE-2026-11-12.md). It is historical evidence, not current authority.
-- Append detailed evidence to [HISTORY](HISTORY.md). Keep this file to current scope, blockers and next actions; do not grow another turn log here.
+Complete and independently review coherent slices, run exact-head CI, merge passing work, then continue O7/O8 and Phase 3 sandbox flows. Keep incomplete or inaccessible checks explicit.

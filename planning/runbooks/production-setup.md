@@ -30,7 +30,7 @@ These were found while writing this runbook by reading `apps/web/wrangler.jsonc`
 |---|---|---|---|
 | **P-1** | ~~`wrangler.jsonc` has a default (local) and a `staging` environment, **no `production`**~~ **Fixed** (2026-11-12): `env.production` exists, pinned by `scripts/ops/env/contract.test.js` | A production build would pick up `CARWORX_ENV=local` | Agent PR (config owner), reviewed |
 | **P-2** | ~~No environment declares the **`CATALOGUE_DB` Hyperdrive binding**, staging included~~ **Fixed in shape** (2026-11-12): staging and production bind `CATALOGUE_DB` and `FORMS_DB` to placeholder IDs `OWNER_SETS_<ENV>_<BINDING>_HYPERDRIVE_ID`. A deploy fails until the owner's real IDs replace them | Search, the listing pages and the forms return "unavailable" without them | Agent PR; the owner supplies the Hyperdrive IDs (not secret) |
-| **P-3** | `readServerConfig` recognises only `local` and `staging`. Any other `CARWORX_ENV` gives `environment: null` | Production Auth email and sign-up behaviour must be reviewed for the `null` case before launch | Agent review, Bundle A/B owners |
+| **P-3** | ~~`readServerConfig` recognises only `local` and `staging`~~ **Fixed** (2026-11-12): `CARWORX_ENV=production` is recognised and fails closed. It throws (500 on every mutation) if `APP_ORIGIN` or `SUPABASE_URL` is missing, not HTTPS or loopback, or if any staging/local control in §7.2 is set. Dev pages are always closed, Auth email stays `unavailable` until P-4, Turnstile test keys are refused. Unknown modes stay `null` | Production Auth email and sign-up behaviour must be reviewed for the `null` case before launch | Agent review, Bundle A/B owners |
 | **P-4** | There is **no production Auth email path**. K2 built a staging-only hook Worker (`carworx-auth-email-staging`) | Sign-up confirmation and password reset need a sender. Supabase's built-in sender isn't for production use | Agents propose (hook or custom SMTP), the owner decides |
 | **P-5** | The Turnstile names aren't fixed yet (Bundle B) | The form secret must be named before Bundle B ships | Bundle B fixes; this runbook uses proposed names |
 
@@ -112,7 +112,7 @@ Set with `wrangler secret put <NAME> --env production` or in the dashboard ([Sec
 |---|---|---|---|
 | `APP_ORIGIN` | var | `https://carworx.app` | `.env.example`, T3 |
 | `SUPABASE_URL` | var | The production API URL | `.env.example`, T3 |
-| `CARWORX_ENV` | var | `production` (see gap P-3) | `wrangler.jsonc`, K2 |
+| `CARWORX_ENV` | var | `production`. The Worker refuses to start mutations if any name in §7.2 is also set (P-3) | `wrangler.jsonc`, K2 |
 | `SUPABASE_PUBLISHABLE_KEY` | secret | The production publishable (anon) key. **Never** the service-role key | `.env.example`, K2 README |
 | `SEARCH_CURSOR_KEY` | secret | 32+ random characters, signs search cursors and map pins | `.env.example`, D-081, D-084 |
 | `SEARCH_LIMITER_SALT` | secret | 32+ random characters, keys the limiter | `.env.example`, D-081 |

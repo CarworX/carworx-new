@@ -1,6 +1,12 @@
 import { createRequestHandler } from "react-router";
 
 import {
+  MAIL_WEBHOOK_PATH,
+  dispatchMailWebhook,
+  drainScheduledMail,
+} from "../app/server/mail/runtime.server";
+
+import {
   withSecurityBoundary,
   type SecurityContext,
 } from "../app/server/security/boundary";
@@ -26,10 +32,18 @@ const requestHandler = createRequestHandler(
 
 export default {
   fetch(request, env, ctx) {
+    // This exact endpoint uses raw-body Svix authentication instead of a browser
+    // CSRF token. All other requests retain the full T5 security boundary.
+    if (new URL(request.url).pathname === MAIL_WEBHOOK_PATH) {
+      return dispatchMailWebhook(request, env);
+    }
     // Every request passes the T5 boundary: Origin and CSRF checks before the
     // app runs, cache, cookie, redirect and security headers after it.
     return withSecurityBoundary(request, env, (checked, security) =>
       requestHandler(checked, { cloudflare: { env, ctx }, security }),
     );
+  },
+  scheduled(_controller, env, ctx) {
+    ctx.waitUntil(drainScheduledMail(env));
   },
 } satisfies ExportedHandler<Env>;

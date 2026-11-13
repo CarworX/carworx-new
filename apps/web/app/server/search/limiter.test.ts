@@ -34,6 +34,7 @@ function memoryStorage(): MemoryStorage {
       return Promise.resolve();
     },
     transaction: <T>(fn: (txn: LimiterStorage) => Promise<T>) => fn(storage),
+    getAlarm: () => Promise.resolve(storage.alarm),
     setAlarm: (time: number) => {
       storage.alarm = time;
       return Promise.resolve();
@@ -302,6 +303,32 @@ describe("counter retention (R-1)", () => {
       expect(storage.data.size).toBe(0);
       expect(storage.alarm).toBeNull();
     }
+  });
+
+  it("a failed alarm write fails the request, and the next one re-arms (Codex P2 on #88)", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(70_000);
+    const storage = memoryStorage();
+    let fail = true;
+    storage.setAlarm = (time: number) => {
+      if (fail) {
+        fail = false;
+        return Promise.reject(new Error("synthetic alarm outage"));
+      }
+      storage.alarm = time;
+      return Promise.resolve();
+    };
+    // A real transaction rolls back the row; this stub keeps it, which is
+    // the worse case: a row with no alarm.
+    const object = new SearchLimiter({ storage });
+    const first = await check(object, IP_WINDOW);
+    expect(first.status).toBe(500);
+    await first.body?.cancel();
+    expect(storage.alarm).toBeNull();
+    vi.setSystemTime(70_000 + 1_000);
+    const second = await check(object, IP_WINDOW);
+    expect(await second.json()).toEqual({ allowed: true });
+    expect(storage.alarm).toBe(70_000 + IP_WINDOW.windowMs);
   });
 
   it("a refused (over-limit) request never extends the row's life", async () => {

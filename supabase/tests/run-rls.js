@@ -57,7 +57,16 @@ function databaseUrl() {
   return parsed.DB_URL;
 }
 
-const psqlArgs = ["-X", "-q", "-t", "-A", "-v", "ON_ERROR_STOP=1"];
+const psqlArgs = [
+  "-X",
+  "-q",
+  "-t",
+  "-A",
+  "-v",
+  "ON_ERROR_STOP=1",
+  "-v",
+  "VERBOSITY=verbose",
+];
 
 function psqlCommand(url) {
   const hostPsql = spawnSync("psql", ["--version"], { encoding: "utf8" });

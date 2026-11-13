@@ -8,7 +8,7 @@
  * slow answer fails closed: the caller turns it into 503, never an allow.
  *
  * Retention (R-1): each object keeps one counter row and a storage alarm set
- * for the end of its window. The alarm deletes the row (and the object's
+ * for the end of its window, written in the same transaction. The alarm deletes the row (and the object's
  * storage) once the window has ended, so a key that is never seen again
  * leaves nothing behind. A stale row read before its alarm runs is ignored
  * and overwritten. The longest window is the 24-hour global quota, which
@@ -75,6 +75,7 @@ export interface LimiterStorage {
   get<T>(key: string): Promise<T | undefined>;
   put(key: string, value: unknown): Promise<void>;
   transaction<T>(fn: (txn: LimiterStorage) => Promise<T>): Promise<T>;
+  getAlarm(): Promise<number | null>;
   setAlarm(scheduledTime: number): Promise<void>;
   deleteAlarm(): Promise<void>;
   deleteAll(): Promise<void>;
@@ -113,11 +114,13 @@ export class SearchLimiter {
           ...outcome.next,
           windowMs: window.windowMs,
         } satisfies StoredCounter);
+        // Same transaction as the row, so a failed alarm write rolls the row
+        // back too. Re-armed whenever it isn't at this window's end, so a row
+        // can never be left without an expiry.
+        const end = outcome.next.start + window.windowMs;
+        if ((await txn.getAlarm()) !== end) await txn.setAlarm(end);
         return outcome;
       });
-      // A new window: point the alarm at its end (replacing any older one).
-      if (result.next.start === now)
-        await this.storage.setAlarm(now + window.windowMs);
       return Response.json(
         result.allowed
           ? { allowed: true }
