@@ -6,7 +6,7 @@ Updated 2026-11-13 UTC. INACTIVE foundation, not completed O7 or O8. No migratio
 
 - private.org_mfa_satisfied(org) reads the caller's current active membership and current policy. Owners, optional policies and uncovered staff pass. Covered callers need native aal2 or a valid private proof for the same user and session. Membership/role authorization remains separate.
 - public.org_mfa_satisfied is a narrow own-JWT wrapper. orgMfaSatisfied in the Worker delegates to it without a second AAL rule and fails closed on errors.
-- mfa_stepups is private, RLS-enabled and has no client or capability-role DML grants. A proof is bounded to twelve hours, a live matching Auth session and its not_after limit; revoked, future, expired, passwordless and administrator proofs are rejected. Later user changes or factor enrolment invalidate it conservatively. No proof issuer exists yet.
+- mfa_stepups is private, RLS-enabled and has no client or capability-role DML grants. A proof is bounded to twelve hours, a live matching Auth session and its not_after limit; revoked, future, expired, passwordless and administrator proofs are rejected. Later user changes or factor enrolment invalidate it conservatively. The follow-up migration adds the server-only email challenge issuer and verifier described below.
 - primary_auth_receipts is private, RLS-enabled and bounded to five minutes. Only auth_security_server can stamp a receipt through record_primary_auth_receipt after its Worker has just completed a new password login or recovery-initiated Google code exchange. The capability validates the user/session pair and the corresponding identity; it is not a fresh-login detector by itself.
 - revoke_mfa_stepups revokes a user's proofs for one/all sessions and removes matching receipts. It never changes native AAL or factors.
 
@@ -14,7 +14,7 @@ No native admin function changes. The existing set_team_settings not_yet_availab
 
 ## Required before O7/O8 activation
 
-1. Implement hashed, single-use email challenges: ten minutes, five attempts, send limits, password recheck, admin/Google-only exclusion and an alert on successful use. Mint a session proof only after verification.
+1. Connect and verify the implemented email challenge service: ten minutes, five attempts, three sends per hour and one per minute per user, password recheck, admin/Google-only exclusion, and atomic durable alert on successful use. No route is connected yet.
 2. Connect fresh receipt issuance to the Worker's own password and recovery-started Google callback results, using verified user/session claims. Check fresh password/oauth AMR when the pinned Auth supplies it. Never use refreshed iat, browser metadata or browser-provided times as freshness evidence.
 3. Implement atomic single-use recovery redemption, audit and the isolated privileged factor-reset service. Recovery removes TOTP factors, then native reenrolment; it never grants aal2. No service-role key belongs in the web Worker.
 4. Add the canonical predicate to every protected org RLS policy and RPC, and call the own-JWT wrapper from every org Worker loader/action. Only then remove the team policy write guard, in the same deploy.
@@ -31,3 +31,17 @@ References: [approved plan §8](../claude/23-onboarding-redesign-build-plan.md),
 ## History
 
 - 2026-11-13 UTC: prepared the shared predicate, own-JWT Worker adapter and private receipt/revocation capabilities independently of Claude's frontend/deployment. All O7/O8 activation remains pending.
+
+## Email challenge follow-up
+
+The subsequent migration adds private.mfa_email_challenges, server-only issue/verify capabilities and an append-only usage audit trigger. Plaintext digits never enter database columns. A 32-byte server pepper HMAC binds the code to user, session and challenge. The database consumes a fresh password receipt when issuing, and verifies the current user/session, password identity, recipient hash and factor/user state again before minting.
+
+Wrong codes return normally after incrementing the attempt counter, so the increment commits. Used, expired, invalidated, mismatched and exhausted challenges fail closed. An alert is queued in the same transaction as proof creation and code consumption; mail failure rolls the transaction back. Revoke also invalidates pending challenges.
+
+The Worker rechecks the password through Supabase, verifies the exact returned access token with getClaims and checks fresh password AMR when present. The route MUST return auth.headers on every outcome because password recheck creates a new session. No iat-based freshness, client timestamps, JWT promotion or native-factor changes.
+
+Names only, opt-in staging: AUTH_SECURITY_ENABLED=1, AUTH_SECURITY_DB (Hyperdrive as auth_security_server, caching disabled), AUTH_CODE_PEPPER (32 random bytes as base64url), plus existing encrypted-mail configuration. Neither a service-role key nor an Auth signing secret belongs in this Worker. The pepper and encryption keys must be different.
+
+The current source integrates the mail drafts #93/#94 into this branch. They remain separately reviewable, but no migration has run. Backup coverage must now include the third private table, mfa_email_challenges, and invalidate all transient security evidence on restore. Challenge metadata cleanup must preserve at least the last hour for the send limit; its longer retention needs the approved schedule.
+
+- 2026-11-13 UTC: added the email-code backend and atomic alert template. Source formatting/inspection only; no tests, SQL execution or route activation. Full org Worker/RLS/RPC enforcement, O8 redemption/reset and runtime evidence remain open.

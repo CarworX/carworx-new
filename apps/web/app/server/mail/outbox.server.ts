@@ -2,17 +2,32 @@ import type { ServerConfig } from "../security/config";
 import { canonicalEmail } from "../security/recipient-policy";
 
 /** Server only. No method returns a recipient, token, body or provider error. */
-export interface MailConfig {
+export interface MailEnvelopeConfig {
   origin: string;
-  from: string;
-  apiKey: string;
   encryptionKey: string;
   approvedRecipients: ReadonlySet<string>;
+}
+export interface MailConfig extends MailEnvelopeConfig {
+  from: string;
+  apiKey: string;
   dailyLimit: number;
 }
 export type MailMessage =
+  | { kind: "security_alert"; to: string; expiresAt: string }
   | { kind: "invite"; to: string; token: string; expiresAt: string }
-  | { kind: "security_code"; to: string; code: string; expiresAt: string };
+  | { kind: "security_code"; to: string; code: string; expiresAt: string }
+  | {
+      kind: "auth_signup";
+      to: string;
+      tokenHash: string;
+      expiresAt: string;
+    }
+  | {
+      kind: "auth_recovery";
+      to: string;
+      tokenHash: string;
+      expiresAt: string;
+    };
 
 export interface ClaimedMail {
   id: string;
@@ -43,6 +58,30 @@ export interface MailDatabase {
     providerId: string,
     event: "email.bounced" | "email.complained",
   ): Promise<boolean>;
+}
+
+/** Producer needs encryption and recipient policy, never a Resend API key. */
+export function readMailEnvelopeConfig(
+  env: unknown,
+  security: ServerConfig,
+): MailEnvelopeConfig | null {
+  const value = (env ?? {}) as Record<string, unknown>;
+  const key = value["MAIL_ENCRYPTION_KEY"];
+  if (
+    security.environment !== "staging" ||
+    !security.appOrigin.startsWith("https:") ||
+    security.approvedRecipients === null ||
+    security.approvedRecipients.size === 0 ||
+    value["MAIL_ENABLED"] !== "1" ||
+    typeof key !== "string" ||
+    !/^[A-Za-z0-9_-]{43}$/.test(key)
+  )
+    return null;
+  return {
+    origin: security.appOrigin,
+    encryptionKey: key,
+    approvedRecipients: security.approvedRecipients,
+  };
 }
 
 /** Deliberately staging-only until production mail has its own launch evidence. */
@@ -112,7 +151,7 @@ async function cipherKey(value: string) {
 function message(
   value: unknown,
   now: number,
-  config: MailConfig,
+  config: MailEnvelopeConfig,
 ): MailMessage | null {
   if (typeof value !== "object" || value === null) return null;
   const m = value as Record<string, unknown>;
@@ -121,7 +160,11 @@ function message(
   if (
     to === null ||
     !config.approvedRecipients.has(to) ||
-    (kind !== "invite" && kind !== "security_code")
+    (kind !== "invite" &&
+      kind !== "security_code" &&
+      kind !== "auth_signup" &&
+      kind !== "auth_recovery" &&
+      kind !== "security_alert")
   )
     return null;
   const expiresAt = m["expiresAt"];
@@ -129,9 +172,17 @@ function message(
   if (
     !Number.isFinite(expiry) ||
     expiry <= now ||
-    expiry > now + (kind === "invite" ? 7 * 86400_000 : 600_000)
+    expiry >
+      now +
+        (kind === "invite"
+          ? 7 * 86400_000
+          : kind === "security_alert"
+            ? 86400_000
+            : 600_000)
   )
     return null;
+  if (kind === "security_alert")
+    return { kind, to, expiresAt: expiresAt as string };
   if (
     kind === "invite" &&
     typeof m["token"] === "string" &&
@@ -144,6 +195,17 @@ function message(
     /^\d{6}$/.test(m["code"])
   )
     return { kind, to, expiresAt: expiresAt as string, code: m["code"] };
+  if (
+    (kind === "auth_signup" || kind === "auth_recovery") &&
+    typeof m["tokenHash"] === "string" &&
+    /^[A-Za-z0-9_-]{8,256}$/.test(m["tokenHash"])
+  )
+    return {
+      kind,
+      to,
+      expiresAt: expiresAt as string,
+      tokenHash: m["tokenHash"],
+    };
   return null;
 }
 async function seal(
@@ -191,6 +253,32 @@ async function open(
     : null;
 }
 function rendered(config: MailConfig, m: MailMessage) {
+  if (m.kind === "security_alert") {
+    return {
+      from: config.from,
+      to: [m.to],
+      subject: "CarworX email sign-in code used",
+      text: "An email code was just used for team access on your CarworX account. This did not verify an authenticator factor. If this was not you, change your password and sign out other sessions from Security.",
+    };
+  }
+  if (m.kind === "auth_signup" || m.kind === "auth_recovery") {
+    const link = new URL("/auth/confirm", config.origin);
+    link.searchParams.set("token_hash", m.tokenHash);
+    link.searchParams.set(
+      "type",
+      m.kind === "auth_signup" ? "email" : "recovery",
+    );
+    const subject =
+      m.kind === "auth_signup"
+        ? "Confirm your CarworX email"
+        : "Reset your CarworX password";
+    return {
+      from: config.from,
+      to: [m.to],
+      subject,
+      text: `${subject}\n\n${link.href}\n\nIf you did not request this, ignore this message.`,
+    };
+  }
   // Plain-text templates do not interpolate untrusted HTML or arbitrary URLs.
   return {
     from: config.from,
@@ -206,6 +294,60 @@ function rendered(config: MailConfig, m: MailMessage) {
   };
 }
 
+/** Prepares ciphertext for an atomic domain transaction; never exposes plaintext. */
+export async function prepareMailEnvelope(
+  config: MailEnvelopeConfig,
+  logicalKey: string,
+  input: MailMessage,
+  now = Date.now,
+): Promise<{
+  template: MailMessage["kind"];
+  recipientHash: string;
+  envelope: string;
+  expiresAt: string;
+} | null> {
+  const m = message(input, now(), config);
+  if (!KEY.test(logicalKey) || m === null) return null;
+  const envelope = await seal(config.encryptionKey, logicalKey, m);
+  const hash = new Uint8Array(
+    await crypto.subtle.digest("SHA-256", encoder.encode(m.to)),
+  );
+  return {
+    template: m.kind,
+    recipientHash: Array.from(hash, (v) =>
+      v.toString(16).padStart(2, "0"),
+    ).join(""),
+    envelope,
+    expiresAt: m.expiresAt,
+  };
+}
+
+export function createMailEnqueuer(
+  config: MailEnvelopeConfig,
+  db: Pick<MailDatabase, "enqueue">,
+  now = Date.now,
+) {
+  return async (
+    logicalKey: string,
+    input: MailMessage,
+  ): Promise<"queued" | "invalid" | "unavailable"> => {
+    try {
+      const ready = await prepareMailEnvelope(config, logicalKey, input, now);
+      if (ready === null) return "invalid";
+      await db.enqueue(
+        logicalKey,
+        ready.template,
+        ready.recipientHash,
+        ready.envelope,
+        ready.expiresAt,
+      );
+      return "queued";
+    } catch {
+      return "unavailable";
+    }
+  };
+}
+
 export function createMailService(
   config: MailConfig,
   db: MailDatabase,
@@ -213,32 +355,7 @@ export function createMailService(
   now = Date.now,
 ) {
   return {
-    async enqueue(
-      logicalKey: string,
-      input: MailMessage,
-    ): Promise<"queued" | "invalid" | "unavailable"> {
-      const m = message(input, now(), config);
-      if (!KEY.test(logicalKey) || m === null) return "invalid";
-      try {
-        const envelope = await seal(config.encryptionKey, logicalKey, m);
-        const hash = new Uint8Array(
-          await crypto.subtle.digest("SHA-256", encoder.encode(m.to)),
-        );
-        const recipientHash = Array.from(hash, (v) =>
-          v.toString(16).padStart(2, "0"),
-        ).join("");
-        await db.enqueue(
-          logicalKey,
-          m.kind,
-          recipientHash,
-          envelope,
-          m.expiresAt,
-        );
-        return "queued";
-      } catch {
-        return "unavailable";
-      }
-    },
+    enqueue: createMailEnqueuer(config, db, now),
     async drainOne(): Promise<
       "idle" | "sent" | "retry" | "failed" | "unavailable"
     > {
