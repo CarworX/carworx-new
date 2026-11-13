@@ -229,6 +229,37 @@ describe("user-supplied fields are escaped", () => {
   });
 });
 
+describe("cancellation without a refund", () => {
+  it("promises no refund timing and points to the booking", () => {
+    const r = render(
+      {
+        ...(SAMPLES.cancellation as Extract<
+          MailTemplate,
+          { kind: "cancellation" }
+        >),
+        refundMinor: 0,
+        keptMinor: 83_000,
+      },
+      SAMPLE_ORIGIN,
+    );
+    expect(r.subject).toBe("Booking cancelled");
+    expect(r.text).toContain("no refund is due.");
+    expect(r.text).toContain("Kept: R830");
+    expect(r.text).not.toMatch(
+      /Arrives|business days|Banks set the timing|View refund/,
+    );
+    expect(r.text).toContain(
+      "View booking: https://carworx.app/account/bookings/CX-2048",
+    );
+  });
+
+  it("keeps the refund details when money is coming back", () => {
+    const r = render(SAMPLES.cancellation, SAMPLE_ORIGIN);
+    expect(r.text).toContain("Arrives: Within 7 business days");
+    expect(r.text).toContain("View refund:");
+  });
+});
+
 describe("CarworX formats", () => {
   it("writes money as R2 430 and times in SAST", () => {
     expect(money(243_000)).toBe("R2 430");

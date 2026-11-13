@@ -371,19 +371,18 @@ function build(t: MailTemplate, origin: string): Email {
         t.cancelledBy === "customer"
           ? "You cancelled"
           : `${clean(t.business.name, 80)} cancelled`;
+      const refunded = t.refundMinor > 0;
       return {
-        subject:
-          t.refundMinor > 0
-            ? `Booking cancelled: refund of ${money(t.refundMinor)}`
-            : "Booking cancelled",
+        subject: refunded
+          ? `Booking cancelled: refund of ${money(t.refundMinor)}`
+          : "Booking cancelled",
         preheader: `${by} ${clean(t.service, 60)} on ${day(t.start)}.`,
         ref: ref(t.ref),
         eyebrow: "Booking cancelled",
         title: "Booking cancelled",
-        titleQuiet:
-          t.refundMinor > 0
-            ? `${money(t.refundMinor)} is on its way back.`
-            : "no refund is due.",
+        titleQuiet: refunded
+          ? `${money(t.refundMinor)} is on its way back.`
+          : "no refund is due.",
         blocks: [
           {
             kind: "p",
@@ -401,20 +400,29 @@ function build(t: MailTemplate, origin: string): Email {
                     },
                   ]
                 : []),
-              {
-                label: "Arrives",
-                value: `Within ${String(t.refundBusinessDays)} business days, to the card you paid with`,
-              },
+              ...(refunded
+                ? [
+                    {
+                      label: "Arrives",
+                      value: `Within ${String(t.refundBusinessDays)} business days, to the card you paid with`,
+                    },
+                  ]
+                : []),
               { label: "Reference", value: ref(t.ref), mono: true },
             ],
           },
           {
             kind: "p",
             tone: "muted",
-            text: "Banks set the timing, so it can show a few days after we send it. CarworX never holds your money.",
+            text: refunded
+              ? "Banks set the timing, so it can show a few days after we send it. CarworX never holds your money."
+              : "Questions about the business's cancellation terms? Reply to this email and we'll help. CarworX never holds your money.",
           },
         ],
-        action: { label: "View refund", url: link },
+        action: {
+          label: refunded ? "View refund" : "View booking",
+          url: link,
+        },
         reason: "you had a booking through CarworX.",
       };
     }
