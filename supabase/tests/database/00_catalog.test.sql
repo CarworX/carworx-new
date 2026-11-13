@@ -28,7 +28,7 @@ select is_empty($$
   select policyname from pg_policies
   where schemaname in ('public', 'private') and roles <> '{authenticated}'::name[]
     and not (schemaname = 'public'
-      and tablename in ('categories','services','branches','listings','service_areas','verifications')
+      and tablename in ('categories','services','branches','listings','service_areas','verifications','listing_hours')
       and roles in ('{listing_projection}'::name[], '{listing_eligibility}'::name[])
       and policyname in ('catalogue_projection','catalogue_eligibility'))
 $$, 'policies use authenticated or the explicit P2 catalogue capability roles');

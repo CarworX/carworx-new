@@ -41,7 +41,7 @@ The good news: the database and `clean_hours` already store per-day times. The f
 
 ## 2. Decision: one period per day in v1 (no split hours)
 
-**Recommendation: v1 stores one opening period per day. Split hours (e.g. 08:00–12:00 and 13:00–17:00) wait.** Record as a decision once the coordinator agrees (proposed D-094).
+**Recommendation: v1 stores one opening period per day. Split hours (e.g. 08:00–12:00 and 13:00–17:00) wait.** Recorded as **D-095**.
 
 | | One period (v1) | Split periods |
 |---|---|---|
