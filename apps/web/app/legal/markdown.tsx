@@ -15,7 +15,9 @@ export function publishable(source: string): string {
   const notes = text.search(/^-{3,}\s*\n+#{1,6}\s*Reviewer notes/m);
   if (notes !== -1) text = text.slice(0, notes);
   text = text.replace(/^> \*\*Draft for owner approval\.\*\*.*\n/m, "");
-  text = text.replace(/\s*\*Basis:[^*]*\*/g, "");
+  // A Basis note runs to the asterisk that ends its line, so emphasis inside
+  // the note (e.g. "*outcome*") doesn't end it early.
+  text = text.replace(/[ \t]*\*Basis:.*?\*[ \t]*(?=\n|$)/g, "");
   text = text.replace(/\s*\[Reviewer:[^\]]*\]/g, "");
   return text.replace(/\n{3,}/g, "\n\n").trim();
 }
