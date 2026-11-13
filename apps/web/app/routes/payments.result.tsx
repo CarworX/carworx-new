@@ -1,6 +1,7 @@
-import { data } from "react-router";
+import { data, Form } from "react-router";
+import { CsrfField } from "../auth/ui";
 import { requireSignedIn } from "../auth/session.server";
-import { ButtonLink } from "../ui/Button";
+import { Button, ButtonLink } from "../ui/Button";
 import { PublicShell } from "../ui/public/PublicShell";
 import type { Route } from "./+types/payments.result";
 interface Summary {
@@ -8,6 +9,7 @@ interface Summary {
   amount_minor: number;
   currency: "ZAR";
   state: string;
+  late_payment: boolean;
 }
 export async function loader({ request, context }: Route.LoaderArgs) {
   const auth = await requireSignedIn(request, context.security);
@@ -40,13 +42,37 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           amount_minor: amount,
           currency: "ZAR",
           state,
+          late_payment: x["late_payment"] === true,
         };
     }
   }
-  return data({ summary }, { headers: auth.headers });
+  return data(
+    { summary, csrf: context.security.csrfToken },
+    { headers: auth.headers },
+  );
+}
+export async function action({ request, context }: Route.ActionArgs) {
+  const a = await requireSignedIn(request, context.security);
+  a.headers.set("Cache-Control", "private, no-store");
+  a.headers.set("Referrer-Policy", "no-referrer");
+  const f = await request.formData(),
+    booking = f.get("booking");
+  if (
+    typeof booking !== "string" ||
+    !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(
+      booking,
+    )
+  )
+    return data({ ok: false }, { status: 400, headers: a.headers });
+  const r = await a.supabase.rpc("refund_late_payment", { p_booking: booking });
+  return data(
+    { ok: r.error === null },
+    { status: r.error === null ? 200 : 409, headers: a.headers },
+  );
 }
 export default function PaymentResult({
-  loaderData: { summary: s },
+  loaderData: { summary: s, csrf },
+  actionData,
 }: Route.ComponentProps) {
   return (
     <PublicShell signedIn>
@@ -68,11 +94,37 @@ export default function PaymentResult({
                       ? "A dispute is being handled."
                       : "Payment is still being checked. Returning from checkout is not proof of payment."}
             </p>
+            {s.late_payment && s.state === "paid" ? (
+              <section>
+                <p>
+                  The payment arrived after the hold. Open your booking to
+                  choose a new slot, or request a refund.
+                </p>
+                <Form method="post">
+                  <CsrfField token={csrf} />
+                  <input type="hidden" name="booking" value={s.booking_id} />
+                  <Button type="submit" variant="outline">
+                    Request late-payment refund
+                  </Button>
+                </Form>
+              </section>
+            ) : null}
             <ButtonLink href={"/bookings/" + s.booking_id}>
               Open booking
             </ButtonLink>
           </>
         )}
+        {actionData?.ok ? (
+          <p role="status">
+            Refund requested. Processing is checked with Paystack.
+          </p>
+        ) : null}
+        {actionData?.ok === false ? (
+          <p role="alert">
+            The refund could not be requested. Check your booking's current
+            options.
+          </p>
+        ) : null}
         <ButtonLink href="/bookings" variant="outline">
           Your bookings
         </ButtonLink>

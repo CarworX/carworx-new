@@ -1,9 +1,12 @@
 import { createRequestHandler } from "react-router";
+import { produceBookingNotifications } from "../app/server/payments/notifications.server";
+import { purgeReviewData } from "../app/server/payments/reviews-retention.server";
 import {
   PAYMENT_WEBHOOK_PATH,
   dispatchPaymentWebhook,
   drainPaymentEvents,
   reconcilePayments,
+  reconcileSettlements,
 } from "../app/server/payments/runtime.server";
 
 import { pgClient, runRetention } from "../app/server/retention/run";
@@ -56,17 +59,21 @@ export default {
   // Cron (wrangler.jsonc triggers): R-2 retention, plus draining queued
   // mail (O5). Retention logs counts only; any failure throws, so the run is
   // marked failed.
-  async scheduled(_controller, env, ctx) {
+  async scheduled(controller, env, ctx) {
     ctx.waitUntil(drainScheduledMail(env));
     ctx.waitUntil(
       (async () => {
         await reconcilePayments(env);
         await drainPaymentEvents(env);
+        await reconcileSettlements(env);
       })(),
     );
+    ctx.waitUntil(produceBookingNotifications(env));
+    if (controller.cron !== "17 1 * * *") return;
     const binding = (env as { RETENTION_DB?: { connectionString?: unknown } })
       .RETENTION_DB;
     const counts = await runRetention(binding, pgClient);
-    console.log(JSON.stringify({ event: "retention", counts }));
+    const reviewCount = await purgeReviewData(binding, pgClient);
+    console.log(JSON.stringify({ event: "retention", counts, reviewCount }));
   },
 } satisfies ExportedHandler<Env>;

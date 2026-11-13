@@ -153,7 +153,7 @@ returns void language plpgsql security definer set search_path='' as $$
 declare a private.payment_attempts;
 begin
  select * into a from private.payment_attempts where id=p_attempt for update;
- if not found or p_outcome is null or p_outcome is null or p_outcome not in('confirmed','already_confirmed','hold_expired') or
+ if not found or p_outcome is null or p_outcome not in('confirmed','already_confirmed','hold_expired') or
  not exists(select from private.payment_inbox where event_key=p_key and reference=a.reference and provider_id=p_provider) then
    raise exception 'payment_verification_invalid' using errcode='P0001'; end if;
  insert into private.payment_effects(attempt_id,provider_id,event_key) values(a.id,p_provider,p_key);
@@ -237,6 +237,7 @@ create function public.payment_details(p_reference text) returns jsonb
 language sql stable security definer set search_path='' as $$
  select jsonb_build_object('id',a.id,'booking_id',a.booking_id,'reference',a.reference,
  'amount_minor',a.amount_minor,'currency',a.currency,'state',private.payment_state(a.booking_id),
+ 'late_payment',exists(select from private.payment_cases c where c.attempt_id=a.id and c.kind='late_payment' and c.status='open'),
  'checkout_url',case when a.customer_id=auth.uid() and a.state='ready' and a.hold_expires_at>now() then a.checkout_url end)
  from private.payment_attempts a where a.reference=p_reference and
  (a.customer_id=auth.uid() or private.is_platform_admin() or private.has_org_role(a.organisation_id,array['owner','manager']))

@@ -226,6 +226,73 @@ export function createPaystack(
           status === "resolved" || status === "archived" ? "resolved" : "open",
       };
     },
+
+    async settlements(page: number) {
+      if (!Number.isSafeInteger(page) || page < 1)
+        throw new Error("payment_input_invalid");
+      return (
+        await list("/settlement?status=success&perPage=10&page=" + page)
+      ).map((d) => {
+        const gross = d["total_processed"],
+          fees = d["total_fees"],
+          net = d["total_amount"];
+        if (
+          d["domain"] !== "test" ||
+          d["currency"] !== "ZAR" ||
+          ![gross, fees, net].every(
+            (x) => typeof x === "number" && Number.isSafeInteger(x) && x >= 0,
+          )
+        )
+          throw new Error("settlement_verification_invalid");
+        return {
+          id: providerId(d["id"]),
+          gross: gross as number,
+          fees: fees as number,
+          net: net as number,
+        };
+      });
+    },
+    async settlementTransactions(id: string, page: number) {
+      if (
+        !/^[1-9][0-9]{0,29}$/.test(id) ||
+        !Number.isSafeInteger(page) ||
+        page < 1
+      )
+        throw new Error("payment_input_invalid");
+      return (
+        await list(
+          "/settlement/" + id + "/transactions?perPage=10&page=" + page,
+        )
+      ).map((d) => {
+        const amount = d["amount"],
+          fees = d["fees"],
+          ref = d["reference"],
+          sub = d["subaccount"];
+        if (
+          d["domain"] !== "test" ||
+          d["currency"] !== "ZAR" ||
+          d["status"] !== "success" ||
+          typeof amount !== "number" ||
+          !Number.isSafeInteger(amount) ||
+          amount <= 0 ||
+          typeof fees !== "number" ||
+          !Number.isSafeInteger(fees) ||
+          fees < 0
+        )
+          throw new Error("settlement_verification_invalid");
+        const subaccount =
+          typeof sub === "object" && sub !== null
+            ? (sub as Record<string, unknown>)["subaccount_code"]
+            : null;
+        return {
+          id: providerId(d["id"]),
+          reference: typeof ref === "string" && REF.test(ref) ? ref : null,
+          amount,
+          fees,
+          subaccount: typeof subaccount === "string" ? subaccount : null,
+        };
+      });
+    },
     /** reference and subaccount MUST come from the durable money ledger. */
     async initialise(
       hold: PayableHold,

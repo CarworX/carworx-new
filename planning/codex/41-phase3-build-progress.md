@@ -1,28 +1,36 @@
 # Phase 3 money and messaging
 
-Updated 2026-11-13 UTC. Owner-authorized build-first round, shared `phase-3`. No merge, deploy, SQL execution, real mail or live payments.
+Updated 2026-11-13 UTC. Owner-authorized build-first round on shared `phase-3`. No #99 review or merge, deployment, SQL execution, live payments or email sends.
 
-## Built source
+## Built source, awaiting joint validation
 
-- X1 test-only adapter and own-JWT hold snapshot reader.
-- X2 durable bounded signed webhook inbox, minimal fields, stable transition keys, charge/refund/dispute routing.
-- X3 transaction applies confirm_paid through inherited booking_contract and records unique payment effects atomically. Retry queue and ambiguous initialise/refund cases remain durable.
-- X4 transaction/refund reconciliation batches, late-payment cases and own-customer refund choice. Settlement reconciliation remains outstanding.
-- X5 refund reservations capped against paid amount, independent dispute state and idempotency-key conflicts. Unknown submissions are reconciled by deterministic refund reference, never blindly retried.
-- X8 checkout and result screens registered, private/no-store responses. Admin screens and final-schema drill remain outstanding.
-- X6 notifications and X7 reviews remain outstanding.
+| Slice | Source delivered                                                                                                                                                                                               |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| X1    | Test-only Paystack adapter; own-JWT public.hold_snapshot; durable amount/reference/subaccount snapshots; no browser amount or live key                                                                         |
+| X2    | Bounded raw signed webhook, durable inbox before 200, transition dedupe, independent API verification for effects                                                                                              |
+| X3    | confirm_paid via inherited booking_contract in the same transaction as the unique money effect; retries and crash recovery                                                                                     |
+| X4    | Transaction/refund reconciliation, durable settlement list/page cursors, minimal financial settlement lines, mismatch operations; late-payment rebook link or own-customer refund choice                       |
+| X5    | Independent partial refunds and dispute state, capped refund reservations, stable operation keys, deterministic provider refund references; ambiguous submissions reconciled without blind retries             |
+| X6    | Shared booking/payment events to encrypted O5 outbox, approved recipients only, stale/revoked-recipient suppression and send-time recheck; same idempotency keys, 23h50 retry ceiling and quota alert retained |
+| X7    | One review per own completed booking; private raw submissions, native-aal2 moderation, explicit de-identification before publication; author unlink/raw removal and daily 90-day purge                         |
+| X8    | Checkout/result, admin money/delivery/settlement and review screens, customer submission/public reviews; synthetic fixtures wired into the final-schema BK-1 drill                                             |
 
-## Provider access
+## Validation status
 
-Read-only Make API shell created using the existing Paystack connection in the private space. GET /transaction succeeded and reported test domain with ZAR currency. No payment/refund was initiated and no secrets copied. This proves Make access only; Worker bindings and secrets are not provisioned.
+Prettier parse/format only. No new tests authored or run, per P3-O2. No typecheck, database reset, browser validation or restore drill executed: owner requested GitHub-only work after disk exhaustion. These are built source, not a readiness or security approval. Existing CI and joint A21/A23-A26/A29/A32-A36 evidence remain required.
 
-## Validation and gates
+Bookings #99 is still separate. Claude supplied the customer-owned public.hold_snapshot wrapper and clarified request_refund's fourth argument is the stable idempotency key, not an authorization claim. No shared contract change is required by this source. Assemble both lanes for the joint test/review round without silently merging #99. Review/publication entry points and final schema fixtures must be exercised there.
 
-Prettier parse/format on new TypeScript and TSX only. No new tests authored/run, per P3-O2. No typecheck, SQL reset, integration test or browser validation: GitHub-only continuation after local disk exhaustion. Source remains unverified until the joint test round with bookings #99 assembled; no #99 review or merge.
+## Provider and runtime access
 
-Runtime requires PAYSTACK_ENABLED=1, PAYSTACK_MODE=test, PAYSTACK_SECRET_KEY (sk_test only), explicit PAYSTACK_FEE_BEARER, optional PAYSTACK_WEBHOOK_SECRET, MONEY_DB Hyperdrive using money_server and admin-configured test subaccounts. Missing configuration fails closed. No live configuration is accepted.
+Make API shell 7024895 reuses the existing private-space Paystack connection, GET only. GET /transaction succeeded, reporting test domain and ZAR. No charge/refund initiated and no keys copied. This proves Make access only; it does not provision Worker credentials or make Make the application's runtime transport.
 
-## Outstanding prior items
+Runtime remains disabled until separately configured: PAYSTACK_ENABLED=1, PAYSTACK_MODE=test, PAYSTACK_SECRET_KEY (sk_test only), explicit PAYSTACK_FEE_BEARER, optional PAYSTACK_WEBHOOK_SECRET, MONEY_DB Hyperdrive for money_server, and admin-configured test subaccounts. MAIL_DB and existing mail gates are independent. No credentials/binding IDs are invented. The staging configuration declares a minute drain cron and daily retention; nothing is deployed.
 
-- #97 contains the separate migration setting mail_server connection limit 5; still unmerged/unexecuted.
-- BK-1 exception prepared in #95 must be integrated when that PR lands. Final Phase 3 restore coverage is still required.
+## Remaining gates and prior work
+
+- Joint validation and code/security review, then owner-approved integration; no phase-3 promotion to main now.
+- Test-mode settlement/refund payload compatibility and ambiguous initialisation recovery still need provider fixtures. Unrecoverable attempts/cases stay visible; no speculative reinitialisation or refund resend.
+- Final A36 restore execution after bookings, money and any #95 schema are assembled. Fixture wiring is source only.
+- #97 contains the separate mail_server connection-limit-5 migration; still unmerged/unexecuted.
+- Preserve the BK-1 restore exception from #95 when that PR lands; it is not silently waived here.

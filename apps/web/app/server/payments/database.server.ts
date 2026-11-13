@@ -50,6 +50,60 @@ export function moneyDatabase(connectionString: string) {
     });
   }
   return {
+    settlementPage() {
+      return scalar<number | null>(
+        "select private.settlement_list_page() as value",
+        [],
+      );
+    },
+    settlementList(page: number, rows: unknown[]) {
+      return scalar<unknown>(
+        "select private.record_settlement_list($1,$2::jsonb) as value",
+        [page, JSON.stringify(rows)],
+      );
+    },
+    claimSettlement() {
+      return scalar<{ id: string; page: number; lease: string } | null>(
+        "select private.claim_settlement() as value",
+        [],
+      );
+    },
+    settlementTransactions(
+      id: string,
+      page: number,
+      lease: string,
+      rows: unknown[],
+    ) {
+      return scalar<unknown>(
+        "select private.record_settlement_page($1,$2,$3,$4::jsonb) as value",
+        [id, page, lease, JSON.stringify(rows)],
+      );
+    },
+    prepareNotifications() {
+      return scalar<unknown>(
+        "select private.prepare_booking_notifications() as value",
+        [],
+      );
+    },
+    notifications() {
+      return connection(
+        async (c) =>
+          (
+            await c.query<{
+              logical_key: string;
+              booking_id: string;
+              email: string;
+              expires_at: Date | string;
+            }>("select * from private.pending_booking_notifications()")
+          ).rows,
+      );
+    },
+    finishNotification(key: string, state: "queued" | "suppressed") {
+      return scalar<unknown>(
+        "select private.finish_booking_notification($1,$2) as value",
+        [key, state],
+      );
+    },
     recovery() {
       return connection(
         async (c) =>

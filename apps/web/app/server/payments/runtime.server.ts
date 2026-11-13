@@ -215,3 +215,23 @@ export async function reconcilePayments(env: unknown): Promise<void> {
     }
   }
 }
+
+/** Durable page cursors cover the account, without retaining provider customer objects. */
+export async function reconcileSettlements(env: unknown): Promise<void> {
+  const ready = paymentRuntime(env);
+  if (ready === null) return;
+  const page = await ready.db.settlementPage();
+  if (page !== null)
+    try {
+      await ready.db.settlementList(
+        page,
+        await ready.provider.settlements(page),
+      );
+    } catch {
+      /* Cursor remains on this page for the next run. */
+    }
+  const job = await ready.db.claimSettlement();
+  if (job === null) return;
+  const rows = await ready.provider.settlementTransactions(job.id, job.page);
+  await ready.db.settlementTransactions(job.id, job.page, job.lease, rows);
+}
