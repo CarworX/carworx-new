@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   PLATFORM,
   SCHEMAS,
+  TRANSIENT_SECURITY_TABLES,
   assertManifestCovers,
   classify,
   inventorySql,
@@ -12,7 +13,7 @@ import {
 
 const migrations = new URL("../../../supabase/migrations/", import.meta.url);
 
-test("every public and private table the migrations create is exported", () => {
+test("every app table is exported except the named transient security tables", () => {
   const tables = migrationTables(migrations.pathname);
   // Sanity: Phase 1, P2-1, P2-4, P2-5 and onboarding tables are all seen.
   for (const t of [
@@ -30,7 +31,19 @@ test("every public and private table the migrations create is exported", () => {
   ])
     assert.ok(tables.includes(t), t);
   const plan = classify(tables);
-  assert.deepEqual(plan.export, tables);
+  assert.deepEqual(
+    plan.export,
+    tables.filter((t) => !TRANSIENT_SECURITY_TABLES.includes(t)),
+  );
+  assert.deepEqual(
+    plan.ephemeral,
+    tables.filter((t) => TRANSIENT_SECURITY_TABLES.includes(t)),
+  );
+  assert.deepEqual([...TRANSIENT_SECURITY_TABLES].sort(), [
+    "private.mfa_email_challenges",
+    "private.mfa_stepups",
+    "private.primary_auth_receipts",
+  ]);
 });
 
 test("an unclassified table fails the plan, naming it", () => {
@@ -41,7 +54,7 @@ test("an unclassified table fails the plan, naming it", () => {
   assert.throws(() => classify(["graphql.something"]), /graphql\.something/);
 });
 
-test("an app table can never be excluded", () => {
+test("ordinary app tables cannot be excluded by the platform plan", () => {
   // Even if someone lists a public table as ephemeral, it is exported.
   const plan = classify(["public.sessions", "private.cache"]);
   assert.deepEqual(plan.export, ["private.cache", "public.sessions"]);

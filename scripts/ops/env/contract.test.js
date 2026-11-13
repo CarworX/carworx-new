@@ -89,6 +89,8 @@ test("staging and production bind every Hyperdrive config with distinct owner ID
   }
   assert.equal(new Set(ids).size, ids.length);
   for (const b of staging.hyperdrive) assert.doesNotMatch(b.id, /PRODUCTION/);
+  // Staging is set up (2026-11-13): real IDs only, no owner placeholders left.
+  for (const b of staging.hyperdrive) assert.match(b.id, /^[a-f0-9]{32}$/);
   for (const b of production.hyperdrive) assert.doesNotMatch(b.id, /STAGING/);
 });
 function fixture() {
