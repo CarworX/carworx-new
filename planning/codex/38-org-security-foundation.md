@@ -53,3 +53,11 @@ Claude's staging coordinator confirmed Hyperdrive's minimum origin cap is five. 
 BK-1 now has an explicit three-table ephemeral exception for mfa_stepups, primary_auth_receipts and mfa_email_challenges. Ordinary app tables remain exported. The source drill seeds non-empty witnesses for active/revoked, unused/used and used/invalidated states, requires those witnesses, and asserts the restored tables are empty before sign-in verification. This preserves schema/role coverage while preventing security evidence from being resurrected. Coverage assertions and runbooks are updated. No backup drill or unit suite was run.
 
 - 2026-11-13 UTC: prepared the bounded pool-limit and transient-security restore changes requested by Claude on #84. #96's staging bindings were independently source-reviewed and merged on existing green exact-head checks at f18eced111766cff8c2e0b7e4e0533c94e7a72f8. No deployment or tests launched by Codex.
+
+## Mail scheduling follow-up
+
+The staging Worker now has a minute mail drain separate from the daily 01:17 UTC retention job. Without this, ten-minute Auth and step-up envelopes could expire before the only daily dispatch. The scheduled handler dispatches by the exact cron string; the minute invocation does not run retention. Production keeps its daily retention-only schedule, and mail still requires the existing opt-in staging configuration and MAIL_DB binding.
+
+One item is drained per minute, with security/Auth priority and the unchanged global daily cap. This is bounded pilot capacity, not a throughput or actual-delivery claim. The existing retention fixture supplies its real cron explicitly and the schedule contract records the two staging triggers. No suite, cron, network send or deployment was run by Codex. The dispatcher must be configured and observed before activating the queued Auth hook.
+
+Reference checked 2026-11-13: [Cloudflare multiple cron triggers](https://developers.cloudflare.com/workers/examples/multiple-cron-triggers/).

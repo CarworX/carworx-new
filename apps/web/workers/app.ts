@@ -44,11 +44,14 @@ export default {
       requestHandler(checked, { cloudflare: { env, ctx }, security }),
     );
   },
-  // Cron (wrangler.jsonc triggers): R-2 retention, plus draining queued
-  // mail (O5). Retention logs counts only; any failure throws, so the run is
-  // marked failed.
-  async scheduled(_controller, env, ctx) {
-    ctx.waitUntil(drainScheduledMail(env));
+  // Keep the minute mail drain separate from the daily retention job.
+  async scheduled(controller, env) {
+    if (controller.cron === "* * * * *") {
+      await drainScheduledMail(env);
+      return;
+    }
+    if (controller.cron !== "17 1 * * *")
+      throw new Error("Unknown scheduled task");
     const binding = (env as { RETENTION_DB?: { connectionString?: unknown } })
       .RETENTION_DB;
     const counts = await runRetention(binding, pgClient);
