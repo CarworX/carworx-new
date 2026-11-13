@@ -5,6 +5,10 @@ from `phase-3` @`4b97de8`. Local unit/type/SQL/concurrency results and outstandi
 restore/staging gates: [test record](codex/42-phase3-money-tests.md). Claude owns
 the separate bookings test PR; do not merge it. Shared A23/A29/A35 end-to-end
 checks wait for staging. No Phase 3 acceptance-complete claim.
+Local A36 passed at `2ef8951` (1,099 RLS assertions / 76 restored tables).
+Money test PR #107 targets `phase-3`; #97 is ready with green required CI.
+
+## Earlier finish checkpoint (2026-11-12; historical)
 
 Updated 2026-11-12 UTC. Owner authorized the finish plan in chat: Codex may build, use Codex workers/review, publish and safely merge without waiting for Claude. Latest execution choice: continue through GitHub only while local disk space is exhausted. See D-091 and [finish record](codex/35-autonomous-finish.md).
 
