@@ -3,7 +3,15 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import { dateTime, dateTimeYear, duration, esc, money, safeLink, time } from "./format";
+import {
+  dateTime,
+  dateTimeYear,
+  duration,
+  esc,
+  money,
+  safeLink,
+  time,
+} from "./format";
 import { SAMPLES, SAMPLE_ORIGIN } from "./samples";
 import { render, renderAuthEmail, type MailTemplate } from "./templates";
 
@@ -26,16 +34,27 @@ describe("every template, with synthetic data", () => {
       expect(r.html).toMatch(/class="cx-btn" bgcolor="#0d0f12"/);
       // Images: the hosted PNG logo only. No pixels, no SVG, no http.
       expect(count(r.html, "<img ")).toBe(1);
-      expect(r.html).toContain(`${SAMPLE_ORIGIN}/email/carworx-lockup-on-ink@2x.png`);
+      expect(r.html).toContain(
+        `${SAMPLE_ORIGIN}/email/carworx-lockup-on-ink@2x.png`,
+      );
       expect(r.html).not.toMatch(/\.svg|width="1" height="1"|http:\/\//);
       expect(r.html).not.toMatch(/<script|javascript:/i);
       // Footer: sender, replies, legal placeholders, privacy.
-      for (const s of ["no-reply@carworx.app", "support@carworx.app", "CarworX (Pty) Ltd", "OQ-L2", `${SAMPLE_ORIGIN}/privacy`])
+      for (const s of [
+        "no-reply@carworx.app",
+        "support@carworx.app",
+        "CarworX (Pty) Ltd",
+        "OQ-L2",
+        `${SAMPLE_ORIGIN}/privacy`,
+      ])
         expect(r.html).toContain(s);
       // The plain-text part carries the action URL and the same footer.
-      const action = /<a href="([^"]+)" style="display:inline-block;padding:14px 28px/.exec(r.html)?.[1];
+      const action =
+        /<a href="([^"]+)" style="display:inline-block;padding:14px 28px/.exec(
+          r.html,
+        )?.[1];
       expect(action).toBeDefined();
-      expect(r.text).toContain(action!.replaceAll("&amp;", "&"));
+      expect(r.text).toContain((action ?? "").replaceAll("&amp;", "&"));
       expect(r.text).toContain("support@carworx.app");
       expect(r.text).not.toMatch(/<[a-z]/i);
     });
@@ -58,12 +77,49 @@ describe("colour carries meaning", () => {
 describe("user-supplied fields are escaped", () => {
   const evil = { name: HOSTILE, demo: true };
   const cases: MailTemplate[] = [
-    { ...(SAMPLES.invite as Extract<MailTemplate, { kind: "invite" }>), business: evil, inviterFirstName: HOSTILE },
-    { ...(SAMPLES.enquiry_received as Extract<MailTemplate, { kind: "enquiry_received" }>), business: evil, service: HOSTILE },
-    { ...(SAMPLES.booking_request as Extract<MailTemplate, { kind: "booking_request" }>), customerFirstName: HOSTILE, service: HOSTILE, vehicle: HOSTILE },
-    { ...(SAMPLES.booking_confirmed as Extract<MailTemplate, { kind: "booking_confirmed" }>), business: evil, address: HOSTILE },
-    { ...(SAMPLES.reschedule as Extract<MailTemplate, { kind: "reschedule" }>), business: evil, service: HOSTILE },
-    { ...(SAMPLES.cancellation as Extract<MailTemplate, { kind: "cancellation" }>), business: evil, service: HOSTILE },
+    {
+      ...(SAMPLES.invite as Extract<MailTemplate, { kind: "invite" }>),
+      business: evil,
+      inviterFirstName: HOSTILE,
+    },
+    {
+      ...(SAMPLES.enquiry_received as Extract<
+        MailTemplate,
+        { kind: "enquiry_received" }
+      >),
+      business: evil,
+      service: HOSTILE,
+    },
+    {
+      ...(SAMPLES.booking_request as Extract<
+        MailTemplate,
+        { kind: "booking_request" }
+      >),
+      customerFirstName: HOSTILE,
+      service: HOSTILE,
+      vehicle: HOSTILE,
+    },
+    {
+      ...(SAMPLES.booking_confirmed as Extract<
+        MailTemplate,
+        { kind: "booking_confirmed" }
+      >),
+      business: evil,
+      address: HOSTILE,
+    },
+    {
+      ...(SAMPLES.reschedule as Extract<MailTemplate, { kind: "reschedule" }>),
+      business: evil,
+      service: HOSTILE,
+    },
+    {
+      ...(SAMPLES.cancellation as Extract<
+        MailTemplate,
+        { kind: "cancellation" }
+      >),
+      business: evil,
+      service: HOSTILE,
+    },
     {
       ...(SAMPLES.receipt as Extract<MailTemplate, { kind: "receipt" }>),
       business: evil,
@@ -71,10 +127,35 @@ describe("user-supplied fields are escaped", () => {
       method: HOSTILE,
       lines: [{ label: HOSTILE, amountMinor: 100 }],
     },
-    { ...(SAMPLES.welcome_customer as Extract<MailTemplate, { kind: "welcome_customer" }>), firstName: HOSTILE },
-    { ...(SAMPLES.welcome_business_received as Extract<MailTemplate, { kind: "welcome_business_received" }>), business: evil },
-    { ...(SAMPLES.welcome_business_approved as Extract<MailTemplate, { kind: "welcome_business_approved" }>), business: evil },
-    { ...(SAMPLES.welcome_team as Extract<MailTemplate, { kind: "welcome_team" }>), business: evil, inviterFirstName: HOSTILE },
+    {
+      ...(SAMPLES.welcome_customer as Extract<
+        MailTemplate,
+        { kind: "welcome_customer" }
+      >),
+      firstName: HOSTILE,
+    },
+    {
+      ...(SAMPLES.welcome_business_received as Extract<
+        MailTemplate,
+        { kind: "welcome_business_received" }
+      >),
+      business: evil,
+    },
+    {
+      ...(SAMPLES.welcome_business_approved as Extract<
+        MailTemplate,
+        { kind: "welcome_business_approved" }
+      >),
+      business: evil,
+    },
+    {
+      ...(SAMPLES.welcome_team as Extract<
+        MailTemplate,
+        { kind: "welcome_team" }
+      >),
+      business: evil,
+      inviterFirstName: HOSTILE,
+    },
   ];
   for (const t of cases) {
     it(`${t.kind}: no markup survives`, () => {
@@ -93,7 +174,9 @@ describe("user-supplied fields are escaped", () => {
       },
       SAMPLE_ORIGIN,
     );
-    expect(r.subject).toBe("You're invited to join Gleam Bcc: x@example.test on CarworX");
+    expect(r.subject).toBe(
+      "You're invited to join Gleam Bcc: x@example.test on CarworX",
+    );
     expect(r.html).not.toContain("‮");
   });
 
@@ -104,19 +187,44 @@ describe("user-supplied fields are escaped", () => {
       "http://carworx.app/x",
       "data:text/html,hi",
     ])
-      expect(() => render({ kind: "verify", link, expiresInMs: 3_600_000 }, SAMPLE_ORIGIN)).toThrow();
+      expect(() =>
+        render({ kind: "verify", link, expiresInMs: 3_600_000 }, SAMPLE_ORIGIN),
+      ).toThrow();
     expect(() =>
-      render({ ...(SAMPLES.receipt as Extract<MailTemplate, { kind: "receipt" }>), pdfLink: "https://evil.example.test/r.pdf" }, SAMPLE_ORIGIN),
+      render(
+        {
+          ...(SAMPLES.receipt as Extract<MailTemplate, { kind: "receipt" }>),
+          pdfLink: "https://evil.example.test/r.pdf",
+        },
+        SAMPLE_ORIGIN,
+      ),
     ).toThrow();
-    expect(safeLink("http://localhost:5173/x", "http://localhost:5173")).toBe("http://localhost:5173/x");
+    expect(safeLink("http://localhost:5173/x", "http://localhost:5173")).toBe(
+      "http://localhost:5173/x",
+    );
   });
 
   it("refuses malformed references and empty receipts", () => {
     expect(() =>
-      render({ ...(SAMPLES.enquiry_received as Extract<MailTemplate, { kind: "enquiry_received" }>), ref: "<b>" }, SAMPLE_ORIGIN),
+      render(
+        {
+          ...(SAMPLES.enquiry_received as Extract<
+            MailTemplate,
+            { kind: "enquiry_received" }
+          >),
+          ref: "<b>",
+        },
+        SAMPLE_ORIGIN,
+      ),
     ).toThrow("mail_reference");
     expect(() =>
-      render({ ...(SAMPLES.receipt as Extract<MailTemplate, { kind: "receipt" }>), lines: [] }, SAMPLE_ORIGIN),
+      render(
+        {
+          ...(SAMPLES.receipt as Extract<MailTemplate, { kind: "receipt" }>),
+          lines: [],
+        },
+        SAMPLE_ORIGIN,
+      ),
     ).toThrow("mail_receipt_lines");
   });
 });
@@ -134,7 +242,9 @@ describe("CarworX formats", () => {
     expect(duration(3_600_000)).toBe("1 hour");
     expect(duration(7 * 86_400_000)).toBe("7 days");
     expect(duration(15 * 60_000)).toBe("15 minutes");
-    expect(esc(`<a href="x">'&'</a>`)).toBe("&lt;a href=&quot;x&quot;&gt;&#39;&amp;&#39;&lt;/a&gt;");
+    expect(esc(`<a href="x">'&'</a>`)).toBe(
+      "&lt;a href=&quot;x&quot;&gt;&#39;&amp;&#39;&lt;/a&gt;",
+    );
   });
 
   it("marks demo businesses DEMO in both parts", () => {
@@ -147,7 +257,9 @@ describe("CarworX formats", () => {
     const r = render(SAMPLES.receipt, SAMPLE_ORIGIN);
     expect(r.subject).toBe("Your CarworX receipt CX-2048");
     expect(r.text).toContain("Total paid  R830");
-    expect(r.text).toContain("Download PDF receipt: https://carworx.app/receipts/CX-2048.pdf");
+    expect(r.text).toContain(
+      "Download PDF receipt: https://carworx.app/receipts/CX-2048.pdf",
+    );
   });
 });
 
@@ -162,12 +274,20 @@ describe("Supabase Auth templates", () => {
   } as const;
   for (const [file, { action, type }] of Object.entries(files)) {
     it(`supabase/templates/${file}.html matches renderAuthEmail("${action}")`, () => {
-      const path = fileURLToPath(new URL(`../../../../../supabase/templates/${file}.html`, import.meta.url));
+      const path = fileURLToPath(
+        new URL(
+          `../../../../../supabase/templates/${file}.html`,
+          import.meta.url,
+        ),
+      );
       const link = `${SITE}/auth/confirm?token_hash={{ .TokenHash }}&type=${type}`;
       const { html } = renderAuthEmail(action, link, SITE);
-      expect(html).toContain(`href="${SITE}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=${type}"`);
+      expect(html).toContain(
+        `href="${SITE}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=${type}"`,
+      );
       expect(html).toContain("Link expires in 1 hour");
-      if (process.env["UPDATE_AUTH_TEMPLATES"] === "1") writeFileSync(path, html);
+      if (process.env["UPDATE_AUTH_TEMPLATES"] === "1")
+        writeFileSync(path, html);
       expect(readFileSync(path, "utf8")).toBe(html);
     });
   }
@@ -177,6 +297,8 @@ describe("Supabase Auth templates", () => {
     expect(renderAuthEmail("signup", link, SAMPLE_ORIGIN)).toEqual(
       render({ kind: "verify", link, expiresInMs: 3_600_000 }, SAMPLE_ORIGIN),
     );
-    expect(renderAuthEmail("recovery", link, SAMPLE_ORIGIN).subject).toBe("Reset your CarworX password");
+    expect(renderAuthEmail("recovery", link, SAMPLE_ORIGIN).subject).toBe(
+      "Reset your CarworX password",
+    );
   });
 });

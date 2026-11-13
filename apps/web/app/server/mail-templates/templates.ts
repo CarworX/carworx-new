@@ -128,7 +128,9 @@ function ref(value: string): string {
   return value;
 }
 function biz(b: Business): Inline[] {
-  return b.demo ? [{ strong: clean(b.name, 80) }, { demo: true }] : [{ strong: clean(b.name, 80) }];
+  return b.demo
+    ? [{ strong: clean(b.name, 80) }, { demo: true }]
+    : [{ strong: clean(b.name, 80) }];
 }
 function bizPlain(b: Business): string {
   return clean(b.name, 80) + (b.demo ? " (DEMO)" : "");
@@ -202,14 +204,21 @@ function build(t: MailTemplate, origin: string): Email {
       return {
         subject: `You're invited to join ${bizPlain(t.business)} on CarworX`,
         preheader: `${inviter} invited you as ${t.role}. The invite works until ${dateTime(t.expiresAt)}.`,
-        chip: { tone: "signal", text: `Invite expires ${dateTime(t.expiresAt)}` },
+        chip: {
+          tone: "signal",
+          text: `Invite expires ${dateTime(t.expiresAt)}`,
+        },
         eyebrow: "Team invite",
         title: `Join ${clean(t.business.name, 80)}`,
         titleQuiet: "on CarworX.",
         blocks: [
           {
             kind: "p",
-            text: [`${inviter} invited you to the team at `, ...biz(t.business), ` as ${t.role}. ${ROLE_CAN[t.role]}`],
+            text: [
+              `${inviter} invited you to the team at `,
+              ...biz(t.business),
+              ` as ${t.role}. ${ROLE_CAN[t.role]}`,
+            ],
           },
           {
             kind: "p",
@@ -296,7 +305,10 @@ function build(t: MailTemplate, origin: string): Email {
           {
             kind: "facts",
             rows: [
-              { label: "Where", value: [...biz(t.business), `, ${clean(t.address, 120)}`] },
+              {
+                label: "Where",
+                value: [...biz(t.business), `, ${clean(t.address, 120)}`],
+              },
               { label: "When", value: `${dateTime(t.start)} – ${time(t.end)}` },
               { label: "Service", value: clean(t.service, 80) },
               { label: "Paid", value: money(t.paidMinor), mono: true },
@@ -329,11 +341,18 @@ function build(t: MailTemplate, origin: string): Email {
         title: "New time",
         titleQuiet: `${dateTime(t.newStart)}.`,
         blocks: [
-          { kind: "p", text: `${who} this booking. Everything else stays the same, including what was paid.` },
+          {
+            kind: "p",
+            text: `${who} this booking. Everything else stays the same, including what was paid.`,
+          },
           {
             kind: "facts",
             rows: [
-              { label: "When", value: { strong: dateTime(t.newStart) }, was: dateTime(t.oldStart) },
+              {
+                label: "When",
+                value: { strong: dateTime(t.newStart) },
+                was: dateTime(t.oldStart),
+              },
               { label: "Service", value: clean(t.service, 80) },
               { label: "Business", value: biz(t.business) },
               { label: "Reference", value: ref(t.ref), mono: true },
@@ -349,7 +368,9 @@ function build(t: MailTemplate, origin: string): Email {
     }
     case "cancellation": {
       const by =
-        t.cancelledBy === "customer" ? "You cancelled" : `${clean(t.business.name, 80)} cancelled`;
+        t.cancelledBy === "customer"
+          ? "You cancelled"
+          : `${clean(t.business.name, 80)} cancelled`;
       return {
         subject:
           t.refundMinor > 0
@@ -360,17 +381,30 @@ function build(t: MailTemplate, origin: string): Email {
         eyebrow: "Booking cancelled",
         title: "Booking cancelled",
         titleQuiet:
-          t.refundMinor > 0 ? `${money(t.refundMinor)} is on its way back.` : "no refund is due.",
+          t.refundMinor > 0
+            ? `${money(t.refundMinor)} is on its way back.`
+            : "no refund is due.",
         blocks: [
-          { kind: "p", text: `${by} ${clean(t.service, 60)} at ${bizPlain(t.business)}, ${dateTime(t.start)}.` },
+          {
+            kind: "p",
+            text: `${by} ${clean(t.service, 60)} at ${bizPlain(t.business)}, ${dateTime(t.start)}.`,
+          },
           {
             kind: "facts",
             rows: [
               { label: "Refund", value: money(t.refundMinor), mono: true },
               ...(t.keptMinor > 0
-                ? [{ label: "Kept", value: `${money(t.keptMinor)} (late cancellation, the business's terms)` }]
+                ? [
+                    {
+                      label: "Kept",
+                      value: `${money(t.keptMinor)} (late cancellation, the business's terms)`,
+                    },
+                  ]
                 : []),
-              { label: "Arrives", value: `Within ${t.refundBusinessDays} business days, to the card you paid with` },
+              {
+                label: "Arrives",
+                value: `Within ${String(t.refundBusinessDays)} business days, to the card you paid with`,
+              },
               { label: "Reference", value: ref(t.ref), mono: true },
             ],
           },
@@ -385,7 +419,8 @@ function build(t: MailTemplate, origin: string): Email {
       };
     }
     case "receipt": {
-      if (t.lines.length === 0 || t.lines.length > 20) throw new Error("mail_receipt_lines");
+      if (t.lines.length === 0 || t.lines.length > 20)
+        throw new Error("mail_receipt_lines");
       const total = t.lines.reduce((s, l) => s + l.amountMinor, 0);
       return {
         subject: `Your CarworX receipt ${ref(t.ref)}`,
@@ -397,25 +432,39 @@ function build(t: MailTemplate, origin: string): Email {
         blocks: [
           {
             kind: "p",
-            text: ["Here's your receipt from ", ...biz(t.business), ". Keep this email for your records."],
+            text: [
+              "Here's your receipt from ",
+              ...biz(t.business),
+              ". Keep this email for your records.",
+            ],
           },
           {
             kind: "ticket",
             title: "Receipt",
             ref: ref(t.ref),
-            lines: t.lines.map((l) => ({ label: clean(l.label, 60), amount: money(l.amountMinor) })),
+            lines: t.lines.map((l) => ({
+              label: clean(l.label, 60),
+              amount: money(l.amountMinor),
+            })),
             total: { label: "Total paid", amount: money(total) },
             meta: [
               { label: "Paid", value: dateTimeYear(t.paidAt) },
               { label: "Method", value: clean(t.method, 40) },
-              { label: "Paid to", value: [...biz(t.business), `, ${clean(t.businessArea, 60)}`] },
+              {
+                label: "Paid to",
+                value: [...biz(t.business), `, ${clean(t.businessArea, 60)}`],
+              },
               { label: "Booking", value: dateTime(t.start) },
             ],
           },
         ],
         action: { label: "View booking", url: link },
         after: [
-          { kind: "link", label: "Download PDF receipt", url: safeLink(t.pdfLink, origin) },
+          {
+            kind: "link",
+            label: "Download PDF receipt",
+            url: safeLink(t.pdfLink, origin),
+          },
           {
             kind: "p",
             tone: "muted",
@@ -433,16 +482,32 @@ function build(t: MailTemplate, origin: string): Email {
         title: "Welcome to CarworX",
         titleQuiet: "car services, near you.",
         blocks: [
-          { kind: "p", text: `${hi(t.firstName)}your account is ready. Here's how it works:` },
+          {
+            kind: "p",
+            text: `${hi(t.firstName)}your account is ready. Here's how it works:`,
+          },
           {
             kind: "steps",
             items: [
-              { title: "Find", text: "Search washes, mechanics, glass and tyres by area. Distances are straight-line." },
-              { title: "Enquire", text: "Ask a business for a price range. Free, and no obligation." },
-              { title: "Book", text: "Pick a time and pay the business in the app, where they offer it." },
+              {
+                title: "Find",
+                text: "Search washes, mechanics, glass and tyres by area. Distances are straight-line.",
+              },
+              {
+                title: "Enquire",
+                text: "Ask a business for a price range. Free, and no obligation.",
+              },
+              {
+                title: "Book",
+                text: "Pick a time and pay the business in the app, where they offer it.",
+              },
             ],
           },
-          { kind: "p", tone: "muted", text: "You never pay CarworX. Businesses set their own prices." },
+          {
+            kind: "p",
+            tone: "muted",
+            text: "You never pay CarworX. Businesses set their own prices.",
+          },
         ],
         action: { label: "Find a car service", url: link },
         reason: "you created a CarworX account.",
@@ -450,21 +515,41 @@ function build(t: MailTemplate, origin: string): Email {
     case "welcome_business_received":
       return {
         subject: "We've received your CarworX application",
-        preheader: `We review applications within ${t.reviewDays} working days. Your listing stays hidden until then.`,
+        preheader: `We review applications within ${String(t.reviewDays)} working days. Your listing stays hidden until then.`,
         eyebrow: "Application received",
         title: "Thanks for applying",
         titleQuiet: "we'll be in touch.",
         blocks: [
-          { kind: "p", text: ["We've received the application for ", ...biz(t.business), "."] },
+          {
+            kind: "p",
+            text: [
+              "We've received the application for ",
+              ...biz(t.business),
+              ".",
+            ],
+          },
           {
             kind: "steps",
             items: [
-              { title: "We check", text: "A person checks your details against public records. We may email you a question." },
-              { title: "We decide", text: `Usually within ${t.reviewDays} working days. We'll email you either way.` },
-              { title: "You go live", text: "Once approved, your listing appears in search and you can invite your team." },
+              {
+                title: "We check",
+                text: "A person checks your details against public records. We may email you a question.",
+              },
+              {
+                title: "We decide",
+                text: `Usually within ${String(t.reviewDays)} working days. We'll email you either way.`,
+              },
+              {
+                title: "You go live",
+                text: "Once approved, your listing appears in search and you can invite your team.",
+              },
             ],
           },
-          { kind: "p", tone: "muted", text: "Your listing stays hidden until it's approved. Listing on CarworX is free." },
+          {
+            kind: "p",
+            tone: "muted",
+            text: "Your listing stays hidden until it's approved. Listing on CarworX is free.",
+          },
         ],
         action: { label: "View your application", url: link },
         reason: "you applied to list a business on CarworX.",
@@ -472,7 +557,8 @@ function build(t: MailTemplate, origin: string): Email {
     case "welcome_business_approved":
       return {
         subject: `${bizPlain(t.business)} is live on CarworX`,
-        preheader: "Your listing is live. Add your hours and services so customers can find you.",
+        preheader:
+          "Your listing is live. Add your hours and services so customers can find you.",
         chip: { tone: "blue", text: "Approved" },
         eyebrow: "Welcome",
         title: `${clean(t.business.name, 80)} is live`,
@@ -481,14 +567,29 @@ function build(t: MailTemplate, origin: string): Email {
           {
             kind: "steps",
             items: [
-              { title: "Check your hours", text: "Customers see when you're open, and search uses it." },
-              { title: "List your services", text: "Add prices or ranges, so enquiries arrive with the right expectations." },
-              { title: "Invite your team", text: "Managers can reply to customers; staff see their schedule." },
+              {
+                title: "Check your hours",
+                text: "Customers see when you're open, and search uses it.",
+              },
+              {
+                title: "List your services",
+                text: "Add prices or ranges, so enquiries arrive with the right expectations.",
+              },
+              {
+                title: "Invite your team",
+                text: "Managers can reply to customers; staff see their schedule.",
+              },
             ],
           },
         ],
         action: { label: "Open your dashboard", url: link },
-        after: [{ kind: "link", label: "See your public listing", url: safeLink(t.listingLink, origin) }],
+        after: [
+          {
+            kind: "link",
+            label: "See your public listing",
+            url: safeLink(t.listingLink, origin),
+          },
+        ],
         reason: "your business was approved on CarworX.",
       };
     case "welcome_team": {
@@ -500,8 +601,19 @@ function build(t: MailTemplate, origin: string): Email {
         title: `You're in`,
         titleQuiet: `${t.role} at ${clean(t.business.name, 80)}.`,
         blocks: [
-          { kind: "p", text: [`${inviter} added you to `, ...biz(t.business), `. ${ROLE_CAN[t.role]}`] },
-          { kind: "p", tone: "muted", text: "Use your own sign-in every time. If you leave the business, the owner removes you and your own account stays yours." },
+          {
+            kind: "p",
+            text: [
+              `${inviter} added you to `,
+              ...biz(t.business),
+              `. ${ROLE_CAN[t.role]}`,
+            ],
+          },
+          {
+            kind: "p",
+            tone: "muted",
+            text: "Use your own sign-in every time. If you leave the business, the owner removes you and your own account stays yours.",
+          },
         ],
         action: { label: "Open your dashboard", url: link },
         reason: "you accepted an invite to a business on CarworX.",
@@ -519,7 +631,11 @@ function build(t: MailTemplate, origin: string): Email {
             kind: "p",
             text: "You've been given admin access. Admin pages stay locked until you add an authenticator app and sign in with it.",
           },
-          { kind: "p", tone: "muted", text: "If you didn't expect this, tell the CarworX owner straight away." },
+          {
+            kind: "p",
+            tone: "muted",
+            text: "If you didn't expect this, tell the CarworX owner straight away.",
+          },
         ],
         action: { label: "Set up two-step sign-in", url: link },
         reason: "you were given admin access to CarworX.",

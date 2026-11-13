@@ -18,11 +18,24 @@ export function esc(value: string): string {
 
 /** Remove control characters and collapse whitespace in user-supplied text. */
 export function clean(value: string, max = 120): string {
-  const flat = value
-    .replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069]/g, " ")
+  const flat = Array.from(value, (c) =>
+    isInvisible(c.codePointAt(0) ?? 0) ? " " : c,
+  )
+    .join("")
     .replace(/\s+/g, " ")
     .trim();
   return flat.length > max ? `${flat.slice(0, max - 1)}…` : flat;
+}
+
+/** C0/C1 controls, zero-width marks, line separators and bidi overrides. */
+function isInvisible(code: number): boolean {
+  return (
+    code <= 0x1f ||
+    (code >= 0x7f && code <= 0x9f) ||
+    (code >= 0x200b && code <= 0x200f) ||
+    (code >= 0x2028 && code <= 0x202e) ||
+    (code >= 0x2066 && code <= 0x2069)
+  );
 }
 
 /**
@@ -104,9 +117,10 @@ export function day(iso: string): string {
 /** "1 hour", "24 hours", "7 days", "15 minutes". */
 export function duration(ms: number): string {
   const minutes = Math.round(ms / 60_000);
-  if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"}`;
+  if (minutes < 60)
+    return `${String(minutes)} minute${minutes === 1 ? "" : "s"}`;
   const hours = Math.round(minutes / 60);
-  if (hours < 48) return `${hours} hour${hours === 1 ? "" : "s"}`;
+  if (hours < 48) return `${String(hours)} hour${hours === 1 ? "" : "s"}`;
   const days = Math.round(hours / 24);
-  return `${days} days`;
+  return `${String(days)} days`;
 }

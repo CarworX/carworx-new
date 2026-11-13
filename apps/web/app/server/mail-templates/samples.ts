@@ -6,8 +6,16 @@ const O = SAMPLE_ORIGIN;
 const gleam = { name: "Gleamline", demo: true };
 
 export const SAMPLES: Record<MailTemplate["kind"], MailTemplate> = {
-  verify: { kind: "verify", link: `${O}/auth/confirm?token_hash=pkce_7f3a9c&type=email`, expiresInMs: 3_600_000 },
-  reset: { kind: "reset", link: `${O}/auth/confirm?token_hash=pkce_1b8e44&type=recovery`, expiresInMs: 3_600_000 },
+  verify: {
+    kind: "verify",
+    link: `${O}/auth/confirm?token_hash=pkce_7f3a9c&type=email`,
+    expiresInMs: 3_600_000,
+  },
+  reset: {
+    kind: "reset",
+    link: `${O}/auth/confirm?token_hash=pkce_1b8e44&type=recovery`,
+    expiresInMs: 3_600_000,
+  },
   invite: {
     kind: "invite",
     link: `${O}/join/AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abcde`,
@@ -85,7 +93,11 @@ export const SAMPLES: Record<MailTemplate["kind"], MailTemplate> = {
     start: "2026-11-15T07:00:00.000Z",
     ref: "CX-2048",
   },
-  welcome_customer: { kind: "welcome_customer", link: `${O}/search`, firstName: "Thandi" },
+  welcome_customer: {
+    kind: "welcome_customer",
+    link: `${O}/search`,
+    firstName: "Thandi",
+  },
   welcome_business_received: {
     kind: "welcome_business_received",
     link: `${O}/provider/application`,

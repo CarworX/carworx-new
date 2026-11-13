@@ -20,10 +20,7 @@ export const LEGAL = {
 };
 
 export type Inline =
-  | string
-  | { strong: string }
-  | { mono: string }
-  | { demo: true };
+  string | { strong: string } | { mono: string } | { demo: true };
 export type Text = Inline | Inline[];
 
 export type Block =
@@ -84,7 +81,8 @@ const C = {
 };
 const SANS =
   "Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
-const MONO = "'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace";
+const MONO =
+  "'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace";
 
 function inlineHtml(t: Text): string {
   const list = Array.isArray(t) ? t : [t];
@@ -135,7 +133,7 @@ function blockHtml(b: Block): string {
       return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 24px">${b.items
         .map(
           (s, n) =>
-            `<tr><td valign="top" style="font-family:${MONO};font-size:13px;line-height:22px;color:${C.muted};padding:12px 12px 12px 0;width:28px;border-top:1px solid ${C.rule}" class="cx-muted">0${n + 1}</td><td valign="top" style="padding:11px 0;border-top:1px solid ${C.rule}"><div class="cx-text" style="font-family:${SANS};font-size:16px;line-height:24px;font-weight:600;color:${C.ink}">${esc(s.title)}</div><div class="cx-muted" style="font-family:${SANS};font-size:14px;line-height:22px;color:${C.muted}">${esc(s.text)}</div></td></tr>`,
+            `<tr><td valign="top" style="font-family:${MONO};font-size:13px;line-height:22px;color:${C.muted};padding:12px 12px 12px 0;width:28px;border-top:1px solid ${C.rule}" class="cx-muted">0${String(n + 1)}</td><td valign="top" style="padding:11px 0;border-top:1px solid ${C.rule}"><div class="cx-text" style="font-family:${SANS};font-size:16px;line-height:24px;font-weight:600;color:${C.ink}">${esc(s.title)}</div><div class="cx-muted" style="font-family:${SANS};font-size:14px;line-height:22px;color:${C.muted}">${esc(s.text)}</div></td></tr>`,
         )
         .join("")}</table>`;
     case "ticket": {
@@ -177,7 +175,7 @@ function blockText(b: Block): string {
         .join("\n");
     case "steps":
       return b.items
-        .map((s, n) => `${n + 1}. ${s.title}. ${s.text}`)
+        .map((s, n) => `${String(n + 1)}. ${s.title}. ${s.text}`)
         .join("\n");
     case "ticket":
       return [
@@ -269,11 +267,17 @@ ${after}
     email.title,
     email.titleQuiet ?? "",
     "",
-    email.blocks.map(blockText).filter((s) => s !== "").join("\n\n"),
+    email.blocks
+      .map(blockText)
+      .filter((s) => s !== "")
+      .join("\n\n"),
     "",
     `${email.action.label}: ${email.action.url}`,
     "",
-    (email.after ?? []).map(blockText).filter((s) => s !== "").join("\n\n"),
+    (email.after ?? [])
+      .map(blockText)
+      .filter((s) => s !== "")
+      .join("\n\n"),
     "",
     "--",
     `Sent from ${SENDER}. Replies go to ${SUPPORT}.`,
