@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 2 · Finish setup · CarworX onboarding</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<link rel="stylesheet" href="../_shared/hub.css">
+<style>
+  /* Phase 2: after approval. Same hub, task and bar language as Phase 1. */
+  .live { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .later { margin-top: 28px; display: grid; gap: 10px; }
+  .later .task { background: rgba(255,255,255,.55); box-shadow: inset 0 0 0 1px var(--hair); }
+  .later .task b, .later .task p { color: var(--muted); }
+  .people { list-style: none; padding: 0; display: grid; gap: 8px; }
+  .people li { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: var(--radius-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hair); }
+  .people .av { width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: var(--white); display: grid; place-items: center; font: 500 14px var(--font-sans); flex: none; }
+  .people .av.pending { background: var(--canvas-2); color: var(--muted); }
+  .people b { display: block; font: 500 15px var(--font-sans); }
+  .people small { font: 400 13px var(--font-sans); color: var(--muted); }
+  .people .cx-label { margin-left: auto; }
+  .perm { width: 100%; border-collapse: collapse; font: 400 13px var(--font-sans); }
+  .perm th, .perm td { padding: 8px 6px; border-top: 1px solid var(--hair); text-align: center; }
+  .perm th:first-child, .perm td:first-child { text-align: left; }
+  .perm thead th { border-top: 0; font: 500 12px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .qr { width: 132px; height: 132px; border-radius: var(--radius-md); background:
+    conic-gradient(from 90deg at 18% 18%, var(--ink) 25%, transparent 0) 0 0 / 33% 33%,
+    repeating-linear-gradient(90deg, var(--ink) 0 8px, transparent 8px 16px),
+    var(--surface); box-shadow: inset 0 0 0 10px var(--surface), inset 0 0 0 11px var(--line); opacity: .9; }
+  .linkrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .linkrow code { font: 500 13px var(--font-mono); padding: 10px 12px; border-radius: var(--radius-sm); background: var(--canvas); }
+  .swatch { display: inline-block; width: 18px; height: 18px; border-radius: 5px; margin-right: 4px; vertical-align: -4px; }
+</style>
+<meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/onboarding/preview.css"></head>
+<body class="cx-canvas">
+<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/phase1/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
+<div data-shell></div>
+<form data-flow novalidate>
+  <main>
+    <div class="taskhead" data-only="task">
+      <div class="row"><button type="button" class="ob-link" data-go="hub">All setup tasks</button></div>
+      <div class="ob-segbar" data-segbar aria-label="Task progress"></div>
+    </div>
+
+    <section data-step id="welcome" data-cta="Finish setup">
+      <div class="hero">
+        <div class="live"><span class="cx-label">Live</span><span class="t-cap">In search now</span></div>
+        <h1>You're approved.<br><span style="color:var(--quiet)">Now finish setting up.</span></h1>
+        <p class="t-lede">Customers can already find Shine Bay Car Wash. A few short tasks add your team and decide how bookings work. About 3 minutes; do them in any order.</p>
+        <div class="lbls" style="display:flex;gap:6px;flex-wrap:wrap"><span class="cx-label">Identity checked</span><span class="cx-label">Business details checked</span><span class="cx-label">Premises visited</span></div>
+        <div><button type="button" class="cx-btn primary" data-go="hub">Finish setup</button></div>
+      </div>
+    </section>
+
+    <section data-step id="hub" data-kind="hub">
+      <div class="hubhead">
+        <div><p class="cx-eyebrow">Shine Bay Car Wash · Live</p><h1>Finish setup</h1><p class="t-cap" style="margin-top:6px">Your listing is already in search. These make bookings work the way you want.</p></div>
+        <div class="ring" data-ring><b data-ringtext>0/5</b></div>
+      </div>
+      <div class="tasks">
+        <article class="task" data-task="team"><span class="ic" data-ic="team"></span><b>Team <span data-badge></span></b><p>Invite managers and staff. Owners and managers can invite.</p><button type="button" class="cx-btn outlined sm" data-go="t-team">Start</button></article>
+        <article class="task" data-task="assign"><span class="ic" data-ic="user"></span><b>Who gets the booking <span data-badge></span></b><p>Customers pick a staff member, or you assign one.</p><button type="button" class="cx-btn outlined sm" data-go="b-assign">Start</button></article>
+        <article class="task" data-task="contact"><span class="ic" data-ic="lock"></span><b>What staff can see <span data-badge></span></b><p>How much customer detail your staff see.</p><button type="button" class="cx-btn outlined sm" data-go="p-contact">Start</button></article>
+        <article class="task" data-task="secure"><span class="ic" data-ic="lock"></span><b>Team sign-in security <span data-badge></span></b><p>Whether managers and staff must use two-step sign-in.</p><button type="button" class="cx-btn outlined sm" data-go="s-mfa">Start</button></article>
+        <article class="task" data-task="cover"><span class="ic" data-ic="eye"></span><b>Cover photo <span data-badge></span></b><p>The first thing customers see on your listing.</p><button type="button" class="cx-btn outlined sm" data-go="c-cover">Start</button></article>
+      </div>
+      <div class="sendbar"><p class="t-body" data-sendmsg>5 tasks to go.</p><span class="cx-label info" data-donechip hidden>Setup complete</span></div>
+      <section class="later" aria-labelledby="later-h">
+        <p class="cx-eyebrow" id="later-h">Later · opens when bookings launch</p>
+        <div class="tasks">
+          <article class="task"><span class="ic" data-ic="clock"></span><b>Prices and durations <span class="ob-lbl-off">Later</span></b><p>A price and time for each service.</p></article>
+          <article class="task"><span class="ic" data-ic="flag"></span><b>Get paid <span class="ob-lbl-off">Later</span></b><p>Set up with our payment partner. Money goes straight to you.</p></article>
+          <article class="task"><span class="ic" data-ic="van"></span><b>Travel charges <span class="ob-lbl-off">Later</span></b><p>Mobile only: a charge per distance band.</p></article>
+        </div>
+      </section>
+    </section>
+
+    <!-- Team: list, then invite (role → how → email → sent) -->
+    <section data-step id="t-team" data-kind="list" data-next="hub" data-cta="Done">
+      <div class="card"><h2>Team</h2>
+        <ul class="people">
+          <li><span class="av">SD</span><span><b>Sipho Dlamini (you)</b><small>Owner</small></span><span class="cx-label">Active</span></li>
+          <li data-if="sent=yes"><span class="av pending">…</span><span><b data-bind="invEmail" data-empty="One-time link"></b><small><span data-bind="invRole"></span> · invite expires in 7 days</small></span><span class="cx-label warn">Invited</span></li>
+        </ul>
+        <div><button type="button" class="cx-btn outlined sm" data-go="i-role">+ Invite someone</button></div>
+        <div data-if="sent!=yes"><div data-q="solo"></div></div>
+        <div data-actions></div></div>
+    </section>
+    <section data-step id="i-role" data-title="Invite · Role" data-kind="task" data-group="invite" data-count data-require="invRole">
+      <div class="card"><h2>Invite someone</h2><div data-q="invRole"></div>
+        <table class="perm"><thead><tr><th>Can they…</th><th>Owner</th><th>Manager</th><th>Staff</th></tr></thead><tbody>
+          <tr><td>Edit the listing</td><td>✓</td><td>✓</td><td>–</td></tr>
+          <tr><td>Invite people</td><td>✓</td><td>✓</td><td>–</td></tr>
+          <tr><td>Handle requests</td><td>✓</td><td>✓</td><td>✓</td></tr>
+          <tr><td>Payment settings</td><td>✓</td><td>–</td><td>–</td></tr>
+        </tbody></table>
+        <div data-actions></div></div>
+    </section>
+    <section data-step id="i-how" data-title="Invite · How" data-kind="task" data-group="invite" data-count data-require="invHow"><div class="card"><h2>Invite someone</h2><div data-q="invHow"></div><div data-actions></div></div></section>
+    <section data-step id="i-email" data-title="Invite · Email" data-kind="task" data-group="invite" data-count data-if="invHow!=Share a link" data-require="invEmail" data-cta="Send invite"><div class="card"><h2>Invite someone</h2><div data-q="invEmail"></div><div data-actions></div></div></section>
+    <section data-step id="i-link" data-title="Invite · Link" data-kind="task" data-group="invite" data-count data-if="invHow=Share a link" data-cta="Done">
+      <div class="card"><h2>Share this link</h2>
+        <p class="t-body">Send it to one person on WhatsApp, SMS or email. It works once and expires in 7 days.</p>
+        <div class="linkrow"><code>carworx.app/join/7K2-QX9</code><button type="button" class="cx-btn outlined sm">Copy</button></div>
+        <img src="qr-invite.svg" alt="QR code for the one-time team invite link" width="168" height="168" style="display:block;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line), var(--sh-1)">
+        <div data-actions></div></div>
+    </section>
+    <section data-step id="i-sent" data-skip data-next="t-team" data-cta="Back to your team">
+      <div class="card"><div class="ob-status"><div class="ob-tickbig" data-ic="tick"></div>
+        <h2 data-if="invHow=Email invite">Invite sent</h2><h2 data-if="invHow=Share a link">Link ready</h2>
+        <p class="t-lede"><span data-bind="invEmail" data-empty="The person you send the link to"></span> joins as <b data-bind="invRole"></b> once they sign in with their own CarworX account. You can cancel the invite any time.</p></div>
+        <div class="ob-actions"><a class="ob-link" data-preview-invite href="../staff/index.html">See what they'll see</a><button type="button" class="cx-btn primary" data-next data-cta="Back to your team">Back to your team</button></div></div>
+    </section>
+
+    <!-- Who gets the booking -->
+    <section data-step id="b-assign" data-title="Who gets the booking" data-kind="task" data-group="assign" data-count data-require="assign" data-next="hub" data-cta="Done">
+      <div class="card"><h2>Who gets the booking</h2><div data-q="assign"></div><div data-if="assign=The customer picks"><div data-q="anyone"></div></div>
+        <p class="ob-private" data-if="assign=The customer picks"><span data-ic="eye"></span><span>Customers will see each team member's <b>first name</b>. Staff add it when they join.</span></p>
+        <div data-actions></div></div>
+    </section>
+    <!-- What staff can see -->
+    <section data-step id="p-contact" data-title="What staff can see" data-kind="task" data-group="contact" data-count data-require="contact" data-next="hub" data-cta="Done"><div class="card"><h2>What staff can see</h2><div data-q="contact"></div><div data-actions></div></div></section>
+    <!-- Team sign-in security (owner decides, 2026-11-12) -->
+    <section data-step id="s-mfa" data-title="Team sign-in security" data-kind="task" data-group="secure" data-count data-require="teamMfa" data-next="hub" data-cta="Done"><div class="card"><h2>Team sign-in security</h2><div data-q="teamMfa"></div>
+      <p class="ob-private"><span data-ic="lock"></span><span>For your own account, turn it on in Profile and settings → Security. It's recommended, not required.</span></p><div data-actions></div></div></section>
+    <!-- Cover -->
+    <section data-step id="c-cover" data-title="Cover photo" data-kind="task" data-group="cover" data-count data-require="cover" data-next="hub" data-cta="Done"><div class="card"><h2>Cover photo</h2><div data-q="cover"></div><div data-actions></div></div></section>
+  </main>
+  <input type="hidden" name="sent" value="">
+</form>
+<script src="../_shared/kit.js"></script>
+<script src="../_shared/shell.js"></script>
+<script>
+  OB.Q.solo = { t: "It's just me for now", h: "You can invite people later.", type: "switch" };
+  document.querySelectorAll("[data-actions]").forEach((el) => {
+    el.outerHTML = `<div class="ob-actions"><button type="button" class="ob-back" data-back>Back</button><span class="ob-keys"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span><button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button></div>`;
+  });
+  const form = document.querySelector("[data-flow]");
+  const has = (v) => v != null && v !== "" && !(Array.isArray(v) && !v.length);
+  const TASKS = { team: (s) => s.sent === "yes" || has(s.solo), assign: (s) => has(s.assign), contact: (s) => has(s.contact), secure: (s) => has(s.teamMfa), cover: (s) => has(s.cover) };
+  const N = Object.keys(TASKS).length;
+  form.addEventListener("ob:change", (e) => {
+    const s = e.detail;
+    const inviteUrl = new URL("../staff/index.html", location.href);
+    inviteUrl.searchParams.set("role", s.invRole === "Manager" ? "Manager" : "Staff");
+    inviteUrl.searchParams.set("teamMfa", ({ "Required for managers": "managers", "Required for everyone": "all" })[s.teamMfa] || "optional");
+    inviteUrl.searchParams.set("pick", s.assign === "We assign" ? "assign" : "customer");
+    inviteUrl.searchParams.set("contact", ({ "Name and phone number": "phone", "Booking details only": "none" })[s.contact] || "first");
+    form.querySelector("[data-preview-invite]").href = inviteUrl.href;
+    let done = 0;
+    form.querySelectorAll("[data-task]").forEach((c) => {
+      const ok = TASKS[c.dataset.task](s);
+      done += ok;
+      c.classList.toggle("done", ok);
+      c.querySelector("[data-badge]").outerHTML = `<span data-badge class="cx-label ${ok ? "" : "info"}">${ok ? "Done" : "To do"}</span>`;
+      c.querySelectorAll(".cx-btn").forEach((b) => (b.textContent = ok ? "Edit" : "Start"));
+    });
+    form.querySelector("[data-ring]").style.setProperty("--p", done / N);
+    form.querySelector("[data-ringtext]").textContent = `${done}/${N}`;
+    form.querySelector("[data-sendmsg]").textContent = done === N ? "All set. You can change any of this later." : `${N - done} task${N - done === 1 ? "" : "s"} to go. Your listing stays live either way.`;
+    form.querySelector("[data-donechip]").hidden = done !== N;
+  });
+  // The last invite step marks the invite as sent and shows the confirmation.
+  form.addEventListener("ob:step", (e) => {
+    if (e.detail.id === "i-sent") { form.elements.sent.value = "yes"; flow.update(); }
+  });
+  document.querySelectorAll("[data-ic]").forEach((e) => (e.innerHTML = OB.ic(e.dataset.ic)));
+  SHELL.mount(document.querySelector("[data-shell]"), { role: "owner", current: "today" });
+  const flow = OB.boot();
+  // Email and link both end on the confirmation.
+  form.querySelector("#i-email").dataset.next = "i-sent";
+  form.querySelector("#i-link").dataset.next = "i-sent";
+  // Cover swatches (synthetic stand-ins for photos).
+  const sw = { "Bay at sunrise": "linear-gradient(135deg,#ffb08a,#3d6dff)", "Foam wash": "linear-gradient(135deg,#e3eaff,#a9c0ff)", "Workshop floor": "linear-gradient(135deg,#8a97a6,#1c2128)" };
+  form.querySelectorAll('[name="cover"]').forEach((i) => i.insertAdjacentHTML("afterend", `<span class="swatch" style="background:${sw[i.value]}" aria-hidden="true"></span>`));
+</script>
+</body>
+</html>

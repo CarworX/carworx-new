@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4 · Conversational · CarworX onboarding concept</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+  /* Concept 4: friendly prompts, one answer per step, your answers stack up as a thread. */
+  main { max-width: 660px; margin: 0 auto; padding: 20px 16px 150px; display: grid; gap: 14px; }
+  .row { display: flex; gap: 10px; align-items: flex-end; }
+  .av { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--surface); box-shadow: var(--sh-1); display: grid; place-items: center; }
+  .av img { width: 20px; height: 20px; }
+  .bubble, [data-step] > .ob-q > .ob-qt, [data-step] .bot {
+    display: block; max-width: 86%; padding: 12px 16px; border-radius: 20px 20px 20px 6px;
+    background: var(--surface); box-shadow: var(--sh-1); font: 400 16px/23px var(--font-sans); color: var(--ink);
+  }
+  .me { justify-content: flex-end; }
+  .me .bubble { background: var(--ink); color: var(--white); border-radius: 20px 20px 6px 20px; box-shadow: none; max-width: 80%; }
+  .me .ob-link { font-size: 13px; color: var(--muted); align-self: center; }
+  .thread { display: grid; gap: 10px; }
+  .thread .q { color: var(--graphite); }
+  [data-step] { display: grid; gap: 12px; scroll-margin-bottom: 110px; }
+  [data-step] > .ob-q { gap: 12px; }
+  [data-step] > .ob-q > .ob-qt { position: relative; margin-left: 44px; animation: pop .35s cubic-bezier(.2,.9,.3,1.3) both; }
+  [data-step] > .ob-q > .ob-qt::before { content: ""; position: absolute; left: -44px; bottom: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--surface) url(../_shared/carworx-mark-small-ink.svg) center / 20px no-repeat; box-shadow: var(--sh-1); }
+  [data-step] > .ob-q > .ob-qh { margin-left: 44px; }
+  [data-step] > .ob-q > :not(.ob-qt):not(.ob-qh):not(.ob-err),
+  [data-step] .reply { margin-left: 12%; padding: 14px; border-radius: 22px; background: rgba(255,255,255,.6); box-shadow: inset 0 0 0 1px var(--hair); animation: up .4s .25s cubic-bezier(.2,.8,.2,1) both; }
+  [data-step] .bot { margin-left: 44px; position: relative; animation: pop .35s both; }
+  [data-step] .bot::before { content: ""; position: absolute; left: -44px; bottom: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--surface) url(../_shared/carworx-mark-small-ink.svg) center / 20px no-repeat; box-shadow: var(--sh-1); }
+  @keyframes pop { from { opacity: 0; transform: scale(.92) translateY(6px); transform-origin: left bottom; } }
+  @keyframes up { from { opacity: 0; transform: translateY(8px); } }
+  .reply { display: grid; gap: 12px; }
+  .composer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 15; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: var(--frost); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); border-top: 1px solid var(--hair); }
+  .composer .ob-actions { max-width: 660px; margin: 0 auto; }
+  .typing { display: inline-flex; gap: 4px; }
+  .status { padding-top: 8px; }
+  @media (max-width: 640px) {
+    [data-step] > .ob-q > :not(.ob-qt):not(.ob-qh):not(.ob-err), [data-step] .reply { margin-left: 0; }
+    .ob-tiles { grid-template-columns: 1fr; }
+    .ob-keys { display: none; }
+    .thread > :nth-last-child(n+5) { display: none; } /* phones keep the last two exchanges */
+    .more { display: block !important; }
+  }
+  .more { display: none; font: 500 12px var(--font-mono); color: var(--muted); text-align: center; }
+</style>
+<meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/onboarding/preview.css"></head>
+<body class="cx-canvas" data-voice="chat">
+<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/phase1/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
+<form data-flow data-autonext novalidate>
+  <div data-screen="nav" data-label="Concept 4 · conversational"></div>
+  <main>
+    <p class="more" data-only="!welcome !submitted !waiting !live">Earlier answers are in Check, at the end</p>
+    <div class="thread" data-thread aria-label="Your answers so far"></div>
+    <section data-step id="welcome" data-cta="Let's go">
+      <div class="row"><span class="av"><img src="../_shared/carworx-mark-small-ink.svg" alt=""></span><p class="bubble">Hi, welcome to CarworX for businesses.</p></div>
+      <div class="row"><span class="av" aria-hidden="true"></span><p class="bubble">I'll ask a few quick questions, mostly tap-to-answer. It takes about 2 minutes, and listing is free during the pilot.</p></div>
+      <div class="row"><span class="av" aria-hidden="true"></span><p class="bubble">A CarworX admin checks every business before it goes live. Ready?</p></div>
+    </section>
+    <section data-step id="path" data-count data-require="path"><div data-q="path"></div></section>
+    <section data-step id="listing" data-count data-if="path=claim" data-require="claimListing"><div data-q="claimListing"></div></section>
+    <section data-step id="name" data-count data-if="path=new" data-require="name"><div data-q="name"></div></section>
+    <section data-step id="role" data-count data-require="role"><div data-q="role"></div></section>
+    <section data-step id="services" data-count data-if="path=new" data-require="services"><div data-q="services"></div></section>
+    <section data-step id="mode" data-count data-if="path=new" data-require="mode"><div data-q="mode"></div></section>
+    <section data-step id="metro" data-count data-if="path=new" data-require="metro"><div data-q="metro"></div></section>
+    <section data-step id="pin" data-count data-if="path=new&mode=They come to me" data-require="pin"><div data-q="pin"></div></section>
+    <section data-step id="base" data-count data-if="path=new&mode=I go to them" data-require="base"><div data-q="base"></div></section>
+    <section data-step id="hours" data-count data-if="path=new" data-require="days"><div data-q="hours"></div></section>
+    <section data-step id="staff" data-count data-if="path=new" data-require="staff"><div data-q="staff"></div></section>
+    <section data-step id="about" data-count data-if="path=new" data-require="about"><div data-q="about"></div></section>
+    <section data-step id="evidence" data-count data-if="path=claim" data-require="evidence"><div data-q="evidence"></div></section>
+    <section data-step id="doc" data-count data-if="path=claim&evidence=Show an admin a document" data-require="doc,docDate"><p class="bot">Which document will you show the admin, and what date is on it? Nothing is uploaded.</p><div class="reply"><div data-q="doc"></div><div data-q="docDate"></div></div></section>
+    <section data-step id="checks" data-count data-require="adult,consent"><p class="bot">Nearly done. Two quick checks before you send:</p><div class="reply"><div data-q="adult"></div><div data-q="consent"></div></div></section>
+    <section data-step id="review" data-cta="Send it"><p class="bot">Here's everything. Tap Change to fix anything, and I'll bring you straight back.</p><div class="reply"><div data-screen="review"></div></div></section>
+    <section data-step id="submitted" data-cta="Go to your dashboard"><div class="status" data-screen="submitted"></div></section>
+    <section data-step id="waiting"><div class="status" data-screen="waiting"></div></section>
+    <section data-step id="live" data-skip><div class="status" data-screen="live"></div></section>
+  </main>
+  <div class="composer" data-only="!waiting !live">
+    <div class="ob-actions">
+      <button type="button" class="ob-back" data-back data-only="!welcome !submitted">Undo</button>
+      <span class="ob-keys" data-only="!welcome !submitted"><kbd>Enter</kbd> send · <kbd>Esc</kbd> undo</span>
+      <button type="button" class="cx-btn primary" data-next data-cta="Send">Send</button>
+    </div>
+  </div>
+</form>
+<script src="../_shared/kit.js"></script>
+<script>
+  const form = document.querySelector("[data-flow]");
+  const flow = OB.boot();
+  const answer = (k, s) =>
+    ({
+      path: s.path === "claim" ? "I want to claim my listing" : "I'm new, list my business",
+      pin: s.pin && `Here: near ${s.pinArea}`,
+      base: s.base && `From my base (private), up to ${s.radius} km`,
+      hours: s.hoursText,
+      since: s.sinceText || "Skip",
+      adult: s.adult && "Yes, 18+",
+      consent: s.consent && "Agreed",
+    })[k] ?? [].concat(s[k] ?? []).join(", ");
+  // Rebuild the thread: every answered step before this one, as a question and your reply.
+  form.addEventListener("ob:step", (e) => {
+    const s = flow ? flow.state() : e.detail.s;
+    const steps = [...form.querySelectorAll("[data-step][data-count]")];
+    const at = [...form.querySelectorAll("[data-step]")].indexOf(e.detail.step);
+    const thread = form.querySelector("[data-thread]");
+    const status = ["submitted", "waiting", "live", "welcome"].includes(e.detail.id);
+    thread.hidden = status;
+    if (status) return;
+    thread.innerHTML = steps
+      .filter((st) => [...form.querySelectorAll("[data-step]")].indexOf(st) < at && OB.matches(st.dataset.if, s))
+      .map((st) => {
+        const keys = [...st.querySelectorAll("[data-q]")].map((q) => q.dataset.q);
+        const q = st.querySelector(".bot, .ob-qt").textContent;
+        const a = keys.map((k) => answer(k, s)).filter(Boolean).join(" · ");
+        return `<div class="row"><span class="av" aria-hidden="true"><img src="../_shared/carworx-mark-small-ink.svg" alt=""></span><p class="bubble q">${OB.esc(q)}</p></div>
+          <div class="row me"><button type="button" class="ob-link" data-change="${keys[0]}">Change</button><p class="bubble">${OB.esc(a || "–")}</p></div>`;
+      })
+      .join("");
+    requestAnimationFrame(() => e.detail.step.scrollIntoView({ block: "end" }));
+  });
+  flow.show(form.dataset.step, false);
+</script>
+</body>
+</html>

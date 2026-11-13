@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5 · Setup checklist · CarworX onboarding concept</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/studio.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<link rel="stylesheet" href="../_shared/hub.css">
+<meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/onboarding/preview.css"></head>
+<body class="cx-canvas">
+<aside class="cx-preview-notice" aria-label="Preview information"><span>PRIVATE PREVIEW · Fictional people and businesses. Nothing is sent, booked or charged.</span><nav aria-label="Example journeys"><a href="/">Customer home</a><a href="/onboarding/phase1/index.html">Get listed</a><a href="/onboarding/setup/index.html#hub">Business</a><a href="/onboarding/staff/index.html?demo=1#home">Staff</a><a href="/onboarding/admin/index.html#today">Admin</a><a href="/onboarding/account/index.html?as=owner&tab=profile">Account</a></nav></aside>
+<form data-flow novalidate>
+  <div data-screen="nav" data-label="Concept 5 · checklist"></div>
+  <main>
+    <div class="taskhead" data-only="task">
+      <div class="row"><button type="button" class="ob-link" data-go="hub">All tasks</button></div>
+      <div class="ob-segbar" data-segbar aria-label="Task progress"></div>
+    </div>
+
+    <section data-step id="welcome" data-cta="Get set up">
+      <div class="hero"><p class="cx-eyebrow">For businesses · R0 during the pilot</p><h1>Let's get you set up.</h1>
+      <p class="t-lede">A few short tasks. Do them in any order, stop whenever you like, and pick up where you left off. A CarworX admin checks everything before you go live.</p>
+      <div><button type="button" class="cx-btn primary" data-next>Get set up</button></div></div>
+    </section>
+    <section data-step id="path" data-require="path" data-next="hub">
+      <div class="card"><div data-q="path"></div><div data-actions></div></div>
+    </section>
+
+    <section data-step id="hub" data-kind="hub">
+      <div class="hubhead">
+        <div><p class="cx-eyebrow" data-if="path=new">New listing</p><p class="cx-eyebrow" data-if="path=claim">Claiming a listing</p><h1>Get set up</h1><p class="t-cap" style="margin-top:6px">Saved on this device as you go.</p></div>
+        <div class="ring" data-ring><b data-ringtext>0/4</b></div>
+      </div>
+      <div class="tasks">
+        <article class="task" data-task="listing" data-if="path=claim"><span class="ic" data-ic="flag"></span><b>Your listing <span data-badge></span></b><p>Pick the listing you run.</p><button type="button" class="cx-btn outlined sm" data-go="c-listing">Start</button></article>
+        <article class="task" data-task="details" data-if="path=new"><span class="ic" data-ic="store"></span><b>Details <span data-badge></span></b><p>Name, services and one line about you. 3 steps.</p><button type="button" class="cx-btn outlined sm" data-go="d-name">Start</button></article>
+        <article class="task" data-task="location" data-if="path=new"><span class="ic" data-ic="pin"></span><b>Location <span data-badge></span></b><p>How you work, your area, your pin and hours. 3 steps.</p><button type="button" class="cx-btn outlined sm" data-go="l-mode">Start</button></article>
+        <article class="task" data-task="proof"><span class="ic" data-ic="doc"></span><b>Proof <span data-badge></span></b><p data-if="path=new">One check, plus what the admin will look at.</p><p data-if="path=claim">How we check the listing is yours.</p><button type="button" class="cx-btn outlined sm" data-go="p-evidence" data-if="path=claim">Start</button><button type="button" class="cx-btn outlined sm" data-go="p-adult" data-if="path=new">Start</button></article>
+        <article class="task" data-task="team"><span class="ic" data-ic="team"></span><b>Team <span data-badge></span></b><p>Your role<span data-if="path=new"> and team size</span>. Invites open after approval.</p><button type="button" class="cx-btn outlined sm" data-go="t-role">Start</button></article>
+      </div>
+      <div class="sendbar"><p class="t-body" data-sendmsg>Finish every task to send.</p><button type="button" class="cx-btn primary" data-send aria-disabled="true">Review and send</button></div>
+    </section>
+
+    <!-- Details -->
+    <section data-step id="d-name" data-title="Details · Name" data-kind="task" data-group="details" data-count data-require="name"><div class="card"><h2>Details</h2><div data-q="name"></div><div data-actions></div></div></section>
+    <section data-step id="d-services" data-title="Details · Services" data-kind="task" data-group="details" data-count data-require="services"><div class="card"><h2>Details</h2><div data-q="services"></div><div data-actions></div></div></section>
+    <section data-step id="d-about" data-title="Details · About you" data-kind="task" data-group="details" data-count data-require="about" data-next="hub" data-cta="Done"><div class="card"><h2>Details</h2><div data-q="about"></div><div data-q="since"></div><div data-actions></div></div></section>
+    <!-- Location -->
+    <section data-step id="l-mode" data-title="Location · How you work" data-kind="task" data-group="location" data-count data-require="mode,metro"><div class="card"><h2>Location</h2><div data-q="mode"></div><div data-q="metro"></div><div data-actions></div></div></section>
+    <section data-step id="l-where" data-title="Location · Where" data-kind="task" data-group="location" data-count data-require="pin,base"><div class="card"><h2>Location</h2><div data-q="pin"></div><div data-q="base"></div><div data-actions></div></div></section>
+    <section data-step id="l-hours" data-title="Location · Hours" data-kind="task" data-group="location" data-count data-require="days" data-next="hub" data-cta="Done"><div class="card"><h2>Location</h2><div data-q="hours"></div><div data-actions></div></div></section>
+    <!-- Listing (claim) -->
+    <section data-step id="c-listing" data-title="Your listing" data-kind="task" data-group="listing" data-count data-require="claimListing" data-next="hub" data-cta="Done"><div class="card"><h2>Your listing</h2><div data-q="claimListing"></div><div data-actions></div></div></section>
+    <!-- Proof -->
+    <section data-step id="p-evidence" data-title="Proof · Evidence" data-kind="task" data-group="proof" data-count data-if="path=claim" data-require="evidence"><div class="card"><h2>Proof</h2><div data-q="evidence"></div><div data-actions></div></div></section>
+    <section data-step id="p-doc" data-title="Proof · Document" data-kind="task" data-group="proof" data-count data-if="path=claim&evidence=Show an admin a document" data-require="doc,docDate"><div class="card"><h2>Proof</h2><div data-q="doc"></div><div data-q="docDate"></div><div data-actions></div></div></section>
+    <section data-step id="p-adult" data-title="Proof · Checks" data-kind="task" data-group="proof" data-count data-require="adult" data-next="hub" data-cta="Done"><div class="card"><h2>Proof</h2><div data-q="adult"></div>
+      <div class="ob-panel" style="box-shadow:inset 0 0 0 1px var(--hair)"><h3>What the admin checks</h3><ul class="ob-checks"><li><span class="dot"></span>Identity checked</li><li><span class="dot"></span>Business details checked</li><li data-if="mode=They come to me"><span class="dot"></span>Premises visited (fixed premises only)</li></ul><p class="t-cap">By phone, documents or a visit. Each check they do becomes a label on your listing.</p></div>
+      <div data-actions></div></div></section>
+    <!-- Team -->
+    <section data-step id="t-role" data-title="Team" data-kind="task" data-group="team" data-count data-require="role,staff" data-next="hub" data-cta="Done"><div class="card"><h2>Team</h2><div data-q="role"></div><div data-if="path=new"><div data-q="staff"></div></div><p class="ob-private"><span data-ic="team"></span><span>You can invite managers and staff once you're approved.</span></p><div data-actions></div></div></section>
+
+    <section data-step id="send" data-require="consent" data-cta="Send for review" data-skip><div class="card"><h2>Check and send</h2><div data-screen="review"></div><div data-q="consent"></div><div data-actions></div></div></section>
+    <section data-step id="submitted" data-next="waiting" data-skip><div class="card"><div data-screen="submitted"></div><div class="ob-actions"><button type="button" class="cx-btn primary" data-go="waiting" style="margin-left:auto">Go to your dashboard</button></div></div></section>
+    <section data-step id="waiting" data-skip><div data-screen="waiting"></div></section>
+    <section data-step id="live" data-skip><div data-screen="live"></div></section>
+  </main>
+</form>
+<script src="../_shared/kit.js"></script>
+<script>
+  document.querySelectorAll("[data-actions]").forEach((el) => {
+    el.outerHTML = `<div class="ob-actions"><button type="button" class="ob-back" data-back>Back</button><span class="ob-keys"><kbd>Enter</kbd> next · <kbd>Esc</kbd> back</span><button type="button" class="cx-btn primary" data-next data-cta="Next">Next</button></div>`;
+  });
+  document.querySelectorAll("[data-ic]").forEach((e) => (e.innerHTML = OB.ic(e.dataset.ic)));
+  const form = document.querySelector("[data-flow]");
+  const KEY = "carworx-onboarding-concept-5";
+  const has = (v) => v != null && v !== "" && !(Array.isArray(v) && !v.length);
+  const TASKS = {
+    listing: (s) => has(s.claimListing),
+    details: (s) => has(s.name) && has(s.services) && has(s.about),
+    location: (s) => has(s.mode) && has(s.metro) && (!s.fixed || has(s.pin)) && (!(s.mode || []).includes("I go to them") || has(s.base)) && has(s.days),
+    proof: (s) => has(s.adult) && (s.path !== "claim" || (has(s.evidence) && (s.evidence !== "Show an admin a document" || (has(s.doc) && has(s.docDate))))),
+    team: (s) => has(s.role) && (s.path === "claim" || has(s.staff)),
+  };
+  let ready = false;
+  form.addEventListener("ob:change", (e) => {
+    const s = e.detail;
+    const cards = [...form.querySelectorAll("[data-task]")].filter((c) => OB.matches(c.dataset.if, s));
+    let done = 0;
+    cards.forEach((c) => {
+      const ok = TASKS[c.dataset.task](s);
+      done += ok;
+      c.classList.toggle("done", ok);
+      c.querySelector("[data-badge]").outerHTML = `<span data-badge class="cx-label ${ok ? "" : "info"}">${ok ? "Done" : "To do"}</span>`;
+      c.querySelectorAll(".cx-btn").forEach((b) => (b.textContent = ok ? "Edit" : "Start"));
+    });
+    form.querySelector("[data-ring]").style.setProperty("--p", cards.length ? done / cards.length : 0);
+    form.querySelector("[data-ringtext]").textContent = `${done}/${cards.length}`;
+    const all = cards.length && done === cards.length;
+    const btn = form.querySelector("[data-send]");
+    btn.setAttribute("aria-disabled", String(!all));
+    form.querySelector("[data-sendmsg]").textContent = all ? "All done. Check your answers and send." : `${cards.length - done} task${cards.length - done === 1 ? "" : "s"} to go. Finish every task to send.`;
+    if (ready && !new URLSearchParams(location.search).has("preset")) {
+      const save = {};
+      for (const el of form.elements) if (el.name && (el.type === "hidden" || ((el.type !== "radio" && el.type !== "checkbox") || el.checked))) (save[el.name] ||= []).push(el.value);
+      localStorage.setItem(KEY, JSON.stringify(save));
+    }
+  });
+  form.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-send]");
+    if (!b) return;
+    if (b.getAttribute("aria-disabled") === "true") form.querySelector("[data-sendmsg]").focus?.();
+    else flow.go("send");
+  });
+  const flow = OB.boot();
+  // Pick up where you left off (this device only; synthetic prototype).
+  try {
+    const saved = !new URLSearchParams(location.search).has("preset") && JSON.parse(localStorage.getItem(KEY) || "null");
+    if (saved) {
+      for (const el of form.elements) {
+        const v = saved[el.name];
+        if (!el.name || !v) continue;
+        if (el.type === "radio" || el.type === "checkbox") el.checked = v.includes(el.value);
+        else if (el.type !== "button") el.value = v[0];
+      }
+    }
+  } catch {}
+  ready = true;
+  flow.update();
+  // The send step's Next goes to "submitted", then the dashboard.
+  form.querySelector("#send").dataset.next = "submitted";
+  form.querySelector('[data-restart]').addEventListener("click", () => {}, { once: true });
+</script>
+</body>
+</html>
