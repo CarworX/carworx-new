@@ -1,4 +1,6 @@
 -- SYNTHETIC ONLY: invoked by the disposable local BK-1 source stack.
+-- Prove the restore keeps progress rather than resetting the migration seed.
+update private.payment_reconcile_cursor set page=3,checked_at='2026-11-13T12:00:00Z' where job='settlements';
 insert into private.payment_accounts(organisation_id,subaccount) values('5eed0000-0000-4000-8000-0000000000a1','ACCT_BK1synthetic');
 insert into private.payment_attempts(id,hold_id,booking_id,customer_id,organisation_id,amount_minor,subaccount,hold_expires_at,state,provider_id,reference)
 values('bac30000-0000-4000-8000-000000000001','bac30000-0000-4000-8000-000000000002','bac30000-0000-4000-8000-000000000003',
