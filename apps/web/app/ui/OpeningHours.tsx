@@ -220,8 +220,8 @@ export function OpeningHoursTable({
             </tbody>
           </table>
           <p className="type-caption">
-            Times are South African time. Public holiday hours may differ;
-            check with the business before you travel.
+            Times are South African time. Public holiday hours may differ; check
+            with the business before you travel.
           </p>
         </>
       )}

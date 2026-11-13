@@ -154,11 +154,7 @@ describe("provider draft allowlist", () => {
       parseStep(form({ ...input, "closes-6": "07:00" }), "about", services),
     ).toBeNull();
     expect(
-      parseStep(
-        form({ description: input.description }),
-        "about",
-        services,
-      ),
+      parseStep(form({ description: input.description }), "about", services),
     ).toBeNull();
   });
   it("does not skip missing prerequisites", () => {

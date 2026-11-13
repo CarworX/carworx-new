@@ -58,7 +58,9 @@ describe("opening hours for customers", () => {
     );
     expect(h).toContain("Open now · closes 13:00");
     expect((h.match(/aria-current="date"/g) ?? []).length).toBe(1);
-    expect(h).toMatch(/aria-current="date"><th scope="row">Saturday<span class="tag">Today<\/span>/);
+    expect(h).toMatch(
+      /aria-current="date"><th scope="row">Saturday<span class="tag">Today<\/span>/,
+    );
     expect((h.match(/>Closed</g) ?? []).length).toBe(5);
     expect(h).toContain("Public holiday hours may differ");
   });

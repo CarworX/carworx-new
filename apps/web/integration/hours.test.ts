@@ -1,6 +1,13 @@
 import { randomUUID } from "node:crypto";
 
-import { afterAll, beforeAll, describe, expect, it, onTestFinished } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  onTestFinished,
+} from "vitest";
 
 import {
   Browser,
@@ -34,20 +41,19 @@ afterAll(() => {
   sql("alter role catalogue_server password null");
 });
 
-const visitor = (catalogue = true) =>
+const visitor = (catalogue = true): Browser =>
   new Browser({
     ...workerEnv,
     ...(catalogue ? { CATALOGUE_DB: { connectionString: login() } } : {}),
   } as unknown as typeof workerEnv & Record<string, string>);
 
 /** Monday to Friday 08:00–17:00 and Saturday 08:00–13:00, as posted. */
-const WEEK: Record<string, string> = Object.fromEntries(
-  [1, 2, 3, 4, 5, 6, 7].flatMap((day) => [
-    ...(day <= 6 ? [[`open-${String(day)}`, "on"]] : []),
-    [`opens-${String(day)}`, "08:00"],
-    [`closes-${String(day)}`, day === 6 ? "13:00" : "17:00"],
-  ]),
-);
+const WEEK: Record<string, string> = {};
+for (let day = 1; day <= 7; day++) {
+  if (day <= 6) WEEK[`open-${String(day)}`] = "on";
+  WEEK[`opens-${String(day)}`] = "08:00";
+  WEEK[`closes-${String(day)}`] = day === 6 ? "13:00" : "17:00";
+}
 
 async function fixture(status = "live") {
   const owner = await createConfirmedUser("hours-owner");
@@ -117,7 +123,12 @@ describe("editing opening hours after listing", () => {
     expect(saved(f.listing)).toEqual([]);
 
     const ok = await owner.send(path, {
-      form: { ...WEEK, intent: "save", "opens-5": "07:30", "closes-5": "16:00" },
+      form: {
+        ...WEEK,
+        intent: "save",
+        "opens-5": "07:30",
+        "closes-5": "16:00",
+      },
     });
     expect(ok.status).toBe(302);
     expect(ok.location).toBe(`${path}?saved=1`);
@@ -140,7 +151,9 @@ describe("editing opening hours after listing", () => {
     expect(listing.body).toContain("Opening hours");
     expect(listing.body).toContain("07:30 – 16:00");
     expect(listing.body).toContain("08:00 – 13:00");
-    expect(listing.body).toMatch(/<th scope="row">Sunday<\/th><td>Closed<\/td>/);
+    expect(listing.body).toMatch(
+      /<th scope="row">Sunday<\/th><td>Closed<\/td>/,
+    );
     expect((listing.body.match(/aria-current="date"/g) ?? []).length).toBe(1);
     expect(listing.body).toMatch(/data-open-status="(open|closed)"/);
     expect(listing.body).toContain("Public holiday hours may differ");
@@ -200,7 +213,9 @@ describe("opening hours on the public listing", () => {
       values ('${f.listing}','${f.org}',1,'08:00','17:00')`);
     const down = await visitor(false).send(`/p/${f.listing}`);
     expect(down.status).toBe(200);
-    expect(down.body).toContain("Opening hours aren&#x27;t available right now.");
+    expect(down.body).toContain(
+      "Opening hours aren&#x27;t available right now.",
+    );
     expect(down.headers.get("Cache-Control")).toBe("private, no-store");
   });
 });

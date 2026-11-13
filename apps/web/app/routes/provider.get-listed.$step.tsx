@@ -248,7 +248,11 @@ export async function action({ request, context, params }: Route.ActionArgs) {
       return data(
         {
           ...EMPTY_REPLY,
-          hours: { rows: copyMonday(readRows(form)), problems: {}, description },
+          hours: {
+            rows: copyMonday(readRows(form)),
+            problems: {},
+            description,
+          },
         },
         { headers: signedIn.headers },
       );
@@ -564,9 +568,7 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
                     maxLength={2000}
                     key={actionData?.hours ? "posted" : "saved"}
                     defaultValue={
-                      actionData?.hours?.description ??
-                      draft?.description ??
-                      ""
+                      actionData?.hours?.description ?? draft?.description ?? ""
                     }
                     phrases={[
                       "Friendly local service",

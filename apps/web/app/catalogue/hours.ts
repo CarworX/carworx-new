@@ -113,7 +113,8 @@ export function openStatus(hours: readonly HoursRow[], now: Date): OpenStatus {
   for (let step = 1; step <= 7; step++) {
     const next = ((day - 1 + step) % 7) + 1;
     const row = hours.find((h) => h.day === next);
-    if (row) return { kind: "closed", day: next, opens: row.opens, today: false };
+    if (row)
+      return { kind: "closed", day: next, opens: row.opens, today: false };
   }
   return { kind: "none" };
 }

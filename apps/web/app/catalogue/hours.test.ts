@@ -28,20 +28,14 @@ describe("open now, in South African time", () => {
   });
 
   it("is open during the day and names the closing time", () => {
-    expect(text(week, "2026-11-16T10:00:00")).toBe(
-      "Open now · closes 17:00",
-    );
+    expect(text(week, "2026-11-16T10:00:00")).toBe("Open now · closes 17:00");
   });
   it("opens at the opening minute and closes at the closing minute", () => {
-    expect(text(week, "2026-11-16T08:00:00")).toBe(
-      "Open now · closes 17:00",
-    );
+    expect(text(week, "2026-11-16T08:00:00")).toBe("Open now · closes 17:00");
     expect(text(week, "2026-11-16T07:59:00")).toBe(
       "Closed · opens today 08:00",
     );
-    expect(text(week, "2026-11-16T16:59:00")).toBe(
-      "Open now · closes 17:00",
-    );
+    expect(text(week, "2026-11-16T16:59:00")).toBe("Open now · closes 17:00");
     expect(text(week, "2026-11-16T17:00:00")).toBe("Closed · opens Tue 08:00");
   });
   it("skips closed days and wraps from the weekend to Monday", () => {
@@ -69,9 +63,9 @@ describe("open now, in South African time", () => {
       );
     }
     // 06:30 UTC on Saturday is 08:30 SAST: open, closing at 13:00.
-    expect(
-      statusText(openStatus(week, new Date("2026-11-21T06:30:00Z"))),
-    ).toBe("Open now · closes 13:00");
+    expect(statusText(openStatus(week, new Date("2026-11-21T06:30:00Z")))).toBe(
+      "Open now · closes 13:00",
+    );
   });
   it("says nothing when there are no hours", () => {
     expect(openStatus([], sast("2026-11-16T10:00:00"))).toEqual({

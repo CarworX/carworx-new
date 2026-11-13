@@ -65,9 +65,7 @@ export function readRows(form: FormData): DayRow[] {
 export function copyMonday(rows: readonly DayRow[]): DayRow[] {
   const monday = rows.find((r) => r.day === 1);
   return rows.map((r) =>
-    monday && r.day >= 2 && r.day <= 5
-      ? { ...monday, day: r.day }
-      : { ...r },
+    monday && r.day >= 2 && r.day <= 5 ? { ...monday, day: r.day } : { ...r },
   );
 }
 
@@ -103,7 +101,11 @@ export function parseHoursForm(
         `${dayName(day)}: closing time must be after opening time.`;
     else hours.push({ day, opens, closes });
   }
-  if (requireOpenDay && hours.length === 0 && Object.keys(problems).length === 0)
+  if (
+    requireOpenDay &&
+    hours.length === 0 &&
+    Object.keys(problems).length === 0
+  )
     problems[0] = "Choose at least one day you're open.";
   return Object.keys(problems).length === 0
     ? { ok: true, hours }

@@ -32,10 +32,7 @@ interface HoursEnv {
  * page: no binding, a slow database or odd rows all mean "not available
  * right now" (null), which is different from "not provided" ([]).
  */
-async function hoursFor(
-  env: HoursEnv,
-  id: string,
-): Promise<HoursRow[] | null> {
+async function hoursFor(env: HoursEnv, id: string): Promise<HoursRow[] | null> {
   const connection = env.CATALOGUE_DB?.connectionString;
   if (typeof connection !== "string" || !connection || !UUID.test(id))
     return null;
@@ -51,10 +48,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   const config = context.security.config;
   if (!config) unavailable();
   let listing;
-  const hours = hoursFor(
-    context.cloudflare.env as unknown as HoursEnv,
-    params.publicId,
-  );
+  const hours = hoursFor(context.cloudflare.env, params.publicId);
   try {
     listing = await listingById(config, params.publicId);
   } catch (error) {

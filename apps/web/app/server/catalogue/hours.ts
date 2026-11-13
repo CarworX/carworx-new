@@ -9,8 +9,7 @@ import { Client } from "pg";
 
 import { readHours, type HoursRow } from "../../catalogue/hours";
 
-export const HOURS_SQL =
-  "select day, opens, closes from api.listing_hours($1)";
+export const HOURS_SQL = "select day, opens, closes from api.listing_hours($1)";
 
 export function createHoursReader(connectionString: string) {
   return async (listing: string): Promise<HoursRow[] | null> => {

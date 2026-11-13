@@ -61,22 +61,23 @@ describe("per-day hours form", () => {
     expect(result.ok).toBe(true);
   });
   it("names the day when closing is not after opening", () => {
-    const result = parseHoursForm(
-      form({ ...week, "closes-2": "07:30" }),
-      { requireOpenDay: true },
-    );
+    const result = parseHoursForm(form({ ...week, "closes-2": "07:30" }), {
+      requireOpenDay: true,
+    });
     expect(result).toMatchObject({
       ok: false,
       problems: { 2: "Tuesday: closing time must be after opening time." },
     });
   });
   it("refuses times that aren't in the list", () => {
-    for (const bad of ["08:15", "8:00", "24:00", ""])
-      expect(
-        parseHoursForm(form({ ...week, "opens-1": bad }), {
-          requireOpenDay: false,
-        }),
-      ).toMatchObject({ ok: false, problems: { 1: expect.any(String) } });
+    for (const bad of ["08:15", "8:00", "24:00", ""]) {
+      const result = parseHoursForm(form({ ...week, "opens-1": bad }), {
+        requireOpenDay: false,
+      });
+      expect(result.ok ? null : result.problems[1]).toBe(
+        "Monday: choose times from the list.",
+      );
+    }
   });
   it("refuses an unexpected switch value", () => {
     expect(

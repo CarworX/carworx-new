@@ -226,8 +226,8 @@ export default function ListingHours({
             </p>
             {d.hours.length === 0 && !actionData?.rows ? (
               <StatusNote title="No hours on your listing yet.">
-                Customers see "Hours not provided". We've filled in common
-                hours to start from: change any day, then save.
+                Customers see "Hours not provided". We've filled in common hours
+                to start from: change any day, then save.
               </StatusNote>
             ) : null}
             <OpeningHoursEditor
@@ -237,7 +237,10 @@ export default function ListingHours({
             />
             <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-5">
               {live ? (
-                <a className="cx-tlink" href={`/p/${d.listing.public_id}#hours`}>
+                <a
+                  className="cx-tlink"
+                  href={`/p/${d.listing.public_id}#hours`}
+                >
                   See your public listing
                 </a>
               ) : (
