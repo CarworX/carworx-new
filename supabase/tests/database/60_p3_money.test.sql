@@ -38,13 +38,13 @@ select is((select count(*) from private.payment_inbox where event_key=repeat('a'
 select is((select count(*) from private.pending_payment_events() where event_key=repeat('a',64)),1::bigint,'A26 stored event survives until drain');
 select throws_ok($$select private.stage_verified_charge(repeat('a',64),(select value->>'reference' from money_first),'999',12500,'ZAR')$$,'P0001','payment_verification_invalid','A25 provider ID mismatch cannot apply');
 savepoint before_effect;
-select private.stage_verified_charge(repeat('a',64),(select value->>'reference' from money_first),'123',12500,'ZAR');
-select private.confirm_paid('ad210000-0000-4000-8000-000000000008',(select (value->>'id')::uuid from money_first));
+do $$begin perform private.stage_verified_charge(repeat('a',64),(select value->>'reference' from money_first),'123',12500,'ZAR'); end$$;
+do $$begin perform private.confirm_paid('ad210000-0000-4000-8000-000000000008',(select (value->>'id')::uuid from money_first)); end$$;
 rollback to before_effect;
 select is((select state from public.bookings where id='ad210000-0000-4000-8000-000000000007'),'awaiting_payment','A26 interrupted transaction rolls back booking confirmation');
 select is((select count(*) from private.payment_effects where attempt_id=(select (value->>'id')::uuid from money_first)),0::bigint,'A26 interrupted effect leaves no partial money record');
-select private.stage_verified_charge(repeat('a',64),(select value->>'reference' from money_first),'123',12500,'ZAR');
-select private.finish_charge_effect(repeat('a',64),(select (value->>'id')::uuid from money_first),'123',private.confirm_paid('ad210000-0000-4000-8000-000000000008',(select (value->>'id')::uuid from money_first)));
+do $$begin perform private.stage_verified_charge(repeat('a',64),(select value->>'reference' from money_first),'123',12500,'ZAR'); end$$;
+do $$begin perform private.finish_charge_effect(repeat('a',64),(select (value->>'id')::uuid from money_first),'123',private.confirm_paid('ad210000-0000-4000-8000-000000000008',(select (value->>'id')::uuid from money_first))); end$$;
 select is((select state from public.bookings where id='ad210000-0000-4000-8000-000000000007'),'confirmed','A26 replay completes booking');
 select is((select private.stage_verified_charge(repeat('a',64),(select value->>'reference' from money_first),'123',12500,'ZAR')->>'duplicate'),'true','A24 applied charge replay is identified');
 select is((select count(*) from private.payment_effects where attempt_id=(select (value->>'id')::uuid from money_first)),1::bigint,'A24 charge has one business effect');
@@ -54,21 +54,21 @@ select throws_ok($$select private.request_refund('ad210000-0000-4000-8000-000000
 select ok(not has_table_privilege('money_server','private.payment_attempts','select'),'money login has no direct ledger read');
 select ok(pg_has_role('money_server','booking_contract','usage'),'money login inherits booking contract');
 -- A32 event producer, freshness guard, retry window and operator quota alert.
-select private.prepare_booking_notifications();
+do $$begin perform private.prepare_booking_notifications(); end$$;
 select is((select count(*) from private.booking_notifications where logical_key in (select 'p3/payment/'||id||'/ad210000-0000-4000-8000-000000000001' from private.payment_event where booking_id='ad210000-0000-4000-8000-000000000007' and kind='paid')),1::bigint,'A32 paid event targets customer once');
-select private.prepare_booking_notifications();
+do $$begin perform private.prepare_booking_notifications(); end$$;
 select is((select count(*) from private.booking_notifications where logical_key in (select 'p3/payment/'||id||'/ad210000-0000-4000-8000-000000000001' from private.payment_event where booking_id='ad210000-0000-4000-8000-000000000007' and kind='paid')),1::bigint,'A32 producer replay does not duplicate notification');
-select private.enqueue_mail(logical_key,'booking_update',repeat('a',64),'v1.AAAAAAAAAAAAAAAA.'||repeat('B',60),expires_at)
- from private.booking_notifications where booking_id='ad210000-0000-4000-8000-000000000007';
+do $$begin perform private.enqueue_mail(logical_key,'booking_update',repeat('a',64),'v1.AAAAAAAAAAAAAAAA.'||repeat('B',60),expires_at)
+ from private.booking_notifications where booking_id='ad210000-0000-4000-8000-000000000007'; end$$;
 create temporary table money_mail_claim as select * from private.claim_mail(100);
 select ok((select private.mail_still_current(id,lease_token) from money_mail_claim),'A32 leased action is initially current');
 update public.bookings set state='completed' where id='ad210000-0000-4000-8000-000000000007';
 select ok(not (select private.mail_still_current(id,lease_token) from money_mail_claim),'A32 later booking state suppresses stale action');
-select private.claim_mail(100);
+do $$begin perform private.claim_mail(100); end$$;
 select is((select state from private.mail_outbox where id=(select id from money_mail_claim)),'failed','A32 claim suppresses obsolete action');
-select private.enqueue_mail('invite/p3-window','invite',repeat('b',64),'v1.AAAAAAAAAAAAAAAA.'||repeat('B',60),now()+interval '2 days');
+do $$begin perform private.enqueue_mail('invite/p3-window','invite',repeat('b',64),'v1.AAAAAAAAAAAAAAAA.'||repeat('B',60),now()+interval '2 days'); end$$;
 update private.mail_outbox set first_attempt_at=now()-interval '24 hours' where logical_key='invite/p3-window';
-select private.claim_mail(100);
+do $$begin perform private.claim_mail(100); end$$;
 select is((select state from private.mail_outbox where logical_key='invite/p3-window'),'reconcile','A32 retry beyond provider window is flagged');
 select ok((select encrypted_payload is null from private.mail_outbox where logical_key='invite/p3-window'),'A32 flagged retry cannot be resent');
 insert into private.mail_outbox(logical_key,template,recipient_hash,encrypted_payload,expires_at,state,first_attempt_at)
