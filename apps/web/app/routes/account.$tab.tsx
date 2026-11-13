@@ -23,6 +23,20 @@ const TABS = [
   { id: "work", label: "Your work", href: "/account/work" },
 ] as const;
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** A date for display only, in South African time. */
+function addedOn(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("en-ZA", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Africa/Johannesburg",
+  }).format(date);
+}
+
 export const meta: Route.MetaFunction = () => [
   { title: "Profile and settings · CarworX" },
   { name: "robots", content: "noindex" },
@@ -39,6 +53,17 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     .maybeSingle()
     .overrideTypes<{ display_name: string }, { merge: false }>();
   if (profile.error !== null) throwStatus(503, signedIn.headers);
+  let factors: { id: string; name: string; addedOn: string }[] = [];
+  if (tab === "security") {
+    // listFactors().totp holds verified TOTP factors only.
+    const listed = await signedIn.supabase.auth.mfa.listFactors();
+    if (listed.error !== null) throwStatus(503, signedIn.headers);
+    factors = listed.data.totp.map((f) => ({
+      id: f.id,
+      name: f.friendly_name ?? "Authenticator app",
+      addedOn: addedOn(f.created_at),
+    }));
+  }
   return data(
     {
       tab,
@@ -47,6 +72,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       name: profile.data?.display_name ?? "",
       aal: signedIn.aal,
       enrolled: signedIn.nextAal === "aal2",
+      factors,
     },
     { headers: signedIn.headers },
   );
@@ -115,6 +141,42 @@ export async function action({ request, params, context }: Route.ActionArgs) {
           503,
         );
   }
+  if (tab === "security" && intent === "remove-factor") {
+    const factorId = form.get("factorId");
+    if (typeof factorId !== "string" || !UUID.test(factorId))
+      return reply(false, "Choose an authenticator to remove.", 400);
+    // Removing a verified factor needs a session that has just proved it
+    // (aal2). Supabase enforces this too; checking first gives a clear message.
+    if (signedIn.aal !== "aal2")
+      return reply(
+        false,
+        "Verify with your authenticator first, then remove it.",
+        403,
+      );
+    const listed = await signedIn.supabase.auth.mfa.listFactors();
+    if (listed.error !== null)
+      return reply(false, "We couldn't check your authenticators.", 503);
+    if (!listed.data.all.some((f) => f.id === factorId))
+      return reply(false, "That authenticator isn't on your account.", 404);
+    const removed = await signedIn.supabase.auth.mfa.unenroll({ factorId });
+    if (removed.error !== null)
+      return reply(
+        false,
+        "We couldn't remove that authenticator. Please try again.",
+        503,
+      );
+    // A security change ends every other session; this one stays open.
+    const others = await signedIn.supabase.auth.signOut({ scope: "others" });
+    return others.error === null
+      ? reply(
+          true,
+          "The authenticator is removed and your other devices are signed out.",
+        )
+      : reply(
+          true,
+          'The authenticator is removed. Use "Sign out other devices" to end your other sessions.',
+        );
+  }
   return reply(false, "Choose an action on this settings page.", 400);
 }
 
@@ -161,21 +223,63 @@ export default function Settings({
         ) : tab === "security" ? (
           <>
             <h2 className="type-heading">Keep your account secure</h2>
-            <p>
-              {loaderData.enrolled
-                ? "An authenticator is enrolled on your account."
-                : "Add your own authenticator app for two-step sign-in."}
-            </p>
-            <p>
+            <h3 className="type-title">Two-step sign-in</h3>
+            {loaderData.factors.length === 0 ? (
+              <p>
+                Add an authenticator app, such as Google Authenticator or
+                Microsoft Authenticator. You'll enter a 6-digit code from it
+                when you sign in.
+              </p>
+            ) : (
+              <ul className="grid gap-3" aria-label="Your authenticator apps">
+                {loaderData.factors.map((factor) => (
+                  <li
+                    key={factor.id}
+                    className="cx-surface flex flex-wrap items-center justify-between gap-3 rounded-xl p-4"
+                  >
+                    <span>
+                      <strong>{factor.name}</strong>
+                      {factor.addedOn !== "" ? (
+                        <span className="type-body-sm block">
+                          Added {factor.addedOn}
+                        </span>
+                      ) : null}
+                    </span>
+                    {loaderData.aal === "aal2" ? (
+                      <form method="post">
+                        <CsrfField token={csrf} />
+                        <input
+                          type="hidden"
+                          name="intent"
+                          value="remove-factor"
+                        />
+                        <input
+                          type="hidden"
+                          name="factorId"
+                          value={factor.id}
+                        />
+                        <Button type="submit">Remove</Button>
+                      </form>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p data-aal={loaderData.aal}>
               {loaderData.aal === "aal2"
-                ? "This session has passed authenticator verification."
-                : "This session has not passed authenticator verification."}
+                ? "This session has passed the authenticator check."
+                : loaderData.enrolled
+                  ? "This session hasn't passed the authenticator check yet. Verify to make changes."
+                  : "Two-step sign-in is off."}
             </p>
-            <ButtonLink href="/auth/mfa">
-              {loaderData.enrolled
-                ? "Verify with your authenticator"
-                : "Set up two-step sign-in"}
-            </ButtonLink>
+            {loaderData.aal !== "aal2" ? (
+              <ButtonLink href="/auth/mfa?returnTo=%2Faccount%2Fsecurity">
+                {loaderData.enrolled
+                  ? "Verify with your authenticator"
+                  : "Set up two-step sign-in"}
+              </ButtonLink>
+            ) : null}
+            <h3 className="type-title">Password and devices</h3>
             <a className="cx-tlink" href="/auth/forgot-password">
               Reset your password
             </a>
