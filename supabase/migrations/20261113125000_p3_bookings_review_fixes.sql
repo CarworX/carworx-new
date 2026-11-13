@@ -216,3 +216,16 @@ grant execute on function
   to authenticated;
 -- The invoker wrapper runs private.expire_holds() as the caller.
 grant execute on function private.expire_holds() to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Foreign keys that close a reference loop (bookings <-> reservations;
+-- bookings -> quote_versions -> quotes -> bookings; bookings' own parent)
+-- are checked at commit, so a data-only backup restores in one transaction
+-- whatever order it writes the rows in (BK-1). Integrity is unchanged.
+-- ---------------------------------------------------------------------------
+alter table public.reservations alter constraint reservations_booking_fk deferrable initially deferred;
+alter table public.bookings alter constraint bookings_hold_id_fkey deferrable initially deferred;
+alter table public.bookings alter constraint bookings_quote_version_fk deferrable initially deferred;
+alter table public.bookings alter constraint bookings_parent_booking_id_fkey deferrable initially deferred;
+alter table public.quotes alter constraint quotes_parent_booking_id_fkey deferrable initially deferred;
+alter table public.quotes alter constraint quotes_diagnostic_booking_id_fkey deferrable initially deferred;
