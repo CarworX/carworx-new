@@ -169,22 +169,21 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     // still say aal2. Refresh now so the page and /auth/mfa see the new level
     // (Set-Cookie goes out in signedIn.headers).
     const refreshed = await signedIn.supabase.auth.refreshSession();
-    if (refreshed.error !== null)
-      return reply(
-        true,
-        "The authenticator is removed. Sign out and back in to set up a new one.",
-      );
-    // A security change ends every other session; this one stays open.
+    // A security change ends every other session, whether or not the refresh
+    // worked; this one stays open.
     const others = await signedIn.supabase.auth.signOut({ scope: "others" });
-    return others.error === null
-      ? reply(
-          true,
-          "The authenticator is removed and your other devices are signed out.",
-        )
-      : reply(
-          true,
-          'The authenticator is removed. Use "Sign out other devices" to end your other sessions.',
-        );
+    const steps = [
+      others.error === null
+        ? "your other devices are signed out"
+        : 'use "Sign out other devices" to end your other sessions',
+      ...(refreshed.error === null
+        ? []
+        : ["sign out and back in to set up a new one"]),
+    ];
+    return reply(
+      true,
+      `The authenticator is removed. ${steps.join(", and ").replace(/^./, (c) => c.toUpperCase())}.`,
+    );
   }
   return reply(false, "Choose an action on this settings page.", 400);
 }
