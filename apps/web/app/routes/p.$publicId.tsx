@@ -1,15 +1,18 @@
 import { data, redirect } from "react-router";
 
+import { localClock, openStatus, type HoursRow } from "../catalogue/hours";
 import { topCategoryOf } from "../catalogue/taxonomy";
 import { CsrfField } from "../auth/ui";
 import { CatalogueUnavailable, listingById } from "../server/catalogue/public";
 import { NOTICE_VERSION, parseEnquiry } from "../server/forms/parse";
 import { formAction, formHeaders } from "../server/forms/route.server";
 import { siteKeyFor, type FormsEnv } from "../server/forms/submit";
+import { UUID } from "../server/providers/forms";
 import { Button, TextLink } from "../ui/Button";
 import { StatusLabel } from "../ui/Chip";
 import { ConsentCheckbox, TextField } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
+import { OpeningHoursTable } from "../ui/OpeningHours";
 import { FormProblem } from "../ui/public/FormProblem";
 import { HumanCheck } from "../ui/public/HumanCheck";
 import { PublicShell } from "../ui/public/PublicShell";
@@ -20,10 +23,38 @@ function unavailable(): never {
   throw data(null, { status: 503, headers: { "Cache-Control": "no-store" } });
 }
 
+interface HoursEnv {
+  CATALOGUE_DB?: { connectionString?: unknown };
+}
+
+/**
+ * Opening hours through the scoped catalogue_server login. Never fails the
+ * page: no binding, a slow database or odd rows all mean "not available
+ * right now" (null), which is different from "not provided" ([]).
+ */
+async function hoursFor(
+  env: HoursEnv,
+  id: string,
+): Promise<HoursRow[] | null> {
+  const connection = env.CATALOGUE_DB?.connectionString;
+  if (typeof connection !== "string" || !connection || !UUID.test(id))
+    return null;
+  try {
+    const { createHoursReader } = await import("../server/catalogue/hours");
+    return await createHoursReader(connection)(id);
+  } catch {
+    return null;
+  }
+}
+
 export async function loader({ request, params, context }: Route.LoaderArgs) {
   const config = context.security.config;
   if (!config) unavailable();
   let listing;
+  const hours = hoursFor(
+    context.cloudflare.env as unknown as HoursEnv,
+    params.publicId,
+  );
   try {
     listing = await listingById(config, params.publicId);
   } catch (error) {
@@ -34,10 +65,16 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router control flow
     throw data(null, { status: 404 });
   }
-  // The page carries a CSRF token in its enquiry form, so it is never cached.
+  // The page carries a CSRF token in its enquiry form, so it is never cached,
+  // and the open-now line is worked out fresh, in South African time.
+  const now = new Date();
+  const opening = await hours;
   return data(
     {
       listing,
+      hours: opening,
+      today: localClock(now).day,
+      status: openStatus(opening ?? [], now),
       csrf: context.security.csrfToken,
       siteKey: siteKeyFor(context.cloudflare.env as FormsEnv, config),
       sent: new URL(request.url).searchParams.get("sent") === "1",
@@ -110,6 +147,13 @@ export default function ListingPage({
             provider confirms your exact address before any booking.
           </StatusNote>
         )}
+      </div>
+      <div className="mt-6 max-w-[65ch]">
+        <OpeningHoursTable
+          hours={loaderData.hours}
+          today={loaderData.today}
+          status={loaderData.status}
+        />
       </div>
       <p className="mt-6">
         <TextLink href={`/provider/claim/${listing.public_id}`}>
