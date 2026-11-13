@@ -136,7 +136,7 @@ export default function ProviderQuote({
 }: Route.ComponentProps) {
   const { csrf, quote, versions } = loaderData;
   const latest = versions[0];
-  const open = quote.state === "requested" || quote.state === "quoted";
+  const open = ["requested", "quoted", "approved"].includes(quote.state);
   return (
     <PublicShell signedIn>
       <div className="grid max-w-[70ch] gap-5" data-quote-state={quote.state}>

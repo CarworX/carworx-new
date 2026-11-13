@@ -5,6 +5,7 @@ import { throwRedirect, throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
 import {
+  expireDue,
   BOOKING_PROBLEM_TEXT,
   bookingProblem,
   clock,
@@ -62,6 +63,7 @@ interface Slot {
  */
 export async function loader({ request, params, context }: Route.LoaderArgs) {
   const signedIn = await requireSignedIn(request, context.security);
+  await expireDue(signedIn.supabase);
   if (!UUID.test(params.id)) throwStatus(404, signedIn.headers);
   const db = signedIn.supabase;
   const [q, v] = await Promise.all([

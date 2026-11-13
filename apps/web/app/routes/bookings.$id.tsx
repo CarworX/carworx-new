@@ -5,6 +5,7 @@ import { throwRedirect, throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
 import {
+  expireDue,
   BOOKING_PROBLEM_TEXT,
   bookingProblem,
   checkoutHref,
@@ -70,6 +71,7 @@ const COLUMNS =
  */
 export async function loader({ request, params, context }: Route.LoaderArgs) {
   const signedIn = await requireSignedIn(request, context.security);
+  await expireDue(signedIn.supabase);
   if (!UUID.test(params.id)) throwStatus(404, signedIn.headers);
   const db = signedIn.supabase;
   const { data: b, error } = await db
@@ -149,7 +151,12 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     });
     if (error !== null) return fail(bookingProblem(error));
   } else if (intent === "reschedule" || intent === "rebook") {
-    const startsAt = parseInstant(form, "starts_at");
+    // One radio per slot carries both its resource and its start, so the
+    // rebook goes to the bay or team that actually has the room.
+    const [resource = "", start = ""] = field(form, "slot").split("|");
+    const slotForm = new FormData();
+    slotForm.set("starts_at", start);
+    const startsAt = parseInstant(slotForm, "starts_at");
     if (startsAt === null) return fail("invalid_input");
     if (intent === "reschedule") {
       const { error } = await rpc(db, "reschedule_booking", {
@@ -158,7 +165,6 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       });
       if (error !== null) return fail(bookingProblem(error));
     } else {
-      const resource = field(form, "resource_id");
       if (!UUID.test(resource)) return fail("invalid_input");
       const { error } = await rpc(db, "rebook_after_late_payment", {
         p_booking: params.id,
@@ -303,8 +309,8 @@ export default function BookingPage({
                     >
                       <input
                         type="radio"
-                        name="starts_at"
-                        value={s.starts_at}
+                        name="slot"
+                        value={`${s.resource_id}|${s.starts_at}`}
                         required
                       />
                       {b.state === "paid_after_expiry"
@@ -314,13 +320,6 @@ export default function BookingPage({
                   ))}
                 </fieldset>
               )}
-              {b.state === "paid_after_expiry" && slots[0] ? (
-                <input
-                  type="hidden"
-                  name="resource_id"
-                  value={slots[0].resource_id}
-                />
-              ) : null}
               <div>
                 <Button
                   type="submit"

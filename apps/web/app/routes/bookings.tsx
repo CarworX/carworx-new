@@ -3,6 +3,7 @@ import { data, Link } from "react-router";
 import { throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import {
+  expireDue,
   parseRange,
   rand,
   STATE_COPY,
@@ -34,6 +35,7 @@ interface QuoteRow {
 /** /bookings: the signed-in customer's own bookings and quotes (RLS: customer_id = me). */
 export async function loader({ request, context }: Route.LoaderArgs) {
   const signedIn = await requireSignedIn(request, context.security);
+  await expireDue(signedIn.supabase);
   const [bookings, quotes] = await Promise.all([
     signedIn.supabase
       .from("bookings")

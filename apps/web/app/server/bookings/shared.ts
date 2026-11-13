@@ -257,3 +257,12 @@ export async function rpc<T = unknown>(
   const result = await db.rpc(fn, args);
   return { data: result.data as T | null, error: result.error };
 }
+
+/**
+ * Moves holds and unanswered requests whose time has passed into their
+ * expired states before a booking screen reads them. Housekeeping only:
+ * capacity already ignores expired holds, so a failure here is not fatal.
+ */
+export async function expireDue(db: RpcClient): Promise<void> {
+  await rpc(db, "expire_due_bookings");
+}

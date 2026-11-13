@@ -5,6 +5,7 @@ import { throwRedirect, throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
 import {
+  expireDue,
   BOOKING_PROBLEM_TEXT,
   bookingProblem,
   parseIntIn,
@@ -81,6 +82,7 @@ const BOOKING_COLUMNS =
  */
 export async function loader({ request, context }: Route.LoaderArgs) {
   const signedIn = await requireSignedIn(request, context.security);
+  await expireDue(signedIn.supabase);
   const db = signedIn.supabase;
   const mine = await db
     .from("memberships")
@@ -129,7 +131,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         "id, organisation_id, state, customer_note, parent_booking_id, created_at",
       )
       .in("organisation_id", managed)
-      .in("state", ["requested", "quoted"])
+      .in("state", ["requested", "quoted", "approved"])
       .order("created_at")
       .limit(50)
       .overrideTypes<Quote[], { merge: false }>(),
@@ -368,7 +370,9 @@ export default function ProviderBookings({
                       {when(q.created_at)} ·{" "}
                       {q.state === "quoted"
                         ? "sent, waiting for the customer"
-                        : "needs a price"}
+                        : q.state === "approved"
+                          ? "approved, waiting for payment (you can still revise it)"
+                          : "needs a price"}
                     </Link>
                   </li>
                 ))}
