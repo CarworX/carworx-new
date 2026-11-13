@@ -1,5 +1,6 @@
 import { createRequestHandler } from "react-router";
 
+import { pgClient, runRetention } from "../app/server/retention/run";
 import {
   MAIL_WEBHOOK_PATH,
   dispatchMailWebhook,
@@ -43,7 +44,14 @@ export default {
       requestHandler(checked, { cloudflare: { env, ctx }, security }),
     );
   },
-  scheduled(_controller, env, ctx) {
+  // Cron (wrangler.jsonc triggers): R-2 retention, plus draining queued
+  // mail (O5). Retention logs counts only; any failure throws, so the run is
+  // marked failed.
+  async scheduled(_controller, env, ctx) {
     ctx.waitUntil(drainScheduledMail(env));
+    const binding = (env as { RETENTION_DB?: { connectionString?: unknown } })
+      .RETENTION_DB;
+    const counts = await runRetention(binding, pgClient);
+    console.log(JSON.stringify({ event: "retention", counts }));
   },
 } satisfies ExportedHandler<Env>;

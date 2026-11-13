@@ -47,6 +47,8 @@ test("source config keeps local, staging and production separate without public 
   assert.equal(config.vars?.CARWORX_DEV_PAGES, undefined);
   assert.equal(config.vars?.CARWORX_ENV, "local");
   assert.equal(config.hyperdrive, undefined);
+  // Local never runs the retention cron.
+  assert.equal(config.triggers, undefined);
   assert.deepEqual(Object.keys(config.env).sort(), ["production", "staging"]);
   assert.equal(config.env.staging.name, "carworx-web-staging");
   assert.equal(config.env.staging.vars.CARWORX_DEV_PAGES, "1");
@@ -71,13 +73,13 @@ test("production config is isolated, has no dev pages and no staging controls (P
     /isolated staging/,
   );
 });
-test("staging and production bind both Hyperdrive configs with distinct owner IDs (P-2)", () => {
+test("staging and production bind every Hyperdrive config with distinct owner IDs (P-2, R-2)", () => {
   const { staging, production } = sourceConfig().env;
   const ids = [];
   for (const env of [staging, production]) {
     assert.deepEqual(
       env.hyperdrive.map((b) => b.binding),
-      ["CATALOGUE_DB", "FORMS_DB"],
+      ["CATALOGUE_DB", "FORMS_DB", "RETENTION_DB"],
     );
     for (const b of env.hyperdrive) {
       assert.deepEqual(Object.keys(b).sort(), ["binding", "id"]);
@@ -352,4 +354,9 @@ test("D-073 rejects a complete D-071 record without independent approval", () =>
     mutate(copy);
     assert.throws(() => verify(copy));
   }
+});
+test("staging and production run the R-2 retention cron once a day", () => {
+  const { staging, production } = sourceConfig().env;
+  for (const env of [staging, production])
+    assert.deepEqual(env.triggers, { crons: ["17 1 * * *"] });
 });
