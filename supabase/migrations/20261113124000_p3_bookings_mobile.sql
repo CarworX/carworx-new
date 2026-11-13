@@ -35,8 +35,8 @@ create table private.booking_addresses (
   booking_id uuid primary key references public.bookings(id) on delete cascade,
   address text not null check (length(address) between 5 and 300),
   access_notes text check (access_notes is null or length(access_notes) <= 300),
-  latitude double precision not null check (latitude between -35 and -22),
-  longitude double precision not null check (longitude between 16 and 33),
+  -- No coordinates: they come from Mapbox temporary geocoding, which may not
+  -- be stored (A17, D-082). They are used once for the distance, then dropped.
   created_at timestamptz not null default now()
 );
 revoke all on private.booking_addresses from public, anon, authenticated, service_role;
@@ -96,8 +96,8 @@ begin
           v_accept_by, o.price_minor + coalesce(band.charge_minor, 0), nullif(btrim(p_note), ''),
           true, coalesce(band.travel_minutes, 0), coalesce(band.charge_minor, 0), round(v_km::numeric, 1), btrim(p_suburb))
   returning id into v_id;
-  insert into private.booking_addresses(booking_id, address, access_notes, latitude, longitude)
-  values (v_id, btrim(p_address), nullif(btrim(p_access_notes), ''), p_latitude, p_longitude);
+  insert into private.booking_addresses(booking_id, address, access_notes)
+  values (v_id, btrim(p_address), nullif(btrim(p_access_notes), ''));
   perform private.booking_log(v_id, 'requested', jsonb_build_object('mobile', true));
   return v_id;
 end $$;
@@ -165,7 +165,7 @@ end $$;
 -- 7 days ago). aal2 admins may read it too; each admin read is logged.
 -- ---------------------------------------------------------------------------
 create function private.job_address(p_booking uuid)
-returns table(address text, access_notes text, latitude double precision, longitude double precision)
+returns table(address text, access_notes text)
 language plpgsql volatile security definer set search_path = '' as $$
 declare b record; v_allowed boolean; v_admin boolean := private.is_platform_admin();
 begin
@@ -182,7 +182,7 @@ begin
     -- event feed with the admin's id, kept with the booking's history.
     perform private.booking_log(b.id, 'admin_address_read', jsonb_build_object('admin_id', auth.uid()));
   end if;
-  return query select ad.address, ad.access_notes, ad.latitude, ad.longitude
+  return query select ad.address, ad.access_notes
     from private.booking_addresses ad where ad.booking_id = b.id;
 end $$;
 
@@ -229,7 +229,7 @@ returns void language sql volatile security invoker set search_path = '' as $$ s
 create function public.unassign_staff(p_booking uuid, p_membership uuid)
 returns void language sql volatile security invoker set search_path = '' as $$ select private.unassign_staff(p_booking, p_membership) $$;
 create function public.job_address(p_booking uuid)
-returns table(address text, access_notes text, latitude double precision, longitude double precision)
+returns table(address text, access_notes text)
 language sql volatile security invoker set search_path = '' as $$ select * from private.job_address(p_booking) $$;
 create function public.my_jobs()
 returns table(booking_id uuid, starts_at timestamptz, ends_at timestamptz, state text, suburb text, mobile boolean)

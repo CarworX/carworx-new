@@ -284,6 +284,10 @@ create policy bookings_customer_select on public.bookings for select to authenti
   using (customer_id = (select auth.uid()));
 create policy bookings_org_select on public.bookings for select to authenticated
   using ((select private.is_org_member(organisation_id)));
+-- A customer may read the reservations of their own bookings (hold expiry
+-- for the countdown). No other customer data is in that table.
+create policy reservations_customer_select on public.reservations for select to authenticated
+  using (exists (select 1 from public.bookings b where b.id = booking_id and b.customer_id = (select auth.uid())));
 create policy bookings_admin_select on public.bookings for select to authenticated
   using ((select auth.jwt() ->> 'aal') = 'aal2' and (select private.is_platform_admin()));
 

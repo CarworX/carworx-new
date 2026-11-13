@@ -278,7 +278,7 @@ end $$;
 -- Candidate start times for an offer on one local date, in 15-minute steps,
 -- on any active resource of the offer's kind with room left. Server-only
 -- (booking_server): the Worker shapes it for the slot picker.
-create function private.available_slots(p_offer uuid, p_day date)
+create function private.available_slots(p_offer uuid, p_day date, p_minutes integer default null)
 returns table(resource_id uuid, starts_at timestamptz, ends_at timestamptz)
 language sql stable security definer set search_path = '' as $$
   with o as (
@@ -294,7 +294,7 @@ language sql stable security definer set search_path = '' as $$
   ), cand as (
     select res.id as resource_id,
            (s.local_start at time zone 'Africa/Johannesburg') as starts_at,
-           ((s.local_start + make_interval(mins => o.duration_minutes + o.buffer_minutes)) at time zone 'Africa/Johannesburg') as ends_at
+           ((s.local_start + make_interval(mins => coalesce(p_minutes, o.duration_minutes) + o.buffer_minutes)) at time zone 'Africa/Johannesburg') as ends_at
     from res cross join starts s cross join o
   )
   select c.resource_id, c.starts_at, c.ends_at from cand c, public.resources r
@@ -432,7 +432,7 @@ revoke all on function
   private.easter_sunday(integer), private.sa_public_holidays(integer), private.is_public_holiday(date),
   private.peak_concurrency(uuid, tstzrange), private.within_opening(uuid, tstzrange),
   private.reserve(uuid, tstzrange, text, integer, uuid), private.release_reservation(uuid, text),
-  private.expire_holds(), private.available_slots(uuid, date), private.require_org_manager(uuid),
+  private.expire_holds(), private.available_slots(uuid, date, integer), private.require_org_manager(uuid),
   private.save_resource(uuid, uuid, text, text, smallint, boolean, boolean, uuid),
   private.set_resource_hours(uuid, uuid, jsonb), private.add_resource_closure(uuid, uuid, timestamptz, timestamptz, text),
   private.save_service_offer(uuid, uuid, uuid, text, text, bigint, integer, integer, text, boolean),
@@ -448,7 +448,39 @@ grant execute on function
   public.set_resource_hours(uuid, uuid, jsonb), public.add_resource_closure(uuid, uuid, timestamptz, timestamptz, text),
   public.save_service_offer(uuid, uuid, uuid, text, text, bigint, integer, integer, text, boolean)
   to authenticated;
-grant execute on function private.available_slots(uuid, date), private.expire_holds(), private.is_public_holiday(date)
+grant execute on function private.available_slots(uuid, date, integer), private.expire_holds(), private.is_public_holiday(date)
   to booking_server;
+
+-- Signed-in customers see free slots through an invoker wrapper (booking
+-- needs an account). Bounded: one offer, one local day, at most 96 starts
+-- per resource.
+create function public.available_slots(p_offer uuid, p_day date, p_minutes integer default null)
+returns table(resource_id uuid, starts_at timestamptz, ends_at timestamptz)
+language sql stable security invoker set search_path = '' as $$
+  select * from private.available_slots(p_offer, p_day, p_minutes)
+  where p_day between (now() at time zone 'Africa/Johannesburg')::date
+                  and (now() at time zone 'Africa/Johannesburg')::date + 60
+    and (p_minutes is null or p_minutes between 15 and 1440)
+$$;
+revoke all on function public.available_slots(uuid, date, integer) from public, anon, authenticated, service_role;
+grant execute on function private.available_slots(uuid, date, integer), public.available_slots(uuid, date, integer) to authenticated;
+
+-- What a signed-in customer may book on a live listing: the listing's name
+-- and mode plus its active offers. No base, radius or coordinates (A10).
+create function private.bookable_offers(p_listing uuid)
+returns table(listing_name text, listing_mode text, offer_id uuid, name text, pricing text,
+              price_minor bigint, duration_minutes integer)
+language sql stable security definer set search_path = '' as $$
+  select l.display_name, l.mode, so.id, so.name, so.pricing, so.price_minor, so.duration_minutes
+  from public.listings l join public.service_offers so on so.listing_public_id = l.public_id and so.active
+  where l.public_id = p_listing and l.status = 'live'
+  order by so.pricing, so.price_minor nulls last, so.name
+$$;
+create function public.bookable_offers(p_listing uuid)
+returns table(listing_name text, listing_mode text, offer_id uuid, name text, pricing text,
+              price_minor bigint, duration_minutes integer)
+language sql stable security invoker set search_path = '' as $$ select * from private.bookable_offers(p_listing) $$;
+revoke all on function private.bookable_offers(uuid), public.bookable_offers(uuid) from public, anon, authenticated, service_role;
+grant execute on function private.bookable_offers(uuid), public.bookable_offers(uuid) to authenticated;
 
 alter role booking_server login connection limit 5;
