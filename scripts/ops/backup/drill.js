@@ -17,6 +17,7 @@ import { validateTap } from "../../ci/core.js";
 import {
   DISCOVER_SEQUENCES_SQL,
   DISCOVER_TABLES_SQL,
+  TRANSIENT_SECURITY_TABLES,
   assertManifestCovers,
   classify,
   inventorySql,
@@ -457,6 +458,77 @@ function negativeTests(manifest, read) {
   }
 }
 
+// A non-empty source witness proves these are intentionally omitted, rather
+// than merely empty on both sides. The two sessions come from real local Auth
+// sign-ins, never fabricated session rows. This runs only in throwaway stacks.
+async function seedTransientSecurity(config, users) {
+  const present = JSON.parse(
+    sql(
+      config,
+      "security-table-discovery",
+      `select coalesce(jsonb_agg(t order by t), '[]') from unnest(array[
+      'private.mfa_stepups','private.primary_auth_receipts','private.mfa_email_challenges'
+    ]) t where to_regclass(t) is not null;`,
+    ),
+  );
+  if (present.length === 0) return;
+  assert.deepEqual(present, [...TRANSIENT_SECURITY_TABLES].sort());
+  await signIn(config, 0);
+  await signIn(config, 1);
+  const sessions = users
+    .slice(0, 2)
+    .map((user) =>
+      sql(
+        config,
+        "security-session-fixture",
+        `select id from auth.sessions where user_id = '${user}' order by created_at desc, id limit 1;`,
+      ),
+    );
+  for (const id of sessions)
+    assert.match(
+      id,
+      /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/,
+    );
+  sql(
+    config,
+    "security-proof-fixtures",
+    `
+    insert into private.mfa_stepups(user_id,session_id,expires_at,revoked_at) values
+      ('${users[0]}','${sessions[0]}',now() + interval '12 hours',null),
+      ('${users[1]}','${sessions[1]}',now() + interval '12 hours',now());
+    insert into private.primary_auth_receipts(user_id,session_id,method,expires_at,used_at) values
+      ('${users[0]}','${sessions[0]}','password',now() + interval '5 minutes',null),
+      ('${users[1]}','${sessions[1]}','password',now() + interval '5 minutes',now());
+    insert into private.mfa_email_challenges(id,user_id,session_id,code_hash,expires_at,used_at,invalidated_at) values
+      (gen_random_uuid(),'${users[0]}','${sessions[0]}',decode(repeat('00',32),'hex'),now() + interval '10 minutes',now(),null),
+      (gen_random_uuid(),'${users[1]}','${sessions[1]}',decode(repeat('00',32),'hex'),now() + interval '10 minutes',null,now());
+  `,
+  );
+}
+
+function assertTransientSecurity(config, sourceWitness) {
+  for (const table of TRANSIENT_SECURITY_TABLES) {
+    if (!plan.ephemeral.includes(table)) continue;
+    assert.ok(
+      !plan.export.includes(table),
+      "security evidence must not be exported",
+    );
+    const [schema, name] = table.split(".");
+    const count = Number(
+      sql(
+        config,
+        "transient-security-count",
+        `select count(*) from "${schema}"."${name}";`,
+      ),
+    );
+    assert.ok(Number.isSafeInteger(count));
+    if (sourceWitness)
+      assert.ok(count >= 2, "source security witness is missing");
+    else
+      assert.equal(count, 0, "restore resurrected transient security evidence");
+  }
+}
+
 async function seed(config) {
   const users = [];
   for (const email of addresses) {
@@ -512,6 +584,7 @@ async function seed(config) {
       "-f",
       join(repo, file),
     ]);
+  await seedTransientSecurity(config, users);
   return { id, secret, users };
 }
 
@@ -634,6 +707,7 @@ async function drill() {
     const factor = await seed(origin);
     ({ plan, sequences } = discover(origin));
     tables = plan.export;
+    assertTransientSecurity(origin, true);
     const exportStart = new Date();
     const read = (name) => readFileSync(join(bundle, name));
     const manifest = {
@@ -821,6 +895,7 @@ async function drill() {
       await restoreObject(restored, object, read(object.path));
     }
     assert.deepEqual(inventory(restored), manifest.tables);
+    assertTransientSecurity(restored, false);
     assert.equal(sha(schema(restored)), manifest.payloads["schema.txt"].sha256);
     // Every table is proven restored. Drop the BK-1 fixture rows again, so
     // the tenant checks and the RLS suite below see the data they always

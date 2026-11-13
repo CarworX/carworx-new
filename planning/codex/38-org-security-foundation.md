@@ -45,3 +45,11 @@ Names only, opt-in staging: AUTH_SECURITY_ENABLED=1, AUTH_SECURITY_DB (Hyperdriv
 The current source integrates the mail drafts #93/#94 into this branch. They remain separately reviewable, but no migration has run. Backup coverage must now include the third private table, mfa_email_challenges, and invalidate all transient security evidence on restore. Challenge metadata cleanup must preserve at least the last hour for the send limit; its longer retention needs the approved schedule.
 
 - 2026-11-13 UTC: added the email-code backend and atomic alert template. Source formatting/inspection only; no tests, SQL execution or route activation. Full org Worker/RLS/RPC enforcement, O8 redemption/reset and runtime evidence remain open.
+
+## Staging pool and restore follow-up
+
+Claude's staging coordinator confirmed Hyperdrive's minimum origin cap is five. The separate #97 migration raises the existing mail_server pool limit; the security branch also raises mail_producer and auth_security_server to five without changing grants or credentials.
+
+BK-1 now has an explicit three-table ephemeral exception for mfa_stepups, primary_auth_receipts and mfa_email_challenges. Ordinary app tables remain exported. The source drill seeds non-empty witnesses for active/revoked, unused/used and used/invalidated states, requires those witnesses, and asserts the restored tables are empty before sign-in verification. This preserves schema/role coverage while preventing security evidence from being resurrected. Coverage assertions and runbooks are updated. No backup drill or unit suite was run.
+
+- 2026-11-13 UTC: prepared the bounded pool-limit and transient-security restore changes requested by Claude on #84. #96's staging bindings were independently source-reviewed and merged on existing green exact-head checks at f18eced111766cff8c2e0b7e4e0533c94e7a72f8. No deployment or tests launched by Codex.

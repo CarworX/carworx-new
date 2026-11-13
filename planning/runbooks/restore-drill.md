@@ -14,11 +14,16 @@ start and locks out concurrent K4 runs.
    in the scratch copy. Populate synthetic identities, tenants, memberships,
    audit rows, a TOTP factor and two private Storage objects, then load
    `supabase/seed.sql` and `scripts/ops/backup/fixture.sql` so every app
-   table has rows. Quiesce writes.
+   persisted table has rows. The drill also seeds non-empty transient security
+   witnesses (active/revoked proofs, unused/used receipts, used/invalidated codes).
+   Quiesce writes.
 2. Discover every table and sequence in `public`, `private`, `auth`, `storage`
    and `supabase_migrations` and classify them with
    `scripts/ops/backup/coverage.js` (BK-1); an unclassified table stops the
-   drill. Export every exported table and every sequence using `pg_dump`.
+   drill. Only private.mfa_stepups, private.primary_auth_receipts and
+   private.mfa_email_challenges are explicit app-table exceptions: their rows
+   are ephemeral, like Auth sessions. Preserve their schema, omit their data.
+   Export every exported table and every sequence using `pg_dump`.
    Download every Storage object in every bucket. Save the exact config and migrations, schema and role inventory,
    migration history count and digest, bucket settings and Storage bytes.
    The manifest records the source revision, export window, counts, object
@@ -33,7 +38,9 @@ start and locks out concurrent K4 runs.
 4. Buckets come back with the data. Upload every saved object through the
    Storage API and restore its owner and metadata. Compare counts and hashes
    for every exported table, including `storage.objects` on the columns a
-   restore keeps. Then remove the BK-1 fixture rows
+   restore keeps. Assert the three transient security tables are empty, despite
+   their populated source witnesses, so restore cannot revive old evidence.
+   Then remove the BK-1 fixture rows
    (`scripts/ops/backup/fixture-cleanup.sql`, triggers paused), so the checks
    below run on the usual data. Verify object ownership, bytes and access. The restored
    Storage versions are newly assigned.
@@ -84,3 +91,5 @@ one-off copy to the target's ephemeral public key through a private stream.
 The durable recovery key and any plaintext stay out of CI artifacts. Destroy
 the disposable target after verifying counts, object hashes and access
 controls. Record only the sanitized receipt. Hosted A7 is still open.
+
+2026-11-13 source update: transient-security exclusion and restore assertions are prepared but unexecuted while tests are paused. This is not fresh restore evidence.
