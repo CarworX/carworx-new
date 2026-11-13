@@ -1,5 +1,6 @@
 import { data } from "react-router";
 import { authRequest } from "../auth/session.server";
+import { throwStatus } from "../auth/http.server";
 import { PublicShell } from "../ui/public/PublicShell";
 import type { Route } from "./+types/reviews.$organisationId";
 interface Review {
@@ -14,12 +15,11 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       params.organisationId,
     )
   )
-    throw new Response(null, { status: 404, headers: a.headers });
+    throwStatus(404, a.headers);
   const r = await a.supabase.rpc("organisation_reviews", {
     p_org: params.organisationId,
   });
-  if (r.error !== null)
-    throw new Response(null, { status: 503, headers: a.headers });
+  if (r.error !== null) throwStatus(503, a.headers);
   const items = Array.isArray(r.data)
     ? r.data.filter(
         (x: unknown): x is Review =>

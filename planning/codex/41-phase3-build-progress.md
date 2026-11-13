@@ -1,6 +1,6 @@
 # Phase 3 money and messaging
 
-Updated 2026-11-13 UTC. Owner-authorized build-first round on shared `phase-3`. No #99 review or merge, deployment, SQL execution, live payments or email sends.
+Updated 2026-11-13 UTC. Owner-authorized build-first round on shared `phase-3`. Codex performed no #99 review/merge, deployment, SQL execution, live payments or email sends. Another session has since merged #99 into phase-3 @4b97de8.
 
 ## Built source, awaiting joint validation
 
@@ -17,9 +17,9 @@ Updated 2026-11-13 UTC. Owner-authorized build-first round on shared `phase-3`. 
 
 ## Validation status
 
-Prettier parse/format only. No new tests authored or run, per P3-O2. No typecheck, database reset, browser validation or restore drill executed: owner requested GitHub-only work after disk exhaustion. These are built source, not a readiness or security approval. Existing CI and joint A21/A23-A26/A29/A32-A36 evidence remain required.
+The narrow lint-fix batch now passes `pnpm run lint` on an isolated combined checkout (Node 24.22.2, pnpm 12.16.1), including type generation and ESLint with zero warnings; changed-file formatting and whitespace checks pass. See [lint evidence](42-phase3-lint-validation.md). The owner reported pre-fix typecheck, 452 unit tests and build passing; those broader checks were not independently rerun after these edits. Joint RLS/integration, independent security review and final A36 restore remain pending. These are built source, not a release approval.
 
-Bookings #99 is still separate. Claude supplied the customer-owned public.hold_snapshot wrapper and clarified request_refund's fourth argument is the stable idempotency key, not an authorization claim. No shared contract change is required by this source. Assemble both lanes for the joint test/review round without silently merging #99. Review/publication entry points and final schema fixtures must be exercised there.
+Bookings #99 @1684f7d is now merged into phase-3 @4b97de8 by another session. The customer-owned public.hold_snapshot wrapper and request_refund idempotency-key contract remain unchanged. The joint A-test round uses the current combined branch; review/publication entry points and final schema fixtures must be exercised there.
 
 ## Provider and runtime access
 
