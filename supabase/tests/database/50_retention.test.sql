@@ -23,7 +23,7 @@ insert into public.listings(public_id,organisation_id,service_slug,display_name,
   ('b7200000-0000-4000-8000-000000000001','b7100000-0000-4000-8000-00000000000a','r2-svc','Synthetic listing one','Synthetic description','Gauteng','mobile','live','provider_application','synthetic-r2'),
   ('b7200000-0000-4000-8000-000000000002','b7100000-0000-4000-8000-00000000000a','r2-svc','Synthetic listing two','Synthetic description','Gauteng','mobile','live','provider_application','synthetic-r2');
 
-select plan(26);
+select plan(27);
 
 -- ===== Who may call what ====================================================
 select ok(has_function_privilege('retention_server','public.run_retention()','execute'),
@@ -48,8 +48,14 @@ select is_empty($$select c.relname from pg_class c join pg_namespace n on n.oid 
 select is_empty($$select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace
   where n.nspname in ('public','private','api')
   and has_function_privilege('retention_server', p.oid, 'execute')
-  and p.oid not in ('public.run_retention()'::regprocedure, 'private.run_retention()'::regprocedure)$$,
+  and p.oid not in ('public.run_retention()'::regprocedure, 'private.run_retention()'::regprocedure,
+    'private.purge_review_raw()'::regprocedure)$$,
   'retention_server can execute nothing else in public, private or api');
+select ok(has_function_privilege('retention_server','private.purge_review_raw()','execute')
+  and not has_function_privilege('anon','private.purge_review_raw()','execute')
+  and not has_function_privilege('authenticated','private.purge_review_raw()','execute')
+  and not has_function_privilege('service_role','private.purge_review_raw()','execute'),
+  'Phase 3 review purge is restricted to the retention capability');
 select is_empty($$select rolname from pg_roles where rolname = 'retention_server'
   and not (rolcanlogin and rolconnlimit = 5 and not rolsuper and not rolbypassrls and not rolinherit and not rolcreaterole and not rolcreatedb)$$,
   'retention_server is a limited, non-inheriting login');
