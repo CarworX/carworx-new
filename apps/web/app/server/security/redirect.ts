@@ -14,6 +14,11 @@ const ALLOWED = [
   /^\/org\/[^/?#]+(?:[?#]|$)/,
   /^\/provider(?:\/apply)?(?:[?#]|$)/,
   /^\/provider\/claim\/[0-9a-f-]{36}(?:[?#]|$)/i,
+  /^\/provider\/get-listed\/(?:business|service|location|about|check|submitted)$/,
+  // Setup links carry the organisation as exactly one UUID query (setupHref).
+  /^\/provider\/setup\/[a-z-]+\/[a-z-]+(?:\?org=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$/,
+  // Invite secrets stay in a short-lived HttpOnly cookie, never in returnTo.
+  /^\/join$/,
 ];
 
 export function safeReturnTo(

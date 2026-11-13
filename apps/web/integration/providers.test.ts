@@ -1,5 +1,7 @@
 import { describe, expect, it, onTestFinished } from "vitest";
 
+import { apply } from "./onboarding";
+
 import {
   attr,
   Browser,
@@ -26,11 +28,6 @@ const fixed = {
   longitude: "28.0402",
   confirm: "on",
 };
-
-async function apply(browser: Browser, form: Record<string, string>) {
-  await browser.send("/provider/apply");
-  return browser.send("/provider/apply", { form });
-}
 
 function listingIds(body: string): string[] {
   return [...body.matchAll(/data-listing="([0-9a-f-]{36})"/g)].map(
@@ -71,6 +68,107 @@ describe("provider applications", () => {
     expect(page.body).toContain('href="/provider/apply"');
   });
 
+  it("resumes a saved both-mode draft and requires the final acknowledgements", async () => {
+    const user = await createConfirmedUser("onboarding-resume");
+    const browser = await signIn(user.email);
+    const premature = await browser.send("/provider/get-listed/check");
+    expect(premature.location).toBe("/provider/get-listed/business");
+    await browser.send("/provider/get-listed/business");
+    expect(
+      (
+        await browser.send("/provider/get-listed/business", {
+          form: {
+            intent: "save",
+            businessName: "Resumed Motors (synthetic)",
+            role: "manager",
+          },
+        })
+      ).location,
+    ).toBe("/provider/get-listed/service");
+    const resumed = await signIn(user.email);
+    const servicePage = await resumed.send("/provider/get-listed/service");
+    expect(servicePage.status).toBe(200);
+    expect(servicePage.body).toContain("Resumed Motors (synthetic)");
+    expect(
+      (
+        await resumed.send("/provider/get-listed/service", {
+          form: {
+            intent: "save",
+            services: ["wash", "service"],
+            work: ["fixed", "mobile"],
+            team: "2-5",
+          },
+        })
+      ).location,
+    ).toBe("/provider/get-listed/location");
+    await resumed.send("/provider/get-listed/location");
+    // The submitted mode is deliberately wrong: the saved draft remains authoritative.
+    expect(
+      (
+        await resumed.send("/provider/get-listed/location", {
+          form: {
+            intent: "save",
+            mode: "mobile",
+            metro: "Johannesburg",
+            address: "12 Synthetic Street",
+            pinLat: "-26.204100123456789",
+            pinLng: "28.047300123456789",
+            pinSource: "device",
+            radiusKm: "25",
+          },
+        })
+      ).location,
+    ).toBe("/provider/get-listed/about");
+    expect(
+      sqlRows(
+        `select mode || '|' || public_address from public.provider_applications where user_id = '${user.id}' and submitted_at is null`,
+      ),
+    ).toEqual(["both|12 Synthetic Street"]);
+    await resumed.send("/provider/get-listed/about");
+    expect(
+      (
+        await resumed.send("/provider/get-listed/about", {
+          form: {
+            intent: "save",
+            description: "Synthetic resumed business",
+            days: ["Mon", "Fri"],
+            opens: "08:00",
+            closes: "17:00",
+          },
+        })
+      ).location,
+    ).toBe("/provider/get-listed/check");
+    await resumed.send("/provider/get-listed/check");
+    expect(
+      (
+        await resumed.send("/provider/get-listed/check", {
+          form: { intent: "submit", probing: "on" },
+        })
+      ).status,
+    ).toBe(400);
+    expect(
+      (
+        await resumed.send("/provider/get-listed/check", {
+          form: { intent: "submit", adult: "on" },
+        })
+      ).status,
+    ).toBe(400);
+    expect(
+      sqlRows(
+        `select count(*) from public.listings l join public.memberships m on m.organisation_id = l.organisation_id where m.user_id = '${user.id}'`,
+      ),
+    ).toEqual(["0"]);
+    const sent = await resumed.send("/provider/get-listed/check", {
+      form: { intent: "submit", adult: "on", probing: "on" },
+    });
+    expect(sent.location).toBe("/provider/get-listed/submitted");
+    expect(
+      sqlRows(
+        `select (adult_attested_at is not null and probing_notice_ack_at is not null)::text from public.provider_applications where user_id = '${user.id}' and submitted_at is not null`,
+      ),
+    ).toEqual(["true"]);
+  });
+
   it("every service offered on the form exists in the catalogue", () => {
     const slugs = new Set(sqlRows("select slug from public.services"));
     for (const slug of [
@@ -91,16 +189,17 @@ describe("provider applications", () => {
 
     const bad = await apply(browser, { ...fixed, latitude: "51.5" });
     expect(bad.status).toBe(400);
-    expect(bad.body).toContain('data-problem="invalid_input"');
+    expect(bad.body).toContain("Check your answers");
 
     const sent = await apply(browser, fixed);
     expect(sent.status).toBe(302);
-    expect(sent.location).toBe("/provider?applied=1");
+    expect(sent.location).toBe("/provider/get-listed/submitted");
 
-    const page = await browser.send("/provider?applied=1");
+    const submitted = await browser.send("/provider/get-listed/submitted");
+    expect(submitted.body).toContain("Application sent");
+    const page = await browser.send("/provider");
     expect(page.status).toBe(200);
     expect(page.headers.get("Cache-Control")).toMatch(/no-store/);
-    expect(page.body).toContain('data-notice="applied"');
     expect(page.body).toContain('data-status="submitted"');
     const [publicId = ""] = listingIds(page.body);
 
@@ -109,7 +208,7 @@ describe("provider applications", () => {
       businessName: "Second (synthetic)",
     });
     expect(again.status).toBe(400);
-    expect(again.body).toContain('data-problem="application_pending"');
+    expect(again.body).toContain("already waiting for review");
 
     expect((await new Browser().send(`/p/${publicId}`)).status).toBe(404);
     setLive(publicId);
@@ -213,8 +312,37 @@ describe("claims, disputes and former staff", () => {
       form: { evidence: "document" },
     });
     expect(noRef.body).toContain('data-problem="invalid_input"');
+    const proof = await claimBrowser.send(
+      `/provider/claim/${publicId}?step=proof`,
+    );
+    expect(proof.status).toBe(200);
+    expect(proof.body).not.toContain('type="text"');
+    expect(proof.body).not.toContain("<textarea");
+    const docReview = await claimBrowser.send(`/provider/claim/${publicId}`, {
+      form: {
+        intent: "review",
+        evidence: "document",
+        documentType: "utility",
+        documentYear: "2020",
+        documentMonth: "10",
+        documentDay: "31",
+      },
+    });
+    expect(docReview.status).toBe(200);
+    expect(docReview.body).toContain("Utility bill");
+    expect(docReview.body).toContain("2020-10-31");
+    const review = await claimBrowser.send(`/provider/claim/${publicId}`, {
+      form: { intent: "review", evidence: "business_email" },
+    });
+    expect(review.status).toBe(200);
+    expect(review.body).toContain("Is this right?");
+    expect(
+      sqlRows(
+        `select count(*) from public.listing_claims where claimant_id = '${claimant.id}'`,
+      ),
+    ).toEqual(["0"]);
     const claimed = await claimBrowser.send(`/provider/claim/${publicId}`, {
-      form: { evidence: "business_email" },
+      form: { intent: "submit", evidence: "business_email" },
     });
     expect(claimed.status).toBe(302);
     expect(claimed.location).toBe("/provider?claimed=1");
@@ -429,9 +557,9 @@ describe("claims, disputes and former staff", () => {
   it("refuses a cross-site post", async () => {
     const user = await createConfirmedUser("csrf");
     const browser = await signIn(user.email);
-    await browser.send("/provider/apply");
-    const reply = await browser.send("/provider/apply", {
-      form: fixed,
+    await browser.send("/provider/get-listed/business");
+    const reply = await browser.send("/provider/get-listed/business", {
+      form: { intent: "save", businessName: fixed.businessName, role: "owner" },
       origin: "https://evil.example",
     });
     expect(reply.status).toBe(403);

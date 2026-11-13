@@ -1,5 +1,6 @@
 import { data, Form } from "react-router";
 
+import { ClaimReview } from "../admin-onboarding/ClaimReview";
 import { field } from "../auth/forms";
 import { throwRedirect, throwStatus } from "../auth/http.server";
 import { CsrfField } from "../auth/ui";
@@ -228,50 +229,7 @@ export default function AdminClaim({
         <dd>{c.created}</dd>
       </dl>
 
-      {c.status === "submitted" ? (
-        <div className="mt-8 grid max-w-[65ch] gap-8">
-          <Form method="post" className="grid gap-4" data-form="approve-claim">
-            <h2 className="type-title">Approve: transfer control</h2>
-            <p className="type-body">
-              The claimant becomes the owner. Everyone else with access to{" "}
-              {c.organisation} loses it. A displaced owner can still dispute.
-            </p>
-            <CsrfField token={csrf} />
-            <input type="hidden" name="intent" value="approve" />
-            <div className="cx-field">
-              <label htmlFor="method">How did you check it?</label>
-              <select id="method" name="method" className="cx-input" required>
-                {REVIEW_METHODS.map((m) => (
-                  <option key={m.value} value={m.value}>
-                    {m.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <TextField label="Note (optional)" name="note" maxLength={500} />
-            <div>
-              <Button type="submit" variant="primary">
-                Approve claim
-              </Button>
-            </div>
-          </Form>
-          <Form method="post" className="grid gap-4" data-form="reject-claim">
-            <h2 className="type-title">Reject</h2>
-            <CsrfField token={csrf} />
-            <input type="hidden" name="intent" value="reject" />
-            <TextField
-              label="Why"
-              name="note"
-              required
-              minLength={5}
-              maxLength={500}
-            />
-            <div>
-              <Button type="submit">Reject claim</Button>
-            </div>
-          </Form>
-        </div>
-      ) : null}
+      {c.status === "submitted" ? <ClaimReview csrf={csrf} claim={c} /> : null}
 
       {open ? (
         <section className="mt-8 max-w-[65ch]" data-dispute={open.id}>
