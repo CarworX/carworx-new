@@ -28,15 +28,15 @@
       "hyperdrive": [
         {
           "binding": "CATALOGUE_DB",
-          "id": "OWNER_SETS_STAGING_CATALOGUE_DB_HYPERDRIVE_ID",
+          "id": "cc5e992d66a44f6aa13bd91479494d97",
         },
         {
           "binding": "FORMS_DB",
-          "id": "OWNER_SETS_STAGING_FORMS_DB_HYPERDRIVE_ID",
+          "id": "badab079da38444d8945d1b86db40a3d",
         },
         {
           "binding": "RETENTION_DB",
-          "id": "OWNER_SETS_STAGING_RETENTION_DB_HYPERDRIVE_ID",
+          "id": "1f71d98c48984e25ba23c8d72365494d",
         },
       ],
       "triggers": { "crons": ["17 1 * * *"] },
