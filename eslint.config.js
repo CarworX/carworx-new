@@ -17,6 +17,8 @@ export default defineConfig(
     "design/",
     // Generated verbatim from the Sites preview home (#83 @ b88a8ca).
     "apps/web/public/home/",
+    // Generated from the motion export by apps/web/scripts/intro/build.py.
+    "apps/web/public/intro/",
   ]),
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,

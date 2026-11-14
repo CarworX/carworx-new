@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { Lockup } from "../brand/Lockup";
 import { ButtonLink, TextLink } from "../Button";
 import { usePrefersReducedMotion } from "../motion";
+import { SERVICE_HREFS } from "../../catalogue/taxonomy";
 import { SERVICES } from "../services";
 import { startLens } from "./lens";
 
@@ -23,7 +24,7 @@ interface NotFoundProps {
 export function NotFound({
   homeHref = "/",
   findHref = "/search",
-  serviceHref = (k) => `/search?service=${k}`,
+  serviceHref = (k) => SERVICE_HREFS[k],
   still = false,
   embedded = false,
 }: NotFoundProps) {
