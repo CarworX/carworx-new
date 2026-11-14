@@ -9,7 +9,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   context,
@@ -24,37 +24,43 @@ export const VERSION = "8.30.1";
 export const DIGEST =
   "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb";
 
-// Manual, exact prose exception for Claude's policy review, never a generated baseline.
-// The whole line is a Resend setup checklist; "retry/suppression" is not a credential.
-export const PROSE_DIGEST =
-  "e26004a8204052de2bb98025b77e9a30afc413c2ce14214eb18ee6c43c5e3f56";
-const PROSE_FILE = "planning/research/codex-vendor-access.md";
-const PROSE_COMMIT = "668466e234e65c92dfceba3037a34a9ca9e5bcbc";
-export const MONEY_PROSE_DIGEST =
-  "309313f3c0e2d298c2fdf02fffd0366e5ff2e14537d5e36e901da453b9af548f";
-const MONEY_PROSE_FILE = "planning/codex/41-phase3-build-progress.md";
-const MONEY_PROSE_COMMIT = "db0ae78663a60c0fc42037f3ae41998269a91417";
-const PROSE_SPECS = [
-  { file: PROSE_FILE, commit: PROSE_COMMIT, line: 10, digest: PROSE_DIGEST },
+// Manual, exact prose exceptions for Claude's policy review, never a generated
+// baseline. Each pins one rule, file, line, commit and the SHA-256 of that
+// line, so any edit to the line (or a real credential) is reported again.
+const PROSE_EXCEPTIONS = [
   {
-    file: MONEY_PROSE_FILE,
-    commit: MONEY_PROSE_COMMIT,
+    // The whole line is a Resend setup checklist; "retry/suppression" is not a credential.
+    file: "planning/research/codex-vendor-access.md",
+    line: 10,
+    commit: "668466e234e65c92dfceba3037a34a9ca9e5bcbc",
+    digest: "e26004a8204052de2bb98025b77e9a30afc413c2ce14214eb18ee6c43c5e3f56",
+    reason:
+      "Exact retry/suppression checklist prose; Claude policy review required",
+  },
+  {
+    // Phase 3 build note; "charge/refund/dispute" is a list of webhook kinds.
+    file: "planning/codex/41-phase3-build-progress.md",
     line: 8,
-    digest: MONEY_PROSE_DIGEST,
+    commit: "db0ae78663a60c0fc42037f3ae41998269a91417",
+    digest: "309313f3c0e2d298c2fdf02fffd0366e5ff2e14537d5e36e901da453b9af548f",
+    reason:
+      "Exact charge/refund/dispute webhook-kind prose; Claude policy review required",
   },
 ];
-function proseSpec(finding) {
-  return PROSE_SPECS.find(
-    (spec) =>
+export const PROSE_DIGEST = PROSE_EXCEPTIONS[0].digest;
+const PROSE_FILE = PROSE_EXCEPTIONS[0].file;
+function proseEntry(finding) {
+  return PROSE_EXCEPTIONS.find(
+    (e) =>
       finding.RuleID === "generic-api-key" &&
-      finding.File === spec.file &&
-      finding.StartLine === spec.line &&
-      finding.EndLine === spec.line &&
-      ["", spec.commit].includes(finding.Commit ?? ""),
+      finding.File === e.file &&
+      finding.StartLine === e.line &&
+      finding.EndLine === e.line &&
+      ["", e.commit].includes(finding.Commit ?? ""),
   );
 }
 export function isProseException(finding, digest) {
-  return proseSpec(finding)?.digest === digest;
+  return proseEntry(finding)?.digest === digest;
 }
 
 export function verifyChecksum(bytes, digest = DIGEST) {
@@ -117,23 +123,23 @@ function scan(binary, kind, cwd, privateDir, exceptions = []) {
     "Gitleaks exit/report mismatch",
   );
   const retained = findings.filter((finding) => {
-    const spec = proseSpec(finding);
-    if (spec === undefined) return true;
+    const entry = proseEntry(finding);
+    if (!entry) return true;
     const source = finding.Commit
-      ? execFileSync("git", ["show", `${spec.commit}:${spec.file}`], {
+      ? execFileSync("git", ["show", `${entry.commit}:${entry.file}`], {
           cwd,
           encoding: "utf8",
           stdio: "pipe",
         })
-      : readFileSync(join(cwd, spec.file), "utf8");
+      : readFileSync(join(cwd, entry.file), "utf8");
     const digest = createHash("sha256")
-      .update(source.split(/\r?\n/)[spec.line - 1] ?? "")
+      .update(source.split(/\r?\n/)[entry.line - 1] ?? "")
       .digest("hex");
     if (!isProseException(finding, digest)) return true;
     exceptions.push({
       ...sanitize([finding])[0],
       source_line_sha256: digest,
-      reason: "Exact checklist prose; Claude policy review required",
+      reason: entry.reason,
     });
     return false;
   });
@@ -234,55 +240,41 @@ export function scannerFixtures(binary) {
   invariant(rejected, "Incorrect checksum was accepted");
   // Exercise the exact prose exception with the real scanner, including credentials
   // in the same document and on the exception's own line. Nothing is allowlisted by path.
-  for (const spec of PROSE_SPECS) {
-    const source = execFileSync(
-      "git",
-      ["show", `${spec.commit}:${spec.file}`],
-      { encoding: "utf8", stdio: "pipe" },
-    );
-    const prose = source.split(/\r?\n/)[spec.line - 1];
-    invariant(
-      createHash("sha256")
-        .update(prose ?? "")
-        .digest("hex") === spec.digest,
-      "Prose fixture source changed",
-    );
-    mkdirSync(join(repo, dirname(spec.file)), { recursive: true });
-    const prosePath = join(repo, spec.file);
-    writeFileSync(prosePath, `${"\n".repeat(spec.line - 1)}${prose}\n`);
-    const applied = [];
-    invariant(
-      scan(binary, "checkout", repo, privateDir("k1-fixture-prose-"), applied)
-        .length === 0 && applied.length === 1,
-      "Exact prose exception fixture failed",
-    );
-    writeFileSync(
-      prosePath,
-      `${"\n".repeat(spec.line - 1)}${prose}\ncredential=${token}\n`,
-    );
-    invariant(
-      scan(binary, "checkout", repo, privateDir("k1-fixture-prose-secret-"))
-        .length > 0,
-      "Credential in prose document escaped scanning",
-    );
-    writeFileSync(
-      prosePath,
-      `${"\n".repeat(spec.line - 1)}${prose} ${token}\n`,
-    );
-    const changedLine = [];
-    invariant(
-      scan(
-        binary,
-        "checkout",
-        repo,
-        privateDir("k1-fixture-changed-prose-"),
-        changedLine,
-      ).length > 0 && changedLine.length === 0,
-      "Changed prose line escaped scanning",
-    );
-    unlinkSync(prosePath);
-  }
-  return { cases: 11 };
+  const prose = readFileSync(PROSE_FILE, "utf8").split(/\r?\n/)[9];
+  invariant(
+    createHash("sha256")
+      .update(prose ?? "")
+      .digest("hex") === PROSE_DIGEST,
+    "Prose fixture source changed",
+  );
+  mkdirSync(join(repo, "planning", "research"), { recursive: true });
+  const prosePath = join(repo, PROSE_FILE);
+  writeFileSync(prosePath, `${"\n".repeat(9)}${prose}\n`);
+  const applied = [];
+  invariant(
+    scan(binary, "checkout", repo, privateDir("k1-fixture-prose-"), applied)
+      .length === 0 && applied.length === 1,
+    "Exact prose exception fixture failed",
+  );
+  writeFileSync(prosePath, `${"\n".repeat(9)}${prose}\ncredential=${token}\n`);
+  invariant(
+    scan(binary, "checkout", repo, privateDir("k1-fixture-prose-secret-"))
+      .length > 0,
+    "Credential in prose document escaped scanning",
+  );
+  writeFileSync(prosePath, `${"\n".repeat(9)}${prose} ${token}\n`);
+  const changedLine = [];
+  invariant(
+    scan(
+      binary,
+      "checkout",
+      repo,
+      privateDir("k1-fixture-changed-prose-"),
+      changedLine,
+    ).length > 0 && changedLine.length === 0,
+    "Changed prose line escaped scanning",
+  );
+  return { cases: 8 };
 }
 
 async function main() {

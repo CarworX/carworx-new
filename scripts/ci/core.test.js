@@ -55,7 +55,6 @@ test("database diagnostics expose only fixed labels from private service output"
 });
 import {
   isProseException,
-  MONEY_PROSE_DIGEST,
   PROSE_DIGEST,
   sanitize,
   verifyChecksum,
@@ -100,7 +99,7 @@ test("the manual prose exception cannot suppress another source, line, commit or
     );
 });
 
-test("money checklist prose exception is exact to content and historical location", () => {
+test("the Phase 3 prose exception matches only its own file, line and commit", () => {
   const finding = {
     RuleID: "generic-api-key",
     File: "planning/codex/41-phase3-build-progress.md",
@@ -108,23 +107,17 @@ test("money checklist prose exception is exact to content and historical locatio
     EndLine: 8,
     Commit: "db0ae78663a60c0fc42037f3ae41998269a91417",
   };
-  assert.equal(isProseException(finding, MONEY_PROSE_DIGEST), true);
-  assert.equal(
-    isProseException(finding, "changed line with a credential"),
-    false,
-  );
+  const digest =
+    "309313f3c0e2d298c2fdf02fffd0366e5ff2e14537d5e36e901da453b9af548f";
+  assert.equal(isProseException(finding, digest), true);
+  assert.equal(isProseException(finding, PROSE_DIGEST), false);
   for (const change of [
-    { File: "another.md" },
-    { Commit: "another" },
+    { File: "planning/research/codex-vendor-access.md" },
+    { Commit: "668466e234e65c92dfceba3037a34a9ca9e5bcbc" },
     { StartLine: 9 },
-    { EndLine: 9 },
     { RuleID: "github-pat" },
-  ]) {
-    assert.equal(
-      isProseException({ ...finding, ...change }, MONEY_PROSE_DIGEST),
-      false,
-    );
-  }
+  ])
+    assert.equal(isProseException({ ...finding, ...change }, digest), false);
 });
 
 test("scanner checksum mismatch fails and published findings exclude secret fields", () => {

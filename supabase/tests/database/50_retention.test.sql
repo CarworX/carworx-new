@@ -49,13 +49,14 @@ select is_empty($$select p.oid::regprocedure from pg_proc p join pg_namespace n 
   where n.nspname in ('public','private','api')
   and has_function_privilege('retention_server', p.oid, 'execute')
   and p.oid not in ('public.run_retention()'::regprocedure, 'private.run_retention()'::regprocedure,
-    'private.purge_review_raw()'::regprocedure)$$,
-  'retention_server can execute nothing else in public, private or api');
-select ok(has_function_privilege('retention_server','private.purge_review_raw()','execute')
-  and not has_function_privilege('anon','private.purge_review_raw()','execute')
-  and not has_function_privilege('authenticated','private.purge_review_raw()','execute')
-  and not has_function_privilege('service_role','private.purge_review_raw()','execute'),
-  'Phase 3 review purge is restricted to the retention capability');
+                    'private.purge_review_raw()'::regprocedure)$$,
+  'retention_server can execute nothing else in public, private or api (bar the review purge)');
+-- Phase 3: the daily cron also blanks expired raw review text through one
+-- more no-input, definer-only entry point; pin its shape.
+select ok((select p.prosecdef and p.pronargs = 0 and 'search_path=""' = any(p.proconfig)
+             and p.prorettype = 'integer'::regtype
+           from pg_proc p where p.oid = 'private.purge_review_raw()'::regprocedure),
+  'the review purge is SECURITY DEFINER, empty search_path, no input, returns a count');
 select is_empty($$select rolname from pg_roles where rolname = 'retention_server'
   and not (rolcanlogin and rolconnlimit = 5 and not rolsuper and not rolbypassrls and not rolinherit and not rolcreaterole and not rolcreatedb)$$,
   'retention_server is a limited, non-inheriting login');

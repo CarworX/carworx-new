@@ -1,12 +1,23 @@
 # Phase 3 money and messaging test round
 
-Updated 2026-11-13 17:10 UTC. Owner started this lane in chat. Base:
+Updated 2026-11-14 UTC. Owner started this lane in chat. Original base:
 `phase-3` @`4b97de8`; branch `codex/p3-money-tests`, PR target `phase-3`.
-Original planning and build worktrees remain untouched. No PR merges, deployments,
-provider requests, real email or production access.
-Current `phase-3` lint fixes @`e1aba73` were incorporated into this test branch.
+Original planning and build worktrees remain untouched. No deployments, provider
+requests, real email or production access. Reconciled with `phase-3` @`8c14e84`,
+including approved #115 and #106. They were merged under later owner authority.
+Shared staging end-to-end checks remain open.
 
 ## Results
+
+Fresh reconciliation checks (2026-11-14): 502/502 web unit tests; 31/31 focused
+CI-policy, environment-contract and backup-coverage tests; 30/30 money pgTAP
+assertions on a fresh disposable native stack; twelve simultaneous payment
+initialisations produced one dispatch, and twelve receptions/effects produced
+one confirmation. Stack stopped. Formatting and diff whitespace checks passed.
+Final-head CI and the integrated A36 repeat remain pending.
+
+The following detailed results describe the earlier recorded test run unless
+repeated above.
 
 - Node 24.22.2 and pnpm 12.16.1: frozen installation passed. Temporary npm tool
   cache supplies pins; the default Windows shims use incompatible versions.
@@ -40,16 +51,15 @@ Current `phase-3` lint fixes @`e1aba73` were incorporated into this test branch.
 
 ## Defects and regression fixes
 
-- A36 first failed restoring `private.payment_reconcile_cursor`: migrations
-  already seed its key on the disposable target. Clear that target default
-  inside the restore transaction and load the exported row. The fixture now
-  changes its page/time to prove progress survives rather than being reset.
+- A36 originally failed restoring `private.payment_reconcile_cursor` because
+  migrations seeded its key on the disposable target. #115 fixes this by lazy
+  cursor creation. Keep that fix, remove this branch's target-row deletion,
+  and explicitly seed non-default page/time in the synthetic backup fixture.
 - The security catalog caught twelve public `SECURITY DEFINER` money/review
-  RPCs. Eleven implementations now live in `private`, keeping their existing
-  authenticated grants and ownership/admin checks; public functions are
-  invoker wrappers. Anonymous published reviews use the dedicated
-  `review_projection` schema, preserving the existing client denials on both
-  `private` and the server-only `api` schema. No raw-review table grant.
+  RPCs. #115 moves all twelve implementations to `private`, with public invoker
+  wrappers and existing scoped grants/checks. Removed this branch's overlapping
+  unmerged facade migration. Reviews remain signed-in only per the owner;
+  anonymous reading is deferred. No `review_projection` schema is introduced.
 - The final-schema retention test had not included the explicitly granted
   review purge. Its exact function allowlist now includes only that addition;
   a new assertion also denies it to anon/authenticated/service_role.
@@ -71,15 +81,15 @@ Current `phase-3` lint fixes @`e1aba73` were incorporated into this test branch.
 
 ## Outstanding evidence
 
-- Local A36 is closed for this Phase 3 schema. Repeat after integration of
-  schema-changing PRs such as #95; that PR's BK-1 exception is not included here.
+- Earlier local A36 passed for its recorded schema. Repeat on this integrated
+  schema and after schema-changing PRs such as #95; its BK-1 exception is not included here.
 - Shared A23/A29/A35 end-to-end: staging deploy required. A35 adapter tests use
   synthetic responses; they are not a Paystack sandbox round trip.
 - A33 hosted UI/Auth failure recovery, full cross-lane integration and reciprocal
   independent review remain required. Unit mocks do not establish DB atomicity;
   the SQL/concurrency tests above supply the local DB evidence.
-- #95 BK-1 exception and #97 connection-limit migration remain separate PRs;
-  neither is silently incorporated or merged here.
+- #95 BK-1 exception remains separate. #97 has merged into main; it remains
+  subject to the normal main/phase-3 integration sequence.
 
 ## Coordination
 
@@ -97,4 +107,4 @@ No bookings test PR was merged.
 
 Test PR: [#107](https://github.com/CarworX/carworx-new/pull/107), targeting
 `phase-3`. Claude's [#106](https://github.com/CarworX/carworx-new/pull/106)
-remains open and unmerged. Local and hosted evidence must remain distinct.
+merged after #115 and is incorporated here. Local and hosted evidence remain distinct.

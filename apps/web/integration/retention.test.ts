@@ -89,12 +89,15 @@ describe("R-2 retention cron (built Worker)", () => {
 
   it("fails the cron run without the binding or with the wrong login", async () => {
     const w = await worker();
-    await expect(w.scheduled({}, {}, ctx)).rejects.toThrow(
+    // The Worker now also has a staging minute cron (Phase 3 payments and
+    // notifications); retention runs only on its own daily schedule.
+    const daily = { cron: "17 1 * * *", scheduledTime: Date.now() };
+    await expect(w.scheduled(daily, {}, ctx)).rejects.toThrow(
       "retention run failed: binding_missing",
     );
     await expect(
       w.scheduled(
-        {},
+        daily,
         {
           RETENTION_DB: {
             connectionString: login("retention_server", "wrong"),

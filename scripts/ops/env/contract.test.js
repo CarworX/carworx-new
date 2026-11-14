@@ -357,8 +357,12 @@ test("D-073 rejects a complete D-071 record without independent approval", () =>
     assert.throws(() => verify(copy));
   }
 });
-test("daily retention is preserved and minute queue recovery stays staging-only", () => {
+test("staging and production run the R-2 retention cron once a day", () => {
   const { staging, production } = sourceConfig().env;
-  assert.deepEqual(staging.triggers, { crons: ["* * * * *", "17 1 * * *"] });
+  // Production runs only the daily R-2 retention cron.
   assert.deepEqual(production.triggers, { crons: ["17 1 * * *"] });
+  // Staging also runs the Phase 3 test-mode payment, settlement and
+  // notification jobs every minute (staging-only until G-PAY); the daily
+  // retention cron stays exactly as it was.
+  assert.deepEqual(staging.triggers, { crons: ["* * * * *", "17 1 * * *"] });
 });

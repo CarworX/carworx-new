@@ -1,6 +1,4 @@
 -- SYNTHETIC ONLY: invoked by the disposable local BK-1 source stack.
--- Prove the restore keeps progress rather than resetting the migration seed.
-update private.payment_reconcile_cursor set page=3,checked_at='2026-11-13T12:00:00Z' where job='settlements';
 insert into private.payment_accounts(organisation_id,subaccount) values('5eed0000-0000-4000-8000-0000000000a1','ACCT_BK1synthetic');
 insert into private.payment_attempts(id,hold_id,booking_id,customer_id,organisation_id,amount_minor,subaccount,hold_expires_at,state,provider_id,reference)
 values('bac30000-0000-4000-8000-000000000001','bac30000-0000-4000-8000-000000000002','bac30000-0000-4000-8000-000000000003',
@@ -15,6 +13,9 @@ insert into private.payment_refunds(id,attempt_id,amount_minor,reason,actor,stat
 values('bac30000-0000-4000-8000-000000000004','bac30000-0000-4000-8000-000000000001',1000,'Synthetic BK-1 refund','bk1/refund','processed','9900000002');
 insert into private.payment_disputes(provider_id,attempt_id,amount_minor,state)
 values('9900000003','bac30000-0000-4000-8000-000000000001',9000,'open');
+-- The settlements cursor is created on first use, not by a migration;
+-- give BK-1 non-default progress so the restore proves it survives.
+insert into private.payment_reconcile_cursor(job,page,checked_at) values('settlements',3,'2026-11-13T12:00:00Z') on conflict(job) do nothing;
 insert into private.payment_settlements(provider_id,gross_minor,fees_minor,net_minor,state)
 values('9900000004',10000,300,9700,'matched');
 insert into private.payment_settlement_lines(settlement_id,provider_id,reference,amount_minor,fees_minor,subaccount)

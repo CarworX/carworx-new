@@ -819,11 +819,6 @@ async function drill() {
       restored.DB_URL,
       "-c",
       triggers("disable"),
-      // This disposable target has already run the migrations, which seed a
-      // settlements cursor. Restore the exported cursor (including its page
-      // and timestamp), rather than colliding with that fresh default row.
-      "-c",
-      "delete from private.payment_reconcile_cursor;",
       "-f",
       restoreFile,
       "-c",

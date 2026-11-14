@@ -1,12 +1,14 @@
 # Status
 
-Phase 3 money test round (Codex, 2026-11-13 UTC): isolated `codex/p3-money-tests`
-from `phase-3` @`4b97de8`. Local unit/type/SQL/concurrency results and outstanding
-restore/staging gates: [test record](codex/42-phase3-money-tests.md). Claude owns
-the separate bookings test PR; do not merge it. Shared A23/A29/A35 end-to-end
-checks wait for staging. No Phase 3 acceptance-complete claim.
-Local A36 passed at `2ef8951` (1,099 RLS assertions / 76 restored tables).
-Money test PR #107 targets `phase-3`; #97 is ready with green required CI.
+Phase 3 money test round (Codex, 2026-11-14 UTC): #107 is reconciled with
+`phase-3` @`8c14e84` after approved #115 and #106 merged. Retains #115's private
+RPC implementations, signed-in-only reviews, lazy cursor, exact secrets policy,
+retention allow-list and cron contract. The duplicate unmerged RPC migration
+and superseded restore-target deletion were removed. Current evidence and
+remaining gates: [test record](codex/42-phase3-money-tests.md).
+Shared A23/A29/A35 end-to-end checks wait for staging. Earlier local A36 passed
+at `2ef8951`; rerun on the integrated schema and again after #95. No Phase 3
+acceptance-complete claim. #97 is merged; #93 and #94 are ready for CI/review.
 
 ## Earlier finish checkpoint (2026-11-12; historical)
 
