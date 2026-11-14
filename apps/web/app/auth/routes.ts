@@ -44,4 +44,6 @@ export const authRoutes: RouteConfigEntry[] = [
   route("provider/quotes/:id", "routes/provider.quotes.$id.tsx"),
   route("provider/resources", "routes/provider.resources.tsx"),
   route("provider/jobs", "routes/provider.jobs.tsx"),
+  // Customer payment receipt PDF (Claude 25 §3a (a), D-096).
+  route("receipts/:file", "routes/receipts.$file.ts"),
 ];

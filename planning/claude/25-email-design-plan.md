@@ -105,11 +105,13 @@ Every receipt or invoice email carries a **Download PDF** link (a text link, so 
 
 **Route:** `GET /receipts/:ref.pdf` and `GET /provider/invoices/:ref.pdf`, signed-in only, owner of the record only (the customer for (a); a member of the business with money access for (b)), `Cache-Control: private, no-store`, `Content-Disposition: attachment`, a 404 for anyone else (never a 403 that confirms the record exists). Rendered **server-side in the Worker** from the same data the email uses; no third-party PDF service, no personal data in logs or URLs beyond the opaque reference.
 
-**Owner questions (not guessed, D-047 says the accountant reviews):**
-- **OQ-E1:** is CarworX VAT-registered at launch? If so, invoice (b) must be a full **tax invoice** under the VAT Act s20(4) (the words "tax invoice", CarworX's and the provider's names, addresses and VAT numbers, a serial number, date, description, value, VAT and total), or an abridged one under s20(5) below the threshold.
-- **OQ-E2:** for receipt (a), which providers are VAT-registered? A VAT-registered provider must issue its own tax invoice; does CarworX issue it **on the provider's behalf** (needs a written agreement under s20(2)) or is ours only a payment receipt? Default until answered: a **receipt, not a tax invoice**, saying so in words.
-- **OQ-E3:** invoice (b): per job or a monthly statement? Default: monthly.
-- **OQ-E4:** record retention for these PDFs (the Tax Administration Act's five years is the likely floor; see the retention schedule).
+**Owner answers (D-096, 14 Nov 2026 SAST).** The questions were not guessed; the owner answered them, and the accountant still reviews (D-047).
+- **OQ-E1, is CarworX VAT-registered?** Undecided: the owner is asking their accountant. Invoice (b) is a **plain invoice with no VAT line**. All VAT content (CarworX's VAT number, the 15% line, the words "tax invoice", and the rest of s20(4): both parties' names, addresses and VAT numbers, serial number, date, description, value, VAT and total) sits behind **one config switch, off by default**, so it can be turned on later without a redesign. *Pending the accountant.*
+- **OQ-E2, provider VAT:** receipt (a) is a **payment receipt only** and says so in words: "This is a payment receipt, not a tax invoice." VAT-registered providers issue their own tax invoices; CarworX does **not** issue tax invoices on providers' behalf, so no s20(2) agreement is needed.
+- **OQ-E3, invoice rhythm:** a **monthly statement email** to providers, and every invoice and statement stays **downloadable as a PDF from the provider portal** (a list with Download links). No per-job emails.
+- **OQ-E4, retention:** **5 years from the document date**, then deleted under the existing retention schedule.
+
+**Receipt (a) build:** `GET /receipts/CX-XXXXXXXXXXXX.pdf`. The reference is `CX-` plus the first 12 hex digits (upper case) of the payment's own opaque reference, so it fits the email reference format. A signed-out visitor is sent to sign in (the same for every reference); a signed-in user who is not the paying customer, and any unknown, unpaid or malformed reference, gets the same 404. Data comes from `customer_receipt(ref)`, which returns nothing to anyone but the paying customer. The PDF is drawn in the Worker by a small built-in writer with the standard PDF fonts (no library or service).
 
 Invoice (b) only matters once commission starts (D-054: after company registration, G-PAY and a free pilot), so its build waits; its design is done now so the style is settled.
 
@@ -158,7 +160,7 @@ Branch `claude/branded-emails` (after the owner picks a direction):
 3. **Production only:** in the Supabase dashboard, turn on custom SMTP with Resend's SMTP host and an API key, sender `no-reply@carworx.app`. Staging keeps the D-068 Send Email Hook (it enforces the approved-recipient list), branded through the shared renderer (§6).
 4. Answer OQ-L2 so the footer placeholders can be filled.
 5. ~~Pick a direction~~ Done: the A/B/C mix (§1a).
-6. Answer OQ-E1 to OQ-E4 (§3a) with the accountant.
+6. ~~Answer OQ-E1 to OQ-E4 (§3a)~~ Answered (D-096). Still open: the accountant on whether CarworX registers for VAT (OQ-E1).
 
 ## 8. Milestones
 
