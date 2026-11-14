@@ -256,7 +256,9 @@ describe("D-041 states", () => {
     );
     expect(h).toMatch(/<a href="\/" class="cx-btn primary arrow">Back to home/);
     expect(h).toContain(">Find a service</a>");
-    expect(count(h, /href="\/search\?service=/g)).toBe(5);
+    // The chips go to the real category pages and the fines guide.
+    expect(count(h, /href="\/c\/[a-z-]+"/g)).toBe(4);
+    expect(count(h, /href="\/fines"/g)).toBe(1);
     expect(h).toContain('<canvas class="fx" aria-hidden="true">');
   });
   it("embedded, the 404 drops to h2 and no second main", () => {

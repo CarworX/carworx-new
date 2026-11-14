@@ -18,3 +18,4 @@ supabase/templates/*.html
 # Generated verbatim from the Sites preview home (#83 @ b88a8ca)
 apps/web/app/home/
 apps/web/public/home/
+apps/web/public/intro/
