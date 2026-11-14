@@ -35,4 +35,15 @@ export const authRoutes: RouteConfigEntry[] = [
   route("admin/demand", "routes/admin.demand.tsx"),
   route("admin/support", "routes/admin.support.tsx"),
   route("admin/support/:id", "routes/admin.support.$id.tsx"),
+  // Phase 3 bookings lane (Claude 24 §5 C7).
+  route("book/:listingId", "routes/book.$listingId.tsx"),
+  route("bookings", "routes/bookings.tsx"),
+  route("bookings/:id", "routes/bookings.$id.tsx"),
+  route("quotes/:id", "routes/quotes.$id.tsx"),
+  route("provider/bookings", "routes/provider.bookings.tsx"),
+  route("provider/quotes/:id", "routes/provider.quotes.$id.tsx"),
+  route("provider/resources", "routes/provider.resources.tsx"),
+  route("provider/jobs", "routes/provider.jobs.tsx"),
+  // Customer payment receipt PDF (Claude 25 §3a (a), D-096).
+  route("receipts/:file", "routes/receipts.$file.ts"),
 ];
