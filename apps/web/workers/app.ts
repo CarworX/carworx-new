@@ -74,6 +74,18 @@ export default {
     );
     ctx.waitUntil(produceBookingNotifications(env));
     if (controller.cron !== "17 1 * * *") return;
+    // D-096: last month's provider invoices, once; a no-op while the
+    // G-PAY / D-054 gate is off in the database. Kept apart from retention
+    // so it can never fail or add to the retention run, and skipped where
+    // the money lane has no MONEY_DB binding.
+    const money = (env as { MONEY_DB?: { connectionString?: unknown } })
+      .MONEY_DB;
+    if (typeof money?.connectionString === "string")
+      ctx.waitUntil(
+        issueMonthlyInvoices(money, pgClient).then((invoicesIssued) => {
+          console.log(JSON.stringify({ event: "invoices", invoicesIssued }));
+        }),
+      );
     const binding = (env as { RETENTION_DB?: { connectionString?: unknown } })
       .RETENTION_DB;
     const counts = await runRetention(binding, pgClient);
@@ -87,11 +99,5 @@ export default {
         invoicePurged,
       }),
     );
-    // D-096: last month's provider invoices, once; a no-op while the
-    // G-PAY / D-054 gate is off in the database.
-    const money = (env as { MONEY_DB?: { connectionString?: unknown } })
-      .MONEY_DB;
-    const invoicesIssued = await issueMonthlyInvoices(money, pgClient);
-    console.log(JSON.stringify({ event: "invoices", invoicesIssued }));
   },
 } satisfies ExportedHandler<Env>;
