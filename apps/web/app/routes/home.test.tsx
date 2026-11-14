@@ -1,44 +1,82 @@
+import { readFileSync } from "node:fs";
+
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import Home, { headers } from "./home";
+import Home, { headers, links } from "./home";
 
-const html = renderToStaticMarkup(<Home />).replace(/&#x27;/g, "'");
+const html = renderToStaticMarkup(<Home />);
+const text = html.replace(/<[^>]+>/g, " ").toLowerCase();
 
-describe("/ home (redesign group 1: the approved Studio preview)", () => {
-  it("renders one h1 and the preview's section headings", () => {
+describe("/ home: the Sites preview home, verbatim (owner, 14 Nov)", () => {
+  it("is the preview's page: hero, timeline, quote, fines, app, business, closing", () => {
+    for (const id of [
+      'id="intro"',
+      'class="hero"',
+      'id="how"',
+      'id="quote-sec"',
+      'id="fines"',
+      'id="glimpse"',
+      'id="business"',
+      'id="start"',
+    ])
+      expect(html).toContain(id);
+    expect(html).toContain("Car care, booked properly.");
+    expect(html).toContain("One booking, start to finish.");
     expect(html.match(/<h1\b/g)).toHaveLength(1);
-    for (const id of ["h-hero", "h-how", "h-fines", "h-biz", "h-close"])
-      expect(html).toContain(`id="${id}"`);
   });
 
-  it("keeps the no-JavaScript GET search form and the five service keys", () => {
-    expect(html).toMatch(/<form[^>]*action="\/search"/);
-    expect(html).toMatch(/<form[^>]*method="get"/);
+  it("has no hosting band and no demo, mock, concept or fictional wording", () => {
+    for (const word of [
+      "private interactive preview",
+      "fictional",
+      "demo",
+      "mock",
+      "concept",
+      "prototype",
+    ])
+      expect(text).not.toContain(word);
+  });
+
+  it("links to real routes only", () => {
+    const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1] ?? "");
+    for (const href of hrefs)
+      expect(href).toMatch(
+        /^(#[a-z0-9-]+|\/(search|fines|support|privacy|terms|auth\/sign-in|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+))$/,
+      );
     for (const href of [
       "/c/wash-and-detailing",
       "/c/repairs-and-maintenance",
       "/c/glass-repair-and-replacement",
       "/c/tyres-and-wheel-alignment",
       "/fines",
+      "/search",
     ])
-      expect(html).toContain(`href="${href}"`);
+      expect(hrefs).toContain(href);
   });
 
-  it("has the shared header and ink footer, with the business entry", () => {
-    expect(html).toContain('href="/auth/sign-in"');
-    expect(html).toContain('href="/provider/get-listed/business"');
-    expect(html).toContain('class="cx-footer"');
-    for (const href of ["/support", "/privacy", "/terms"])
-      expect(html).toContain(`href="${href}"`);
+  it("puts Sign in and Sign up in the header and in the menu sheet", () => {
+    const header = html.slice(
+      html.indexOf('<header class="nav"'),
+      html.indexOf("</header>"),
+    );
+    expect(header).toContain('href="/auth/sign-in"');
+    expect(header).toContain('href="/auth/sign-up"');
+    const sheet = html.slice(html.indexOf('id="menu"'));
+    expect(sheet).toContain('class="acct-row"');
+    expect(sheet).toContain('href="/auth/sign-up"');
   });
 
-  it("promises nothing the directory launch does not do (D-093)", () => {
-    expect(html).not.toMatch(/book(ed|ing)|paid|payment|quote/i);
-  });
-
-  it("keeps decoration out of the accessibility tree", () => {
-    expect(html).toMatch(/class="cx-floats" aria-hidden="true"/);
+  it("loads its own stylesheet and script on this route only", () => {
+    const list = links();
+    expect(list).toHaveLength(1);
+    expect(JSON.stringify(list[0])).toContain('"rel":"stylesheet"');
+    expect(html).toContain('<script src="/home/home.js" defer="">');
+    const js = readFileSync(
+      new URL("../../public/home/home.js", import.meta.url),
+      "utf8",
+    );
+    expect(js).not.toMatch(/fetch\(|localStorage|document\.cookie/);
   });
 
   it("stays briefly cacheable (public, no personal data)", () => {

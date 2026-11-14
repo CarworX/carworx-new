@@ -367,14 +367,6 @@
     width: 14px;
     height: 14px;
   }
-  .cx-demo {
-    font: 500 12px var(--font-mono);
-    letter-spacing: 0.04em;
-    color: var(--muted);
-    padding: 1px 6px;
-    border-radius: var(--radius-pill);
-    background: var(--canvas);
-  }
   .cx-slots {
     display: flex;
     flex-wrap: wrap;

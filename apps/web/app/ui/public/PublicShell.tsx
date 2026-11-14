@@ -17,17 +17,31 @@ const NAV = [
 
 const GET_LISTED = "/provider/get-listed/business";
 
-function ListYourBusiness() {
+/** Signed-out visitors: Sign in and Sign up are always in reach. */
+function AccountActions() {
   return (
-    <ButtonLink href={GET_LISTED} variant="secondary" size="sm" arrow>
-      List your business
-    </ButtonLink>
+    <>
+      <QuietLink href="/auth/sign-in">Sign in</QuietLink>
+      <ButtonLink href="/auth/sign-up" size="sm" arrow>
+        Sign up
+      </ButtonLink>
+    </>
   );
 }
 
-function SheetActions() {
+function SheetActions({ signedOut = false }: { signedOut?: boolean }) {
   return (
     <>
+      {signedOut ? (
+        <div className="cx-sheet-acct">
+          <ButtonLink href="/auth/sign-in" variant="secondary" block>
+            Sign in
+          </ButtonLink>
+          <ButtonLink href="/auth/sign-up" block>
+            Sign up
+          </ButtonLink>
+        </div>
+      ) : null}
       <ButtonLink href="/" block arrow>
         Find a service near you
       </ButtonLink>
@@ -120,13 +134,8 @@ export function PublicShell({
           <NavBar
             items={NAV}
             {...(current ? { current } : {})}
-            action={
-              <>
-                <QuietLink href="/auth/sign-in">Sign in</QuietLink>
-                <ListYourBusiness />
-              </>
-            }
-            sheetActions={<SheetActions />}
+            action={<AccountActions />}
+            sheetActions={<SheetActions signedOut />}
           />
         )}
       </div>

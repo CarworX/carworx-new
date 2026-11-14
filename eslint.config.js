@@ -15,6 +15,8 @@ export default defineConfig(
     "**/worker-configuration.d.ts",
     "planning/",
     "design/",
+    // Generated verbatim from the Sites preview home (#83 @ b88a8ca).
+    "apps/web/public/home/",
   ]),
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
