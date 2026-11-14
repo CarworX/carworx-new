@@ -49,8 +49,8 @@ select is_empty($$select p.oid::regprocedure from pg_proc p join pg_namespace n 
   where n.nspname in ('public','private','api')
   and has_function_privilege('retention_server', p.oid, 'execute')
   and p.oid not in ('public.run_retention()'::regprocedure, 'private.run_retention()'::regprocedure,
-                    'private.purge_review_raw()'::regprocedure)$$,
-  'retention_server can execute nothing else in public, private or api (bar the review purge)');
+                    'private.purge_review_raw()'::regprocedure, 'private.purge_old_invoices()'::regprocedure)$$,
+  'retention_server can execute nothing else in public, private or api (bar the review and invoice purges)');
 -- Phase 3: the daily cron also blanks expired raw review text through one
 -- more no-input, definer-only entry point; pin its shape.
 select ok((select p.prosecdef and p.pronargs = 0 and 'search_path=""' = any(p.proconfig)

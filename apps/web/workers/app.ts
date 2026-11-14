@@ -2,6 +2,10 @@ import { createRequestHandler } from "react-router";
 import { produceBookingNotifications } from "../app/server/payments/notifications.server";
 import { purgeReviewData } from "../app/server/payments/reviews-retention.server";
 import {
+  issueMonthlyInvoices,
+  purgeOldInvoices,
+} from "../app/server/receipts/jobs.server";
+import {
   PAYMENT_WEBHOOK_PATH,
   dispatchPaymentWebhook,
   drainPaymentEvents,
@@ -74,6 +78,20 @@ export default {
       .RETENTION_DB;
     const counts = await runRetention(binding, pgClient);
     const reviewCount = await purgeReviewData(binding, pgClient);
-    console.log(JSON.stringify({ event: "retention", counts, reviewCount }));
+    const invoicePurged = await purgeOldInvoices(binding, pgClient);
+    console.log(
+      JSON.stringify({
+        event: "retention",
+        counts,
+        reviewCount,
+        invoicePurged,
+      }),
+    );
+    // D-096: last month's provider invoices, once; a no-op while the
+    // G-PAY / D-054 gate is off in the database.
+    const money = (env as { MONEY_DB?: { connectionString?: unknown } })
+      .MONEY_DB;
+    const invoicesIssued = await issueMonthlyInvoices(money, pgClient);
+    console.log(JSON.stringify({ event: "invoices", invoicesIssued }));
   },
 } satisfies ExportedHandler<Env>;

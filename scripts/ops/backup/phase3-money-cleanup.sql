@@ -1,4 +1,6 @@
 -- App triggers are paused by the existing BK-1 cleanup transaction.
+delete from private.provider_invoices where organisation_id='5eed0000-0000-4000-8000-0000000000a1' and period_start='2026-10-01';
+delete from private.billing_settings where id;
 delete from private.review_moderation where review_id='bac30000-0000-4000-8000-000000000005';
 delete from private.booking_reviews where id='bac30000-0000-4000-8000-000000000005';
 delete from private.booking_notifications where logical_key='bk1/booking-update';
