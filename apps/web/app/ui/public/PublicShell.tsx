@@ -1,13 +1,42 @@
 import type { ReactNode } from "react";
 import { useMatches } from "react-router";
 
+import { Lockup } from "../brand/Lockup";
 import { ButtonLink, QuietLink } from "../Button";
 import { NavBar } from "../NavBar";
 
+/**
+ * The approved Studio preview's navigation (#83, app.html): the driver's
+ * two front doors, the business section, then one light pill on the right.
+ */
 const NAV = [
   { href: "/", label: "Find a service" },
   { href: "/fines", label: "Fines & admin" },
+  { href: "/#business", label: "For businesses" },
 ] as const;
+
+const GET_LISTED = "/provider/get-listed/business";
+
+function ListYourBusiness() {
+  return (
+    <ButtonLink href={GET_LISTED} variant="secondary" size="sm" arrow>
+      List your business
+    </ButtonLink>
+  );
+}
+
+function SheetActions() {
+  return (
+    <>
+      <ButtonLink href="/" block arrow>
+        Find a service near you
+      </ButtonLink>
+      <ButtonLink href={GET_LISTED} variant="secondary" block arrow>
+        List your business
+      </ButtonLink>
+    </>
+  );
+}
 
 function SignedInNavigation() {
   const matches = useMatches();
@@ -40,12 +69,31 @@ function SignedInNavigation() {
             },
           }
         : { action: <QuietLink href="/account">Account</QuietLink> })}
-      sheetActions={
-        <ButtonLink href="/" block arrow>
-          Find a service near you
-        </ButtonLink>
-      }
+      sheetActions={<SheetActions />}
     />
+  );
+}
+
+/** The ink footer from the preview: white lockup, one line, three links. */
+export function SiteFooter() {
+  return (
+    <footer className="cx-footer">
+      <div className="in">
+        <a className="logo" href="/">
+          <Lockup title="CarworX home" />
+        </a>
+        <p className="tag">Car care you can check, near you.</p>
+        <nav aria-label="Footer">
+          <a href="/">Find a service</a>
+          <a href="/fines">Fines guidance</a>
+          <a href={GET_LISTED}>For businesses</a>
+          <a href="/support">Contact support</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms of use</a>
+        </nav>
+        <p className="fine">carworx.app · South Africa</p>
+      </div>
+    </footer>
   );
 }
 
@@ -53,39 +101,42 @@ function SignedInNavigation() {
 export function PublicShell({
   current,
   signedIn = false,
+  wide = false,
   children,
 }: {
   current?: string;
   /** Signed-in pages link to the account instead of sign-in. */
   signedIn?: boolean;
+  /** Home: sections set their own rhythm, so main has no top margin. */
+  wide?: boolean;
   children: ReactNode;
 }) {
   return (
-    <div className="cx-canvas min-h-dvh">
-      <div className="mx-auto max-w-[1180px] px-4 pt-4 pb-24 sm:px-6">
+    <div className="cx-canvas flex min-h-dvh flex-col">
+      <div className="cx-shell-top">
         {signedIn ? (
           <SignedInNavigation />
         ) : (
           <NavBar
             items={NAV}
             {...(current ? { current } : {})}
-            action={<QuietLink href="/auth/sign-in">Sign in</QuietLink>}
-            sheetActions={
-              <ButtonLink href="/" block arrow>
-                Find a service near you
-              </ButtonLink>
+            action={
+              <>
+                <QuietLink href="/auth/sign-in">Sign in</QuietLink>
+                <ListYourBusiness />
+              </>
             }
+            sheetActions={<SheetActions />}
           />
         )}
-        <main id="main" className="mt-10">
-          {children}
-        </main>
-        <footer className="type-caption text-quiet mt-16 flex flex-wrap gap-x-5 gap-y-2">
-          <a href="/support">Contact support</a>
-          <a href="/privacy">Privacy</a>
-          <a href="/terms">Terms of use</a>
-        </footer>
       </div>
+      <main
+        id="main"
+        className={`mx-auto w-full max-w-[1180px] flex-1 px-4 pb-24 sm:px-6 ${wide ? "" : "mt-10"}`}
+      >
+        {children}
+      </main>
+      <SiteFooter />
     </div>
   );
 }

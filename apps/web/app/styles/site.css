@@ -1,0 +1,435 @@
+/* Page-level layouts ported from the approved Studio preview (#83,
+ * planning/sites-customer-preview/dist, head b88a8ca): the shell's top bar
+ * and ink footer, and the home page's hero, sections and closing card.
+ * Values are tokens from tokens.generated.css; where the preview used a
+ * literal it is kept and noted. Decoration is aria-hidden and static: no
+ * scroll-driven animation, so nothing depends on JavaScript. */
+
+@layer components {
+  /* ---------- shell ---------- */
+  .cx-shell-top {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: var(--space-4) var(--space-4) 0;
+    position: relative;
+    z-index: 20;
+  }
+  @media (min-width: 640px) {
+    .cx-shell-top {
+      padding: var(--space-4) var(--space-6) 0;
+    }
+  }
+  /* Two actions on wide screens; below 1060 px studio.css moves them
+   * into the sheet. */
+  @media (min-width: 1061px) {
+    .cx-nav .act {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+  }
+
+  .cx-footer {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .cx-footer .in {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: var(--space-12) var(--space-6) var(--space-10);
+    display: grid;
+    gap: var(--space-4);
+  }
+  .cx-footer .logo {
+    display: block;
+    width: 148px;
+    color: var(--white);
+  }
+  .cx-footer .logo svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .cx-footer .tag {
+    margin: 0;
+    font: 400 14px/21px var(--font-sans);
+    color: rgba(255, 255, 255, 0.78);
+  }
+  .cx-footer nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+  }
+  .cx-footer nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font: 500 14px var(--font-sans);
+    color: var(--white);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .cx-footer .fine {
+    margin: var(--space-2) 0 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    font: 400 13px/19px var(--font-sans);
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .cx-footer :focus-visible {
+    outline-color: var(--white);
+  }
+
+  /* ---------- shared section type ---------- */
+  .cx-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 32px;
+    padding: 0 16px;
+    border-radius: var(--radius-pill);
+    background: var(--frost);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: var(--sh-1);
+    font: 500 13px var(--font-sans);
+    color: var(--graphite);
+  }
+  .cx-badge i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--signal);
+    box-shadow: 0 0 0 4px rgba(255, 59, 10, 0.14);
+  }
+  /* Two-tone headings: the second line is muted (preview .ln.grey). */
+  .cx-h2 {
+    margin: var(--space-2) 0 0;
+    font: 500 clamp(32px, 4.6vw, 60px) / 1.02 var(--font-sans);
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+  .cx-h2 .ln {
+    display: block;
+  }
+  .cx-h2 .grey,
+  .cx-hero h1 .grey {
+    color: var(--muted);
+  }
+  .cx-sec {
+    padding: var(--space-24) 0 0;
+  }
+
+  /* ---------- home hero ---------- */
+  .cx-hero {
+    position: relative;
+    padding: var(--space-24) 0 var(--space-8);
+    text-align: center;
+  }
+  .cx-hero .copy {
+    position: relative;
+    z-index: 2;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .cx-hero h1 {
+    margin: var(--space-3) 0 0;
+    font: 500 clamp(38px, 5.3vw, 76px) / 1.02 var(--font-sans);
+    letter-spacing: -0.045em;
+  }
+  .cx-hero h1 .ln {
+    display: block;
+  }
+  .cx-hero .sub {
+    max-width: 560px;
+    margin: var(--space-3) auto 0;
+    font: 400 clamp(16px, 1.3vw, 18px) / 1.6 var(--font-sans);
+    color: var(--muted);
+  }
+  .cx-hero .find {
+    position: relative;
+    z-index: 2;
+    max-width: 1040px;
+    margin: var(--space-8) auto 0;
+    text-align: left;
+  }
+  .cx-hero .keys {
+    position: relative;
+    z-index: 2;
+    margin: var(--space-6) auto 0;
+    max-width: 1040px;
+    text-align: left;
+  }
+  /* The floating desk objects: decoration only, wide screens only. */
+  .cx-floats {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: none;
+  }
+  @media (min-width: 1140px) {
+    .cx-floats {
+      display: block;
+    }
+  }
+  .cx-floats > * {
+    position: absolute;
+  }
+  .cx-floats .note {
+    left: -40px;
+    top: 72px;
+    width: 150px;
+    aspect-ratio: 1;
+    padding: var(--space-3) var(--space-2) var(--space-2);
+    background: linear-gradient(160deg, #fff1bd, var(--note) 55%, #fbe08f);
+    border-radius: 3px 3px 3px 16px;
+    box-shadow: var(--sh-2);
+    color: #3a3326;
+    text-align: left;
+    transform: rotate(-6deg);
+  }
+  .cx-floats .note::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -12px;
+    width: 80px;
+    height: 24px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+  }
+  .cx-floats .note p {
+    margin: 0;
+    font: 600 22px/1.05 var(--font-hand);
+  }
+  .cx-floats .note p + p {
+    margin-top: var(--space-1);
+    font-size: 18px;
+    font-weight: 500;
+    color: #5b5240;
+  }
+  .cx-floats .tile {
+    width: 248px;
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: var(--sh-3);
+    text-align: left;
+  }
+  .cx-floats .tile.t1 {
+    right: -30px;
+    top: 64px;
+    transform: rotate(3deg);
+  }
+  .cx-floats .tile.t2 {
+    left: -24px;
+    top: 262px;
+    transform: rotate(-3deg);
+  }
+  .cx-floats .tile .row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .cx-floats .tile .tick {
+    width: 32px;
+    height: 32px;
+    flex: none;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--blue);
+    color: var(--white);
+  }
+  .cx-floats .tile .tick.ok {
+    background: var(--ok);
+  }
+  .cx-floats .tile b {
+    display: block;
+    font: 600 14px/1.3 var(--font-sans);
+  }
+  .cx-floats .tile small {
+    display: block;
+    font: 400 12px/1.4 var(--font-sans);
+    color: var(--muted);
+  }
+  .cx-floats .tile .meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--hair);
+    font: 400 12px var(--font-sans);
+    color: var(--muted);
+  }
+  .cx-floats .tile .meta span:last-child {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ---------- how it works ---------- */
+  .cx-how-steps {
+    list-style: none;
+    margin: var(--space-10) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    counter-reset: step;
+  }
+  .cx-how-steps li {
+    position: relative;
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--sh-1);
+  }
+  .cx-how-steps .k {
+    font: 500 12px var(--font-mono);
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .cx-how-steps h3 {
+    margin: var(--space-2) 0 0;
+    font: 500 22px/1.15 var(--font-sans);
+    letter-spacing: -0.02em;
+  }
+  .cx-how-steps p {
+    margin: var(--space-2) 0 0;
+    font: 400 15px/1.55 var(--font-sans);
+    color: var(--muted);
+  }
+
+  /* ---------- fines ---------- */
+  .cx-fines {
+    display: grid;
+    gap: var(--space-10);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .cx-fines {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .cx-fines .ill {
+    aspect-ratio: 7 / 5;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--sh-2);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+  .cx-fines .ill img {
+    width: 100%;
+    height: 100%;
+  }
+  .cx-lede {
+    margin: var(--space-4) 0 0;
+    max-width: 52ch;
+    font: 400 18px/1.6 var(--font-sans);
+    color: var(--muted);
+  }
+  .cx-qs {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .cx-qs li {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    box-shadow: var(--sh-1);
+    font: 400 14px var(--font-sans);
+  }
+  .cx-qs li::before {
+    content: "?";
+    margin-right: var(--space-2);
+    font: 600 20px/0 var(--font-hand);
+    color: var(--blue-ink);
+  }
+
+  /* ---------- for businesses ---------- */
+  .cx-biz {
+    display: grid;
+    gap: var(--space-8);
+    align-items: end;
+  }
+  @media (min-width: 900px) {
+    .cx-biz {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+  .cx-biz .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: flex-start;
+  }
+  @media (min-width: 900px) {
+    .cx-biz .chips {
+      justify-content: flex-end;
+    }
+  }
+  .cx-biz .chips span {
+    padding: 12px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    box-shadow: var(--sh-1);
+    font: 500 14px var(--font-sans);
+  }
+  .cx-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    margin-top: var(--space-8);
+  }
+  .cx-cta-row p {
+    margin: 0;
+    font: 400 14px/1.5 var(--font-sans);
+    color: var(--muted);
+  }
+
+  /* ---------- closing card ---------- */
+  .cx-closing {
+    position: relative;
+    margin-top: var(--space-24);
+    padding: var(--space-16) var(--space-6);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(
+        60% 60% at 25% 110%,
+        rgba(61, 109, 255, 0.14),
+        transparent 70%
+      ),
+      radial-gradient(
+        50% 60% at 80% 110%,
+        rgba(255, 106, 51, 0.16),
+        transparent 70%
+      ),
+      var(--surface);
+    box-shadow: var(--sh-2);
+    text-align: center;
+    overflow: hidden;
+  }
+  .cx-closing .mark {
+    width: 60px;
+    margin: 0 auto var(--space-6);
+    color: var(--ink);
+  }
+  .cx-closing .cx-h2 {
+    margin: 0;
+  }
+  .cx-closing .cx-h2 .ln {
+    display: inline;
+  }
+  .cx-closing .cx-cta-row {
+    justify-content: center;
+  }
+}
