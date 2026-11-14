@@ -14,8 +14,8 @@ values('bac30000-0000-4000-8000-000000000004','bac30000-0000-4000-8000-000000000
 insert into private.payment_disputes(provider_id,attempt_id,amount_minor,state)
 values('9900000003','bac30000-0000-4000-8000-000000000001',9000,'open');
 -- The settlements cursor is created on first use, not by a migration;
--- give BK-1 its row so the table is covered by the restore.
-insert into private.payment_reconcile_cursor(job,page) values('settlements',1) on conflict(job) do nothing;
+-- give BK-1 non-default progress so the restore proves it survives.
+insert into private.payment_reconcile_cursor(job,page,checked_at) values('settlements',3,'2026-11-13T12:00:00Z') on conflict(job) do nothing;
 insert into private.payment_settlements(provider_id,gross_minor,fees_minor,net_minor,state)
 values('9900000004',10000,300,9700,'matched');
 insert into private.payment_settlement_lines(settlement_id,provider_id,reference,amount_minor,fees_minor,subaccount)
