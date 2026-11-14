@@ -30,8 +30,21 @@ export const headers: Route.HeadersFunction = () => ({
 export default function Home() {
   return (
     <>
+      {/* First-visit intro (owner, 14 Nov): runs before the page paints, once
+          per browser, never with reduced motion; without JS nothing runs. */}
+      <div
+        id="cx-intro"
+        aria-hidden="true"
+        hidden
+        // The intro script fills and removes this before and after hydration.
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: "" }}
+      />
+      <script src="/intro/intro.js" />
       <div
         className="cx-home"
+        // home.js draws into this markup (ticks, clocks) before hydration.
+        suppressHydrationWarning
         // Static, generated markup from the repository; no user input.
         dangerouslySetInnerHTML={{ __html: markup }}
       />
