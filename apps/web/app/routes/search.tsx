@@ -8,11 +8,9 @@ import {
   type LimiterNamespace,
 } from "../server/search/limiter";
 import { buildSearchPage, type PageModel } from "../server/search/page";
-import { ButtonLink, TextLink } from "../ui/Button";
-import { EmptyState, StatusNote } from "../ui/Note";
-import { ListingResult } from "../ui/public/ListingResult";
-import { PublicShell } from "../ui/public/PublicShell";
-import { SearchForm } from "../ui/public/SearchForm";
+import { ListingCard } from "../sites/ListingCard";
+import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
+import { UseMyLocation } from "../sites/UseMyLocation";
 import type { Route } from "./+types/search";
 
 interface SearchEnv {
@@ -69,119 +67,127 @@ export const meta: Route.MetaFunction = () => [
   { name: "robots", content: "noindex" },
 ];
 
-function countLabel(n: number) {
-  return n === 1 ? "1 shown" : `${String(n)} shown`;
-}
+const SUB: Record<string, string> = {
+  "": "Washes, repairs, glass and tyres from businesses near you.",
+  "wash-and-detailing": "A little care goes a long way.",
+  "repairs-and-maintenance": "Keep your car moving.",
+  "glass-repair-and-replacement": "Clear answers for chips and cracks.",
+  "tyres-and-wheel-alignment": "A smoother, safer drive.",
+};
 
 function categoryLabel(slug: string) {
   return findCategory(slug)?.label ?? "All services";
 }
 
+export const links: Route.LinksFunction = () => [...SITES_LINKS];
+
+/** The preview's search screen (app.js `search()`), with the real search. */
 export default function SearchPage({ loaderData: m }: Route.ComponentProps) {
-  const formDefaults =
-    "category" in m && "radius" in m
-      ? { category: m.category, radius: m.radius }
-      : {};
+  const category = "category" in m ? m.category : "";
+  const tabs =
+    m.kind === "results"
+      ? m.categoryLinks.map((c) => ({ ...c }))
+      : CATEGORIES.map((c) => ({
+          slug: c.slug,
+          label: c.label,
+          href: `/c/${c.slug}`,
+          current: false,
+        }));
   return (
-    <PublicShell current="/">
-      <header className="cx-pagehead">
-        <span className="cx-eyebrow">Find a service</span>
-        <h1>
-          {m.kind === "results"
-            ? `${categoryLabel(m.category)} near ${m.near || "you"}`
-            : "Find a car service"}
-        </h1>
-        <p className="lede">
-          {m.kind === "results"
-            ? "Nearest first. Every label says exactly what we checked."
-            : "Workshops you can visit and mobile providers who come to you. Free to search, no account needed."}
-        </p>
-        <nav aria-label="Services" className="cx-pills">
-          {m.kind === "results"
-            ? m.categoryLinks.map((c) => (
-                <a
-                  key={c.slug || "all"}
-                  href={c.href}
-                  aria-current={c.current ? "page" : undefined}
-                >
-                  {c.label}
-                </a>
-              ))
-            : CATEGORIES.map((c) => (
-                <a key={c.slug} href={`/c/${c.slug}`}>
-                  {c.label}
-                </a>
-              ))}
-        </nav>
-      </header>
-      <div className="mt-8">
-        <SearchForm
-          {...formDefaults}
-          {...("area" in m && m.kind !== "choose" ? { area: m.area } : {})}
-          {...(m.kind === "results"
-            ? { point: { lat: m.lat, lng: m.lng, near: m.near } }
-            : {})}
-        />
+    <SitesShell>
+      <div className="eyebrow">Find a service</div>
+      <h1 className="title">
+        {m.kind === "results"
+          ? categoryLabel(m.category)
+          : "Find a car service"}
+      </h1>
+      <p className="lead">{SUB[category] ?? SUB[""]}</p>
+      <div className="service-tabs" aria-label="Service categories">
+        {tabs.map((t) => (
+          <a
+            key={t.slug || "all"}
+            className={t.current ? "chip active" : "chip"}
+            href={t.href}
+            aria-current={t.current ? "page" : undefined}
+          >
+            {t.label}
+          </a>
+        ))}
+        <a className="chip" href="/fines">
+          Fines &amp; Vehicle Admin
+        </a>
       </div>
-      <div className="cx-split">
-        <div className="main">
+      <div className="layout">
+        <div className="stack">
+          <SearchCard m={m} />
           <Body m={m} />
         </div>
-        <Aside m={m} />
+        <Summary m={m} />
       </div>
-    </PublicShell>
+    </SitesShell>
   );
 }
 
-/** The preview's side card: what this search is, in plain words. */
-function Aside({ m }: { m: PageModel }) {
-  if (m.kind === "results")
-    return (
-      <aside className="cx-aside" aria-labelledby="about-h">
-        <span className="cx-eyebrow">This search</span>
-        <h2 id="about-h">{categoryLabel(m.category)}</h2>
-        <dl>
-          <div>
-            <dt>Area</dt>
-            <dd>{m.near || "Your location"}</dd>
-          </div>
-          <div>
-            <dt>Distance</dt>
-            <dd>Within {m.radius} km</dd>
-          </div>
-          <div>
-            <dt>Order</dt>
-            <dd>Nearest first</dd>
-          </div>
-        </dl>
-        <p className="fine">
-          Distances are straight-line. Mobile providers show their region, never
-          an address. Your location is used for this search only.
-        </p>
-      </aside>
-    );
+function SearchCard({ m }: { m: PageModel }) {
+  const area = "area" in m && m.kind !== "choose" ? m.area : "";
   return (
-    <aside className="cx-aside" aria-labelledby="about-h">
-      <span className="cx-eyebrow">How search works</span>
-      <h2 id="about-h">Free, and nothing to sign up for</h2>
-      <dl>
-        <div>
-          <dt>Cost to search</dt>
-          <dd>R0</dd>
-        </div>
-        <div>
-          <dt>Account</dt>
-          <dd>Not needed</dd>
-        </div>
-        <div>
-          <dt>Your location</dt>
-          <dd>Not stored</dd>
-        </div>
-      </dl>
-      <p className="fine">
-        Every label on a listing says exactly what CarworX checked, and when.
+    <form className="card" id="search-form" method="get" action="/search">
+      <label htmlFor="location">
+        <strong>Where do you need a service?</strong>
+      </label>
+      <p className="muted small">
+        {m.kind === "results"
+          ? `Leave empty to keep searching near ${m.near || "your location"}. Not stored.`
+          : "Enter a suburb, town or postcode. Used only for this search, not stored."}
       </p>
-    </aside>
+      <div className="searchbox">
+        <input
+          name="area"
+          id="location"
+          defaultValue={area}
+          maxLength={80}
+          autoComplete="address-level2"
+          required={m.kind !== "results"}
+        />
+        <button className="btn" type="submit">
+          Search nearby →
+        </button>
+      </div>
+      {"category" in m && m.category ? (
+        <input type="hidden" name="category" value={m.category} />
+      ) : null}
+      {"radius" in m ? (
+        <input type="hidden" name="radius" value={m.radius} />
+      ) : null}
+      <input
+        type="hidden"
+        name="lat"
+        defaultValue={m.kind === "results" ? m.lat : ""}
+      />
+      <input
+        type="hidden"
+        name="lng"
+        defaultValue={m.kind === "results" ? m.lng : ""}
+      />
+      {m.kind === "results" ? (
+        <input type="hidden" name="near" value={m.near} />
+      ) : null}
+      <UseMyLocation formId="search-form" />
+    </form>
+  );
+}
+
+function Notice({
+  tone = "",
+  children,
+}: {
+  tone?: "" | "blue" | "green";
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={tone ? `notice ${tone}` : "notice"} role="status">
+      {children}
+    </div>
   );
 }
 
@@ -189,60 +195,64 @@ function Body({ m }: { m: PageModel }) {
   switch (m.kind) {
     case "start":
       return (
-        <p className="type-body text-quiet">
-          Type your suburb, town or postcode, or use your location.
-        </p>
+        <Notice tone="blue">
+          Type your suburb, town or postcode to see businesses near you.
+        </Notice>
       );
     case "invalid_area":
       return (
-        <StatusNote tone="warn" title="Check the area name.">
-          Use letters, numbers and spaces only, up to 80 characters.
-        </StatusNote>
+        <Notice>
+          <strong>Check the area name.</strong> Use letters, numbers and spaces
+          only, up to 80 characters.
+        </Notice>
       );
     case "no_area":
       return (
-        <StatusNote tone="warn" title={`We couldn't find "${m.area}".`}>
-          Try a nearby suburb or town, or your postcode.
-        </StatusNote>
+        <Notice>
+          <strong>We couldn't find "{m.area}".</strong> Try a nearby suburb or
+          town, or your postcode.
+        </Notice>
       );
     case "area_unavailable":
       return (
-        <StatusNote tone="warn" title="Area search isn't available right now.">
-          Tap “Use my location”, or try again later.
-        </StatusNote>
+        <Notice>
+          <strong>Area search isn't available right now.</strong> Please try
+          again later.
+        </Notice>
       );
     case "choose":
       return (
-        <section aria-labelledby="choose-h">
-          <h2 id="choose-h" className="type-heading">
-            Which “{m.area}” did you mean?
-          </h2>
-          <ul className="mt-3 grid gap-2">
+        <article className="card">
+          <h2>Which “{m.area}” did you mean?</h2>
+          <ul className="list">
             {m.choices.map((c) => (
               <li key={c.href}>
-                <TextLink href={c.href}>{c.label}</TextLink>
+                <a href={c.href}>{c.label}</a>
               </li>
             ))}
           </ul>
-        </section>
+        </article>
       );
     case "rate_limited":
       return (
-        <StatusNote tone="warn" title="Too many searches.">
-          Please wait {m.retryAfterSeconds} seconds and try again.
-        </StatusNote>
+        <Notice>
+          <strong>Too many searches.</strong> Please wait {m.retryAfterSeconds}{" "}
+          seconds and try again.
+        </Notice>
       );
     case "unavailable":
       return (
-        <StatusNote tone="err" title="Search isn't available right now.">
-          Please try again in a moment.
-        </StatusNote>
+        <Notice>
+          <strong>Search isn't available right now.</strong> Please try again in
+          a moment.
+        </Notice>
       );
     case "bad_request":
       return (
-        <StatusNote tone="warn" title="That search link has expired.">
-          Search again from the form above.
-        </StatusNote>
+        <Notice>
+          <strong>That search link has expired.</strong> Search again from the
+          form above.
+        </Notice>
       );
     case "results":
       return <Results m={m} />;
@@ -252,108 +262,143 @@ function Body({ m }: { m: PageModel }) {
 function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
   const fixed = m.body.fixed?.items ?? [];
   const mobile = m.body.mobile?.items ?? [];
-  const nothing = fixed.length === 0 && mobile.length === 0;
+  const total = fixed.length + mobile.length;
   return (
     <>
-      <nav aria-label="Distance" className="cx-pills !mt-0">
+      <div className="between">
+        <div>
+          <h2>Businesses near {m.near || "you"}</h2>
+          <p className="muted small">
+            Distances are straight-line estimates · within {m.radius} km
+          </p>
+        </div>
+        <span className="tag gray">
+          {total === 1 ? "1 result" : `${String(total)} results`}
+        </span>
+      </div>
+      <nav className="service-tabs" aria-label="Distance">
         {m.radiusLinks.map((r) => (
           <a
             key={r.radius}
             href={r.href}
+            className={r.current ? "chip active" : "chip"}
             aria-current={r.current ? "true" : undefined}
           >
             Within {r.radius} km
           </a>
         ))}
       </nav>
-      {nothing ? (
-        <EmptyState
-          title="No providers found here yet."
-          action={
-            <div className="flex flex-wrap justify-center gap-2">
-              <ButtonLink
-                href={`/demand?category=${encodeURIComponent(m.category)}`}
-                variant="primary"
-              >
-                Tell me when one joins
-              </ButtonLink>
-              <ButtonLink href="/" variant="secondary">
-                Try another area
-              </ButtonLink>
-            </div>
-          }
-        >
-          We're adding providers area by area. This doesn't mean there are none
-          near you, only that none are listed with us yet.
-        </EmptyState>
+      {total === 0 ? (
+        <article className="card">
+          <h2>No providers found here yet.</h2>
+          <p>
+            We're adding businesses area by area. This doesn't mean there are
+            none near you, only that none are listed with us yet.
+          </p>
+          <div className="bar">
+            <a
+              className="btn"
+              href={`/demand?category=${encodeURIComponent(m.category)}`}
+            >
+              Tell me when one joins →
+            </a>
+            <a className="btn secondary" href="/search">
+              Try another area
+            </a>
+          </div>
+        </article>
       ) : null}
       {m.body.fixed !== null && fixed.length > 0 ? (
-        <section aria-labelledby="fixed-h" className="grid gap-3">
-          <div className="cx-group-head">
-            <h2 id="fixed-h">Workshops you visit</h2>
-            <span className="n">{countLabel(fixed.length)}</span>
-          </div>
-          <p className="cx-group-note">Sorted by straight-line distance.</p>
+        <section aria-labelledby="fixed-h" className="stack">
+          <h3 id="fixed-h">Workshops you visit</h3>
           {m.mapImage ? (
-            <figure className="grid gap-2">
+            <figure className="card">
               <img
                 src={m.mapImage}
                 width={640}
                 height={360}
-                className="h-auto w-full rounded-2xl"
+                style={{ width: "100%", height: "auto", borderRadius: 12 }}
                 alt="Map of the workshops listed below. Mobile providers are not shown on the map."
               />
-              <figcaption className="type-caption text-quiet">
+              <figcaption className="small muted">
                 Map shows workshops only. The list has every result.
               </figcaption>
             </figure>
           ) : m.showMap ? (
-            <div>
-              <TextLink href={m.showMap}>Show workshops on a map</TextLink>
-            </div>
+            <p className="small">
+              <a href={m.showMap}>Show workshops on a map →</a>
+            </p>
           ) : null}
           {fixed.map((f) => (
-            <ListingResult
+            <ListingCard
               key={f.public_id}
               listing={{ ...f, mode: "fixed" }}
               matched
             />
           ))}
           {m.moreFixed ? (
-            <ButtonLink href={m.moreFixed} variant="secondary" arrow>
-              More workshops
-            </ButtonLink>
+            <a className="btn secondary" href={m.moreFixed}>
+              More workshops →
+            </a>
           ) : null}
         </section>
       ) : null}
       {m.body.mobile !== null && mobile.length > 0 ? (
-        <section aria-labelledby="mobile-h" className="grid gap-3">
-          <div className="cx-group-head">
-            <h2 id="mobile-h">Providers who come to you</h2>
-            <span className="n">{countLabel(mobile.length)}</span>
-          </div>
-          <p className="cx-group-note">
+        <section aria-labelledby="mobile-h" className="stack">
+          <h3 id="mobile-h">Providers who come to you</h3>
+          <p className="muted small">
             They serve your approximate area. Coverage is confirmed before any
             booking.
           </p>
           {mobile.map((p) => (
-            <ListingResult
+            <ListingCard
               key={p.public_id}
               listing={{ ...p, mode: p.also_premises ? "both" : "mobile" }}
               matched
             />
           ))}
           {m.moreMobile ? (
-            <ButtonLink href={m.moreMobile} variant="secondary" arrow>
-              More mobile providers
-            </ButtonLink>
+            <a className="btn secondary" href={m.moreMobile}>
+              More mobile providers →
+            </a>
           ) : null}
         </section>
       ) : null}
-      <p className="type-caption text-quiet">
-        Showing {categoryLabel(m.category)} within {m.radius} km. Other
-        services: {CATEGORIES.map((c) => c.label).join(" · ")}.
-      </p>
+      <Notice tone="blue">
+        Can't find what you're looking for? Search another suburb, or{" "}
+        <a href={`/demand?category=${encodeURIComponent(m.category)}`}>
+          tell us what you need →
+        </a>
+      </Notice>
     </>
+  );
+}
+
+/** The preview's summary card, describing this search. */
+function Summary({ m }: { m: PageModel }) {
+  return (
+    <aside className="card summary">
+      <span className="eyebrow">Your search</span>
+      <h3>{"category" in m ? categoryLabel(m.category) : "All services"}</h3>
+      <div>
+        <span>Area</span>
+        <strong>
+          {m.kind === "results" ? m.near || "Your location" : "Not chosen yet"}
+        </strong>
+      </div>
+      <div>
+        <span>Distance</span>
+        <strong>{"radius" in m ? `Within ${String(m.radius)} km` : "—"}</strong>
+      </div>
+      <div>
+        <span>Cost to search</span>
+        <strong>R0</strong>
+      </div>
+      <hr className="rule" />
+      <p className="muted small">
+        Every label on a listing says exactly what CarworX checked. Your
+        location is used for this search only.
+      </p>
+    </aside>
   );
 }
