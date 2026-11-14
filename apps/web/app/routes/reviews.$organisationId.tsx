@@ -1,5 +1,5 @@
 import { data } from "react-router";
-import { authRequest } from "../auth/session.server";
+import { authRequest, getSignedIn, signInUrl } from "../auth/session.server";
 import { throwStatus } from "../auth/http.server";
 import { PublicShell } from "../ui/public/PublicShell";
 import type { Route } from "./+types/reviews.$organisationId";
@@ -8,7 +8,11 @@ interface Review {
   review: string;
 }
 export async function loader({ request, params, context }: Route.LoaderArgs) {
-  const a = authRequest(request, context.security);
+  // Reviews are signed-in only for now: anon may read only the public
+  // catalogue projection, and reviews are not in it yet (owner, 14 Nov 2026).
+  const a =
+    (await getSignedIn(request, context.security)) ??
+    authRequest(request, context.security);
   a.headers.set("Cache-Control", "private, no-store");
   if (
     !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(
@@ -16,6 +20,14 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     )
   )
     throwStatus(404, a.headers);
+  if (!("user" in a))
+    return data(
+      {
+        items: [] as Review[],
+        signIn: signInUrl(request, a.config.appOrigin),
+      },
+      { headers: a.headers },
+    );
   const r = await a.supabase.rpc("organisation_reviews", {
     p_org: params.organisationId,
   });
@@ -29,10 +41,10 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
           typeof (x as Review).review === "string",
       )
     : [];
-  return data({ items }, { headers: a.headers });
+  return data({ items, signIn: null }, { headers: a.headers });
 }
 export default function Reviews({
-  loaderData: { items },
+  loaderData: { items, signIn },
 }: Route.ComponentProps) {
   return (
     <PublicShell>
@@ -41,7 +53,11 @@ export default function Reviews({
         Moderated reviews from completed bookings. Reviewer identities are
         private.
       </p>
-      {items.length === 0 ? (
+      {signIn !== null ? (
+        <p>
+          <a href={signIn}>Sign in</a> to read this business&apos;s reviews.
+        </p>
+      ) : items.length === 0 ? (
         <p>No published reviews yet.</p>
       ) : (
         items.map((r, i) => (
