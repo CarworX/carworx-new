@@ -80,8 +80,10 @@ export function PublicShell({
         <main id="main" className="mt-10">
           {children}
         </main>
-        <footer className="type-caption text-quiet mt-16">
+        <footer className="type-caption text-quiet mt-16 flex flex-wrap gap-x-5 gap-y-2">
           <a href="/support">Contact support</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms of use</a>
         </footer>
       </div>
     </div>

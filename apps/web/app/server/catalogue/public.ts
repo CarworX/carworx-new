@@ -47,7 +47,7 @@ async function read(
         Authorization: `Bearer ${config.supabasePublishableKey}`,
         Accept: "application/json",
       },
-      redirect: "error",
+      redirect: "manual", // Workers reject "error"; a 3xx is !ok and fails closed below.
       signal: AbortSignal.timeout(3_000),
     });
     if (!response.ok) {

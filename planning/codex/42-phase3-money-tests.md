@@ -3,18 +3,30 @@
 Updated 2026-11-14 UTC. Owner started this lane in chat. Original base:
 `phase-3` @`4b97de8`; branch `codex/p3-money-tests`, PR target `phase-3`.
 Original planning and build worktrees remain untouched. No deployments, provider
-requests, real email or production access. Reconciled with `phase-3` @`8c14e84`,
-including approved #115 and #106. They were merged under later owner authority.
+requests, real email or production access. Reconciled with `phase-3` @`4c9075d`,
+including approved #115/#106, receipts #120 and invoices #121. They were merged
+under later owner authority. See the [active-lane map](45-coordination-map.md).
 Shared staging end-to-end checks remain open.
 
 ## Results
+
+Fresh receipt/invoice integration checks (2026-11-14): 623/623 web unit tests,
+31/31 focused policy/contract/backup-coverage checks, 30/30 local money SQL
+assertions and the twelve-session initialisation/reception/effect races passed.
+The first unit run found this branch's stale `redirect: error` assertion after
+the already-merged #114 Workers fix. Updated it to `manual` and added five
+redirect-status rejection checks (301/302/303/307/308); no production adapter
+change. Disposable stack stopped. New-head remote CI/restore remains pending.
 
 Fresh reconciliation checks (2026-11-14): 502/502 web unit tests; 31/31 focused
 CI-policy, environment-contract and backup-coverage tests; 30/30 money pgTAP
 assertions on a fresh disposable native stack; twelve simultaneous payment
 initialisations produced one dispatch, and twelve receptions/effects produced
 one confirmation. Stack stopped. Formatting and diff whitespace checks passed.
-Final-head CI and the integrated A36 repeat remain pending.
+At `e57ea2a`, all six CI checks passed, including integrated A36: 76 tables,
+1,274 RLS assertions, two storage objects and eight negative checks (recovery
+run 43549739056). The new receipt/invoice schema requires new-head CI and an
+updated restore receipt; earlier evidence is not relabelled as current.
 
 The following detailed results describe the earlier recorded test run unless
 repeated above.

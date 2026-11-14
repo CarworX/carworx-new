@@ -86,7 +86,7 @@ export async function geocodeArea(
   try {
     const response = await send(url, {
       headers: { Accept: "application/json" },
-      redirect: "error",
+      redirect: "manual", // Workers reject "error"; a 3xx is !ok and fails closed below.
       signal: AbortSignal.timeout(GEOCODE_TIMEOUT_MS),
     });
     if (!response.ok) {

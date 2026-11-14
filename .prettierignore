@@ -11,3 +11,6 @@ design/
 AGENTS.md
 CLAUDE.md
 README.md
+
+# Generated from apps/web/app/server/mail-templates (UPDATE_AUTH_TEMPLATES=1)
+supabase/templates/*.html

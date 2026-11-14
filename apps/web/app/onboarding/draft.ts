@@ -1,4 +1,7 @@
 /** Only explicitly entered answers and an explicitly chosen pin reach the draft RPC. */
+import type { HoursRow } from "../catalogue/hours";
+import { parseHoursForm } from "./hours";
+
 export const STEPS = [
   "business",
   "service",
@@ -27,12 +30,7 @@ export const METROS = [
   "North West",
   "Northern Cape",
 ] as const;
-export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
-export interface Hours {
-  day: number;
-  opens: string;
-  closes: string;
-}
+export type Hours = HoursRow;
 export interface Draft {
   id: string;
   business_name: string | null;
@@ -158,33 +156,16 @@ export function parseStep(
   }
   if (step === "about") {
     const description = field(form, "description").replace(/\r\n?/g, "\n");
-    const days = form.getAll("days");
-    const opens = field(form, "opens");
-    const closes = field(form, "closes");
-    const time = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+    const hours = parseHoursForm(form, { requireOpenDay: true });
     if (
       description.length < 10 ||
       description.length > 2000 ||
       // eslint-disable-next-line no-control-regex -- only newline is permitted in multiline text
       /[\u0000-\u0009\u000b-\u001f\u007f]/.test(description) ||
-      !days.length ||
-      days.length > 7 ||
-      new Set(days).size !== days.length ||
-      days.some((d) => !DAYS.some((day) => day === d)) ||
-      !time.test(opens) ||
-      !time.test(closes) ||
-      closes <= opens
+      !hours.ok
     )
       return null;
-    return {
-      description,
-      hours: days.map((day) => ({
-        day: DAYS.findIndex((d) => d === day) + 1,
-        opens,
-        closes,
-      })),
-      step: 5,
-    };
+    return { description, hours: hours.hours, step: 5 };
   }
   return null;
 }

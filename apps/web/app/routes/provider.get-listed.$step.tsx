@@ -16,6 +16,13 @@ import {
   type Step,
 } from "../onboarding/draft";
 import { lookupPlace, pickerImage } from "../onboarding/geo.server";
+import {
+  copyMonday,
+  parseHoursForm,
+  readRows,
+  rowsFromHours,
+  type DayRow,
+} from "../onboarding/hours";
 import { inSouthAfrica } from "../onboarding/map";
 import { PinPicker, type GeoReply } from "../onboarding/PinPicker";
 import { SERVICE_OPTIONS } from "../server/providers/forms";
@@ -26,7 +33,7 @@ import {
 } from "../server/search/limiter";
 import { Button, ButtonLink, QuietLink } from "../ui/Button";
 import { ChoiceTiles, PickChips } from "../ui/Choice";
-import { DAYS, DayToggles } from "../ui/DayToggles";
+import { OpeningHoursEditor, hoursSummary } from "../ui/OpeningHours";
 import { ConsentCheckbox, TextField } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
 import { ResultCard } from "../ui/ResultCard";
@@ -51,7 +58,20 @@ interface MapEnv {
   SEARCH_LIMITER_SALT?: string;
 }
 const path = (step: Step | "submitted") => `/provider/get-listed/${step}`;
-const EMPTY_REPLY: GeoReply = { problem: null, candidates: null, map: null };
+/** The About step redraws the hours (and the typed description) it was sent. */
+interface HoursReply {
+  rows: DayRow[];
+  problems: Record<number, string>;
+  /** New per response, so a repeated copy still resets edited fields. */
+  version: string;
+  description: string;
+}
+const EMPTY_REPLY: GeoReply & { hours: HoursReply | null } = {
+  problem: null,
+  candidates: null,
+  map: null,
+  hours: null,
+};
 const MESSAGES = {
   invalid:
     "Check your answers, then try again. Choose a location before continuing.",
@@ -223,6 +243,38 @@ export async function action({ request, context, params }: Route.ActionArgs) {
     return throwRedirect(path("submitted"), signedIn.headers);
   }
   if (intent !== "save") return reply(MESSAGES.invalid);
+  if (step === "about") {
+    const description = field(form, "description");
+    // "Copy Monday to weekdays" redraws the form; nothing is saved.
+    if (field(form, "hoursAction") === "copy-monday")
+      return data(
+        {
+          ...EMPTY_REPLY,
+          hours: {
+            rows: copyMonday(readRows(form)),
+            version: crypto.randomUUID(),
+            problems: {},
+            description,
+          },
+        },
+        { headers: signedIn.headers },
+      );
+    const hours = parseHoursForm(form, { requireOpenDay: true });
+    if (!hours.ok)
+      return data(
+        {
+          ...EMPTY_REPLY,
+          problem: "Check the opening hours below.",
+          hours: {
+            rows: hours.rows,
+            problems: hours.problems,
+            description,
+            version: crypto.randomUUID(),
+          },
+        },
+        { status: 400, headers: signedIn.headers },
+      );
+  }
   if (step === "location") {
     // Mode belongs to this person's saved draft; a hidden field is not authoritative.
     const current = await signedIn.supabase
@@ -509,24 +561,23 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
               ) : null}
               {step === "about" ? (
                 <>
-                  <DayToggles
-                    legend="Which days are you open?"
-                    defaultDays={
-                      draft?.hours.length
-                        ? draft.hours.flatMap((hour) => {
-                            const day = DAYS[hour.day - 1];
-                            return day ? [day] : [];
-                          })
-                        : undefined
+                  <OpeningHoursEditor
+                    key={actionData?.hours?.version ?? "saved"}
+                    legend="When are you open?"
+                    rows={
+                      actionData?.hours?.rows ??
+                      rowsFromHours(draft?.hours ?? [])
                     }
-                    defaultOpen={draft?.hours[0]?.opens ?? "08:00"}
-                    defaultClose={draft?.hours[0]?.closes ?? "17:00"}
+                    problems={actionData?.hours?.problems}
                   />
                   <StarterPhrases
                     label="A line about your business"
                     name="description"
                     maxLength={2000}
-                    defaultValue={draft?.description ?? ""}
+                    key={actionData?.hours ? "posted" : "saved"}
+                    defaultValue={
+                      actionData?.hours?.description ?? draft?.description ?? ""
+                    }
                     phrases={[
                       "Friendly local service",
                       "Experienced with all makes",
@@ -575,6 +626,13 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
                         <QuietLink href={path("location")}>
                           Change location
                         </QuietLink>
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Opening hours</dt>
+                      <dd>
+                        {hoursSummary(draft?.hours ?? [])}{" "}
+                        <QuietLink href={path("about")}>Change hours</QuietLink>
                       </dd>
                     </div>
                     <div>

@@ -28,7 +28,7 @@ export async function lookupPlace(
   url.searchParams.set("access_token", token);
   try {
     const response = await send(url, {
-      redirect: "error",
+      redirect: "manual", // Workers reject "error"; a 3xx is !ok and fails closed below.
       signal: AbortSignal.timeout(2500),
     });
     if (!response.ok) {
@@ -56,7 +56,7 @@ export async function pickerImage(
   url.searchParams.set("attribution", "true");
   try {
     const response = await send(url, {
-      redirect: "error",
+      redirect: "manual", // Workers reject "error"; a 3xx is !ok and fails closed below.
       signal: AbortSignal.timeout(3000),
     });
     if (

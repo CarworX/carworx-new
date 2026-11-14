@@ -1622,6 +1622,125 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
+
+  /* Opening hours per day (Claude 26): a row per day, switch + own times. */
+  .cx-hours {
+    display: grid;
+    gap: 10px;
+  }
+  .cx-hours-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 10px 16px;
+    margin: 0;
+    padding: 12px 12px 12px 16px;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--hair);
+  }
+  .cx-hours-row[aria-invalid] {
+    box-shadow: inset 0 0 0 1.5px var(--err);
+  }
+  .cx-hours-day {
+    float: left;
+    padding: 0;
+    font: 500 15px var(--font-sans);
+  }
+  .cx-hours-switch {
+    min-height: 44px;
+    padding: 0;
+    box-shadow: none;
+    background: none;
+  }
+  .cx-hours-switch .t {
+    min-width: 52px;
+    text-align: right;
+  }
+  .cx-hours-switch .t.on,
+  .cx-hours-switch:has(input:checked) .t.off {
+    display: none;
+  }
+  .cx-hours-switch:has(input:checked) .t.on {
+    display: inline;
+  }
+  .cx-hours-times {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .cx-hours-row .error {
+    grid-column: 1 / -1;
+  }
+  /* A closed day keeps its times for later, dimmed and ignored on save. */
+  .cx-hours-row:has(.cx-hours-switch input:not(:checked)) .cx-hours-times {
+    opacity: 0.45;
+  }
+  @media (min-width: 640px) {
+    .cx-hours-row {
+      grid-template-columns: 9rem auto 1fr;
+    }
+    .cx-hours-times {
+      grid-column: auto;
+    }
+  }
+
+  /* Customer view: 7-day table, today marked with text as well as a tint. */
+  .cx-hours-card {
+    padding: 20px;
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--hair);
+  }
+  .cx-hours-now {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font: 500 15px var(--font-sans);
+  }
+  .cx-hours-now .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  .cx-hours-now.open .dot {
+    background: var(--ok);
+  }
+  .cx-hours-table {
+    width: 100%;
+    border-collapse: collapse;
+    font: 400 15px var(--font-sans);
+  }
+  .cx-hours-table th,
+  .cx-hours-table td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--hair);
+  }
+  .cx-hours-table td {
+    font-family: var(--font-mono);
+    text-align: right;
+  }
+  .cx-hours-table th {
+    font-weight: 400;
+  }
+  .cx-hours-table tr.today {
+    background: var(--ok-bg);
+  }
+  .cx-hours-table tr.today th,
+  .cx-hours-table tr.today td {
+    font-weight: 600;
+  }
+  .cx-hours-table .tag {
+    margin-left: 8px;
+    font: 500 12px var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
   .cx-count {
     justify-self: end;
     font: 400 12px var(--font-mono);

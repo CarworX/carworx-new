@@ -188,7 +188,11 @@ export default function Mfa({ loaderData, actionData }: Route.ComponentProps) {
         />
       ) : (
         <>
-          <p>Admin accounts need an authenticator app as a second step.</p>
+          <p>
+            Add an authenticator app as a second step when you sign in. After a
+            password, you'll enter a 6-digit code from the app. Admin accounts
+            must have one.
+          </p>
           <Form method="post">
             <CsrfField token={csrf} />
             <input type="hidden" name="returnTo" value={returnTo} />

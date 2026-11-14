@@ -17,6 +17,9 @@ export default [
   // P2-5 visitor forms (Claude 22). The enquiry form lives on /p/:publicId.
   route("demand", "routes/demand.tsx"),
   route("support", "routes/support.tsx"),
+  // G-PROD E1 and E2: rendered from planning/legal/ (drafts until approved).
+  route("privacy", "routes/privacy.tsx"),
+  route("terms", "routes/terms.tsx"),
   // Review tool: guarded by routes/_dev.guard.ts (404 outside local/staging).
   route("_dev/components", "routes/_dev.components.tsx"),
   ...authRoutes,

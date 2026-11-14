@@ -46,7 +46,7 @@ describe("A21/A25/A35 local Paystack adapter (no provider network)", () => {
     if (call === undefined) throw new Error("Expected initialise request");
     const [url, init] = call;
     expect(url).toBe("https://api.paystack.co/transaction/initialize");
-    expect(init?.redirect).toBe("error");
+    expect(init?.redirect).toBe("manual");
     if (typeof init?.body !== "string") throw new Error("Expected JSON body");
     expect(JSON.parse(init.body)).toMatchObject({
       amount: 12500,
@@ -57,6 +57,27 @@ describe("A21/A25/A35 local Paystack adapter (no provider network)", () => {
       callback_url: config.origin + "/payments/result?reference=" + reference,
     });
   });
+  it.each([301, 302, 303, 307, 308])(
+    "rejects provider redirect %i without following it",
+    async (status) => {
+      const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(null, {
+          status,
+          headers: { Location: "https://redirect.example.test/collect" },
+        }),
+      );
+      await expect(
+        createPaystack(config, fetcher).initialise(
+          hold,
+          "synthetic@example.test",
+          reference,
+          "ACCT_synthetic",
+        ),
+      ).rejects.toThrow("payment_provider_unavailable");
+      expect(fetcher).toHaveBeenCalledOnce();
+      expect(fetcher.mock.calls[0]?.[1]?.redirect).toBe("manual");
+    },
+  );
   it.each([
     "https://checkout.paystack.com.evil.test/x",
     "http://checkout.paystack.com/x",

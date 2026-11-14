@@ -85,7 +85,7 @@ export async function verifyTurnstile(
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
-      redirect: "error",
+      redirect: "manual", // Workers reject "error"; a 3xx is !ok and fails closed below.
       signal: AbortSignal.timeout(VERIFY_TIMEOUT_MS),
     });
     if (!response.ok) {

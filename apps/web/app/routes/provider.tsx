@@ -378,6 +378,10 @@ export default function Provider({
             org={org.id}
             role={org.role}
             live={org.listings.some((listing) => listing.status === "live")}
+            hoursListing={
+              org.listings.find((listing) => listing.status === "live")
+                ?.public_id
+            }
           />
           {org.listings.map((l) => (
             <article
@@ -412,11 +416,20 @@ export default function Provider({
                   <b>Admin note:</b> {l.decision.reason}
                 </p>
               ) : null}
-              {l.status === "live" ? (
-                <a className="cx-tlink" href={`/p/${l.public_id}`}>
-                  View your public listing
+              <div className="flex flex-wrap gap-4">
+                {l.status === "live" ? (
+                  <a className="cx-tlink" href={`/p/${l.public_id}`}>
+                    View your public listing
+                  </a>
+                ) : null}
+                <a
+                  className="cx-tlink"
+                  href={`/provider/hours/${l.public_id}`}
+                  data-hours-link
+                >
+                  Opening hours
                 </a>
-              ) : null}
+              </div>
               {l.status === "draft" && org.role !== "staff" ? (
                 <form method="post" className="grid gap-3">
                   <CsrfField token={csrf} />

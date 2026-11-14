@@ -1,32 +1,32 @@
 # Status
 
-Phase 3 money test round (Codex, 2026-11-14 UTC): #107 is reconciled with
-`phase-3` @`8c14e84` after approved #115 and #106 merged. Retains #115's private
-RPC implementations, signed-in-only reviews, lazy cursor, exact secrets policy,
-retention allow-list and cron contract. The duplicate unmerged RPC migration
-and superseded restore-target deletion were removed. Current evidence and
-remaining gates: [test record](codex/42-phase3-money-tests.md).
-Shared A23/A29/A35 end-to-end checks wait for staging. Earlier local A36 passed
-at `2ef8951`; rerun on the integrated schema and again after #95. No Phase 3
-acceptance-complete claim. #97 is merged; #93 and #94 are ready for CI/review.
+Current coordination, 2026-11-14 UTC: see [the active-lane map](codex/45-coordination-map.md). #122 is approved and its source preflight passes after no-file-change ancestry repair c0580cb. #121 is reviewed and merged into phase-3 at 4c9075d. #107 incorporates that schema and awaits fresh CI and Claude review. #93/#94 are ready, awaiting reciprocal review. #119 is held; #123/#124 remain Claude-owned. Staging deployment and seed execution remain Claude's coordinated step; no hosted changes were made here. Shared staging acceptance remains open.
 
-## Earlier finish checkpoint (2026-11-12; historical)
+## Earlier launch checkpoint (historical)
 
-Updated 2026-11-12 UTC. Owner authorized the finish plan in chat: Codex may build, use Codex workers/review, publish and safely merge without waiting for Claude. Latest execution choice: continue through GitHub only while local disk space is exhausted. See D-091 and [finish record](codex/35-autonomous-finish.md).
+
+Updated 2026-11-13 (SAST) by Claude. **Launch order (D-093): the directory goes live first; Phase 3 (bookings, quotes, payments, messaging) is a second release.** Both agents keep full build and merge authority, with reviews after merge (D-091). The launch plan is the [G-PROD checklist](runbooks/g-prod-checklist.md).
 
 ## Current work
 
-- Main includes foundations, Phase 2 Bundles A/B/C, onboarding designs #72, O1 #78, build plan #77 and O2 #79. CI regression #76 and context cleanup #81 were independently reviewed and merged on green exact-head CI during this task.
-- O3 provider steps, O4 admin flows, O5 encrypted email foundation, O6 team setup and account tabs are in progress on the Codex finish branch. These are not acceptance-complete or approved for merge yet. Remote Actions will provide pinned-runtime verification.
-- Sites preview changes exist locally but remain CHANGES: role/query handling, Google-only eligibility, reflected markup and main application entry need correction. Publication is pending security fixes and the packaging path; current restricted Site audience is preserved.
+- **main** (`7550b1a`) has Phases 1–2, onboarding (#84), the launch gaps (P-1 to P-3, R-1, R-2, BK-1, the no-JS forms) and the first O7 slice (#100, #101, #103: listing and removing authenticators).
+- **Staging Supabase** `gdiyrdqfkthtcglgqnts` has all 12 migrations on main plus the synthetic seed. The `catalogue_server`, `forms_server` and `retention_server` logins are set. The three Hyperdrive configs are made, with caching off over a direct connection (#96). Backups (D2) and retention (E4) are only partly done.
+- **The staging Worker is not deployed yet.** The cloud proxy rewrites the Authorization header on Cloudflare's asset upload, so the owner deploys from their own machine.
+- **Phase 3** is on the shared `phase-3` branch (draft #102 into main). Claude's bookings C1–C7 are merged there (#99), along with Codex's checkout and messaging. The bookings test round is running in its own Claude sub-session.
+- **Codex drafts:** #93, #94 and #97 (the mail pipeline, which is needed for the launch Auth emails), #95 (the sign-in security backend, not a launch blocker) and #83 (Sites).
 
 ## External blockers and gates
 
-- C: exhausted; local WSL and browser/runtime writes failed. Automatic approval review rejected cleanup commands. Owner chose GitHub-only continuation; local personal files remain untouched.
-- Cloudflare connector requires reauthentication. Supabase connection lists CarworX MVP Dev; it has not been established as the approved staging target. No migrations or real sends were performed there.
-- Hosted A1–A7, real OAuth/mail, application-path timings, backup/restore, physical-device/accessibility evidence and G-PROD remain open.
-- G-LIVEPAY requirements remain open; payment implementation is test mode only. No live collection or public-domain cutover is claimed.
+- The owner's staging deploy and the hosted A1–A7 checks.
+- Real Auth email: a verified sending domain and Codex's mail PRs.
+- The production project, Hyperdrive and secrets (runbook).
+- The legal approvals: E1–E3 and E5–E6, plus the owner questions OQ-L1, L2 and L4 to L7.
+- Information Officer registration, and the D-060 device and accessibility checks.
+- G-LIVEPAY for Phase 3. Payments are test mode only.
 
 ## Next
 
-Complete and independently review coherent slices, run exact-head CI, merge passing work, then continue O7/O8 and Phase 3 sandbox flows. Keep incomplete or inaccessible checks explicit.
+1. The owner deploys staging. Then the Claude smoke and A1–A7 checks run.
+2. Claude: build the `/privacy` and `/terms` pages from `planning/legal/`, marked as drafts until the owner approves them.
+3. Codex: the mail pipeline first (#97, then #93 and #94), then Phase 3.
+4. The owner works through the G-PROD checklist in order; Claude guides each step.

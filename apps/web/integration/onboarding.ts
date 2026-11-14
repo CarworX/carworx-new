@@ -40,9 +40,14 @@ export async function apply(browser: Browser, form: Record<string, string>) {
       {
         intent: "save",
         description: form["description"] ?? "",
-        days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-        opens: "08:00",
-        closes: "17:00",
+        // Per-day hours (Claude 26): Mon–Fri 08:00–17:00, Sat 08:00–13:00.
+        ...Object.fromEntries(
+          [1, 2, 3, 4, 5, 6].flatMap((day) => [
+            [`open-${String(day)}`, "on"],
+            [`opens-${String(day)}`, "08:00"],
+            [`closes-${String(day)}`, day === 6 ? "13:00" : "17:00"],
+          ]),
+        ),
       },
     ],
     ["check", { intent: "submit", adult: "on", probing: "on" }],
