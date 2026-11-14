@@ -12,6 +12,20 @@
 -- Safe to run again: it removes its own rows first. Undo with
 -- seed-staging-remove.sql.
 begin;
+-- Hard guard: this file runs only where the synthetic seed (seed.sql) ran,
+-- i.e. a local stack or staging. Production never has the synthetic admin
+-- below, so there the whole file stops before changing anything.
+do $guard$
+begin
+  if not exists (
+    select 1 from auth.users
+    where id = '5eed0000-0000-4000-8000-000000000004'
+      and email = 'synthetic.admin@example.test'
+  ) then
+    raise exception 'refusing to run: no synthetic seed here (local or staging only)';
+  end if;
+end
+$guard$;
 
 -- Remove any earlier copy (children first). Only these fixtures' ids (de3...) match.
 delete from public.verifications where organisation_id::text like 'de300000-%';
