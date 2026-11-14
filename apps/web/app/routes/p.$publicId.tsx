@@ -107,79 +107,111 @@ export default function ListingPage({
 }: Route.ComponentProps) {
   const { listing } = loaderData;
   const category = topCategoryOf(listing.category_slug);
+  const where =
+    listing.mode === "fixed"
+      ? "Workshop you visit"
+      : listing.mode === "both"
+        ? "Workshop · also comes to you"
+        : "Comes to you";
   return (
     <PublicShell>
-      <p className="cx-eyebrow">
-        {category ? (
-          <TextLink href={`/c/${category.slug}`}>{category.label}</TextLink>
-        ) : null}
-        {category ? " · " : null}
-        {listing.service_name}
+      <p>
+        <TextLink href={category ? `/c/${category.slug}` : "/"}>
+          {category ? `← ${category.label}` : "← Find a service"}
+        </TextLink>
       </p>
-      <h1 className="type-display-lg mt-2">{listing.display_name}</h1>
-      {listing.verification_labels.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-2">
+      <header className="cx-pagehead mt-6">
+        <span className="cx-eyebrow">
+          {listing.service_name} · {listing.metro}
+        </span>
+        <h1>{listing.display_name}</h1>
+        <p className="lede">{listing.description}</p>
+        <div className="cx-tagbar">
           {listing.verification_labels.map((label) => (
             <StatusLabel key={label}>{label}</StatusLabel>
           ))}
+          <span className="tag">{where}</span>
+          {category ? <span className="tag">{category.label}</span> : null}
         </div>
-      ) : null}
-      <p className="type-body mt-4 max-w-[65ch]">{listing.description}</p>
-      <div className="mt-6 max-w-[65ch]">
-        {listing.mode === "fixed" ? (
-          <StatusNote title="Visit the workshop.">
-            {listing.public_address} · {listing.metro}
-          </StatusNote>
-        ) : listing.mode === "both" ? (
-          <StatusNote title="Visit the workshop, or it comes to you.">
-            {listing.public_address} · {listing.metro}. It also serves an area
-            nearby; the provider confirms your exact address before any booking.
-          </StatusNote>
-        ) : (
-          <StatusNote title="Comes to you.">
-            Serves an area in {listing.metro}. Coverage is approximate; the
-            provider confirms your exact address before any booking.
-          </StatusNote>
-        )}
-      </div>
-      <div className="mt-6 max-w-[65ch]">
-        <OpeningHoursTable
-          hours={loaderData.hours}
-          today={loaderData.today}
-          status={loaderData.status}
-        />
-      </div>
-      <p className="mt-6">
-        <TextLink href={`/provider/claim/${listing.public_id}`}>
-          Is this your business? Claim this listing
-        </TextLink>
-      </p>
-      <section
-        id="enquiry"
-        aria-labelledby="enquiry-h"
-        className="mt-10 grid max-w-[65ch] gap-4"
-      >
-        <h2 id="enquiry-h" className="type-heading">
-          Send {listing.display_name} a message
-        </h2>
-        {loaderData.sent ? (
-          <StatusNote tone="ok" title="Message sent.">
-            We've passed it to {listing.display_name}. They'll reply to the
-            email you gave.
-          </StatusNote>
-        ) : loaderData.siteKey === null ? (
-          <StatusNote title="Messages aren't available right now.">
-            Please try again later.
-          </StatusNote>
-        ) : (
-          <EnquiryForm
-            csrf={loaderData.csrf}
-            siteKey={loaderData.siteKey}
-            provider={listing.display_name}
-            problem={actionData?.problem}
+      </header>
+      <div className="cx-split">
+        <div className="main">
+          <article className="cx-card" aria-labelledby="where-h">
+            <h2 id="where-h">Where</h2>
+            <div className="mt-4">
+              {listing.mode === "fixed" ? (
+                <StatusNote title="Visit the workshop.">
+                  {listing.public_address} · {listing.metro}
+                </StatusNote>
+              ) : listing.mode === "both" ? (
+                <StatusNote title="Visit the workshop, or it comes to you.">
+                  {listing.public_address} · {listing.metro}. It also serves an
+                  area nearby; the provider confirms your exact address before
+                  any booking.
+                </StatusNote>
+              ) : (
+                <StatusNote title="Comes to you.">
+                  Serves an area in {listing.metro}. Coverage is approximate;
+                  the provider confirms your exact address before any booking.
+                </StatusNote>
+              )}
+            </div>
+          </article>
+          <OpeningHoursTable
+            hours={loaderData.hours}
+            today={loaderData.today}
+            status={loaderData.status}
           />
-        )}
-      </section>
+          <article className="cx-card" aria-labelledby="checks-h">
+            <h2 id="checks-h">What CarworX checked</h2>
+            {listing.verification_labels.length > 0 ? (
+              <ul className="cx-checklist">
+                {listing.verification_labels.map((label) => (
+                  <li key={label}>{label}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">
+                No checks are recorded for this listing yet. That isn't a
+                warning, only that we haven't checked anything.
+              </p>
+            )}
+            <p className="muted">
+              We only show a label for a check we actually did.
+            </p>
+          </article>
+          <p>
+            <TextLink href={`/provider/claim/${listing.public_id}`}>
+              Is this your business? Claim this listing
+            </TextLink>
+          </p>
+        </div>
+        <section
+          id="enquiry"
+          aria-labelledby="enquiry-h"
+          className="cx-aside grid gap-4"
+        >
+          <span className="cx-eyebrow">Free to enquire</span>
+          <h2 id="enquiry-h">Send {listing.display_name} a message</h2>
+          {loaderData.sent ? (
+            <StatusNote tone="ok" title="Message sent.">
+              We've passed it to {listing.display_name}. They'll reply to the
+              email you gave.
+            </StatusNote>
+          ) : loaderData.siteKey === null ? (
+            <StatusNote title="Messages aren't available right now.">
+              Please try again later.
+            </StatusNote>
+          ) : (
+            <EnquiryForm
+              csrf={loaderData.csrf}
+              siteKey={loaderData.siteKey}
+              provider={listing.display_name}
+              problem={actionData?.problem}
+            />
+          )}
+        </section>
+      </div>
     </PublicShell>
   );
 }
