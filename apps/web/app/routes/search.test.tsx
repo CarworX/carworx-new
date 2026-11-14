@@ -23,7 +23,7 @@ const results: PageModel = {
       items: [
         {
           public_id: "de3c1000-0000-4000-8000-000000000001",
-          display_name: "Shine Studio (DEMO)",
+          display_name: "Shine Studio",
           metro: "Gauteng",
           service_name: "Wash & valet",
           category_slug: "wash-and-detailing",
@@ -57,26 +57,30 @@ const results: PageModel = {
   mapImage: null,
 };
 
-describe("/search page (redesign group 2)", () => {
+describe("/search page: the Sites preview search screen", () => {
   it("start state: preview head, GET form, service pills and the side card", () => {
     const h = render({ kind: "start", category: "", radius: 25 });
     expect(h.match(/<h1\b/g)).toHaveLength(1);
     expect(h).toContain("Find a car service");
     expect(h).toMatch(/<form[^>]*action="\/search"/);
     expect(h).toContain('href="/c/wash-and-detailing"');
-    expect(h).toContain('class="cx-aside"');
+    expect(h).toContain('class="card summary"');
+    expect(h).toContain('class="title"');
+    expect(h).toContain('href="/auth/sign-up"');
   });
 
   it("results: the card's name is its one link, with labels and distance", () => {
     const h = render(results);
-    expect(h).toContain("All services near Rosebank");
+    expect(h).toContain("Businesses near Rosebank");
     expect(
       h.match(/href="\/p\/de3c1000-0000-4000-8000-000000000001"/g),
     ).toHaveLength(1);
     expect(h).toContain("Identity checked");
     expect(h).toContain("Gauteng · 0.4 km straight-line");
     expect(h).toContain('aria-current="page"');
-    expect(h).toContain("1 shown");
+    expect(h).toContain("1 result");
+    const m0 = /.{0,60}(fictional|example listing|demo).{0,40}/i.exec(h);
+    expect(m0?.[0] ?? "").toBe("");
   });
 
   it("results with nothing found keep the demand route", () => {
