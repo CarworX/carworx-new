@@ -84,7 +84,7 @@ export async function observeEmailProbe(
   );
   const response = await fetch(new URL("/_ops/probe", target), {
     method: "POST",
-    redirect: "error",
+    redirect: "manual", // Workers reject "error"; a 3xx is !ok and fails closed below.
     headers: {
       "Content-Type": "application/json",
       "x-carworx-probe-role": "app",

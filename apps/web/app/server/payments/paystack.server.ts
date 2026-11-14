@@ -102,7 +102,7 @@ export function createPaystack(
     try {
       const response = await fetcher("https://api.paystack.co" + path, {
         method: body === undefined ? "GET" : "POST",
-        redirect: "error",
+        redirect: "manual", // Workers reject "error" (#114); a 3xx is !ok and fails closed below.
         headers: {
           Authorization: "Bearer " + config.secret,
           "Content-Type": "application/json",

@@ -1,9 +1,54 @@
-<h2>Confirm your email</h2>
-<p>Open this link to confirm the email address for your CarworX account:</p>
-<p>
-  <a
-    href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email"
-    >Confirm your email</a
-  >
-</p>
-<p>If you didn't sign up for CarworX, you can ignore this email.</p>
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Confirm your CarworX email</title>
+<style>
+@font-face{font-family:Geist;src:url({{ .SiteURL }}/email/Geist-latin.woff2) format("woff2");font-weight:200 700;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url({{ .SiteURL }}/email/GeistMono-latin.woff2) format("woff2");font-weight:400 500;font-display:swap}
+@media (max-width:620px){.cx-pad{padding-left:24px!important;padding-right:24px!important}.cx-h1{font-size:30px!important;line-height:34px!important}}
+@media (prefers-color-scheme:dark){
+.cx-outside{background:#000000!important}.cx-body{background:#1c2128!important}
+.cx-text,.cx-h1{color:#f2f1ee!important}.cx-muted{color:#a9b0b9!important}
+.cx-rule{background:#39414c!important}.cx-ticket{background:#0d0f12!important}
+.cx-btn{background:#f4efe6!important}.cx-btn a{color:#0d0f12!important}
+}
+</style>
+</head>
+<body class="cx-outside" style="margin:0;padding:0;background:#e9e7e2;-webkit-text-size-adjust:100%">
+<div style="display:none;max-height:0;max-width:0;overflow:hidden;opacity:0;mso-hide:all">One tap and your account is ready. The link works for 1 hour.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="cx-outside" style="border-collapse:collapse;background:#e9e7e2">
+<tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" class="cx-body" style="border-collapse:collapse;width:100%;max-width:600px;background:#f4efe6">
+<tr><td class="cx-pad" bgcolor="#0d0f12" style="background:#0d0f12;padding:26px 40px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse"><tr>
+<td><img src="{{ .SiteURL }}/email/carworx-lockup-on-ink@2x.png" width="140" height="28" alt="CarworX" style="display:block;border:0;width:140px;height:28px;color:#ffffff;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:20px;font-weight:600"></td>
+
+</tr></table>
+</td></tr>
+<tr><td class="cx-pad" style="padding:40px 40px 12px">
+<div style="margin:0 0 20px"><span class="cx-chip-signal" style="display:inline-block;background:#ffe3d4;color:#8a2a0a;border-radius:999px;padding:5px 12px 5px 10px;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:18px;font-weight:500"><span style="display:inline-block;width:8px;height:8px;border-radius:8px;background:#ff3b0a;margin-right:7px;vertical-align:0"></span>Link expires in 1 hour</span></div>
+<div class="cx-muted" style="font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:12px;line-height:17px;letter-spacing:0.08em;text-transform:uppercase;color:#5b6470;margin:0 0 12px">Account</div>
+<h1 class="cx-h1" style="margin:0 0 20px;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:34px;line-height:38px;font-weight:500;letter-spacing:-0.03em;color:#0d0f12">Confirm your email<br><span class="cx-muted" style="color:#5b6470">and you&#39;re in.</span></h1>
+<p class="cx-text" style="margin:0 0 20px;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:26px;color:#0d0f12">Thanks for joining CarworX. Confirm this is your address and your account is ready. The link works for 1 hour.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:separate;margin:4px 0 24px"><tr><td class="cx-btn" bgcolor="#0d0f12" style="background:#0d0f12;border-radius:999px">
+<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email" style="display:inline-block;padding:14px 28px;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:500;color:#ffffff;text-decoration:none;border-radius:999px">Confirm my email</a>
+</td></tr></table>
+<p class="cx-muted" style="margin:0 0 16px;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;line-height:22px;color:#5b6470">Button not working? Copy this link into your browser:<br><span style="font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:13px;color:#0d0f12;word-break:break-all" class="cx-text">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email</span></p>
+<p class="cx-muted" style="margin:0 0 16px;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;line-height:22px;color:#5b6470">Didn&#39;t sign up? You can ignore this email. Nobody can use your address without this link.</p>
+</td></tr>
+<tr><td class="cx-pad" style="padding:0 40px 32px">
+<div class="cx-rule" style="height:1px;line-height:1px;font-size:1px;background:#d8d0c2;margin:0 0 20px">&nbsp;</div>
+<p class="cx-muted" style="margin:0 0 6px;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;color:#5b6470">Sent from no-reply@carworx.app. Replies go to <a href="mailto:support@carworx.app" class="cx-muted" style="color:#5b6470">support@carworx.app</a>.</p>
+<p class="cx-muted" style="margin:0 0 6px;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;color:#5b6470">You're getting this because someone signed up for CarworX with this address.</p>
+<p class="cx-muted" style="margin:0;font-family:Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;color:#5b6470">CarworX (Pty) Ltd · [registration number, OQ-L2] · [physical address, OQ-L2] · <a href="{{ .SiteURL }}/privacy" class="cx-muted" style="color:#5b6470">Privacy</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

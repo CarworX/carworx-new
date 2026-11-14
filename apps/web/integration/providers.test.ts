@@ -131,9 +131,12 @@ describe("provider applications", () => {
           form: {
             intent: "save",
             description: "Synthetic resumed business",
-            days: ["Mon", "Fri"],
-            opens: "08:00",
-            closes: "17:00",
+            "open-1": "on",
+            "opens-1": "08:00",
+            "closes-1": "17:00",
+            "open-5": "on",
+            "opens-5": "08:00",
+            "closes-5": "17:00",
           },
         })
       ).location,

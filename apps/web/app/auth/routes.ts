@@ -20,6 +20,8 @@ export const authRoutes: RouteConfigEntry[] = [
   route("provider/apply", "routes/provider.apply.tsx"),
   route("provider/get-listed/:step", "routes/provider.get-listed.$step.tsx"),
   route("provider/setup/:task/:step", "routes/provider.setup.$task.$step.tsx"),
+  // Claude 26: per-day opening hours after listing (owner/manager edit).
+  route("provider/hours/:publicId", "routes/provider.hours.$publicId.tsx"),
   route("join/:token?", "routes/join.$token.tsx"),
   route("provider/claim/:publicId", "routes/provider.claim.$publicId.tsx"),
   // P2-7 (Claude 21): admin tools, listed admin at aal2 only.
@@ -42,4 +44,6 @@ export const authRoutes: RouteConfigEntry[] = [
   route("provider/quotes/:id", "routes/provider.quotes.$id.tsx"),
   route("provider/resources", "routes/provider.resources.tsx"),
   route("provider/jobs", "routes/provider.jobs.tsx"),
+  // Customer payment receipt PDF (Claude 25 §3a (a), D-096).
+  route("receipts/:file", "routes/receipts.$file.ts"),
 ];
