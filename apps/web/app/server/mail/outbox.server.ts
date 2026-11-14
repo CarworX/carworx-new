@@ -12,7 +12,13 @@ export interface MailConfig {
 }
 export type MailMessage =
   | { kind: "invite"; to: string; token: string; expiresAt: string }
-  | { kind: "security_code"; to: string; code: string; expiresAt: string };
+  | { kind: "security_code"; to: string; code: string; expiresAt: string }
+  | {
+      kind: "booking_update";
+      to: string;
+      bookingId: string;
+      expiresAt: string;
+    };
 
 export interface ClaimedMail {
   id: string;
@@ -39,6 +45,7 @@ export interface MailDatabase {
     result: "sent" | "retry" | "failed" | "reconcile",
     providerId?: string,
   ): Promise<boolean>;
+  current?(id: string, lease: string): Promise<boolean>;
   delivery(
     providerId: string,
     event: "email.bounced" | "email.complained",
@@ -121,7 +128,7 @@ function message(
   if (
     to === null ||
     !config.approvedRecipients.has(to) ||
-    (kind !== "invite" && kind !== "security_code")
+    (kind !== "invite" && kind !== "security_code" && kind !== "booking_update")
   )
     return null;
   const expiresAt = m["expiresAt"];
@@ -129,9 +136,26 @@ function message(
   if (
     !Number.isFinite(expiry) ||
     expiry <= now ||
-    expiry > now + (kind === "invite" ? 7 * 86400_000 : 600_000)
+    expiry >
+      now +
+        (kind === "invite"
+          ? 7 * 86400_000
+          : kind === "booking_update"
+            ? 86400_000
+            : 600_000)
   )
     return null;
+  if (
+    kind === "booking_update" &&
+    typeof m["bookingId"] === "string" &&
+    UUID.test(m["bookingId"])
+  )
+    return {
+      kind,
+      to,
+      bookingId: m["bookingId"],
+      expiresAt: expiresAt as string,
+    };
   if (
     kind === "invite" &&
     typeof m["token"] === "string" &&
@@ -191,6 +215,13 @@ async function open(
     : null;
 }
 function rendered(config: MailConfig, m: MailMessage) {
+  if (m.kind === "booking_update")
+    return {
+      from: config.from,
+      to: [m.to],
+      subject: "Your CarworX booking has an update",
+      text: `Your booking has an update. Sign in to see its current status and available actions:\n${config.origin}/bookings/${m.bookingId}\n\nA payment redirect alone does not confirm a booking.`,
+    };
   // Plain-text templates do not interpolate untrusted HTML or arbitrary URLs.
   return {
     from: config.from,
@@ -257,6 +288,20 @@ export function createMailService(
       }
       let result: "sent" | "retry" | "failed" = m === null ? "failed" : "retry";
       let providerId: string | undefined;
+      if (m?.kind === "booking_update") {
+        try {
+          if (
+            db.current === undefined ||
+            !(await db.current(job.id, job.lease_token))
+          ) {
+            m = null;
+            result = "failed";
+          }
+        } catch {
+          m = null;
+          result = "retry";
+        }
+      }
       if (m !== null) {
         try {
           const response = await fetcher("https://api.resend.com/emails", {

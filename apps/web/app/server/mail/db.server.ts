@@ -23,6 +23,16 @@ export function createMailDatabase(connectionString: string): MailDatabase {
     }
   }
   return {
+    async current(id, lease) {
+      return (
+        (
+          await query<{ ok: boolean }>(
+            "select private.mail_still_current($1,$2) as ok",
+            [id, lease],
+          )
+        )[0]?.ok === true
+      );
+    },
     async enqueue(key, template, recipientHash, envelope, expiresAt) {
       const rows = await query<{ id: string }>(
         "select private.enqueue_mail($1,$2,$3,$4,$5) as id",

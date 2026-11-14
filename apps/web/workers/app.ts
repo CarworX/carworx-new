@@ -1,4 +1,17 @@
 import { createRequestHandler } from "react-router";
+import { produceBookingNotifications } from "../app/server/payments/notifications.server";
+import { purgeReviewData } from "../app/server/payments/reviews-retention.server";
+import {
+  issueMonthlyInvoices,
+  purgeOldInvoices,
+} from "../app/server/receipts/jobs.server";
+import {
+  PAYMENT_WEBHOOK_PATH,
+  dispatchPaymentWebhook,
+  drainPaymentEvents,
+  reconcilePayments,
+  reconcileSettlements,
+} from "../app/server/payments/runtime.server";
 
 import { pgClient, runRetention } from "../app/server/retention/run";
 import {
@@ -38,6 +51,9 @@ export default {
     if (new URL(request.url).pathname === MAIL_WEBHOOK_PATH) {
       return dispatchMailWebhook(request, env);
     }
+    if (new URL(request.url).pathname === PAYMENT_WEBHOOK_PATH) {
+      return dispatchPaymentWebhook(request, env);
+    }
     // Every request passes the T5 boundary: Origin and CSRF checks before the
     // app runs, cache, cookie, redirect and security headers after it.
     return withSecurityBoundary(request, env, (checked, security) =>
@@ -47,11 +63,41 @@ export default {
   // Cron (wrangler.jsonc triggers): R-2 retention, plus draining queued
   // mail (O5). Retention logs counts only; any failure throws, so the run is
   // marked failed.
-  async scheduled(_controller, env, ctx) {
+  async scheduled(controller, env, ctx) {
     ctx.waitUntil(drainScheduledMail(env));
+    ctx.waitUntil(
+      (async () => {
+        await reconcilePayments(env);
+        await drainPaymentEvents(env);
+        await reconcileSettlements(env);
+      })(),
+    );
+    ctx.waitUntil(produceBookingNotifications(env));
+    if (controller.cron !== "17 1 * * *") return;
+    // D-096: last month's provider invoices, once; a no-op while the
+    // G-PAY / D-054 gate is off in the database. Kept apart from retention
+    // so it can never fail or add to the retention run, and skipped where
+    // the money lane has no MONEY_DB binding.
+    const money = (env as { MONEY_DB?: { connectionString?: unknown } })
+      .MONEY_DB;
+    if (typeof money?.connectionString === "string")
+      ctx.waitUntil(
+        issueMonthlyInvoices(money, pgClient).then((invoicesIssued) => {
+          console.log(JSON.stringify({ event: "invoices", invoicesIssued }));
+        }),
+      );
     const binding = (env as { RETENTION_DB?: { connectionString?: unknown } })
       .RETENTION_DB;
     const counts = await runRetention(binding, pgClient);
-    console.log(JSON.stringify({ event: "retention", counts }));
+    const reviewCount = await purgeReviewData(binding, pgClient);
+    const invoicePurged = await purgeOldInvoices(binding, pgClient);
+    console.log(
+      JSON.stringify({
+        event: "retention",
+        counts,
+        reviewCount,
+        invoicePurged,
+      }),
+    );
   },
 } satisfies ExportedHandler<Env>;

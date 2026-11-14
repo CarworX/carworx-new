@@ -118,4 +118,15 @@ export const SAMPLES: Record<MailTemplate["kind"], MailTemplate> = {
     inviterFirstName: "Sipho",
   },
   welcome_admin: { kind: "welcome_admin", link: `${O}/account/security` },
+  provider_statement: {
+    kind: "provider_statement",
+    link: `${O}/provider/invoices`,
+    pdfLink: `${O}/provider/invoices/CXI-000042.pdf`,
+    business: gleam,
+    month: "2026-10-01",
+    jobs: 12,
+    grossMinor: 1_046_000,
+    feeMinor: 104_600,
+    ref: "CXI-000042",
+  },
 };
