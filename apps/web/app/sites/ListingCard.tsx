@@ -30,7 +30,7 @@ export function ListingCard({
             <p className="muted">{whereText(listing, matched)}</p>
           </div>
         </div>
-        <span className="price">Free to enquire</span>
+        <span className="price small">Free to enquire</span>
       </div>
       <hr className="rule" />
       <p>{listing.service_name} · Opening hours and checks on the listing.</p>

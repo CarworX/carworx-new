@@ -137,7 +137,7 @@ function SearchCard({ m }: { m: PageModel }) {
       </label>
       <p className="muted small">
         {m.kind === "results"
-          ? `Searching near ${m.near || "your location"}. Type a new suburb to search somewhere else. Not stored.`
+          ? `Leave empty to keep searching near ${m.near || "your location"}. Not stored.`
           : "Enter a suburb, town or postcode. Used only for this search, not stored."}
       </p>
       <div className="searchbox">
