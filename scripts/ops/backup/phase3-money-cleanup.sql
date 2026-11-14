@@ -2,6 +2,7 @@
 delete from private.review_moderation where review_id='bac30000-0000-4000-8000-000000000005';
 delete from private.booking_reviews where id='bac30000-0000-4000-8000-000000000005';
 delete from private.booking_notifications where logical_key='bk1/booking-update';
+delete from private.payment_reconcile_cursor where job='settlements';
 delete from private.payment_settlement_lines where settlement_id='9900000004';
 delete from private.payment_settlements where provider_id='9900000004';
 delete from private.payment_disputes where provider_id='9900000003';
