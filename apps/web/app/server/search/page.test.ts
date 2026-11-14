@@ -94,6 +94,20 @@ describe("search page model", () => {
     );
     expect(model.moreFixed).not.toContain("area=");
     expect(model.radiusLinks.map((r) => r.radius)).toEqual([5, 10, 25, 50]);
+    // Service pills keep the point and distance and switch only the service.
+    expect(model.categoryLinks.map((c) => [c.slug, c.current])).toEqual([
+      ["", false],
+      ["wash-and-detailing", false],
+      ["repairs-and-maintenance", true],
+      ["glass-repair-and-replacement", false],
+      ["tyres-and-wheel-alignment", false],
+    ]);
+    for (const c of model.categoryLinks) {
+      expect(c.href).toMatch(/^\/search\?lat=-26\.107&lng=28\.057&near=/);
+      expect(c.href).toContain("radius=10");
+      expect(c.href).not.toContain("cursor");
+      expect(c.href.includes("category=")).toBe(c.slug !== "");
+    }
   });
 
   it("a 'more' link continues without geocoding again", async () => {

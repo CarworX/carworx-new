@@ -6,7 +6,7 @@
  * Both groups stay on screen: a "more" link advances one group and carries
  * the other group's current cursor, so the visitor can alternate.
  */
-import { findCategory } from "../../catalogue/taxonomy";
+import { CATEGORIES, findCategory } from "../../catalogue/taxonomy";
 import type { AreaCandidate, GeocodeResult } from "../geo/geocode";
 import { normaliseArea } from "../geo/geocode";
 import { signMapPins } from "../geo/staticMap";
@@ -57,6 +57,13 @@ export type PageModel =
       radius: number;
       body: SearchBody;
       radiusLinks: { radius: number; href: string; current: boolean }[];
+      /** The same point and distance, one link per service ("" is all). */
+      categoryLinks: {
+        slug: string;
+        label: string;
+        href: string;
+        current: boolean;
+      }[];
       moreFixed: string | null;
       moreMobile: string | null;
       /** Link that reloads this page with the map (map=1); null if no map. */
@@ -239,6 +246,14 @@ export async function buildSearchPage(
       radius: r,
       href: searchHref({ ...base, radius: r }),
       current: r === radius,
+    })),
+    categoryLinks: [
+      { slug: "", label: "All services" },
+      ...CATEGORIES.map((c) => ({ slug: c.slug, label: c.label })),
+    ].map((c) => ({
+      ...c,
+      href: searchHref({ ...base, category: c.slug, radius }),
+      current: c.slug === category,
     })),
     // Each "more" link advances one group and keeps the other where it is.
     moreFixed: outcome.body.fixed?.next

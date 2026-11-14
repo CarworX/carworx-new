@@ -69,6 +69,10 @@ export const meta: Route.MetaFunction = () => [
   { name: "robots", content: "noindex" },
 ];
 
+function countLabel(n: number) {
+  return n === 1 ? "1 shown" : `${String(n)} shown`;
+}
+
 function categoryLabel(slug: string) {
   return findCategory(slug)?.label ?? "All services";
 }
@@ -80,12 +84,37 @@ export default function SearchPage({ loaderData: m }: Route.ComponentProps) {
       : {};
   return (
     <PublicShell current="/">
-      <h1 className="type-display-lg max-sm:text-[34px] max-sm:leading-[36px]">
-        {m.kind === "results"
-          ? `${categoryLabel(m.category)} near ${m.near || "you"}`
-          : "Find a car service"}
-      </h1>
-      <div className="mt-6">
+      <header className="cx-pagehead">
+        <span className="cx-eyebrow">Find a service</span>
+        <h1>
+          {m.kind === "results"
+            ? `${categoryLabel(m.category)} near ${m.near || "you"}`
+            : "Find a car service"}
+        </h1>
+        <p className="lede">
+          {m.kind === "results"
+            ? "Nearest first. Every label says exactly what we checked."
+            : "Workshops you can visit and mobile providers who come to you. Free to search, no account needed."}
+        </p>
+        <nav aria-label="Services" className="cx-pills">
+          {m.kind === "results"
+            ? m.categoryLinks.map((c) => (
+                <a
+                  key={c.slug || "all"}
+                  href={c.href}
+                  aria-current={c.current ? "page" : undefined}
+                >
+                  {c.label}
+                </a>
+              ))
+            : CATEGORIES.map((c) => (
+                <a key={c.slug} href={`/c/${c.slug}`}>
+                  {c.label}
+                </a>
+              ))}
+        </nav>
+      </header>
+      <div className="mt-8">
         <SearchForm
           {...formDefaults}
           {...("area" in m && m.kind !== "choose" ? { area: m.area } : {})}
@@ -94,10 +123,65 @@ export default function SearchPage({ loaderData: m }: Route.ComponentProps) {
             : {})}
         />
       </div>
-      <div className="mt-8 grid gap-4">
-        <Body m={m} />
+      <div className="cx-split">
+        <div className="main">
+          <Body m={m} />
+        </div>
+        <Aside m={m} />
       </div>
     </PublicShell>
+  );
+}
+
+/** The preview's side card: what this search is, in plain words. */
+function Aside({ m }: { m: PageModel }) {
+  if (m.kind === "results")
+    return (
+      <aside className="cx-aside" aria-labelledby="about-h">
+        <span className="cx-eyebrow">This search</span>
+        <h2 id="about-h">{categoryLabel(m.category)}</h2>
+        <dl>
+          <div>
+            <dt>Area</dt>
+            <dd>{m.near || "Your location"}</dd>
+          </div>
+          <div>
+            <dt>Distance</dt>
+            <dd>Within {m.radius} km</dd>
+          </div>
+          <div>
+            <dt>Order</dt>
+            <dd>Nearest first</dd>
+          </div>
+        </dl>
+        <p className="fine">
+          Distances are straight-line. Mobile providers show their region, never
+          an address. Your location is used for this search only.
+        </p>
+      </aside>
+    );
+  return (
+    <aside className="cx-aside" aria-labelledby="about-h">
+      <span className="cx-eyebrow">How search works</span>
+      <h2 id="about-h">Free, and nothing to sign up for</h2>
+      <dl>
+        <div>
+          <dt>Cost to search</dt>
+          <dd>R0</dd>
+        </div>
+        <div>
+          <dt>Account</dt>
+          <dd>Not needed</dd>
+        </div>
+        <div>
+          <dt>Your location</dt>
+          <dd>Not stored</dd>
+        </div>
+      </dl>
+      <p className="fine">
+        Every label on a listing says exactly what CarworX checked, and when.
+      </p>
+    </aside>
   );
 }
 
@@ -171,12 +255,11 @@ function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
   const nothing = fixed.length === 0 && mobile.length === 0;
   return (
     <>
-      <nav aria-label="Distance" className="flex flex-wrap gap-2">
+      <nav aria-label="Distance" className="cx-pills !mt-0">
         {m.radiusLinks.map((r) => (
           <a
             key={r.radius}
             href={r.href}
-            className="cx-chip"
             aria-current={r.current ? "true" : undefined}
           >
             Within {r.radius} km
@@ -206,12 +289,11 @@ function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
       ) : null}
       {m.body.fixed !== null && fixed.length > 0 ? (
         <section aria-labelledby="fixed-h" className="grid gap-3">
-          <h2 id="fixed-h" className="type-heading">
-            Workshops you visit
-          </h2>
-          <p className="type-body-sm text-quiet">
-            Sorted by straight-line distance.
-          </p>
+          <div className="cx-group-head">
+            <h2 id="fixed-h">Workshops you visit</h2>
+            <span className="n">{countLabel(fixed.length)}</span>
+          </div>
+          <p className="cx-group-note">Sorted by straight-line distance.</p>
           {m.mapImage ? (
             <figure className="grid gap-2">
               <img
@@ -246,10 +328,11 @@ function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
       ) : null}
       {m.body.mobile !== null && mobile.length > 0 ? (
         <section aria-labelledby="mobile-h" className="grid gap-3">
-          <h2 id="mobile-h" className="type-heading">
-            Providers who come to you
-          </h2>
-          <p className="type-body-sm text-quiet">
+          <div className="cx-group-head">
+            <h2 id="mobile-h">Providers who come to you</h2>
+            <span className="n">{countLabel(mobile.length)}</span>
+          </div>
+          <p className="cx-group-note">
             They serve your approximate area. Coverage is confirmed before any
             booking.
           </p>
