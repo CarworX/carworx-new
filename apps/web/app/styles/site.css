@@ -30,6 +30,13 @@
     }
   }
 
+  .cx-sheet-acct {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--hair);
+  }
   .cx-footer {
     background: var(--ink);
     color: var(--white);

@@ -14,3 +14,7 @@ README.md
 
 # Generated from apps/web/app/server/mail-templates (UPDATE_AUTH_TEMPLATES=1)
 supabase/templates/*.html
+
+# Generated verbatim from the Sites preview home (#83 @ b88a8ca)
+apps/web/app/home/
+apps/web/public/home/

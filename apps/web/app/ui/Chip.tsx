@@ -58,11 +58,6 @@ export function StatusLabel({
   );
 }
 
-/** Marks fictional businesses in demos. */
-export function Demo() {
-  return <span className="cx-demo">DEMO</span>;
-}
-
 export type Actor = "driver" | "business" | "carworx";
 export function ActorChip({ actor }: { actor: Actor }) {
   const label = { driver: "Driver", business: "Business", carworx: "CarworX" }[

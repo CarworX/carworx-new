@@ -80,11 +80,11 @@ describe("catalogue matches the design taxonomy", () => {
 });
 
 describe("public pages without JavaScript", () => {
-  it("home has a GET search form and the five service keys", async () => {
+  it("home links to search and has the five service keys", async () => {
     const reply = await browser().send("/");
     expect(reply.status).toBe(200);
-    expect(reply.body).toMatch(/<form[^>]*action="\/search"/);
-    expect(reply.body).toMatch(/<form[^>]*method="get"/);
+    // The owner-approved preview home sends visitors to /search (its form).
+    expect(reply.body).toContain('href="/search"');
     for (const href of [
       "/c/wash-and-detailing",
       "/c/repairs-and-maintenance",
