@@ -35,13 +35,17 @@ comment on table private.billing_settings is
 create table private.provider_invoices (
   id uuid primary key default gen_random_uuid(),
   number bigint generated always as identity unique,
-  ref text generated always as ('CXI-' || lpad(number::text, 6, '0')) stored unique,
+  -- At least 6 digits, never truncated (lpad would cut 1000000 to 100000).
+  ref text generated always as ('CXI-' || case when number < 1000000 then lpad(number::text, 6, '0') else number::text end) stored unique,
   organisation_id uuid not null references public.organisations(id),
+  -- The recipient's name when issued: a later rename never changes an invoice.
+  business_name text not null check (length(business_name) between 1 and 200),
   period_start date not null check (extract(day from period_start) = 1),
   period_end date not null,
   issued_at timestamptz not null default now(),
   -- Per job: date, service and amounts only. No customer names or contacts.
-  lines jsonb not null check (jsonb_typeof(lines) = 'array' and jsonb_array_length(lines) between 1 and 5000),
+  -- No upper bound: one busy business must never block everyone's invoices.
+  lines jsonb not null check (jsonb_typeof(lines) = 'array' and jsonb_array_length(lines) >= 1),
   jobs integer not null check (jobs >= 1),
   gross_minor bigint not null check (gross_minor >= 0),
   total_minor bigint not null check (total_minor > 0),
@@ -107,13 +111,18 @@ begin
            count(*)::integer as jobs, sum(amount_minor) as gross, sum(fee) as total
     from jobs group by organisation_id
   ), ins as (
-    insert into private.provider_invoices(organisation_id, period_start, period_end, lines, jobs, gross_minor,
+    insert into private.provider_invoices(organisation_id, business_name, period_start, period_end, lines, jobs, gross_minor,
       total_minor, vat_registered, vat_number, vat_rate_bp, vat_minor)
-    select g.organisation_id, v_start, v_end, g.lines, g.jobs, g.gross, g.total, s.vat_registered,
+    select g.organisation_id, (select o.name from public.organisations o where o.id = g.organisation_id),
+      v_start, v_end, g.lines, g.jobs, g.gross, g.total, s.vat_registered,
       case when s.vat_registered then s.vat_number end,
       case when s.vat_registered then s.vat_rate_bp end,
       case when s.vat_registered then round(g.total * s.vat_rate_bp::numeric / (10000 + s.vat_rate_bp))::bigint else 0 end
     from grouped g
+    -- Skip businesses already invoiced for the month, so daily retries
+    -- don't use up serial numbers (ON CONFLICT alone would).
+    where not exists (select 1 from private.provider_invoices p
+                      where p.organisation_id = g.organisation_id and p.period_start = v_start)
     on conflict (organisation_id, period_start) do nothing
     returning 1
   )
@@ -153,10 +162,10 @@ begin
     return jsonb_build_object('enabled', false, 'invoices', '[]'::jsonb);
   end if;
   return jsonb_build_object('enabled', true, 'invoices', coalesce((
-    select jsonb_agg(jsonb_build_object('ref', i.ref, 'business', g.name, 'period_start', i.period_start,
+    select jsonb_agg(jsonb_build_object('ref', i.ref, 'business', i.business_name, 'period_start', i.period_start,
              'issued_at', i.issued_at, 'jobs', i.jobs, 'total_minor', i.total_minor)
-             order by i.period_start desc, g.name)
-    from private.provider_invoices i join public.organisations g on g.id = i.organisation_id
+             order by i.period_start desc, i.business_name)
+    from private.provider_invoices i
     where private.has_org_role(i.organisation_id, array['owner', 'manager'])), '[]'::jsonb));
 end $$;
 
@@ -169,7 +178,7 @@ begin
   end if;
   select * into i from private.provider_invoices where ref = p_ref;
   if not found or not private.has_org_role(i.organisation_id, array['owner', 'manager']) then return null; end if;
-  return jsonb_build_object('ref', i.ref, 'business', (select name from public.organisations where id = i.organisation_id),
+  return jsonb_build_object('ref', i.ref, 'business', i.business_name,
     'period_start', i.period_start, 'period_end', i.period_end, 'issued_at', i.issued_at, 'lines', i.lines,
     'jobs', i.jobs, 'gross_minor', i.gross_minor, 'total_minor', i.total_minor,
     'vat_registered', i.vat_registered, 'vat_number', i.vat_number, 'vat_rate_bp', i.vat_rate_bp, 'vat_minor', i.vat_minor);

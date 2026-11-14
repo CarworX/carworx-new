@@ -5,7 +5,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 grant execute on all functions in schema extensions to anon, authenticated;
-select plan(33);
+select plan(37);
 
 create function pg_temp.act(p_user uuid, p_aal text default 'aal1') returns void language sql as $$
   select null::void from (select set_config('request.jwt.claims',
@@ -91,6 +91,13 @@ select matches((select ref from private.provider_invoices), '^CXI-[0-9]{6}$', 'r
 select ok(not exists(select 1 from private.provider_invoices, jsonb_array_elements(lines) l
   where l ?| array['customer', 'customer_id', 'email', 'name']), 'lines carry no customer details');
 select throws_ok($$update private.provider_invoices set total_minor = 1$$, '42501', null, 'issued invoices cannot be changed');
+-- Codex review on #121: retries don't use up serial numbers; renames don't change issued invoices.
+select is((select max(number) from private.provider_invoices) + 1,
+  (select last_value + 1 from private.provider_invoices_number_seq),
+  'daily retries do not consume serial numbers');
+update public.organisations set name = 'Renamed Org A (synthetic)' where id = 'd6300000-0000-4000-8000-000000000010';
+select is((select business_name from private.provider_invoices), 'Invoice Org A (synthetic)',
+  'the recipient name is the one at issue, not after a rename');
 
 -- Access ------------------------------------------------------------------------------
 create temp table r as select ref from private.provider_invoices;
@@ -129,6 +136,12 @@ delete from private.provider_invoices;
 select is(private.issue_invoices_for((select last_month from m)), 1, 're-issued with VAT on');
 select is((select vat_minor from private.provider_invoices), round(58300 * 1500::numeric / 11500)::bigint,
   'with VAT on, the VAT share of the commission is shown');
+
+-- Serial numbers past 999999 keep every digit ------------------------------------------
+delete from private.provider_invoices;
+alter table private.provider_invoices alter column number restart with 1000000;
+select is(private.issue_invoices_for((select last_month from m)), 1, 'issued with a 7-digit serial');
+select is((select ref from private.provider_invoices), 'CXI-1000000', 'a 7-digit serial is not truncated');
 
 -- Retention: 5 years from the document date ---------------------------------------------
 alter table private.provider_invoices disable trigger provider_invoice_immutable;

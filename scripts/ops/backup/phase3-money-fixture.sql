@@ -30,6 +30,6 @@ values('bac30000-0000-4000-8000-000000000005','published','5eed0000-0000-4000-80
 insert into private.notification_cursor(source,event_id) select 'payment',id from private.payment_event where booking_id='bac30000-0000-4000-8000-000000000003';
 -- D-096 provider invoices (gate and VAT switch stay off in the fixture).
 insert into private.billing_settings(id,invoices_enabled,vat_registered) values(true,false,false);
-insert into private.provider_invoices(organisation_id,period_start,period_end,lines,jobs,gross_minor,total_minor,vat_registered)
-values('5eed0000-0000-4000-8000-0000000000a1','2026-10-01','2026-10-31',
+insert into private.provider_invoices(organisation_id,business_name,period_start,period_end,lines,jobs,gross_minor,total_minor,vat_registered)
+values('5eed0000-0000-4000-8000-0000000000a1','Synthetic BK-1 business','2026-10-01','2026-10-31',
 '[{"date":"2026-10-03","label":"Synthetic BK-1 service","gross_minor":10000,"fee_minor":1000}]',1,10000,1000,false);
