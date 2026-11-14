@@ -7,9 +7,9 @@ set local search_path = public, extensions;
 grant execute on all functions in schema extensions to anon, authenticated;
 select plan(19);
 
-create function pg_temp.act(p_user uuid) returns void language sql as $$
+create function pg_temp.act(p_user uuid, p_aal text default 'aal1') returns void language sql as $$
   select null::void from (select set_config('request.jwt.claims',
-    json_build_object('sub', p_user, 'role', 'authenticated', 'aal', 'aal1')::text, true)) s $$;
+    json_build_object('sub', p_user, 'role', 'authenticated', 'aal', p_aal)::text, true)) s $$;
 
 -- Fixture ----------------------------------------------------------------------
 insert into auth.users(id, email, email_confirmed_at) values
@@ -82,12 +82,11 @@ select pg_temp.act('d6200000-0000-4000-8000-000000000003');
 set local role authenticated;
 select is(public.customer_receipt('CX-A1B2C3D4E5F6'), null, 'the business owner gets nothing (not their document)');
 reset role;
-select set_config('request.jwt.claims',
-  json_build_object('sub', 'd6200000-0000-4000-8000-000000000004', 'role', 'authenticated', 'aal', 'aal2')::text, true);
+select pg_temp.act('d6200000-0000-4000-8000-000000000004', 'aal2');
 set local role authenticated;
 select is(public.customer_receipt('CX-A1B2C3D4E5F6'), null, 'an aal2 admin gets nothing');
 reset role;
-select set_config('request.jwt.claims', '', true);
+select null::void from (select set_config('request.jwt.claims', '', true)) s;
 set local role anon;
 select throws_ok($$select public.customer_receipt('CX-A1B2C3D4E5F6')$$, '42501', null, 'anon is refused');
 reset role;

@@ -75,11 +75,18 @@ export class DocumentWriter {
   heading(text: string, quiet?: string): void {
     this.room(34);
     this.y += 22;
-    this.page.text(MARGIN, this.y, clean(text, 80), "bold", 26, C.ink);
+    wrap(clean(text, 80), "bold", 26, WIDTH).forEach((line, i) => {
+      if (i > 0) this.y += 30;
+      this.page.text(MARGIN, this.y, line, "bold", 26, C.ink);
+    });
     this.y += 10;
     if (quiet !== undefined) {
-      this.y += 16;
-      this.page.text(MARGIN, this.y, clean(quiet, 120), "sans", 14, C.muted);
+      // A long business name must wrap, not run off the page.
+      for (const line of wrap(clean(quiet, 200), "sans", 14, WIDTH)) {
+        this.room(20);
+        this.y += 18;
+        this.page.text(MARGIN, this.y, line, "sans", 14, C.muted);
+      }
       this.y += 6;
     }
     this.y += 14;

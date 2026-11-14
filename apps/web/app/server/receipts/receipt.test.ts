@@ -276,6 +276,32 @@ describe("GET /receipts/:ref.pdf access", () => {
   });
 });
 
+describe("layout keeps text on the page", () => {
+  it("wraps a long business name in the subtitle (Codex review on #120)", () => {
+    const long =
+      "Johannesburg Automotive Repairs and Complete Vehicle Maintenance Specialists";
+    const raw = Array.from(renderReceiptPdf(receipt({ business: long })), (b) =>
+      String.fromCharCode(b),
+    ).join("");
+    // Every text run starts inside the margins and fits before the right edge.
+    let runs = 0;
+    for (const m of raw.matchAll(
+      /\/(F\d) ([\d.]+) Tf ([\d.]+) [\d.]+ Td \(((?:\\.|[^\\)])*)\) Tj/g,
+    )) {
+      const font = m[1] === "F1" ? "sans" : m[1] === "F2" ? "bold" : "mono";
+      const size = Number(m[2]);
+      const x = Number(m[3]);
+      const t = (m[4] ?? "").replace(/\\(.)/g, "$1");
+      expect(x + widthOf(t, font, size)).toBeLessThanOrEqual(595.28 - 47);
+      runs++;
+    }
+    expect(runs).toBeGreaterThan(20);
+    expect(pageText(renderReceiptPdf(receipt({ business: long })))).toContain(
+      "Vehicle Maintenance Specialists",
+    );
+  });
+});
+
 describe("pdf text helpers", () => {
   it("maps text to WinAnsi and replaces what the fonts cannot draw", () => {
     expect(winAnsi("Café −R5 • ok")).toBe("Café -R5 \u0095 ok");
