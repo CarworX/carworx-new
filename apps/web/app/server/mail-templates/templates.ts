@@ -10,6 +10,7 @@ import {
   day,
   duration,
   money,
+  monthYear,
   safeLink,
   time,
 } from "./format";
@@ -118,7 +119,20 @@ export type MailTemplate =
       role: Role;
       inviterFirstName: string;
     }
-  | { kind: "welcome_admin"; link: string };
+  | { kind: "welcome_admin"; link: string }
+  | {
+      /** Monthly, to owners and managers, after G-PAY / D-054 (D-096). */
+      kind: "provider_statement";
+      link: string;
+      pdfLink: string;
+      business: Business;
+      /** First day of the month, YYYY-MM-01. */
+      month: string;
+      jobs: number;
+      grossMinor: number;
+      feeMinor: number;
+      ref: string;
+    };
 
 export type MailKind = MailTemplate["kind"];
 
@@ -648,6 +662,59 @@ function build(t: MailTemplate, origin: string): Email {
         action: { label: "Set up two-step sign-in", url: link },
         reason: "you were given admin access to CarworX.",
       };
+    case "provider_statement": {
+      if (!/^\d{4}-(0[1-9]|1[0-2])-01$/.test(t.month))
+        throw new Error("mail_statement_month");
+      if (
+        !Number.isSafeInteger(t.jobs) ||
+        t.jobs < 1 ||
+        t.feeMinor <= 0 ||
+        t.grossMinor < t.feeMinor
+      )
+        throw new Error("mail_statement_amounts");
+      const month = monthYear(t.month);
+      return {
+        subject: `Your CarworX statement for ${month}`,
+        preheader: `${String(t.jobs)} paid booking${t.jobs === 1 ? "" : "s"}, CarworX fee ${money(t.feeMinor)}. Nothing to pay.`,
+        ref: ref(t.ref),
+        eyebrow: "Monthly statement",
+        title: month,
+        titleQuiet: `${money(t.feeMinor)} CarworX fee, already taken.`,
+        blocks: [
+          {
+            kind: "p",
+            text: [
+              "Here's the statement for ",
+              ...biz(t.business),
+              ". CarworX's fee (10% of each payment, capped at R500 per job) was taken through the payment split when each customer paid, so there is nothing to pay.",
+            ],
+          },
+          {
+            kind: "ticket",
+            title: "Statement",
+            ref: ref(t.ref),
+            lines: [
+              {
+                label: `Customers paid you (${String(t.jobs)} booking${t.jobs === 1 ? "" : "s"})`,
+                amount: money(t.grossMinor),
+              },
+            ],
+            total: { label: "CarworX fee", amount: money(t.feeMinor) },
+            meta: [{ label: "Month", value: month }],
+          },
+        ],
+        action: { label: "View invoices", url: link },
+        after: [
+          {
+            kind: "link",
+            label: "Download PDF invoice and statement",
+            url: safeLink(t.pdfLink, origin),
+          },
+        ],
+        reason:
+          "you own or manage a business that took payments through CarworX.",
+      };
+    }
   }
 }
 

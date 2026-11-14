@@ -113,7 +113,15 @@ Every receipt or invoice email carries a **Download PDF** link (a text link, so 
 
 **Receipt (a) build:** `GET /receipts/CX-XXXXXXXXXXXX.pdf`. The reference is `CX-` plus the first 12 hex digits (upper case) of the payment's own opaque reference, so it fits the email reference format. A signed-out visitor is sent to sign in (the same for every reference); a signed-in user who is not the paying customer, and any unknown, unpaid or malformed reference, gets the same 404. Data comes from `customer_receipt(ref)`, which returns nothing to anyone but the paying customer. The PDF is drawn in the Worker by a small built-in writer with the standard PDF fonts (no library or service).
 
-Invoice (b) only matters once commission starts (D-054: after company registration, G-PAY and a free pilot), so its build waits; its design is done now so the style is settled.
+**Invoice (b) build (behind G-PAY / D-054):**
+- **One document per business per month**, `CXI-` plus a serial number. It is both the invoice and the monthly statement. Each job is listed with its date, service, what the customer paid and the fee; no customer details.
+- **The gate and the VAT switch** are one database row, `private.billing_settings` (no row means everything off). Only an aal2 admin can change it, through `set_billing_settings`, and no page links to it.
+- **VAT is copied onto each invoice when it's issued**, so flipping the switch never changes an invoice that already exists. With VAT on, the fee is treated as VAT-inclusive and its VAT share is shown. The accountant confirms this before the switch is used.
+- **Daily cron:** it issues last month's invoices once (as `money_server`) and deletes invoices older than 5 years (as `retention_server`).
+- **Where providers see them:** `/provider/invoices` lists every invoice with a Download link, and `/provider/invoices/CXI-…pdf` serves each one. Owners and managers only (D-089). The same 404 for everyone else, and for everyone while the gate is off.
+- **Monthly statement email:** a new `provider_statement` renderer. Sending it from the outbox is Codex's wiring.
+
+ (D-054: after company registration, G-PAY and a free pilot), so its build waits; its design is done now so the style is settled.
 
 ## 4. Email-client constraints (why the templates look old-fashioned inside)
 

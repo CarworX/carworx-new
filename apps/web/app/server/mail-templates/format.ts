@@ -124,3 +124,34 @@ export function duration(ms: number): string {
   const days = Math.round(hours / 24);
   return `${String(days)} days`;
 }
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+/** "2026-11-01" (a calendar date, no time zone) to "November 2026". */
+export function monthYear(day: string): string {
+  const m = /^(\d{4})-(\d{2})-\d{2}$/.exec(day);
+  const name = m === null ? undefined : MONTHS[Number(m[2]) - 1];
+  if (m === null || name === undefined) throw new Error("mail_date");
+  return `${name} ${m[1] ?? ""}`;
+}
+
+/** "2026-11-04" (a calendar date, no time zone) to "4 Nov 2026". */
+export function calendarDay(day: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
+  const name = m === null ? undefined : MONTHS[Number(m[2]) - 1];
+  if (m === null || name === undefined) throw new Error("mail_date");
+  return `${String(Number(m[3]))} ${name.slice(0, 3)} ${m[1] ?? ""}`;
+}
