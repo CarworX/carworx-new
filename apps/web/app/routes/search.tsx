@@ -290,7 +290,7 @@ function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
       </nav>
       {total === 0 ? (
         <article className="card">
-          <h2>No businesses listed here yet.</h2>
+          <h2>No providers found here yet.</h2>
           <p>
             We're adding businesses area by area. This doesn't mean there are
             none near you, only that none are listed with us yet.
