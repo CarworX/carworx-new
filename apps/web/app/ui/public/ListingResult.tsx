@@ -1,6 +1,6 @@
 import { topCategoryOf } from "../../catalogue/taxonomy";
 import { StatusLabel } from "../Chip";
-import { ResultCard } from "../ResultCard";
+import { Icon } from "../Icon";
 import { SERVICES } from "../services";
 
 export interface ListingSummary {
@@ -47,21 +47,36 @@ export function ListingResult({
           ? `${listing.metro} · ${(listing.distance_km ?? 0).toFixed(1)} km straight-line`
           : listing.metro;
   return (
-    <ResultCard
-      name={listing.display_name}
-      href={`/p/${listing.public_id}`}
-      meta={`${listing.service_name} · ${where}`}
-      thumb={thumb}
-      price="Enquire"
-      labels={
-        listing.verification_labels.length > 0 ? (
-          <>
-            {listing.verification_labels.map((label) => (
-              <StatusLabel key={label}>{label}</StatusLabel>
-            ))}
-          </>
-        ) : undefined
-      }
-    />
+    <article className="cx-lcard">
+      <div className="top">
+        <span className="th">
+          <img src={thumb} alt="" width={64} height={64} />
+        </span>
+        <div className="who">
+          {listing.verification_labels.length > 0 ? (
+            <div className="lbls">
+              {listing.verification_labels.map((label) => (
+                <StatusLabel key={label}>{label}</StatusLabel>
+              ))}
+            </div>
+          ) : null}
+          <h3>
+            <a href={`/p/${listing.public_id}`}>{listing.display_name}</a>
+          </h3>
+          <p className="m">{where}</p>
+        </div>
+        <p className="pr">
+          Free
+          <small>to enquire</small>
+        </p>
+      </div>
+      <div className="bot">
+        <p className="svc">{listing.service_name}</p>
+        <span className="go" aria-hidden="true">
+          View business
+          <Icon name="arrow" size="sm" />
+        </span>
+      </div>
+    </article>
   );
 }
