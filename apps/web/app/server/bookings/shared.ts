@@ -25,6 +25,7 @@ export type BookingProblem =
   | "version_not_current"
   | "no_price"
   | "resource_unavailable"
+  | "travel_unconfirmed"
   | "unavailable";
 
 export const BOOKING_PROBLEM_TEXT: Record<BookingProblem, string> = {
@@ -48,6 +49,8 @@ export const BOOKING_PROBLEM_TEXT: Record<BookingProblem, string> = {
     "There's a newer version of this quote. Look at the latest one.",
   no_price: "This booking has no price yet.",
   resource_unavailable: "That bay or team isn't available.",
+  travel_unconfirmed:
+    "Confirm the travel time for this mobile job before you accept it.",
   unavailable: "Something went wrong on our side. Try again in a minute.",
 };
 
