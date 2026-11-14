@@ -46,4 +46,7 @@ export const authRoutes: RouteConfigEntry[] = [
   route("provider/jobs", "routes/provider.jobs.tsx"),
   // Customer payment receipt PDF (Claude 25 §3a (a), D-096).
   route("receipts/:file", "routes/receipts.$file.ts"),
+  // Provider invoices and monthly statements, behind G-PAY / D-054 (D-096).
+  route("provider/invoices", "routes/provider.invoices.tsx"),
+  route("provider/invoices/:file", "routes/provider.invoices.$file.ts"),
 ];
