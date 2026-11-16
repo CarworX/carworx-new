@@ -77,6 +77,24 @@ describe("/provider/get-listed: the preview application", () => {
     const text = h.replace(/<[^>]*>/g, " ");
     expect(text).not.toMatch(/demo|fictional|example business application/i);
   });
+  it("Save and exit saves the step first; Enter still means Next", () => {
+    const h = render("business");
+    const exit = h.match(/<button[^>]*>Save and exit<\/button>/)?.[0] ?? "";
+    for (const attr of [
+      'type="submit"',
+      'form="application-step"',
+      'name="exit"',
+      'value="1"',
+    ])
+      expect(exit).toContain(attr);
+    const first = h.match(/<button type="submit"[^>]*>([^<]*)</);
+    expect(first?.[1]).toBe("Next");
+    const check = render("check");
+    expect(check).toMatch(
+      /<a class="cx-btn outlined sm" href="\/provider">Exit<\/a>/,
+    );
+    expect(check).not.toContain('name="exit"');
+  });
   it("business: name and role as real fields", () => {
     const h = render("business");
     expect(h).toContain("Tell us who you are");

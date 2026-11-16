@@ -277,10 +277,12 @@ export function PinPicker({
           <div>
             <b>Allow CarworX to use your location?</b>
             <p>
-              We use it once to place your pin
-              {privateBase ? ". Your base stays private" : ""}. We don&apos;t
-              track you or keep your device&apos;s location. Your browser will
-              ask you next.
+              {privateBase
+                ? "Your device's location becomes your private base, which customers never see. "
+                : "Your device's location becomes your premises pin, which customers see on your listing. "}
+              Only continue while you&apos;re at your{" "}
+              {privateBase ? "base" : "premises"}. We read it once and
+              don&apos;t track you. Your browser will ask you next.
             </p>
             <div className="acts">
               <button

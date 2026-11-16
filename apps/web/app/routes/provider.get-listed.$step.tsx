@@ -346,6 +346,9 @@ export async function action({ request, context, params }: Route.ActionArgs) {
   if (error)
     return reply(MESSAGES.unavailable, error.code === "22023" ? 400 : 503);
   const next = STEPS[STEPS.indexOf(step) + 1];
+  // "Save and exit" posts the step with exit=1: saved, then back to the dashboard.
+  if (field(form, "exit") === "1")
+    return throwRedirect("/provider", signedIn.headers);
   return throwRedirect(path(next ?? "check"), signedIn.headers);
 }
 
@@ -587,7 +590,25 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
         void navigate(path(previous));
       }}
     >
-      <ObNav label="Business application" exitHref="/provider" />
+      {/* Enter submits a form through its first submit button in page
+          order: keep that "Next", not "Save and exit" in the bar. */}
+      <button
+        type="submit"
+        form={formId}
+        className="cx-vh"
+        tabIndex={-1}
+        aria-hidden="true"
+      >
+        Next
+      </button>
+      {/* Steps 1–4 save before leaving; Check has nothing unsaved and its
+          form would send the application, so it just leaves. */}
+      <ObNav
+        label="Business application"
+        exitHref="/provider"
+        saveForm={step === "check" ? undefined : formId}
+        exitText={step === "check" ? "Exit" : "Save and exit"}
+      />
       <h1 className="cx-vh">Get your business listed</h1>
       <main id="main" className="shell">
         <aside className="rail" aria-label="Your progress">

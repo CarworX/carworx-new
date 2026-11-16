@@ -74,10 +74,13 @@ export function ObNav({
   label,
   exitHref,
   exitText = "Save and exit",
+  saveForm,
 }: {
   label: string;
   exitHref: string;
   exitText?: string;
+  /** Submits this form with exit=1, so the server saves, then leaves. */
+  saveForm?: string;
 }) {
   // The preview's bar sits in a short wrapper, so it scrolls with the page.
   return (
@@ -94,9 +97,21 @@ export function ObNav({
           </a>
           <div className="act">
             <span className="ob-demo">{label}</span>
-            <a className="cx-btn outlined sm" href={exitHref}>
-              {exitText}
-            </a>
+            {saveForm ? (
+              <button
+                type="submit"
+                form={saveForm}
+                name="exit"
+                value="1"
+                className="cx-btn outlined sm"
+              >
+                {exitText}
+              </button>
+            ) : (
+              <a className="cx-btn outlined sm" href={exitHref}>
+                {exitText}
+              </a>
+            )}
           </div>
         </nav>
       </div>
