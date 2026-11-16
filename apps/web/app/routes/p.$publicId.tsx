@@ -1,21 +1,27 @@
 import { data, redirect } from "react-router";
 
-import { localClock, openStatus, type HoursRow } from "../catalogue/hours";
+import {
+  dayName,
+  localClock,
+  openStatus,
+  statusText,
+  timeLabel,
+  type HoursRow,
+} from "../catalogue/hours";
 import { topCategoryOf } from "../catalogue/taxonomy";
 import { CsrfField } from "../auth/ui";
 import { CatalogueUnavailable, listingById } from "../server/catalogue/public";
 import { NOTICE_VERSION, parseEnquiry } from "../server/forms/parse";
 import { formAction, formHeaders } from "../server/forms/route.server";
-import { siteKeyFor, type FormsEnv } from "../server/forms/submit";
+import {
+  PROBLEM_TEXT,
+  siteKeyFor,
+  type FormsEnv,
+  type Problem,
+} from "../server/forms/submit";
 import { UUID } from "../server/providers/forms";
-import { Button, TextLink } from "../ui/Button";
-import { StatusLabel } from "../ui/Chip";
-import { ConsentCheckbox, TextField } from "../ui/Field";
-import { StatusNote } from "../ui/Note";
-import { OpeningHoursTable } from "../ui/OpeningHours";
-import { FormProblem } from "../ui/public/FormProblem";
+import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
 import { HumanCheck } from "../ui/public/HumanCheck";
-import { PublicShell } from "../ui/public/PublicShell";
 import type { Route } from "./+types/p.$publicId";
 
 function unavailable(): never {
@@ -101,86 +107,193 @@ export function meta({ loaderData }: Route.MetaArgs) {
   ];
 }
 
+export const links: Route.LinksFunction = () => [...SITES_LINKS];
+
+/** The preview's listing view (app.js `listing()`), with the real listing. */
 export default function ListingPage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { listing } = loaderData;
+  const { listing, hours, today, status } = loaderData;
   const category = topCategoryOf(listing.category_slug);
+  const mode =
+    listing.mode === "fixed"
+      ? "Workshop you visit"
+      : listing.mode === "both"
+        ? "Workshop · also comes to you"
+        : "Comes to you";
+  const now = statusText(status);
   return (
-    <PublicShell>
-      <p className="cx-eyebrow">
-        {category ? (
-          <TextLink href={`/c/${category.slug}`}>{category.label}</TextLink>
-        ) : null}
-        {category ? " · " : null}
-        {listing.service_name}
-      </p>
-      <h1 className="type-display-lg mt-2">{listing.display_name}</h1>
-      {listing.verification_labels.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {listing.verification_labels.map((label) => (
-            <StatusLabel key={label}>{label}</StatusLabel>
-          ))}
+    <SitesShell>
+      <a className="back" href={category ? `/c/${category.slug}` : "/search"}>
+        ← {category ? category.label : "Find a service"}
+      </a>
+      <div className="eyebrow">
+        {category ? `${category.label} · ` : ""}
+        {listing.metro}
+      </div>
+      <h1 className="title">{listing.display_name}</h1>
+      <p className="lead">{listing.description}</p>
+      <div className="bar">
+        {listing.verification_labels.map((label) => (
+          <span key={label} className="tag green">
+            {label}
+          </span>
+        ))}
+        <span className="tag gray">{mode}</span>
+        {now ? <span className="tag gray">{now}</span> : null}
+      </div>
+      <div className="layout">
+        <div className="stack">
+          <article className="card">
+            <h2>Services</h2>
+            <p className="muted">
+              Ask the business for a price. You agree it with them directly.
+            </p>
+            <hr className="rule" />
+            <div className="between">
+              <div>
+                <h3>{listing.service_name}</h3>
+                <p className="muted small">
+                  {category ? category.label : "Car service"}
+                </p>
+              </div>
+              <strong>Ask for a price</strong>
+            </div>
+          </article>
+          <article className="card">
+            <h2>Where</h2>
+            {listing.mode === "fixed" ? (
+              <p>
+                <strong>Visit the workshop.</strong> {listing.public_address} ·{" "}
+                {listing.metro}
+              </p>
+            ) : listing.mode === "both" ? (
+              <p>
+                <strong>Visit the workshop, or it comes to you.</strong>{" "}
+                {listing.public_address} · {listing.metro}. It also serves an
+                area nearby; the provider confirms your exact address before any
+                booking.
+              </p>
+            ) : (
+              <p>
+                <strong>Comes to you.</strong> Serves an area in {listing.metro}
+                . Coverage is approximate; the provider confirms your exact
+                address before any booking.
+              </p>
+            )}
+          </article>
+          <article
+            className="card summary"
+            id="hours"
+            aria-labelledby="hours-h"
+          >
+            <h2 id="hours-h">Opening hours</h2>
+            {hours === null ? (
+              <p>Opening hours aren't available right now.</p>
+            ) : hours.length === 0 ? (
+              <p>Hours not provided.</p>
+            ) : (
+              <>
+                {now ? (
+                  <p data-open-status={status.kind}>
+                    <strong>{now}</strong>
+                  </p>
+                ) : null}
+                <table className="hours-table">
+                  <caption className="cx-vh">Opening hours by day</caption>
+                  <tbody>
+                    {[1, 2, 3, 4, 5, 6, 7].map((day) => {
+                      const row = hours.find((h) => h.day === day);
+                      const isToday = day === today;
+                      return (
+                        <tr
+                          key={day}
+                          {...(isToday
+                            ? { "aria-current": "date" as const }
+                            : {})}
+                        >
+                          <th scope="row">
+                            {dayName(day)}
+                            {isToday ? (
+                              <>
+                                {" "}
+                                <span className="tag">Today</span>
+                              </>
+                            ) : null}
+                          </th>
+                          <td>
+                            {row
+                              ? `${row.opens} – ${timeLabel(row.closes)}`
+                              : "Closed"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <hr className="rule" />
+                <p className="muted small">
+                  Times are South African time. Public holiday hours may differ;
+                  check with the business before you travel.
+                </p>
+              </>
+            )}
+          </article>
+          <article className="card">
+            <h2>What CarworX checked</h2>
+            {listing.verification_labels.length > 0 ? (
+              <div className="bar">
+                {listing.verification_labels.map((label) => (
+                  <span key={label} className="tag green">
+                    {label}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p>No checks are recorded for this listing yet.</p>
+            )}
+            <p className="muted small">
+              We only show a label for a check we actually did.
+            </p>
+          </article>
+          <article className="card">
+            <h2>What happens next?</h2>
+            <p>
+              Send a message. The business replies to the email you give.
+              Nothing is booked or paid through CarworX.
+            </p>
+          </article>
+          <p className="small">
+            <a href={`/provider/claim/${listing.public_id}`}>
+              Is this your business? Claim this listing
+            </a>
+          </p>
         </div>
-      ) : null}
-      <p className="type-body mt-4 max-w-[65ch]">{listing.description}</p>
-      <div className="mt-6 max-w-[65ch]">
-        {listing.mode === "fixed" ? (
-          <StatusNote title="Visit the workshop.">
-            {listing.public_address} · {listing.metro}
-          </StatusNote>
-        ) : listing.mode === "both" ? (
-          <StatusNote title="Visit the workshop, or it comes to you.">
-            {listing.public_address} · {listing.metro}. It also serves an area
-            nearby; the provider confirms your exact address before any booking.
-          </StatusNote>
-        ) : (
-          <StatusNote title="Comes to you.">
-            Serves an area in {listing.metro}. Coverage is approximate; the
-            provider confirms your exact address before any booking.
-          </StatusNote>
-        )}
+        <aside className="card" id="enquiry" aria-labelledby="enquiry-h">
+          <span className="eyebrow">Send a message</span>
+          <h2 id="enquiry-h">Send {listing.display_name} a message</h2>
+          {loaderData.sent ? (
+            <div className="notice green" role="status">
+              <strong>Message sent.</strong> We've passed it to{" "}
+              {listing.display_name}. They'll reply to the email you gave.
+            </div>
+          ) : loaderData.siteKey === null ? (
+            <div className="notice" role="status">
+              <strong>Messages aren't available right now.</strong> Please try
+              again later.
+            </div>
+          ) : (
+            <EnquiryForm
+              csrf={loaderData.csrf}
+              siteKey={loaderData.siteKey}
+              provider={listing.display_name}
+              problem={actionData?.problem}
+            />
+          )}
+        </aside>
       </div>
-      <div className="mt-6 max-w-[65ch]">
-        <OpeningHoursTable
-          hours={loaderData.hours}
-          today={loaderData.today}
-          status={loaderData.status}
-        />
-      </div>
-      <p className="mt-6">
-        <TextLink href={`/provider/claim/${listing.public_id}`}>
-          Is this your business? Claim this listing
-        </TextLink>
-      </p>
-      <section
-        id="enquiry"
-        aria-labelledby="enquiry-h"
-        className="mt-10 grid max-w-[65ch] gap-4"
-      >
-        <h2 id="enquiry-h" className="type-heading">
-          Send {listing.display_name} a message
-        </h2>
-        {loaderData.sent ? (
-          <StatusNote tone="ok" title="Message sent.">
-            We've passed it to {listing.display_name}. They'll reply to the
-            email you gave.
-          </StatusNote>
-        ) : loaderData.siteKey === null ? (
-          <StatusNote title="Messages aren't available right now.">
-            Please try again later.
-          </StatusNote>
-        ) : (
-          <EnquiryForm
-            csrf={loaderData.csrf}
-            siteKey={loaderData.siteKey}
-            provider={listing.display_name}
-            problem={actionData?.problem}
-          />
-        )}
-      </section>
-    </PublicShell>
+    </SitesShell>
   );
 }
 
@@ -193,55 +306,71 @@ function EnquiryForm({
   csrf: string;
   siteKey: string;
   provider: string;
-  problem: Parameters<typeof FormProblem>[0]["problem"];
+  problem: Problem | undefined;
 }) {
   return (
-    <form method="post" className="grid gap-4" data-form="enquiry">
+    <form method="post" data-form="enquiry">
       <CsrfField token={csrf} />
-      <FormProblem problem={problem} title="We couldn't send your message." />
-      <TextField
-        label="Your name"
-        name="name"
-        autoComplete="name"
-        required
-        minLength={2}
-        maxLength={80}
-      />
-      <TextField
-        label="Your email"
-        name="email"
-        type="email"
-        autoComplete="email"
-        required
-        maxLength={254}
-        hint="The provider replies to this address."
-      />
-      <div className="cx-field">
+      {problem ? (
+        <div className="notice" data-problem={problem} role="alert">
+          <strong>We couldn't send your message.</strong>{" "}
+          {PROBLEM_TEXT[problem]}
+        </div>
+      ) : null}
+      <div className="field">
+        <label htmlFor="enquiry-name">Your name</label>
+        <input
+          id="enquiry-name"
+          name="name"
+          autoComplete="name"
+          required
+          minLength={2}
+          maxLength={80}
+        />
+      </div>
+      <div className="field">
+        <label htmlFor="enquiry-email">Your email</label>
+        <input
+          id="enquiry-email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          maxLength={254}
+          aria-describedby="enquiry-email-hint"
+        />
+        <span id="enquiry-email-hint" className="small muted">
+          The provider replies to this address.
+        </span>
+      </div>
+      <div className="field">
         <label htmlFor="enquiry-message">Your message</label>
         <textarea
           id="enquiry-message"
           name="message"
-          className="cx-input"
           required
           minLength={10}
           maxLength={1000}
           rows={5}
           aria-describedby="enquiry-message-hint"
         />
-        <span id="enquiry-message-hint" className="hint">
+        <span id="enquiry-message-hint" className="small muted">
           Say what you need. Don't include ID numbers or bank details.
         </span>
       </div>
-      <ConsentCheckbox name="consent" required>
-        Share my name, email and message with {provider} so they can reply.
-        CarworX keeps a copy for 12 months, on servers outside South Africa.
-      </ConsentCheckbox>
-      <HumanCheck siteKey={siteKey} action="enquiry" />
-      <div>
-        <Button type="submit" variant="primary">
-          Send message
-        </Button>
+      <label className="row small" style={{ alignItems: "flex-start" }}>
+        <input type="checkbox" name="consent" required />
+        <span>
+          Share my name, email and message with {provider} so they can reply.
+          CarworX keeps a copy for 12 months, on servers outside South Africa.
+        </span>
+      </label>
+      <div style={{ margin: "16px 0" }}>
+        <HumanCheck siteKey={siteKey} action="enquiry" />
       </div>
+      <button className="btn" type="submit">
+        Send message →
+      </button>
     </form>
   );
 }

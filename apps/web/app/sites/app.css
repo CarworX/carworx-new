@@ -487,3 +487,24 @@ footer a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* apps/web addition: the opening-hours table in the preview's summary-row style. */
+.sites .hours-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.sites .hours-table th {
+  text-align: left;
+  font-weight: 400;
+  padding: 6px 0;
+}
+.sites .hours-table td {
+  text-align: right;
+  font-weight: 700;
+  padding: 6px 0;
+  white-space: nowrap;
+}
+.sites .hours-table tr[aria-current] th {
+  font-weight: 700;
+}
