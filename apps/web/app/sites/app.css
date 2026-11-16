@@ -49,17 +49,12 @@
 .sites .card .tag + h2 {
   margin-top: 6px;
 }
-@font-face {
-  font-family: Geist;
-  src: url("/fonts/Geist-latin.woff2");
-}
+/* apps/web: the preview's Geist and Caveat faces are dropped (the app's
+ * tokens declare them, preloaded, with swap); its "Mono" alias stays. */
 @font-face {
   font-family: Mono;
   src: url("/fonts/GeistMono-latin.woff2");
-}
-@font-face {
-  font-family: Caveat;
-  src: url("/fonts/Caveat-latin.woff2");
+  font-display: swap;
 }
 * {
   box-sizing: border-box;

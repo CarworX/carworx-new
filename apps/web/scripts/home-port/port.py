@@ -52,6 +52,9 @@ head = ("<!-- GENERATED from planning/sites-customer-preview/dist/index.html on 
         "     real routes, Sign in / Sign up, no demo wording. Do not hand-edit. -->\n")
 open(f"{OUT}/app/home/preview.html", "w", encoding="utf-8").write(head + body.strip() + "\n")
 css = "\n".join(styles)
+# The app's tokens declare Geist, Geist Mono and Caveat (preloaded, swap);
+# the preview's own blocking @font-face copies would hide the hero text.
+css = re.sub(r"@font-face\s*\{[^}]*\}", "", css)
 extra = """
 /* ---- apps/web additions (not in the preview) ---- */
 .nav .acct{display:flex;align-items:center;gap:var(--s2)}
