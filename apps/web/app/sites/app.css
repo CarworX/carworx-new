@@ -49,17 +49,12 @@
 .sites .card .tag + h2 {
   margin-top: 6px;
 }
-@font-face {
-  font-family: Geist;
-  src: url("/fonts/Geist-latin.woff2");
-}
+/* apps/web: the preview's Geist and Caveat faces are dropped (the app's
+ * tokens declare them, preloaded, with swap); its "Mono" alias stays. */
 @font-face {
   font-family: Mono;
   src: url("/fonts/GeistMono-latin.woff2");
-}
-@font-face {
-  font-family: Caveat;
-  src: url("/fonts/Caveat-latin.woff2");
+  font-display: swap;
 }
 * {
   box-sizing: border-box;
@@ -486,4 +481,25 @@ footer a {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* apps/web addition: the opening-hours table in the preview's summary-row style. */
+.sites .hours-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.sites .hours-table th {
+  text-align: left;
+  font-weight: 400;
+  padding: 6px 0;
+}
+.sites .hours-table td {
+  text-align: right;
+  font-weight: 700;
+  padding: 6px 0;
+  white-space: nowrap;
+}
+.sites .hours-table tr[aria-current] th {
+  font-weight: 700;
 }

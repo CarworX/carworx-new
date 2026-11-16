@@ -4,17 +4,18 @@
 // motion, skips on any tap, click, scroll or key, and only covers the page:
 // without JavaScript nothing here runs and the page simply shows.
 (() => {
+const start = () => {
   const KEY = 'cx-intro-seen';
-  try { if (localStorage.getItem(KEY)) return; } catch { return; }
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  try { localStorage.setItem(KEY, '1'); } catch { return; }
+  // The inline gate (app/home/introGate.ts) already decided: first visit and
+  // no reduced motion. It covered the page and marked the container.
+  const el = document.getElementById('cx-intro');
+  if (!el || el.getAttribute('data-play') !== '1' || el.hidden) return;
+  el.setAttribute('data-started', '1');
+  try { localStorage.setItem(KEY, '1'); } catch {}
   const vw = innerWidth || 1280, vh = innerHeight || 800;
   const W = vw / vh < 1 ? 1640 : Math.max(1400, Math.round(1080 * vw / vh));
   const H = vw / vh < 1 ? Math.round(1640 * vh / vw) : 1080;
   const INTRO_OPTS = { w: W, h: H, bg: true, cut: 'intro' };
-  // The container is rendered (hidden) by routes/home.tsx just before this script.
-  const el = document.getElementById('cx-intro');
-  if (!el) return;
   el.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#0d0f12;display:grid;place-items:center;cursor:pointer;transition:opacity .45s ease';
   el.hidden = false;
 
@@ -409,7 +410,7 @@ const S = scene({ word: {"letters":[{"ch":"C","d":"M50.96,2.6L50.96,2.6Q37.4,2.6
     if (done) return; done = true; cancelAnimationFrame(raf);
     el.style.transitionDuration = fast ? '.2s' : '.45s';
     el.style.opacity = '0';
-    setTimeout(() => { el.hidden = true; el.innerHTML = ''; el.style.cssText = ''; }, fast ? 220 : 470);
+    setTimeout(() => { el.hidden = true; el.innerHTML = ''; el.style.cssText = ''; el.removeAttribute('data-play'); }, fast ? 220 : 470);
     for (const e of ['pointerdown', 'keydown', 'wheel', 'touchstart']) removeEventListener(e, skip, true);
   };
   const skip = () => close(true);
@@ -425,4 +426,10 @@ const S = scene({ word: {"letters":[{"ch":"C","d":"M50.96,2.6L50.96,2.6Q37.4,2.6
   };
   draw(0);
   raf = requestAnimationFrame(tick);
+};
+// React hoists async scripts into <head>, so this can run before the page
+// (and the inline gate) is parsed: wait for it.
+if (document.readyState === 'loading')
+  document.addEventListener('DOMContentLoaded', start, { once: true });
+else start();
 })();

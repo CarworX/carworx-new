@@ -15,6 +15,7 @@ import {
   LOADER_DELAY_MS,
   useDelayedFlag,
 } from "./NavigationLoader";
+import { INTRO_GATE } from "../../home/introGate";
 import { NotFound } from "./NotFound";
 
 (
@@ -30,12 +31,23 @@ function runIntro(reduced: boolean) {
     matches: reduced && q.includes("reduce"),
   })) as unknown as typeof window.matchMedia;
   window.requestAnimationFrame = () => 0;
+  // The inline gate first, then the async animation script, as on the page.
+  // eslint-disable-next-line @typescript-eslint/no-implied-eval -- the shipped inline gate
+  (new Function(INTRO_GATE) as () => void)();
   // eslint-disable-next-line @typescript-eslint/no-implied-eval -- the shipped script, as the browser runs it
   (new Function(INTRO) as () => void)();
   return document.getElementById("cx-intro");
 }
 
 describe("first-visit intro", () => {
+  it("the animation script does nothing unless the inline gate marked a first visit", () => {
+    document.body.innerHTML = '<div id="cx-intro" hidden></div>';
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval -- the shipped script
+    (new Function(INTRO) as () => void)();
+    expect(document.getElementById("cx-intro")?.hidden).toBe(true);
+    expect(localStorage.getItem("cx-intro-seen")).toBeNull();
+  });
+
   beforeEach(() => {
     localStorage.clear();
   });

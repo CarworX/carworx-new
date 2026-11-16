@@ -1,16 +1,6 @@
-/* GENERATED from the Sites preview home (#83 @ b88a8ca). Loaded on / only. */
-@font-face {
-  font-family: Geist;
-  src: url(/fonts/Geist-latin.woff2);
-}
-@font-face {
-  font-family: "Geist Mono";
-  src: url(/fonts/GeistMono-latin.woff2);
-}
-@font-face {
-  font-family: Caveat;
-  src: url(/fonts/Caveat-latin.woff2);
-}
+/* GENERATED from the Sites preview home (#83 @ b88a8ca). Loaded on / only.
+ * The preview's own @font-face rules are dropped: the app's tokens already
+ * declare Geist, Geist Mono and Caveat, preloaded and with font-display: swap. */
 
 :root {
   --canvas: #f2f1ee;

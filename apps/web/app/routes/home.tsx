@@ -1,4 +1,5 @@
 import homeCss from "../home/home.css?url";
+import { INTRO_GATE } from "../home/introGate";
 import markup from "../home/preview.html?raw";
 import type { Route } from "./+types/home";
 
@@ -40,7 +41,10 @@ export default function Home() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: "" }}
       />
-      <script src="/intro/intro.js" />
+      {/* Inline, so the cover never waits on the network; the animation
+          then loads without blocking the page (see app/home/introGate.ts). */}
+      <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
+      <script src="/intro/intro.js" async />
       <div
         className="cx-home"
         // home.js draws into this markup (ticks, clocks) before hydration.
