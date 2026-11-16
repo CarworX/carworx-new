@@ -47,8 +47,68 @@ function value(form: FormData, name: string): string {
   return typeof v === "string" ? v.trim() : "";
 }
 
+/**
+ * The application's About step sends day chips (open-N) and one shared
+ * pair of times (opens, closes), as in the Sites preview. Copy that pair
+ * to each ticked day that has no times of its own; per-day fields, as the
+ * hours editor sends them, always win.
+ */
+function withSharedTimes(form: FormData): FormData {
+  const opens = value(form, "opens");
+  const closes = value(form, "closes");
+  if (!opens && !closes) return form;
+  const out = new FormData();
+  for (const [k, v] of form.entries()) out.append(k, v);
+  for (let day = 1; day <= 7; day++) {
+    if (!form.has(`opens-${String(day)}`))
+      out.set(`opens-${String(day)}`, opens);
+    if (!form.has(`closes-${String(day)}`))
+      out.set(`closes-${String(day)}`, closes);
+  }
+  return out;
+}
+
+const SHORT_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+
+/**
+ * The preview's one-line hours ("Mon–Fri · 08:00–17:00") when every open
+ * day shares its times; otherwise the full week, day by day.
+ */
+export function shortHours(
+  hours: readonly HoursRow[],
+  full: (hours: readonly HoursRow[]) => string,
+): string {
+  if (!hours.length) return "";
+  const first = hours[0];
+  if (
+    !first ||
+    hours.some((h) => h.opens !== first.opens || h.closes !== first.closes)
+  )
+    return full(hours);
+  const days = [...new Set(hours.map((h) => h.day))].sort((a, b) => a - b);
+  const runs: [number, number][] = [];
+  for (const d of days) {
+    const last = runs.at(-1);
+    if (last && last[1] === d - 1) last[1] = d;
+    else runs.push([d, d]);
+  }
+  const name = (d: number) => SHORT_DAYS[d - 1] ?? "";
+  const range = runs
+    .map(([a, b]) =>
+      a === b
+        ? name(a)
+        : b === a + 1
+          ? `${name(a)}, ${name(b)}`
+          : `${name(a)}–${name(b)}`,
+    )
+    .join(", ");
+  const closes = first.closes === "23:59" ? "midnight" : first.closes;
+  return `${range} · ${first.opens}–${closes}`;
+}
+
 /** What was posted, made safe to draw again (unknown times → defaults). */
-export function readRows(form: FormData): DayRow[] {
+export function readRows(posted: FormData): DayRow[] {
+  const form = withSharedTimes(posted);
   return DEFAULT_ROWS.map((d) => {
     const opens = value(form, `opens-${String(d.day)}`);
     const closes = value(form, `closes-${String(d.day)}`);
@@ -78,9 +138,10 @@ export type HoursResult =
  * number, 0 for the whole week) and written for the person filling it in.
  */
 export function parseHoursForm(
-  form: FormData,
+  posted: FormData,
   { requireOpenDay }: { requireOpenDay: boolean },
 ): HoursResult {
+  const form = withSharedTimes(posted);
   const problems: Record<number, string> = {};
   const hours: HoursRow[] = [];
   for (let day = 1; day <= 7; day++) {
@@ -109,5 +170,5 @@ export function parseHoursForm(
     problems[0] = "Choose at least one day you're open.";
   return Object.keys(problems).length === 0
     ? { ok: true, hours }
-    : { ok: false, rows: readRows(form), problems };
+    : { ok: false, rows: readRows(posted), problems };
 }
