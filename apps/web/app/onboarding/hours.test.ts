@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   copyMonday,
+  shortHours,
   DEFAULT_ROWS,
   HOUR_TIMES,
   parseHoursForm,
@@ -131,5 +132,30 @@ describe("per-day hours form", () => {
       false,
     ]);
     expect(rowsFromHours([])).toEqual(DEFAULT_ROWS);
+  });
+});
+
+describe("short hours line", () => {
+  const full = () => "FULL";
+  it("names runs of days when every open day shares its times", () => {
+    const row = (day: number) => ({ day, opens: "08:00", closes: "17:00" });
+    expect(shortHours([1, 2, 3, 4, 5].map(row), full)).toBe(
+      "Mon–Fri · 08:00–17:00",
+    );
+    expect(shortHours([1, 2, 6].map(row), full)).toBe(
+      "Mon, Tue, Sat · 08:00–17:00",
+    );
+    expect(shortHours([], full)).toBe("");
+  });
+  it("falls back to the full week when days differ", () => {
+    expect(
+      shortHours(
+        [
+          { day: 1, opens: "08:00", closes: "17:00" },
+          { day: 6, opens: "08:00", closes: "13:00" },
+        ],
+        full,
+      ),
+    ).toBe("FULL");
   });
 });
