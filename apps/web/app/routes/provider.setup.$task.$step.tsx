@@ -31,6 +31,7 @@ import { TextField } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/provider.setup.$task.$step";
 import { PublicShell } from "../ui/public/PublicShell";
+import "../team/setup.css";
 
 const STEPS: Record<string, readonly string[]> = {
   team: ["start", "role", "share"],
@@ -216,323 +217,334 @@ export default function TeamSetup({
   const org = d.organisation;
   return (
     <PublicShell signedIn>
-      <div className="mx-auto grid max-w-[760px] gap-5">
-        <a className="cx-tlink" href="/provider">
+      <div className="cx-setup-flow">
+        <a className="cx-tlink" href={`/provider#business-${org.id}`}>
           All setup tasks
         </a>
         <p className="type-label text-quiet">{org.name}</p>
         <h1 className="type-display-lg">{TITLES[d.task]}</h1>
-        {actionData?.problem ? (
-          <StatusNote tone="err" title="That didn't work.">
-            {TEAM_PROBLEMS[actionData.problem]}
-          </StatusNote>
-        ) : null}
-        {d.task === "team" && d.step === "start" ? (
-          <>
-            <p className="type-body">
-              Everyone uses their own account. Owners and managers can invite
-              staff; only owners can invite managers.
-            </p>
-            <ul className="grid gap-3">
-              {d.members.map((member) => (
-                <li
-                  key={member.id}
-                  className="rounded-xl bg-[var(--surface)] p-4"
-                >
-                  {member.user_id === d.membership.user_id
-                    ? "You"
-                    : `Team member ${member.id.slice(0, 8)}`}{" "}
-                  · {member.role}
-                </li>
-              ))}
-            </ul>
-            {d.members.length === 100 ? (
-              <p className="type-caption">
-                Showing the first 100 active members.
-              </p>
-            ) : null}
-            {d.invites.length > 0 ? (
-              <section>
-                <h2 className="type-title">Pending invites</h2>
-                <ul className="mt-3 grid gap-2">
-                  {d.invites.map((invite) => (
-                    <li key={invite.id}>
-                      {invite.email ?? "One-time link"} · {invite.role} ·
-                      expires{" "}
-                      {new Date(invite.expires_at).toLocaleDateString("en-ZA", {
-                        timeZone: "Africa/Johannesburg",
-                      })}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-            <div>
-              <ButtonLink href={setupHref(org.id, "team", "role")} arrow>
-                Invite someone
-              </ButtonLink>
-            </div>
-          </>
-        ) : null}
-        {d.task === "team" && d.step === "role" ? (
-          <form method="post" className="grid gap-5">
-            <CsrfField token={d.csrf} />
-            <input type="hidden" name="intent" value="choose-role" />
-            <ChoiceTiles
-              name="role"
-              legend="What will they do?"
-              defaultValue="staff"
-              required
-              options={[
-                {
-                  value: "staff",
-                  title: "Staff",
-                  description: "See their work and assigned booking details.",
-                },
-                ...(d.membership.role === "owner"
-                  ? [
-                      {
-                        value: "manager",
-                        title: "Manager",
-                        description:
-                          "Help manage the business and invite staff.",
-                      },
-                    ]
-                  : []),
-              ]}
-            />
-            <div>
-              <Button type="submit" variant="primary">
-                Continue
-              </Button>
-            </div>
-          </form>
-        ) : null}
-        {d.task === "team" && d.step === "share" ? (
-          actionData?.inviteUrl ? (
+        <div className="cx-setup-card">
+          {actionData?.problem ? (
+            <StatusNote tone="err" title="That didn't work.">
+              {TEAM_PROBLEMS[actionData.problem]}
+            </StatusNote>
+          ) : null}
+          {d.task === "team" && d.step === "start" ? (
             <>
-              <StatusNote tone="ok" title="Link ready">
-                Share it privately with the person you are inviting. It works
-                once, expires in seven days, and is not shown again after
-                leaving this page.
-              </StatusNote>
-              <TextField
-                label="One-time invite link"
-                readOnly
-                value={actionData.inviteUrl}
-                onFocus={(event) => {
-                  event.currentTarget.select();
-                }}
-              />
+              <p className="type-body">
+                Everyone uses their own account. Owners and managers can invite
+                staff; only owners can invite managers.
+              </p>
+              <ul className="grid gap-3">
+                {d.members.map((member) => (
+                  <li
+                    key={member.id}
+                    className="rounded-xl bg-[var(--surface)] p-4"
+                  >
+                    {member.user_id === d.membership.user_id
+                      ? "You"
+                      : `Team member ${member.id.slice(0, 8)}`}{" "}
+                    · {member.role}
+                  </li>
+                ))}
+              </ul>
+              {d.members.length === 100 ? (
+                <p className="type-caption">
+                  Showing the first 100 active members.
+                </p>
+              ) : null}
+              {d.invites.length > 0 ? (
+                <section>
+                  <h2 className="type-title">Pending invites</h2>
+                  <ul className="mt-3 grid gap-2">
+                    {d.invites.map((invite) => (
+                      <li key={invite.id}>
+                        {invite.email ?? "One-time link"} · {invite.role} ·
+                        expires{" "}
+                        {new Date(invite.expires_at).toLocaleDateString(
+                          "en-ZA",
+                          {
+                            timeZone: "Africa/Johannesburg",
+                          },
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
               <div>
-                <ButtonLink href={setupHref(org.id, "team")} arrow>
-                  Back to your team
+                <ButtonLink href={setupHref(org.id, "team", "role")} arrow>
+                  Invite someone
                 </ButtonLink>
               </div>
             </>
-          ) : (
+          ) : null}
+          {d.task === "team" && d.step === "role" ? (
             <form method="post" className="grid gap-5">
               <CsrfField token={d.csrf} />
-              <input type="hidden" name="intent" value="create-link" />
-              <input type="hidden" name="role" value={d.inviteRole ?? ""} />
-              <StatusNote title="Share a one-time link">
-                Invite a {d.inviteRole ?? "team member"} using a private link.
-                Email delivery is not available here yet; no email will be sent.
-              </StatusNote>
+              <input type="hidden" name="intent" value="choose-role" />
+              <ChoiceTiles
+                name="role"
+                legend="What will they do?"
+                defaultValue="staff"
+                required
+                options={[
+                  {
+                    value: "staff",
+                    title: "Staff",
+                    description: "See their work and assigned booking details.",
+                  },
+                  ...(d.membership.role === "owner"
+                    ? [
+                        {
+                          value: "manager",
+                          title: "Manager",
+                          description:
+                            "Help manage the business and invite staff.",
+                        },
+                      ]
+                    : []),
+                ]}
+              />
               <div>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={d.inviteRole === null}
-                >
-                  Create invite link
+                <Button type="submit" variant="primary">
+                  Continue
                 </Button>
               </div>
             </form>
-          )
-        ) : null}
-        {d.task === "assign" ? (
-          <form method="post" className="grid gap-5">
-            <CsrfField token={d.csrf} />
-            <input type="hidden" name="intent" value="save" />
-            <ChoiceTiles
-              legend="Who picks the staff member?"
-              name="assignMode"
-              defaultValue={org.assign_mode}
-              required
-              options={[
-                {
-                  value: "customer",
-                  title: "Customers pick",
-                  description: "Show available people by first name.",
-                },
-                {
-                  value: "business",
-                  title: "We assign",
-                  description: "The owner or a manager chooses the person.",
-                },
-              ]}
-            />
-            <label className="type-body">
-              <input
-                type="checkbox"
-                name="offerAnyone"
-                defaultChecked={org.offer_anyone}
-              />{" "}
-              Offer “Anyone available” when customers pick
-            </label>
-            <p className="type-caption text-quiet">
-              This sets your preference for when bookings become available.
-            </p>
-            <div>
-              <Button type="submit" variant="primary">
-                Save preference
-              </Button>
-            </div>
-          </form>
-        ) : null}
-        {d.task === "contact" ? (
-          <form method="post" className="grid gap-5">
-            <CsrfField token={d.csrf} />
-            <input type="hidden" name="intent" value="save" />
-            <ChoiceTiles
-              legend="Customer details visible to assigned staff"
-              name="visibility"
-              defaultValue={org.staff_contact_visibility}
-              required
-              options={[
-                {
-                  value: "booking_only",
-                  title: "Booking only",
-                  description: "Only the information needed for the work.",
-                },
-                {
-                  value: "first_name",
-                  title: "First name",
-                  description: "Booking details and the customer's first name.",
-                },
-                {
-                  value: "phone",
-                  title: "Phone number",
-                  description: "Booking details, first name and phone number.",
-                },
-              ]}
-            />
-            <p className="type-caption text-quiet">
-              This preference applies to assigned bookings when bookings become
-              available.
-            </p>
-            <div>
-              <Button type="submit" variant="primary">
-                Save preference
-              </Button>
-            </div>
-          </form>
-        ) : null}
-        {d.task === "profile" ? (
-          <form method="post" className="grid gap-5">
-            <CsrfField token={d.csrf} />
-            <input type="hidden" name="intent" value="save" />
-            {org.assign_mode === "customer" ? (
-              <TextField
-                label="Your first name"
-                name="firstName"
-                defaultValue={d.profile?.first_name ?? ""}
-                maxLength={60}
-                required
-                hint="Shown to customers when they pick who does the work."
-              />
+          ) : null}
+          {d.task === "team" && d.step === "share" ? (
+            actionData?.inviteUrl ? (
+              <>
+                <StatusNote tone="ok" title="Link ready">
+                  Share it privately with the person you are inviting. It works
+                  once, expires in seven days, and is not shown again after
+                  leaving this page.
+                </StatusNote>
+                <TextField
+                  label="One-time invite link"
+                  readOnly
+                  value={actionData.inviteUrl}
+                  onFocus={(event) => {
+                    event.currentTarget.select();
+                  }}
+                />
+                <div>
+                  <ButtonLink href={setupHref(org.id, "team")} arrow>
+                    Back to your team
+                  </ButtonLink>
+                </div>
+              </>
             ) : (
-              <p className="type-body">
-                Your business assigns the work. You do not need a public staff
-                name.
+              <form method="post" className="grid gap-5">
+                <CsrfField token={d.csrf} />
+                <input type="hidden" name="intent" value="create-link" />
+                <input type="hidden" name="role" value={d.inviteRole ?? ""} />
+                <StatusNote title="Share a one-time link">
+                  Invite a {d.inviteRole ?? "team member"} using a private link.
+                  Email delivery is not available here yet; no email will be
+                  sent.
+                </StatusNote>
+                <div>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={d.inviteRole === null}
+                  >
+                    Create invite link
+                  </Button>
+                </div>
+              </form>
+            )
+          ) : null}
+          {d.task === "assign" ? (
+            <form method="post" className="grid gap-5">
+              <CsrfField token={d.csrf} />
+              <input type="hidden" name="intent" value="save" />
+              <ChoiceTiles
+                legend="Who picks the staff member?"
+                name="assignMode"
+                defaultValue={org.assign_mode}
+                required
+                options={[
+                  {
+                    value: "customer",
+                    title: "Customers pick",
+                    description: "Show available people by first name.",
+                  },
+                  {
+                    value: "business",
+                    title: "We assign",
+                    description: "The owner or a manager chooses the person.",
+                  },
+                ]}
+              />
+              <label className="type-body">
+                <input
+                  type="checkbox"
+                  name="offerAnyone"
+                  defaultChecked={org.offer_anyone}
+                />{" "}
+                Offer “Anyone available” when customers pick
+              </label>
+              <p className="type-caption text-quiet">
+                This sets your preference for when bookings become available.
               </p>
-            )}
-            <PickChips
-              legend="Which services do you do?"
-              name="services"
-              multiple
-              defaultValue={d.profile?.service_slugs ?? []}
-              options={d.services.map((s) => ({
-                value: s.slug,
-                label: s.name,
-              }))}
-            />
-            {d.services.length === 0 ? (
-              <StatusNote title="No services set yet">
-                Your business needs to finish its listing before you can choose
-                services.
-              </StatusNote>
-            ) : null}
-            <PickChips
-              legend="Which days do you usually work?"
-              name="days"
-              multiple
-              defaultValue={d.profile?.days.map(String) ?? []}
-              options={DAYS}
-            />
-            <p className="type-caption text-quiet">
-              These are usual working days, not confirmed availability or
-              bookings.
-            </p>
-            <div>
-              <Button type="submit" variant="primary">
-                Save your profile
-              </Button>
-            </div>
-          </form>
-        ) : null}
-        {d.task === "cover" ? (
-          <StatusNote title="Photo uploads are coming later">
-            Your listing stays live without a cover photo. Uploads will open
-            after the storage and privacy review.
-          </StatusNote>
-        ) : null}
-        {d.task === "history" ? (
-          d.changes === null ? (
-            <StatusNote title="Team history is temporarily unavailable">
-              Your access and settings are unchanged. Try again later.
-            </StatusNote>
-          ) : (
-            <>
-              <p className="type-body">
-                Recent team and business-setting changes. Personal details and
-                invite secrets are never included.
+              <div>
+                <Button type="submit" variant="primary">
+                  Save preference
+                </Button>
+              </div>
+            </form>
+          ) : null}
+          {d.task === "contact" ? (
+            <form method="post" className="grid gap-5">
+              <CsrfField token={d.csrf} />
+              <input type="hidden" name="intent" value="save" />
+              <ChoiceTiles
+                legend="Customer details visible to assigned staff"
+                name="visibility"
+                defaultValue={org.staff_contact_visibility}
+                required
+                options={[
+                  {
+                    value: "booking_only",
+                    title: "Booking only",
+                    description: "Only the information needed for the work.",
+                  },
+                  {
+                    value: "first_name",
+                    title: "First name",
+                    description:
+                      "Booking details and the customer's first name.",
+                  },
+                  {
+                    value: "phone",
+                    title: "Phone number",
+                    description:
+                      "Booking details, first name and phone number.",
+                  },
+                ]}
+              />
+              <p className="type-caption text-quiet">
+                This preference applies to assigned bookings when bookings
+                become available.
               </p>
-              {d.changes.length === 0 ? (
-                <StatusNote title="No team changes yet" />
+              <div>
+                <Button type="submit" variant="primary">
+                  Save preference
+                </Button>
+              </div>
+            </form>
+          ) : null}
+          {d.task === "profile" ? (
+            <form method="post" className="grid gap-5">
+              <CsrfField token={d.csrf} />
+              <input type="hidden" name="intent" value="save" />
+              {org.assign_mode === "customer" ? (
+                <TextField
+                  label="Your first name"
+                  name="firstName"
+                  defaultValue={d.profile?.first_name ?? ""}
+                  maxLength={60}
+                  required
+                  hint="Shown to customers when they pick who does the work."
+                />
               ) : (
-                <ul className="grid gap-3">
-                  {d.changes.map((change) => (
-                    <li
-                      key={change.id}
-                      className="rounded-xl bg-[var(--surface)] p-4"
-                    >
-                      {change.target_table === "memberships"
-                        ? "Team access"
-                        : change.target_table === "invites"
-                          ? "Invite"
-                          : change.target_table === "staff_profiles"
-                            ? "Staff profile"
-                            : "Business settings"}{" "}
-                      ·{" "}
-                      {change.action === "insert"
-                        ? "added"
-                        : change.action === "delete"
-                          ? "removed"
-                          : "updated"}
-                      <span className="type-caption text-quiet block">
-                        {new Date(change.occurred_at).toLocaleString("en-ZA", {
-                          timeZone: "Africa/Johannesburg",
-                        })}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <p className="type-body">
+                  Your business assigns the work. You do not need a public staff
+                  name.
+                </p>
               )}
-            </>
-          )
-        ) : null}
+              <PickChips
+                legend="Which services do you do?"
+                name="services"
+                multiple
+                defaultValue={d.profile?.service_slugs ?? []}
+                options={d.services.map((s) => ({
+                  value: s.slug,
+                  label: s.name,
+                }))}
+              />
+              {d.services.length === 0 ? (
+                <StatusNote title="No services set yet">
+                  Your business needs to finish its listing before you can
+                  choose services.
+                </StatusNote>
+              ) : null}
+              <PickChips
+                legend="Which days do you usually work?"
+                name="days"
+                multiple
+                defaultValue={d.profile?.days.map(String) ?? []}
+                options={DAYS}
+              />
+              <p className="type-caption text-quiet">
+                These are usual working days, not confirmed availability or
+                bookings.
+              </p>
+              <div>
+                <Button type="submit" variant="primary">
+                  Save your profile
+                </Button>
+              </div>
+            </form>
+          ) : null}
+          {d.task === "cover" ? (
+            <StatusNote title="Photo uploads are coming later">
+              Your listing stays live without a cover photo. Uploads will open
+              after the storage and privacy review.
+            </StatusNote>
+          ) : null}
+          {d.task === "history" ? (
+            d.changes === null ? (
+              <StatusNote title="Team history is temporarily unavailable">
+                Your access and settings are unchanged. Try again later.
+              </StatusNote>
+            ) : (
+              <>
+                <p className="type-body">
+                  Recent team and business-setting changes. Personal details and
+                  invite secrets are never included.
+                </p>
+                {d.changes.length === 0 ? (
+                  <StatusNote title="No team changes yet" />
+                ) : (
+                  <ul className="grid gap-3">
+                    {d.changes.map((change) => (
+                      <li
+                        key={change.id}
+                        className="rounded-xl bg-[var(--surface)] p-4"
+                      >
+                        {change.target_table === "memberships"
+                          ? "Team access"
+                          : change.target_table === "invites"
+                            ? "Invite"
+                            : change.target_table === "staff_profiles"
+                              ? "Staff profile"
+                              : "Business settings"}{" "}
+                        ·{" "}
+                        {change.action === "insert"
+                          ? "added"
+                          : change.action === "delete"
+                            ? "removed"
+                            : "updated"}
+                        <span className="type-caption text-quiet block">
+                          {new Date(change.occurred_at).toLocaleString(
+                            "en-ZA",
+                            {
+                              timeZone: "Africa/Johannesburg",
+                            },
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            )
+          ) : null}
+        </div>
       </div>
     </PublicShell>
   );
