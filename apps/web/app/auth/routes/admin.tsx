@@ -2,7 +2,7 @@ import { data } from "react-router";
 
 import { throwRedirect, throwStatus } from "../http.server";
 import { isListedAdmin, requireSignedIn } from "../session.server";
-import { AuthPage } from "../ui";
+import { AdminShell } from "../../ui/admin/AdminShell";
 import type { Route } from "./+types/admin";
 
 export const meta: Route.MetaFunction = () => [{ title: "Admin · CarworX" }];
@@ -34,23 +34,31 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     throwStatus(503, signedIn.headers);
   }
   return data(
-    { organisations: orgs.count ?? 0, auditEntries: audit.count ?? 0 },
+    {
+      csrf: context.security.csrfToken,
+      organisations: orgs.count ?? 0,
+      auditEntries: audit.count ?? 0,
+    },
     { headers: signedIn.headers },
   );
 }
 
 export default function Admin({ loaderData }: Route.ComponentProps) {
   return (
-    <AuthPage title="Admin">
-      <dl>
-        <dt>Organisations</dt>
-        <dd data-admin-organisations={loaderData.organisations}>
-          {loaderData.organisations}
-        </dd>
-        <dt>Audit log entries</dt>
-        <dd data-admin-audit={loaderData.auditEntries}>
-          {loaderData.auditEntries}
-        </dd>
+    <AdminShell title="Admin overview">
+      <dl className="cx-admin-kpis">
+        <div className="cx-admin-kpi">
+          <dt>Organisations</dt>
+          <dd data-admin-organisations={loaderData.organisations}>
+            <strong>{loaderData.organisations}</strong>
+          </dd>
+        </div>
+        <div className="cx-admin-kpi">
+          <dt>Audit log entries</dt>
+          <dd data-admin-audit={loaderData.auditEntries}>
+            <strong>{loaderData.auditEntries}</strong>
+          </dd>
+        </div>
       </dl>
       <nav aria-label="Admin tools">
         <ul>
@@ -68,6 +76,6 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
           </li>
         </ul>
       </nav>
-    </AuthPage>
+    </AdminShell>
   );
 }

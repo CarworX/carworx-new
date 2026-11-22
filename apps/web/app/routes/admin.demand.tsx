@@ -108,11 +108,7 @@ export default function AdminDemand({
       ) : (
         <ul className="grid gap-3" data-admin-list="demand">
           {rows.map((r) => (
-            <li
-              key={r.id}
-              className="rounded-2xl bg-[var(--surface)] p-4"
-              data-row={r.id}
-            >
+            <li key={r.id} className="cx-admin-panel" data-row={r.id}>
               <p className="type-body">
                 <b>{findCategory(r.category_slug)?.label ?? r.category_slug}</b>{" "}
                 ·{" "}

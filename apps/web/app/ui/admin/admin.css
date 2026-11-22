@@ -1,0 +1,119 @@
+/* Admin frame, metrics and queue rows from the Sites admin console. */
+.cx-admin-workspace {
+  display: grid;
+  gap: 18px;
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+.cx-admin-workspace > * {
+  min-width: 0;
+}
+.cx-admin-head h1 {
+  font-size: clamp(30px, 5vw, 40px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+}
+
+.cx-admin-nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 3px 3px 10px;
+}
+
+.cx-admin-nav a {
+  flex: none;
+}
+.cx-admin-nav a[aria-current] {
+  color: var(--white);
+  background: var(--ink);
+}
+
+.cx-admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 176px), 1fr));
+  gap: 10px;
+}
+
+.cx-admin-kpi,
+.cx-admin-panel {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--sh-1);
+}
+
+.cx-admin-kpi dd strong {
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+.cx-admin-row {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  text-decoration: none;
+  color: inherit;
+}
+
+.cx-admin-row:hover {
+  box-shadow: inset 0 0 0 1px var(--control-edge);
+}
+
+.cx-admin-row-icon {
+  display: grid;
+  place-items: center;
+  height: 48px;
+  color: var(--white);
+  background: var(--ink);
+  border-radius: var(--radius-md);
+}
+
+.cx-admin-row-copy {
+  display: grid;
+  overflow-wrap: anywhere;
+}
+
+.cx-admin-row-copy > span,
+.cx-admin-audit-time {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.cx-admin-audit-row {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .cx-admin-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cx-admin-row {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+  .cx-admin-row-icon {
+    height: 44px;
+  }
+  .cx-admin-audit-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
