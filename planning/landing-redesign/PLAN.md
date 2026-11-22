@@ -44,7 +44,7 @@ Mockups (approved for review): `planning/landing-redesign/mockup.html` → `desk
 ### PR B: Accounts for enquiries (and the sign-in step)
 - `apps/web/app/routes/p.$publicId.tsx`: the enquiry action calls `requireSignedIn` (`auth/session.server.ts`). Signed out, the form shows the **sign-in step** (desktop modal / phone bottom sheet from the mockup). Signed in, name and email come from the account and only the message is asked for.
 - "Your message is kept": the draft goes into `sessionStorage` before the redirect and is restored when they come back. `signInUrl()` already carries `returnTo`, and sign-up must honour `returnTo` too (check `auth/routes/sign-up.tsx` and the email-confirm path).
-- Migration: link `enquiries` to `auth.users` (nullable column → required for new rows). The enquiry function in `20261111140000_p2_5_forms.sql` reads `auth.uid()`. Old anonymous rows stay as they are.
+- Migration: link `enquiries` to `auth.users` (nullable column → required for new rows). **Identity bridge:** enquiries go through `apps/web/app/server/forms/db.ts`, a direct Postgres connection as the scoped `forms_server` role, so `auth.uid()` is always null there. Instead, the route takes the user id from `requireSignedIn` (validated server-side) and passes it as a new explicit `p_user_id` argument to `public.submit_enquiry` (from `20261111140000_p2_5_forms.sql`). The function rejects a null id; only `forms_server` may execute it, so the browser can never choose the id. Old anonymous rows stay as they are.
 - The Book button (phase-3 only) uses the same sign-in step. On main it stays inert, as today.
 - Tests: `listing-pages.test.tsx` (signed-out gate, signed-in send, returnTo round trip).
 
