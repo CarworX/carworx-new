@@ -76,12 +76,6 @@ try {
     process.env.REVIEWED_SHA,
     "--config",
     "build/server/wrangler.json",
-    "--var",
-    `APP_ORIGIN:${origin}`,
-    "--var",
-    `SUPABASE_URL:https://${policy.supabase_project_ref}.supabase.co`,
-    "--var",
-    "CARWORX_ENV:staging",
   ];
   if (dryRun)
     args.push(

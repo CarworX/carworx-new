@@ -332,3 +332,11 @@ Owner approved the finish plan and delegated implementation, Codex review and sa
 - 2026-11-12 (SAST) — Claude: D-091 records the owner granting both agents full build and merge authority, with reviews after merge, and the lane split (Codex: #84 onboarding and #83 Sites; Claude: review #84, launch gaps, O7, O8, P-4).
 
 - 2026-11-13 16:56 UTC — Codex: #97 ready-for-review CI reached RLS and failed; aligned 50_email_outbox capability assertion with migration cap 5 (was 3). Disposable native stack: all 30 O5 pgTAP assertions passed. No merge. Agent: codex
+
+## 2026-11-22 — Codex staging deployment, main 70d10b5
+
+Owner authorized gdiyrdqfkthtcglgqnts only. Applied the exact source SQL, in order: 20261122120000_keyword_search.sql (SHA-256 c2712b2f93898ce7de1d8470c5a2102f0e95e5394280fd3d6ab0ad76d8a708d9), then 20261122130000_enquiry_accounts.sql (d8663cdfd1710e1d1e036be88b73719d96ce5eea319c0f2db6e80edafbd8759f). Supabase recorded versions 20261122195435 and 20261122195446. Immediately deployed the prepared 70d10b5 staging build with Wrangler 4.156.1, tag 70d10b5, no variable overrides. Active version 7ad34838-fff7-4d4e-bba7-344b96c8146b at 100%, deployment f3fe0878-182c-4389-97b0-4cf4b634a4d5; read back the tag and preserved secret binding types.
+
+Verified new search/account-enquiry signatures, sender_user_id, removal of old anonymous function, catalogue/forms grants and anonymous denial. Direct postgres invocation of catalogue-only search was denied as designed; no privileges changed. Authenticated application route/sign-in checks remain pending because local CF_ACCESS_CLIENT_ID/CF_ACCESS_CLIENT_SECRET are unavailable. Promotion remains blocked: no auth-email Worker, recipient binding or hosted-delivery receipts, and no reviewed scoped workflow-token policy. No fabricated evidence or blocker removal.
+
+Removed the workflow packager's APP_ORIGIN/SUPABASE_URL/CARWORX_ENV --var overrides; the validated generated staging config supplies environment variables and existing secret bindings survive deployment. Validation: frozen install, staging build and deployment dry-run passed; node --test scripts/ops/env/contract.test.js scripts/ops/env/readiness.test.js scripts/ops/env/hosted.test.js passed 25/25; git diff --check passed. This operations fix does not alter the deployed application commit. #107/#102/#93/#94 unchanged.
