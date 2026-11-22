@@ -25,6 +25,7 @@ const STATUS: Partial<Record<PageModel["kind"], number>> = {
   rate_limited: 429,
   unavailable: 503,
   bad_request: 400,
+  invalid_words: 400,
 };
 
 export async function loader({ request, context }: Route.LoaderArgs) {
@@ -85,7 +86,7 @@ export const links: Route.LinksFunction = () => [...SITES_LINKS];
 export default function SearchPage({ loaderData: m }: Route.ComponentProps) {
   const category = "category" in m ? m.category : "";
   const tabs =
-    m.kind === "results"
+    m.kind === "results" || m.kind === "browse"
       ? m.categoryLinks.map((c) => ({ ...c }))
       : CATEGORIES.map((c) => ({
           slug: c.slug,
@@ -97,7 +98,7 @@ export default function SearchPage({ loaderData: m }: Route.ComponentProps) {
     <SitesShell>
       <div className="eyebrow">Find a service</div>
       <h1 className="title">
-        {m.kind === "results"
+        {m.kind === "results" || (m.kind === "browse" && m.category)
           ? categoryLabel(m.category)
           : "Find a car service"}
       </h1>
@@ -130,15 +131,32 @@ export default function SearchPage({ loaderData: m }: Route.ComponentProps) {
 
 function SearchCard({ m }: { m: PageModel }) {
   const area = "area" in m && m.kind !== "choose" ? m.area : "";
+  const words = "q" in m ? (m.q ?? "") : "";
   return (
     <form className="card" id="search-form" method="get" action="/search">
+      <label htmlFor="words">
+        <strong>What do you need?</strong>
+      </label>
+      <p className="muted small">
+        Service or business name, e.g. “tyre fitment”. Optional.
+      </p>
+      <div className="searchbox" style={{ marginBottom: 16 }}>
+        <input
+          name="q"
+          id="words"
+          defaultValue={words}
+          maxLength={60}
+          autoComplete="off"
+          enterKeyHint="search"
+        />
+      </div>
       <label htmlFor="location">
-        <strong>Where do you need a service?</strong>
+        <strong>Where?</strong>
       </label>
       <p className="muted small">
         {m.kind === "results"
           ? `Leave empty to keep searching near ${m.near || "your location"}. Not stored.`
-          : "Enter a suburb, town or postcode. Used only for this search, not stored."}
+          : "Suburb, town or postcode. Optional, used only for this search, not stored."}
       </p>
       <div className="searchbox">
         <input
@@ -147,10 +165,9 @@ function SearchCard({ m }: { m: PageModel }) {
           defaultValue={area}
           maxLength={80}
           autoComplete="address-level2"
-          required={m.kind !== "results"}
         />
         <button className="btn" type="submit">
-          Search nearby →
+          Search →
         </button>
       </div>
       {"category" in m && m.category ? (
@@ -193,10 +210,13 @@ function Notice({
 
 function Body({ m }: { m: PageModel }) {
   switch (m.kind) {
-    case "start":
+    case "browse":
+      return <Browse m={m} />;
+    case "invalid_words":
       return (
-        <Notice tone="blue">
-          Type your suburb, town or postcode to see businesses near you.
+        <Notice>
+          <strong>Check what you typed.</strong> Use letters, numbers and
+          spaces, 2 to 60 characters.
         </Notice>
       );
     case "invalid_area":
@@ -257,6 +277,64 @@ function Body({ m }: { m: PageModel }) {
     case "results":
       return <Results m={m} />;
   }
+}
+
+/** Browsing without a location (D-097): every live business, no distance. */
+function Browse({ m }: { m: Extract<PageModel, { kind: "browse" }> }) {
+  const items = m.body.all?.items ?? [];
+  const count =
+    items.length === 1 ? "1 result" : `${String(items.length)} results`;
+  return (
+    <>
+      <div className="between">
+        <div>
+          <h2>
+            {m.q
+              ? `Businesses matching “${m.q}”`
+              : "Businesses you can explore"}
+          </h2>
+          <p className="muted small">
+            Free to browse, no account needed. Add an area to sort by distance.
+          </p>
+        </div>
+        <span className="tag gray">
+          {m.moreAll ? `${count} so far` : count}
+        </span>
+      </div>
+      {items.length === 0 ? (
+        <article className="card">
+          <h2>
+            {m.q
+              ? `Nothing matches “${m.q}” yet.`
+              : "No businesses listed yet."}
+          </h2>
+          <p>
+            We're adding businesses area by area. Try another word, or tell us
+            what you need and we'll let you know when one joins.
+          </p>
+          <div className="bar">
+            <a
+              className="btn"
+              href={`/demand?category=${encodeURIComponent(m.category)}`}
+            >
+              Tell me when one joins →
+            </a>
+            <a className="btn secondary" href="/search">
+              Clear search
+            </a>
+          </div>
+        </article>
+      ) : null}
+      {items.map((l) => (
+        <ListingCard key={l.public_id} listing={l} />
+      ))}
+      {m.moreAll ? (
+        <a className="btn secondary" href={m.moreAll}>
+          More businesses →
+        </a>
+      ) : null}
+    </>
+  );
 }
 
 function Results({ m }: { m: Extract<PageModel, { kind: "results" }> }) {
@@ -386,9 +464,17 @@ function Summary({ m }: { m: PageModel }) {
           {m.kind === "results" ? m.near || "Your location" : "Not chosen yet"}
         </strong>
       </div>
+      {"q" in m && m.q ? (
+        <div>
+          <span>Looking for</span>
+          <strong>{m.q}</strong>
+        </div>
+      ) : null}
       <div>
         <span>Distance</span>
-        <strong>{"radius" in m ? `Within ${String(m.radius)} km` : "—"}</strong>
+        <strong>
+          {m.kind === "results" ? `Within ${String(m.radius)} km` : "—"}
+        </strong>
       </div>
       <div>
         <span>Cost to search</span>

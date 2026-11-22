@@ -58,12 +58,28 @@ const results: PageModel = {
 };
 
 describe("/search page: the Sites preview search screen", () => {
-  it("start state: preview head, GET form, service pills and the side card", () => {
-    const h = render({ kind: "start", category: "", radius: 25 });
+  it("browse state: preview head, GET form, service pills and the side card", () => {
+    const h = render({
+      kind: "browse",
+      q: "",
+      category: "",
+      radius: 25,
+      body: {
+        fixed: null,
+        mobile: null,
+        all: { items: [], next: null },
+      } as never,
+      categoryLinks: [
+        { slug: "", label: "All services", href: "/search", current: true },
+      ],
+      moreAll: null,
+    });
     expect(h.match(/<h1\b/g)).toHaveLength(1);
     expect(h).toContain("Find a car service");
     expect(h).toMatch(/<form[^>]*action="\/search"/);
-    expect(h).toContain('href="/c/wash-and-detailing"');
+    expect(h).toContain('name="q"');
+    expect(h).toContain("What do you need?");
+    expect(h).not.toMatch(/name="area"[^>]*required/);
     expect(h).toContain('class="card summary"');
     expect(h).toContain('class="title"');
     expect(h).toContain('href="/auth/sign-up"');
@@ -92,5 +108,48 @@ describe("/search page: the Sites preview search screen", () => {
       } as never,
     });
     expect(h).toContain('href="/demand?category="');
+  });
+
+  it("browse results: businesses without an area, no distance chips", () => {
+    const h = render({
+      kind: "browse",
+      q: "Shine",
+      category: "",
+      radius: 25,
+      body: {
+        fixed: null,
+        mobile: null,
+        all: {
+          items: [
+            {
+              public_id: "de3c1000-0000-4000-8000-000000000001",
+              display_name: "Shine Studio",
+              metro: "Gauteng",
+              mode: "fixed",
+              service_name: "Wash & valet",
+              category_slug: "wash-and-detailing",
+              verification_labels: [],
+              public_address: "1 Synthetic Road",
+            },
+          ],
+          next: "cursor",
+        },
+      } as never,
+      categoryLinks: [
+        {
+          slug: "",
+          label: "All services",
+          href: "/search?q=Shine",
+          current: true,
+        },
+      ],
+      moreAll: "/search?q=Shine&all_cursor=cursor",
+    });
+    expect(h).toContain("Businesses matching “Shine”");
+    expect(h).toContain('href="/p/de3c1000-0000-4000-8000-000000000001"');
+    expect(h).toContain('value="Shine"');
+    expect(h).toContain("More businesses →");
+    expect(h).not.toContain("Within 25 km");
+    expect(h).not.toContain("straight-line");
   });
 });

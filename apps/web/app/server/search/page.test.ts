@@ -48,7 +48,8 @@ function deps(
     },
     search: (args) => {
       calls.push(args);
-      const rows = Array.from({ length: 25 }, (_, i) => row(i + 1, args.group));
+      const mode = args.group === "fixed" ? "fixed" : "mobile";
+      const rows = Array.from({ length: 25 }, (_, i) => row(i + 1, mode));
       return Promise.resolve(rows.slice(0, args.limit));
     },
     ...over,
@@ -58,18 +59,97 @@ function deps(
 const req = (q: string) => new Request(`http://localhost:5173/search${q}`);
 
 describe("search page model", () => {
-  it("shows the start state without touching limits, quota or Mapbox", async () => {
-    let touched = false;
-    const touch = () => {
-      touched = true;
-      return Promise.resolve({ kind: "allowed" as const });
-    };
+  it("browses every live listing without an area: no geocode, no distance", async () => {
+    const calls: SearchArgs[] = [];
+    const geocodes: string[] = [];
+    let quota = 0;
     const { model } = await buildSearchPage(
       req(""),
-      deps({ limits: touch, quota: touch }),
+      deps(
+        {
+          quota: () => {
+            quota += 1;
+            return allow();
+          },
+        },
+        calls,
+        geocodes,
+      ),
     );
-    expect(model.kind).toBe("start");
+    if (model.kind !== "browse") throw new Error(model.kind);
+    expect(geocodes).toEqual([]);
+    expect(quota).toBe(0);
+    expect(calls.map((c) => [c.group, c.lat, c.lng, c.radius, c.q])).toEqual([
+      ["all", null, null, null, null],
+    ]);
+    expect(model.body.all?.items).toHaveLength(20);
+    expect(model.moreAll).toMatch(/^\/search\?all_cursor=/);
+    expect(model.categoryLinks[0]).toMatchObject({
+      href: "/search",
+      current: true,
+    });
+  });
+
+  it("name words narrow browsing and stay on every link", async () => {
+    const calls: SearchArgs[] = [];
+    const { model } = await buildSearchPage(
+      req("?q=%20Shine%20%20tyres%20&category=tyres-and-wheel-alignment"),
+      deps({}, calls),
+    );
+    if (model.kind !== "browse") throw new Error(model.kind);
+    expect(model.q).toBe("Shine tyres");
+    expect(calls[0]).toMatchObject({
+      group: "all",
+      q: "Shine tyres",
+      category: "tyres-and-wheel-alignment",
+    });
+    expect(model.moreAll).toMatch(
+      /^\/search\?q=Shine\+tyres&category=tyres-and-wheel-alignment&all_cursor=/,
+    );
+    for (const c of model.categoryLinks)
+      expect(c.href).toContain("q=Shine+tyres");
+    // The next page reads its cursor back.
+    const next = await buildSearchPage(
+      req((model.moreAll ?? "").slice("/search".length)),
+      deps({}, calls),
+    );
+    expect(next.model.kind).toBe("browse");
+    expect(calls[1]?.afterId).not.toBeNull();
+  });
+
+  it("rejects words it cannot search before any limit is spent", async () => {
+    let touched = false;
+    const { model } = await buildSearchPage(
+      req("?q=%3Cscript%3E"),
+      deps({
+        limits: () => {
+          touched = true;
+          return allow();
+        },
+      }),
+    );
+    expect(model.kind).toBe("invalid_words");
     expect(touched).toBe(false);
+  });
+
+  it("name words narrow an area search and stay on its links", async () => {
+    const calls: SearchArgs[] = [];
+    const { model } = await buildSearchPage(
+      req("?area=Sandton&q=shine"),
+      deps({}, calls),
+    );
+    if (model.kind !== "results") throw new Error(model.kind);
+    expect(calls.map((c) => [c.group, c.q])).toEqual([
+      ["fixed", "shine"],
+      ["mobile", "shine"],
+    ]);
+    expect(model.moreFixed).toMatch(/^\/search\?q=shine&lat=/);
+    for (const l of model.radiusLinks) expect(l.href).toContain("q=shine");
+    const more = await buildSearchPage(
+      req((model.moreFixed ?? "").slice("/search".length)),
+      deps({}, calls),
+    );
+    expect(more.model.kind).toBe("results");
   });
 
   it("geocodes an area once, rounds the point and runs both groups", async () => {
@@ -180,13 +260,15 @@ describe("search page model", () => {
       mobile: Array.from({ length: 45 }, (_, i) => row(i + 1, "mobile")),
     };
     const keyset = (args: SearchArgs) => {
-      const rows = all[args.group].filter((r) => {
-        if (args.afterId === null) return true;
-        if (args.group === "mobile") return r.public_id > args.afterId;
-        const b = r.distance_bucket ?? 0;
-        const after = args.afterBucket ?? 0;
-        return b > after || (b === after && r.public_id > args.afterId);
-      });
+      const rows = all[args.group === "fixed" ? "fixed" : "mobile"].filter(
+        (r) => {
+          if (args.afterId === null) return true;
+          if (args.group === "mobile") return r.public_id > args.afterId;
+          const b = r.distance_bucket ?? 0;
+          const after = args.afterBucket ?? 0;
+          return b > after || (b === after && r.public_id > args.afterId);
+        },
+      );
       return Promise.resolve(rows.slice(0, args.limit));
     };
     const visit = async (href: string) => {
