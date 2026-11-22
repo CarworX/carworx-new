@@ -1,0 +1,114 @@
+/* Layout from the Sites setup hub and task cards. */
+.cx-setup-hub,
+.cx-setup-flow {
+  display: grid;
+  gap: 20px;
+  max-width: 880px;
+}
+
+.cx-setup-flow {
+  margin-inline: auto;
+}
+
+.cx-setup-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 16px;
+}
+
+.cx-setup-head h3 {
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  margin-block: 6px;
+}
+
+.cx-setup-ring {
+  display: grid;
+  width: 88px;
+  height: 88px;
+  place-items: center;
+}
+
+.cx-setup-ring > * {
+  grid-area: 1 / 1;
+}
+.cx-setup-ring svg {
+  width: 100%;
+  transform: rotate(-90deg);
+}
+.cx-setup-ring circle {
+  fill: none;
+  stroke: var(--canvas-2);
+  stroke-width: 8px;
+}
+.cx-setup-ring circle + circle {
+  stroke: var(--ink);
+}
+
+.cx-setup-tasks {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+
+.cx-setup-task {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 6px 14px;
+  padding: 18px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--sh-1);
+}
+
+.cx-setup-task h4 {
+  font-size: 17px;
+  font-weight: 500;
+}
+.cx-setup-task p {
+  color: var(--muted);
+  font-size: 14px;
+}
+.cx-setup-icon {
+  grid-row: span 3;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--canvas);
+}
+
+.cx-setup-task[data-ready] .cx-setup-icon {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.cx-setup-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.cx-setup-card {
+  display: grid;
+  gap: 24px;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--sh-2);
+  padding: 28px;
+}
+
+@media (max-width: 640px) {
+  .cx-setup-ring {
+    width: 64px;
+    height: 64px;
+  }
+  .cx-setup-card {
+    padding: 20px;
+  }
+}
