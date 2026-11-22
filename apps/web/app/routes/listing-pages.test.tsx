@@ -42,6 +42,7 @@ function renderListing(extra: Record<string, unknown> = {}) {
             csrf: "csrf-token-for-test",
             siteKey: null,
             sent: false,
+            draft: "",
             ...extra,
           }}
         />
@@ -118,6 +119,7 @@ describe("/p/:publicId: the preview listing view", () => {
               siteKey: "1x00000000000000000000AA",
               sent: false,
               sender: null,
+              draft: "",
             }}
             actionData={{
               problem: "account_required",
@@ -138,6 +140,16 @@ describe("/p/:publicId: the preview listing view", () => {
     });
     expect(h).toContain("Comes to you");
     expect(h).not.toContain("Kestrel Lane");
+  });
+
+  it("signed in after the step: the kept message is back in the box", () => {
+    const h = renderListing({
+      siteKey: "1x00000000000000000000AA",
+      sender: { email: "sam@example.test" },
+      draft: "Do you do weekend washes?",
+    });
+    expect(h).toContain(">Do you do weekend washes?</textarea>");
+    expect(h).toContain("Your message is kept.");
   });
 
   it("says when a message was sent", () => {

@@ -13,6 +13,7 @@ import { topCategoryOf } from "../catalogue/taxonomy";
 import { CsrfField } from "../auth/ui";
 import { getSignedIn, hasSessionCookie } from "../auth/session.server";
 import { CatalogueUnavailable, listingById } from "../server/catalogue/public";
+import { forgetDraft, keepDraft, readDraft } from "../server/forms/draft";
 import { NOTICE_VERSION, parseEnquiry } from "../server/forms/parse";
 import { formAction, formHeaders } from "../server/forms/route.server";
 import {
@@ -89,6 +90,8 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       siteKey: siteKeyFor(context.cloudflare.env as FormsEnv, config),
       sent: new URL(request.url).searchParams.get("sent") === "1",
       sender,
+      // A message kept through sign-in without JavaScript (server/forms/draft).
+      draft: readDraft(request, params.publicId),
     },
     {
       headers: (() => {
@@ -111,15 +114,13 @@ export async function action({ request, params, context }: Route.ActionArgs) {
   const signedIn = await getSignedIn(request, context.security);
   if (signedIn === null) {
     const form = await request.clone().formData();
-    const message = form.get("message");
+    const field = form.get("message");
+    const message = typeof field === "string" ? field.slice(0, 1000) : "";
     const problem: Problem = "account_required";
-    return data(
-      {
-        problem,
-        message: typeof message === "string" ? message.slice(0, 1000) : "",
-      },
-      { status: 401, headers: { "Cache-Control": "private, no-store" } },
-    );
+    const headers = new Headers({ "Cache-Control": "private, no-store" });
+    const kept = keepDraft(params.publicId, message);
+    if (kept) headers.append("Set-Cookie", kept);
+    return data({ problem, message }, { status: 401, headers });
   }
   const userId = signedIn.user.id;
   const problem = await formAction(
@@ -138,6 +139,8 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       for (const cookie of refreshed) headers.append("Set-Cookie", cookie);
     return problem;
   }
+  // Sent: the kept draft is no longer needed.
+  signedIn.headers.append("Set-Cookie", forgetDraft());
   // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router control flow
   throw redirect(`/p/${params.publicId}?sent=1#enquiry`, {
     headers: signedIn.headers,
@@ -341,6 +344,7 @@ export default function ListingPage({
               listingId={listing.public_id}
               sender={loaderData.sender.email}
               problem={actionData?.problem}
+              keptDraft={loaderData.draft}
             />
           ) : (
             <SignedOutEnquiry
@@ -353,7 +357,7 @@ export default function ListingPage({
                 "message" in actionData &&
                 typeof actionData.message === "string"
                   ? actionData.message
-                  : ""
+                  : loaderData.draft
               }
             />
           )}
@@ -464,6 +468,7 @@ function EnquiryForm({
   listingId,
   sender,
   problem,
+  keptDraft,
 }: {
   csrf: string;
   siteKey: string;
@@ -471,10 +476,12 @@ function EnquiryForm({
   listingId: string;
   sender: string;
   problem: Problem | undefined;
+  /** The message kept through sign-in by the server ("" for none). */
+  keptDraft: string;
 }) {
   const draft = useEnquiryDraft(listingId);
   const box = useRef<HTMLTextAreaElement>(null);
-  const [kept, setKept] = useState(false);
+  const [kept, setKept] = useState(keptDraft !== "");
   useEffect(() => {
     const message = draft.restore();
     if (box.current && message && box.current.value === "") {
@@ -512,6 +519,7 @@ function EnquiryForm({
           ref={box}
           id="enquiry-message"
           name="message"
+          defaultValue={keptDraft}
           required
           minLength={10}
           maxLength={1000}
