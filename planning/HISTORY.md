@@ -332,3 +332,7 @@ Owner approved the finish plan and delegated implementation, Codex review and sa
 - 2026-11-12 (SAST) — Claude: D-091 records the owner granting both agents full build and merge authority, with reviews after merge, and the lane split (Codex: #84 onboarding and #83 Sites; Claude: review #84, launch gaps, O7, O8, P-4).
 
 - 2026-11-13 16:56 UTC — Codex: #97 ready-for-review CI reached RLS and failed; aligned 50_email_outbox capability assertion with migration cap 5 (was 3). Disposable native stack: all 30 O5 pgTAP assertions passed. No merge. Agent: codex
+
+## 2026-11-22 — Remaining directory screen plan (Codex)
+
+Owner requested page-by-page plans for business setup, staff, accounts and admin. Added planning/codex/directory-remaining-screens-plan.md and linked it from the booking staging plan in #134. Audited the registered main routes, existing loaders/actions, task/tab permissions and current Sites source (v4). Plan includes four implementation groups, existing versus missing capabilities, role/MFA isolation, visual parity and hosted acceptance. Cover uploads, invite email, unsupported privacy/preferences and optional step-up remain explicit dependencies rather than claimed functionality. Documentation only; git diff --check passed; no application tests, migrations or deployments performed for this planning addition.

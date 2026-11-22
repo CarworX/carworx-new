@@ -2,6 +2,8 @@
 
 Requested by the owner on 2026-11-22 (SAST). Plan for a private, synthetic-data staging release the owner can try. This document does not record a deployment or a passed hosted test.
 
+The [business, staff, account and admin screen plan](directory-remaining-screens-plan.md) now provides the complementary page-by-page directory work, implementation order and role-based staging acceptance criteria.
+
 ## Verified starting point
 
 - Directory staging runs main `70d10b5fb9f8de119a58d3f9a85316134dc52964`, Worker version `7ad34838-fff7-4d4e-bba7-344b96c8146b`. Keyword-search and account-enquiry migrations are applied.
