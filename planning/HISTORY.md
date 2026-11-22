@@ -332,3 +332,7 @@ Owner approved the finish plan and delegated implementation, Codex review and sa
 - 2026-11-12 (SAST) — Claude: D-091 records the owner granting both agents full build and merge authority, with reviews after merge, and the lane split (Codex: #84 onboarding and #83 Sites; Claude: review #84, launch gaps, O7, O8, P-4).
 
 - 2026-11-13 16:56 UTC — Codex: #97 ready-for-review CI reached RLS and failed; aligned 50_email_outbox capability assertion with migration cap 5 (was 3). Disposable native stack: all 30 O5 pgTAP assertions passed. No merge. Agent: codex
+
+## 2026-11-22 — Directory workspace implementation (Codex)
+
+Business setup #135 and staff #136 passed GitHub checks and merged to main under D-091. #137 adds Sites account settings and scoped active membership links. Admin follow-up adds Sites-inspired queue, audit and dashboard presentation with existing native AAL2 and database actions. These ports retain the existing schema. Combined local TypeScript, focused lint, staging build and Wrangler dry-run passed. See planning/runbooks/directory-staging-walkthrough.md for the owner test paths. Browser parity and hosted acceptance require their own evidence, and independent review is required before the staging deployment in the approved plan.

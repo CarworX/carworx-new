@@ -133,15 +133,14 @@ export default function AdminToday({ loaderData }: Route.ComponentProps) {
         Start with disputes, then the oldest applications. Decisions use your
         signed-in admin account and are recorded in the audit log.
       </p>
-      <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-admin-today>
+      <dl className="cx-admin-kpis" data-admin-today>
         {metrics.map((metric) => (
-          <div
-            key={metric.title}
-            className="rounded-2xl bg-[var(--surface)] p-4"
-          >
+          <div key={metric.title} className="cx-admin-kpi">
             <dt className="type-label">{metric.title}</dt>
-            <dd className="type-display-lg mt-2">{metric.value}</dd>
-            <dd className="mt-2">
+            <dd>
+              <strong>{metric.value}</strong>
+            </dd>
+            <dd>
               <a className="cx-tlink" href={metric.href}>
                 Open queue
               </a>
@@ -150,7 +149,10 @@ export default function AdminToday({ loaderData }: Route.ComponentProps) {
         ))}
       </dl>
       {disputes.length > 0 ? (
-        <section className="mt-8" aria-labelledby="urgent-disputes">
+        <section
+          className="cx-admin-panel mt-8"
+          aria-labelledby="urgent-disputes"
+        >
           <h2 id="urgent-disputes" className="type-title">
             Disputes need attention
           </h2>
@@ -173,7 +175,10 @@ export default function AdminToday({ loaderData }: Route.ComponentProps) {
           </ul>
         </section>
       ) : null}
-      <section className="mt-8" aria-labelledby="oldest-applications">
+      <section
+        className="cx-admin-panel mt-8"
+        aria-labelledby="oldest-applications"
+      >
         <h2 id="oldest-applications" className="type-title">
           Oldest applications
         </h2>
@@ -197,7 +202,10 @@ export default function AdminToday({ loaderData }: Route.ComponentProps) {
           </ul>
         )}
       </section>
-      <section className="mt-8" aria-labelledby="recent-decisions">
+      <section
+        className="cx-admin-panel mt-8"
+        aria-labelledby="recent-decisions"
+      >
         <h2 id="recent-decisions" className="type-title">
           Your recent decisions
         </h2>
