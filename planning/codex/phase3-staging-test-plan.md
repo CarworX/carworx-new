@@ -41,3 +41,9 @@ Update the existing CarworX Site, keeping its audience and other screens. Reflec
 - No staging auth-email hook Worker or approved-recipient binding was present at the latest read-back; promotion receipts/scoped workflow-token evidence remain incomplete.
 - #133 corrects workflow secret overrides; its CI/review/merge must complete before using that promotion packaging path.
 - Production release and live payments remain separately gated. This plan calls for synthetic private staging testing only.
+
+## Published planning milestone
+
+2026-11-22: existing restricted CarworX Site published as version 4 at https://carworx.gerrardlewu.chatgpt.site (Site source 9a9c59aeae65c71a50b0faf1b30f088d8a512562; deployment appgdep_6b034bcbb3c881918427d08550c24803, succeeded). /progress.html records current directory staging, the outstanding hosted checks and links to /staging-plan.html and existing simulated booking/quote/checkout journeys. Home adds the browse-first entry and three-step explanation; search supports sample business/service keywords without a required area; the listing request includes a simulated account gate. No real credentials, enquiries, bookings or charges are collected on Sites. This is a milestone refresh, not a claimed exact visual match to the deployed D-097 home.
+
+Verified customer route/form/payment simulations, keyword/no-area/no-result/account-gate cases, 17 onboarding pages, role menus and 307 local URLs/assets. Browser rendering/desktop/mobile checks remain unverified because browser access is unavailable in this chat. Native Sites publication succeeded. Older local Site edits were preserved in their original checkout; publication used a fresh checkout of hosted source.
