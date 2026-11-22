@@ -14,6 +14,8 @@ const ALLOWED = [
   /^\/org\/[^/?#]+(?:[?#]|$)/,
   /^\/provider(?:\/apply)?(?:[?#]|$)/,
   /^\/provider\/claim\/[0-9a-f-]{36}(?:[?#]|$)/i,
+  // D-097: back to a business page after signing in to send an enquiry.
+  /^\/p\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:#enquiry)?$/,
   /^\/provider\/get-listed\/(?:business|service|location|about|check|submitted)$/,
   // Setup links carry the organisation as exactly one UUID query (setupHref).
   /^\/provider\/setup\/[a-z-]+\/[a-z-]+(?:\?org=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$/,

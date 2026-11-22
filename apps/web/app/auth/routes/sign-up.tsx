@@ -5,11 +5,19 @@ import {
   FAILURE_MESSAGES,
   type AuthFailure,
 } from "../errors";
-import { isTicked, parseEmail, parsePassword } from "../forms";
+import { field, isTicked, parseEmail, parsePassword } from "../forms";
 import { authRequest } from "../session.server";
 import { emailDecision } from "../email-policy.server";
 import { observeEmailProbe } from "../email-probe.server";
-import { appUrl } from "../../server/security/redirect";
+import {
+  RETURN_COOKIE,
+  serializeAppCookie,
+} from "../../server/security/cookies";
+import {
+  appUrl,
+  DEFAULT_AFTER_SIGN_IN,
+  safeReturnTo,
+} from "../../server/security/redirect";
 import { AuthPage, CsrfField, EmailField, Notice, PasswordField } from "../ui";
 import type { Route } from "./+types/sign-up";
 
@@ -31,8 +39,24 @@ function fail(problem: Problem, init: { status: number; headers?: Headers }) {
   return data({ problem }, init);
 }
 
-export function loader({ context }: Route.LoaderArgs) {
-  return { csrf: context.security.csrfToken };
+export function loader({ request, context }: Route.LoaderArgs) {
+  return {
+    csrf: context.security.csrfToken,
+    returnTo: new URL(request.url).searchParams.get("returnTo") ?? "",
+  };
+}
+
+/**
+ * Where to go after the confirmation link (D-097: back to the business page
+ * the enquiry was for). It rides in a short-lived cookie, like the Google
+ * flow, so it only applies when the link is opened in this same browser.
+ */
+function rememberReturn(headers: Headers, returnTo: string) {
+  if (returnTo === DEFAULT_AFTER_SIGN_IN) return;
+  headers.append(
+    "Set-Cookie",
+    serializeAppCookie(RETURN_COOKIE, returnTo, { maxAge: 3600 }),
+  );
 }
 
 export async function action({ request, context }: Route.ActionArgs) {
@@ -49,6 +73,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return fail(problem ?? "unexpected", { status: 400 });
   }
   const auth = authRequest(request, context.security);
+  const returnTo = safeReturnTo(field(form, "returnTo"), auth.config.appOrigin);
   const decision = emailDecision(request, auth.config, email);
   if (decision === "unavailable") return fail("email_failed", { status: 503 });
   if (decision === "acknowledge") {
@@ -71,6 +96,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
   }
   // Same answer whether or not the email already has an account.
+  rememberReturn(auth.headers, returnTo);
   return redirect("/auth/check-email?sent=signup", { headers: auth.headers });
 }
 
@@ -88,6 +114,7 @@ export default function SignUp({
       )}
       <Form method="post">
         <CsrfField token={loaderData.csrf} />
+        <input type="hidden" name="returnTo" value={loaderData.returnTo} />
         <EmailField />
         <PasswordField autoComplete="new-password" />
         <p>
@@ -99,7 +126,16 @@ export default function SignUp({
         <button type="submit">Create account</button>
       </Form>
       <p>
-        Already have an account? <Link to="/auth/sign-in">Sign in</Link>
+        Already have an account?{" "}
+        <Link
+          to={
+            loaderData.returnTo
+              ? `/auth/sign-in?returnTo=${encodeURIComponent(loaderData.returnTo)}`
+              : "/auth/sign-in"
+          }
+        >
+          Sign in
+        </Link>
       </p>
     </AuthPage>
   );

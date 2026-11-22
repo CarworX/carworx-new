@@ -1,0 +1,96 @@
+/*
+ * D-097 sign-in step for enquiries, from planning/landing-redesign/mockup.html
+ * (.dim, .sheet, .grab, .keep and the desktop-gate card). Desktop: a 440px
+ * card in the middle; phones: a bottom sheet with a grab handle.
+ */
+.gate {
+  /* The Sites reset zeroes margins; a modal dialog centres with auto. */
+  margin: auto;
+  width: min(440px, calc(100vw - 32px));
+  border: 0;
+  border-radius: 24px;
+  background: #fff;
+  color: #0d0f12;
+  padding: 28px;
+  box-shadow: 0 24px 60px rgba(13, 15, 18, 0.25);
+}
+.gate::backdrop {
+  background: rgba(13, 15, 18, 0.45);
+}
+/* Without JavaScript the step is a plain open dialog: keep it on top. */
+.gate[open]:not(:modal) {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  box-shadow: 0 0 0 100vmax rgba(13, 15, 18, 0.45);
+}
+.gate h2 {
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+}
+.gate p {
+  font-size: 14px;
+  line-height: 1.45;
+  color: #5b6470;
+  margin: 0 0 14px;
+}
+.gate-keep {
+  background: #e3eaff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #2a54d4;
+  margin-bottom: 16px;
+}
+.gate .btn {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  margin-bottom: 10px;
+  text-decoration: none;
+}
+.gate .btn.secondary {
+  margin-bottom: 0;
+}
+.gate-grab {
+  display: none;
+}
+.gate-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #5b6470;
+}
+@media (max-width: 600px) {
+  .gate,
+  .gate[open]:not(:modal) {
+    width: 100%;
+    max-width: 100%;
+    margin: auto 0 0;
+    box-sizing: border-box;
+    inset: auto 0 0 0;
+    transform: none;
+    border-radius: 28px 28px 0 0;
+    padding: 14px 22px 30px;
+  }
+  .gate-grab {
+    display: block;
+    width: 40px;
+    height: 5px;
+    border-radius: 9px;
+    background: #dedcd6;
+    margin: 0 auto 18px;
+  }
+  .gate h2 {
+    font-size: 22px;
+  }
+}

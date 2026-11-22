@@ -10,7 +10,15 @@ import {
   onTestFinished,
 } from "vitest";
 
-import { Browser, sql, sqlRows, stack, workerEnv } from "./harness";
+import {
+  admin,
+  Browser,
+  PASSWORD,
+  sql,
+  sqlRows,
+  stack,
+  workerEnv,
+} from "./harness";
 
 /**
  * P2-5 visitor forms through the built Worker, writing as the real scoped
@@ -105,6 +113,40 @@ function cleanUp(address: string) {
   });
 }
 
+/**
+ * D-097: enquiries need an account. A confirmed synthetic customer with this
+ * address, signed in through the real form in a browser with the forms env.
+ * The account is deleted when the test finishes.
+ */
+async function customer(address: string, extra: Record<string, unknown> = {}) {
+  const { data, error } = await admin.auth.admin.createUser({
+    email: address,
+    password: PASSWORD,
+    email_confirm: true,
+  });
+  if (error !== null) throw new Error(`createUser failed: ${error.message}`);
+  onTestFinished(async () => {
+    sql(
+      `delete from public.enquiries where sender_user_id = '${data.user.id}'`,
+    );
+    await admin.auth.admin.deleteUser(data.user.id);
+  });
+  const b = browser(extra);
+  await b.send("/auth/sign-in");
+  const reply = await b.send("/auth/sign-in", {
+    form: {
+      intent: "password",
+      email: address,
+      password: PASSWORD,
+      returnTo: "",
+    },
+  });
+  if (reply.status !== 302)
+    throw new Error(`sign-in failed with ${String(reply.status)}`);
+  await b.send(`/p/${SEED_FIXED}`);
+  return { browser: b, id: data.user.id };
+}
+
 function count(table: string, column: string, value: string): number {
   return Number(
     sqlRows(
@@ -124,7 +166,10 @@ const enquiry = (address: string, extra: Record<string, string> = {}) => ({
 
 describe("enquiry on /p/:publicId", () => {
   it("renders the form with an unticked consent box and the widget slot", async () => {
-    const reply = await browser().send(`/p/${SEED_FIXED}`);
+    const address = email("render");
+    cleanUp(address);
+    const { browser: b } = await customer(address);
+    const reply = await b.send(`/p/${SEED_FIXED}`);
     expect(reply.status).toBe(200);
     expect(reply.headers.get("Cache-Control")).toBe("private, no-store");
     expect(reply.body).toContain('data-form="enquiry"');
@@ -140,8 +185,7 @@ describe("enquiry on /p/:publicId", () => {
   it("stores an enquiry as forms_server after Turnstile passes", async () => {
     const address = email("enquiry");
     cleanUp(address);
-    const b = browser();
-    await b.send(`/p/${SEED_FIXED}`);
+    const { browser: b, id } = await customer(address);
     const reply = await b.send(`/p/${SEED_FIXED}`, {
       form: enquiry(address.toUpperCase()),
       headers: { "CF-Connecting-IP": "198.51.100.7" },
@@ -156,6 +200,12 @@ describe("enquiry on /p/:publicId", () => {
     ).toEqual([
       "enquiry_share_with_provider|checkbox_unticked_default|privacy-2026-11-11",
     ]);
+    // D-097: the sender is the account; a name or email in the form is ignored.
+    expect(
+      sqlRows(
+        `select sender_user_id || '|' || sender_email from public.enquiries where sender_email = '${address}'`,
+      ),
+    ).toEqual([`${id}|${address}`]);
     expect(verifyCalls).toHaveLength(1);
     expect(verifyCalls[0]?.get("secret")).toBe(TEST_SECRET_PASS);
     expect(verifyCalls[0]?.get("response")).toBe(DUMMY_TOKEN);
@@ -164,11 +214,63 @@ describe("enquiry on /p/:publicId", () => {
     expect(sent.body).toContain("Message sent.");
   });
 
+  it("signed out: writes nothing and answers with the sign-in step, message kept (D-097)", async () => {
+    const address = email("signedout");
+    cleanUp(address);
+    const ns = limiter();
+    const b = browser({ SEARCH_LIMITER: ns });
+    const page = await b.send(`/p/${SEED_FIXED}`);
+    expect(page.body).toContain("Sign in to send your enquiry");
+    expect(page.body).not.toMatch(/name="email"/);
+    const reply = await b.send(`/p/${SEED_FIXED}`, {
+      form: enquiry(address, { message: "Synthetic: kept across sign-in" }),
+    });
+    expect(reply.status).toBe(401);
+    expect(reply.body).toMatch(/<dialog class="gate"[^>]*\bopen/);
+    expect(reply.body).toContain(">Synthetic: kept across sign-in</textarea>");
+    expect(ns.names).toHaveLength(0);
+    expect(verifyCalls).toHaveLength(0);
+    expect(count("consents", "subject_email", address)).toBe(0);
+    expect(count("enquiries", "sender_email", address)).toBe(0);
+  });
+
+  it("signing in from the step comes straight back to the business page", async () => {
+    const address = email("returnto");
+    cleanUp(address);
+    const { data } = await admin.auth.admin.createUser({
+      email: address,
+      password: PASSWORD,
+      email_confirm: true,
+    });
+    onTestFinished(async () => {
+      if (data.user) await admin.auth.admin.deleteUser(data.user.id);
+    });
+    const b = browser();
+    const back = `/p/${SEED_FIXED}#enquiry`;
+    const signIn = await b.send(
+      `/auth/sign-in?returnTo=${encodeURIComponent(back)}`,
+    );
+    expect(signIn.body).toContain(
+      `/auth/sign-up?returnTo=${encodeURIComponent(back)}`,
+    );
+    const reply = await b.send("/auth/sign-in", {
+      form: {
+        intent: "password",
+        email: address,
+        password: PASSWORD,
+        returnTo: back,
+      },
+    });
+    expect(reply.status).toBe(302);
+    expect(reply.location).toBe(back);
+    const page = await b.send(`/p/${SEED_FIXED}`);
+    expect(page.body).toContain(`Sending as <strong>${address}</strong>`);
+  });
+
   it("refuses without consent, before Turnstile and the database", async () => {
     const address = email("noconsent");
     cleanUp(address);
-    const b = browser();
-    await b.send(`/p/${SEED_FIXED}`);
+    const { browser: b } = await customer(address);
     const reply = await b.send(`/p/${SEED_FIXED}`, {
       form: enquiry(address, { consent: "" }),
     });
@@ -185,8 +287,7 @@ describe("enquiry on /p/:publicId", () => {
       success: false,
       "error-codes": ["invalid-input-response"],
     };
-    const b = browser();
-    await b.send(`/p/${SEED_FIXED}`);
+    const { browser: b } = await customer(address);
     const reply = await b.send(`/p/${SEED_FIXED}`, { form: enquiry(address) });
     expect(reply.status).toBe(400);
     expect(reply.body).toContain('data-problem="check_failed"');
@@ -196,8 +297,7 @@ describe("enquiry on /p/:publicId", () => {
   it("refuses an enquiry to a listing that isn't live", async () => {
     const address = email("pending");
     cleanUp(address);
-    const b = browser();
-    await b.send(`/p/${SEED_FIXED}`);
+    const { browser: b } = await customer(address);
     const reply = await b.send(`/p/${SEED_PENDING}`, {
       form: enquiry(address),
     });
@@ -211,8 +311,7 @@ describe("enquiry on /p/:publicId", () => {
     const address = email("limited");
     cleanUp(address);
     const ns = limiter({ allowed: false, retry_after: 42 });
-    const b = browser({ SEARCH_LIMITER: ns });
-    await b.send(`/p/${SEED_FIXED}`);
+    const { browser: b } = await customer(address, { SEARCH_LIMITER: ns });
     const reply = await b.send(`/p/${SEED_FIXED}`, {
       form: enquiry(address),
       headers: { "CF-Connecting-IP": "198.51.100.7" },
@@ -231,7 +330,7 @@ describe("enquiry on /p/:publicId", () => {
     ]) {
       const address = email("closed");
       cleanUp(address);
-      const b = browser(env);
+      const { browser: b } = await customer(address, env);
       const page = await b.send(`/p/${SEED_FIXED}`);
       expect(page.body).toContain("available right now.");
       expect(page.body).not.toContain('data-form="enquiry"');
@@ -247,8 +346,7 @@ describe("enquiry on /p/:publicId", () => {
   it("fails closed without the forms database", async () => {
     const address = email("nodb");
     cleanUp(address);
-    const b = browser({ FORMS_DB: undefined });
-    await b.send(`/p/${SEED_FIXED}`);
+    const { browser: b } = await customer(address, { FORMS_DB: undefined });
     const reply = await b.send(`/p/${SEED_FIXED}`, { form: enquiry(address) });
     expect(reply.status).toBe(503);
   });
@@ -256,8 +354,7 @@ describe("enquiry on /p/:publicId", () => {
   it("refuses a cross-site post or a missing CSRF token (T5)", async () => {
     const address = email("csrf");
     cleanUp(address);
-    const b = browser();
-    await b.send(`/p/${SEED_FIXED}`);
+    const { browser: b } = await customer(address);
     expect(
       (
         await b.send(`/p/${SEED_FIXED}`, {

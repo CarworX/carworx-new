@@ -39,14 +39,6 @@ export type Parsed<T> =
 // eslint-disable-next-line no-control-regex -- reject control characters, as the database does
 const CONTROL = /[\u0000-\u001f\u007f]/;
 
-function line(form: FormData, name: string, min: number, max: number) {
-  const value = field(form, name).trim();
-  if (value.length < min || value.length > max || CONTROL.test(value))
-    return null;
-  return value;
-}
-
-/** CRLF and CR become LF; line breaks are kept, other controls refused. */
 function multiline(form: FormData, name: string, min: number, max: number) {
   const value = field(form, name)
     .replace(/\r\n?/g, "\n")
@@ -75,20 +67,19 @@ export function email(form: FormData): string | null {
   return value;
 }
 
+/**
+ * An enquiry asks only for the message (D-097): the sender is the signed-in
+ * account, and the database reads their name and email from it.
+ */
 export interface Enquiry {
-  name: string;
-  email: string;
   message: string;
 }
 export function parseEnquiry(form: FormData): Parsed<Enquiry> {
-  const name = line(form, "name", 2, 80);
-  const address = email(form);
   const message = multiline(form, "message", 10, 1000);
-  if (name === null || address === null || message === null)
-    return { ok: false, problem: "invalid_input" };
+  if (message === null) return { ok: false, problem: "invalid_input" };
   if (!isTicked(form, "consent"))
     return { ok: false, problem: "consent_required" };
-  return { ok: true, value: { name, email: address, message } };
+  return { ok: true, value: { message } };
 }
 
 export interface Demand {

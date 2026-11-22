@@ -3,6 +3,12 @@ import { data, Form, Link, redirect } from "react-router";
 import { FAILURE_MESSAGES } from "../errors";
 import { field } from "../forms";
 import { authRequest } from "../session.server";
+import {
+  RETURN_COOKIE,
+  readCookie,
+  serializeAppCookie,
+} from "../../server/security/cookies";
+import { safeReturnTo } from "../../server/security/redirect";
 import { AuthPage, CsrfField, Notice } from "../ui";
 import type { Route } from "./+types/confirm";
 
@@ -49,12 +55,19 @@ export async function action({ request, context }: Route.ActionArgs) {
   if (error !== null) {
     return data({ failed: true, type }, { status: 400, headers: auth.headers });
   }
-  return redirect(
-    type === "recovery" ? "/auth/reset-password" : "/account?confirmed=1",
-    {
-      headers: auth.headers,
-    },
+  if (type === "recovery")
+    return redirect("/auth/reset-password", { headers: auth.headers });
+  // D-097: a sign-up that started from a business page goes back there.
+  const back = safeReturnTo(
+    readCookie(request, RETURN_COOKIE),
+    auth.config.appOrigin,
+    "/account?confirmed=1",
   );
+  auth.headers.append(
+    "Set-Cookie",
+    serializeAppCookie(RETURN_COOKIE, "", { maxAge: 0 }),
+  );
+  return redirect(back, { headers: auth.headers });
 }
 
 function LinkFailed({ type }: { type: LinkType }) {
