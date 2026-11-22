@@ -323,7 +323,11 @@ function Businesses({ catalogue }: { catalogue: HomeCatalogue | null }) {
               className={filter === f.key ? "lp-chip on" : "lp-chip"}
               aria-current={filter === f.key ? "true" : undefined}
               onClick={(event) => {
-                // With JavaScript, filter the cards here; without, browse.
+                // With JavaScript, filter the cards shown here. When none of
+                // them matches, the link goes to that search instead, so a
+                // category with businesses is never shown as empty.
+                const sample = catalogue?.listings ?? [];
+                if (!sample.some((l) => matches(l, f.key))) return;
                 event.preventDefault();
                 setFilter(f.key);
               }}
@@ -339,14 +343,27 @@ function Businesses({ catalogue }: { catalogue: HomeCatalogue | null }) {
           </p>
         ) : shown.length === 0 ? (
           <p className="lp-note" role="status">
-            None of these here yet. <a href="/search">See every business →</a>
+            <a href="/search">See every business →</a>
           </p>
         ) : (
-          <div className="lp-grid">
-            {shown.map((l) => (
-              <BusinessCard key={l.public_id} listing={l} />
-            ))}
-          </div>
+          <>
+            <div className="lp-grid">
+              {shown.map((l) => (
+                <BusinessCard key={l.public_id} listing={l} />
+              ))}
+            </div>
+            {filter !== "all" ? (
+              <p className="lp-note">
+                <a
+                  href={
+                    FILTERS.find((f) => f.key === filter)?.href ?? "/search"
+                  }
+                >
+                  See all of them →
+                </a>
+              </p>
+            ) : null}
+          </>
         )}
       </div>
     </section>
