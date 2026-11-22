@@ -24,15 +24,30 @@ export function SetupHub({
 }) {
   if (role === "staff")
     return (
-      <div className="mt-4 grid max-w-[65ch] gap-3" data-staff-home>
-        <StatusNote title="Your work">
-          Your own account is connected to this team. Booking assignments will
-          appear here when bookings become available.
-        </StatusNote>
+      <div className="cx-setup-hub mt-4" data-staff-home>
         <div>
-          <ButtonLink href={setupHref(org, "profile")} variant="outline">
-            Your services and days
-          </ButtonLink>
+          <p className="type-label text-quiet">{name} · Staff</p>
+          <h3 className="type-title">You're on the team</h3>
+        </div>
+        <div className="cx-setup-tasks">
+          <section className="cx-setup-card">
+            <h4 className="type-heading">Your requests</h4>
+            <StatusNote title="Bookings are coming later">
+              Requests assigned to you will appear here when bookings open.
+            </StatusNote>
+          </section>
+          <section className="cx-setup-card">
+            <h4 className="type-heading">Your work and availability</h4>
+            <p className="type-body">
+              Tell your team which services you offer and which days you usually
+              work.
+            </p>
+            <div>
+              <ButtonLink href={setupHref(org, "profile")} variant="outline">
+                Your services and days
+              </ButtonLink>
+            </div>
+          </section>
         </div>
       </div>
     );

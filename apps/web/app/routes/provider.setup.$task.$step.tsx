@@ -1,7 +1,7 @@
 import { readTeamChanges, type TeamChange } from "../team/changes";
 import { data } from "react-router";
 
-import { field } from "../auth/forms";
+import { field, parseEmail } from "../auth/forms";
 import { throwRedirect, throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
@@ -169,10 +169,13 @@ export async function action({ request, params, context }: Route.ActionArgs) {
         signedIn.headers,
       );
     if (intent !== "create-link") return fail("invalid_input");
+    const email = parseEmail(form);
+    if (field(form, "email").trim() && email === null)
+      return fail("invalid_input");
     const result = await signedIn.supabase.rpc("create_invite", {
       p_org: organisation.id,
       p_role: role,
-      p_email: null,
+      p_email: email,
     });
     if (result.error !== null) return fail(teamProblem(result.error));
     if (typeof result.data !== "string" || !INVITE_TOKEN.test(result.data))
@@ -345,6 +348,14 @@ export default function TeamSetup({
                   Email delivery is not available here yet; no email will be
                   sent.
                 </StatusNote>
+                <TextField
+                  label="Restrict to an email address (optional)"
+                  name="email"
+                  type="email"
+                  autoComplete="off"
+                  maxLength={254}
+                  hint="Only someone signed in with this verified address can accept the link."
+                />
                 <div>
                   <Button
                     type="submit"
