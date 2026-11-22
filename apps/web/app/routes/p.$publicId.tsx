@@ -409,10 +409,16 @@ function SignedOutEnquiry({
   const draft = useEnquiryDraft(listingId);
   const box = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
+    if (!box.current) return;
+    // Just answered a post: that text is the newest, so keep it here too.
+    if (asked) {
+      draft.save(box.current.value);
+      return;
+    }
+    // Otherwise this browser's draft (saved on every send) is the newest; it
+    // wins over text the server kept from an earlier post.
     const kept = draft.restore();
-    if (box.current && kept && box.current.value === "")
-      box.current.value = kept;
-    if (asked && box.current) draft.save(box.current.value);
+    if (kept) box.current.value = kept;
   }, [draft, asked]);
   return (
     <>
@@ -483,9 +489,11 @@ function EnquiryForm({
   const box = useRef<HTMLTextAreaElement>(null);
   const [kept, setKept] = useState(keptDraft !== "");
   useEffect(() => {
+    // This browser's draft (saved on every send) is newer than any text the
+    // server kept from an earlier post without JavaScript, so it wins.
     const message = draft.restore();
-    if (box.current && message && box.current.value === "") {
-      box.current.value = message;
+    if (box.current && message) {
+      if (box.current.value !== message) box.current.value = message;
       setKept(true);
     }
   }, [draft]);
