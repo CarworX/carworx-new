@@ -127,7 +127,9 @@ export function SetupHub({
               cy="44"
               r="40"
               pathLength="100"
-              strokeDasharray={`${(ready * 100) / available.length} 100`}
+              strokeDasharray={[(ready * 100) / available.length, 100].join(
+                " ",
+              )}
             />
           </svg>
           <b aria-hidden="true">
