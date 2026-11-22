@@ -67,11 +67,69 @@ describe("/p/:publicId: the preview listing view", () => {
     expect(h).not.toMatch(/fictional|example listing|demo/i);
   });
 
-  it("shows the enquiry form with its real fields when messages are on", () => {
-    const h = renderListing({ siteKey: "1x00000000000000000000AA" });
-    for (const name of ["name", "email", "message", "consent", "csrf"])
+  it("signed in: asks only for the message, sending as the account (D-097)", () => {
+    const h = renderListing({
+      siteKey: "1x00000000000000000000AA",
+      sender: { email: "sam@example.test" },
+    });
+    for (const name of ["message", "consent", "csrf"])
       expect(h).toMatch(new RegExp(`name="${name}`));
+    expect(h).not.toMatch(/name="name"|name="email"/);
+    expect(h).toContain("Sending as <strong>sam@example.test</strong>");
+    expect(h).toContain('data-human-check="enquiry"');
+    expect(h).toContain("Send enquiry →");
+    expect(h).not.toContain('class="gate"');
+  });
+
+  it("signed out: the message box and the sign-in step, closed until sent", () => {
+    const h = renderListing({
+      siteKey: "1x00000000000000000000AA",
+      sender: null,
+    });
     expect(h).toContain('data-form="enquiry"');
+    expect(h).toMatch(/<textarea[^>]*name="message"/);
+    expect(h).not.toMatch(/name="name"|name="email"|name="consent"/);
+    expect(h).toMatch(/<dialog class="gate"(?![^>]*\bopen)/);
+    expect(h).toContain("Sign in to send your enquiry");
+    expect(h).toContain(
+      "Your message is kept. You'll come straight back here.",
+    );
+    const back = encodeURIComponent(`/p/${ID}#enquiry`);
+    expect(h).toContain(`href="/auth/sign-up?returnTo=${back}"`);
+    expect(h).toContain(`href="/auth/sign-in?returnTo=${back}"`);
+  });
+
+  it("without JavaScript a signed-out post comes back with the step open and the message kept", () => {
+    const Page = ListingPage as unknown as (p: {
+      loaderData: unknown;
+      actionData?: unknown;
+    }) => React.JSX.Element;
+    const Stub = createRoutesStub([
+      {
+        path: "/",
+        Component: () => (
+          <Page
+            loaderData={{
+              listing,
+              hours: [],
+              today: 1,
+              status: openStatus([], new Date("2026-11-16T08:00:00Z")),
+              csrf: "csrf-token-for-test",
+              siteKey: "1x00000000000000000000AA",
+              sent: false,
+              sender: null,
+            }}
+            actionData={{
+              problem: "account_required",
+              message: "Do you do weekend washes?",
+            }}
+          />
+        ),
+      },
+    ]);
+    const h = renderToStaticMarkup(<Stub />).replace(/&#x27;/g, "'");
+    expect(h).toMatch(/<dialog class="gate"[^>]*\bopen/);
+    expect(h).toContain(">Do you do weekend washes?</textarea>");
   });
 
   it("a mobile provider shows no address", () => {
@@ -83,7 +141,9 @@ describe("/p/:publicId: the preview listing view", () => {
   });
 
   it("says when a message was sent", () => {
-    expect(renderListing({ sent: true })).toContain("Message sent.");
+    const h = renderListing({ sent: true });
+    expect(h).toContain("Message sent.");
+    expect(h).toContain("reply to your account email");
   });
 });
 

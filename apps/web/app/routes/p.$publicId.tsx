@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { data, redirect } from "react-router";
 
 import {
@@ -10,6 +11,7 @@ import {
 } from "../catalogue/hours";
 import { topCategoryOf } from "../catalogue/taxonomy";
 import { CsrfField } from "../auth/ui";
+import { getSignedIn, hasSessionCookie } from "../auth/session.server";
 import { CatalogueUnavailable, listingById } from "../server/catalogue/public";
 import { NOTICE_VERSION, parseEnquiry } from "../server/forms/parse";
 import { formAction, formHeaders } from "../server/forms/route.server";
@@ -20,6 +22,8 @@ import {
   type Problem,
 } from "../server/forms/submit";
 import { UUID } from "../server/providers/forms";
+import { EnquiryGate, useEnquiryDraft } from "../sites/EnquiryGate";
+import gateCss from "../sites/gate.css?url";
 import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
 import { HumanCheck } from "../ui/public/HumanCheck";
 import type { Route } from "./+types/p.$publicId";
@@ -69,6 +73,12 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   // and the open-now line is worked out fresh, in South African time.
   const now = new Date();
   const opening = await hours;
+  // D-097: enquiries need an account. Only a request with a session cookie
+  // costs an Auth round trip; the account is shown as "Sending as".
+  const signedIn = hasSessionCookie(request)
+    ? await getSignedIn(request, context.security)
+    : null;
+  const sender = signedIn?.user.email ? { email: signedIn.user.email } : null;
   return data(
     {
       listing,
@@ -78,23 +88,60 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       csrf: context.security.csrfToken,
       siteKey: siteKeyFor(context.cloudflare.env as FormsEnv, config),
       sent: new URL(request.url).searchParams.get("sent") === "1",
+      sender,
     },
-    { headers: { "Cache-Control": "private, no-store" } },
+    {
+      headers: (() => {
+        const h = new Headers(signedIn?.headers);
+        h.set("Cache-Control", "private, no-store");
+        return h;
+      })(),
+    },
   );
 }
 
-/** Enquiry (P2-5): limiter -> parse -> Turnstile -> forms_server. */
+/**
+ * Enquiry (P2-5, D-097): account -> limiter -> parse -> Turnstile ->
+ * forms_server. The sender is the account the Auth server just validated;
+ * its id goes to the database explicitly (forms_server has no auth.uid()).
+ * Signed out, nothing is written and the page shows the sign-in step with
+ * the message still in the box.
+ */
 export async function action({ request, params, context }: Route.ActionArgs) {
+  const signedIn = await getSignedIn(request, context.security);
+  if (signedIn === null) {
+    const form = await request.clone().formData();
+    const message = form.get("message");
+    const problem: Problem = "account_required";
+    return data(
+      {
+        problem,
+        message: typeof message === "string" ? message.slice(0, 1000) : "",
+      },
+      { status: 401, headers: { "Cache-Control": "private, no-store" } },
+    );
+  }
+  const userId = signedIn.user.id;
   const problem = await formAction(
     request,
     context,
     "enquiry",
     parseEnquiry,
-    (db, enquiry) => db.enquiry(params.publicId, enquiry, NOTICE_VERSION),
+    (db, enquiry) =>
+      db.enquiry(params.publicId, userId, enquiry, NOTICE_VERSION),
   );
-  if (problem) return problem;
+  // Keep any session cookies the Auth check refreshed.
+  const refreshed = signedIn.headers.getSetCookie();
+  if (problem) {
+    const headers = problem.init?.headers;
+    if (headers instanceof Headers)
+      for (const cookie of refreshed) headers.append("Set-Cookie", cookie);
+    return problem;
+  }
   // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router control flow
-  throw redirect(`/p/${params.publicId}?sent=1#enquiry`);
+  throw redirect(`/p/${params.publicId}?sent=1#enquiry`, {
+    headers: signedIn.headers,
+  });
 }
 
 export const headers: Route.HeadersFunction = formHeaders;
@@ -107,7 +154,10 @@ export function meta({ loaderData }: Route.MetaArgs) {
   ];
 }
 
-export const links: Route.LinksFunction = () => [...SITES_LINKS];
+export const links: Route.LinksFunction = () => [
+  ...SITES_LINKS,
+  { rel: "stylesheet", href: gateCss },
+];
 
 /** The preview's listing view (app.js `listing()`), with the real listing. */
 export default function ListingPage({
@@ -260,8 +310,8 @@ export default function ListingPage({
           <article className="card">
             <h2>What happens next?</h2>
             <p>
-              Send a message. The business replies to the email you give.
-              Nothing is booked or paid through CarworX.
+              Send a message from your free account. The business replies to
+              your account email. Nothing is booked or paid through CarworX.
             </p>
           </article>
           <p className="small">
@@ -274,21 +324,37 @@ export default function ListingPage({
           <span className="eyebrow">Send a message</span>
           <h2 id="enquiry-h">Send {listing.display_name} a message</h2>
           {loaderData.sent ? (
-            <div className="notice green" role="status">
-              <strong>Message sent.</strong> We've passed it to{" "}
-              {listing.display_name}. They'll reply to the email you gave.
-            </div>
+            <Sent
+              listingId={listing.public_id}
+              provider={listing.display_name}
+            />
           ) : loaderData.siteKey === null ? (
             <div className="notice" role="status">
               <strong>Messages aren't available right now.</strong> Please try
               again later.
             </div>
-          ) : (
+          ) : loaderData.sender ? (
             <EnquiryForm
               csrf={loaderData.csrf}
               siteKey={loaderData.siteKey}
               provider={listing.display_name}
+              listingId={listing.public_id}
+              sender={loaderData.sender.email}
               problem={actionData?.problem}
+            />
+          ) : (
+            <SignedOutEnquiry
+              csrf={loaderData.csrf}
+              provider={listing.display_name}
+              listingId={listing.public_id}
+              asked={actionData?.problem === "account_required"}
+              message={
+                actionData &&
+                "message" in actionData &&
+                typeof actionData.message === "string"
+                  ? actionData.message
+                  : ""
+              }
             />
           )}
         </aside>
@@ -297,19 +363,133 @@ export default function ListingPage({
   );
 }
 
+/** Sent: the kept draft is no longer needed. */
+function Sent({
+  listingId,
+  provider,
+}: {
+  listingId: string;
+  provider: string;
+}) {
+  const draft = useEnquiryDraft(listingId);
+  useEffect(() => {
+    draft.clear();
+  }, [draft]);
+  return (
+    <div className="notice green" role="status">
+      <strong>Message sent.</strong> We've passed it to {provider}. They'll
+      reply to your account email.
+    </div>
+  );
+}
+
+/**
+ * D-097: signed out, the visitor can still write their message. "Send
+ * enquiry" keeps it in this browser and opens the sign-in step; without
+ * JavaScript the post comes back with the step open and the message kept.
+ */
+function SignedOutEnquiry({
+  csrf,
+  provider,
+  listingId,
+  asked,
+  message,
+}: {
+  csrf: string;
+  provider: string;
+  listingId: string;
+  asked: boolean;
+  message: string;
+}) {
+  const [open, setOpen] = useState(asked);
+  const draft = useEnquiryDraft(listingId);
+  const box = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const kept = draft.restore();
+    if (box.current && kept && box.current.value === "")
+      box.current.value = kept;
+    if (asked && box.current) draft.save(box.current.value);
+  }, [draft, asked]);
+  return (
+    <>
+      <form
+        method="post"
+        data-form="enquiry"
+        onSubmit={(event) => {
+          event.preventDefault();
+          draft.save(box.current?.value ?? "");
+          setOpen(true);
+        }}
+      >
+        <CsrfField token={csrf} />
+        <div className="field">
+          <label htmlFor="enquiry-message">Your message</label>
+          <textarea
+            ref={box}
+            id="enquiry-message"
+            name="message"
+            maxLength={1000}
+            rows={5}
+            defaultValue={message}
+            placeholder="Your message…"
+            aria-describedby="enquiry-message-hint"
+          />
+          <span id="enquiry-message-hint" className="small muted">
+            Say what you need. Don't include ID numbers or bank details.
+          </span>
+        </div>
+        <button className="btn" type="submit">
+          Send enquiry →
+        </button>
+        <p className="small muted">
+          Free to browse. A free account is needed to send an enquiry.
+        </p>
+      </form>
+      <EnquiryGate
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+        provider={provider}
+        returnTo={`/p/${listingId}#enquiry`}
+      />
+    </>
+  );
+}
+
 function EnquiryForm({
   csrf,
   siteKey,
   provider,
+  listingId,
+  sender,
   problem,
 }: {
   csrf: string;
   siteKey: string;
   provider: string;
+  listingId: string;
+  sender: string;
   problem: Problem | undefined;
 }) {
+  const draft = useEnquiryDraft(listingId);
+  const box = useRef<HTMLTextAreaElement>(null);
+  const [kept, setKept] = useState(false);
+  useEffect(() => {
+    const message = draft.restore();
+    if (box.current && message && box.current.value === "") {
+      box.current.value = message;
+      setKept(true);
+    }
+  }, [draft]);
   return (
-    <form method="post" data-form="enquiry">
+    <form
+      method="post"
+      data-form="enquiry"
+      onSubmit={() => {
+        draft.save(box.current?.value ?? "");
+      }}
+    >
       <CsrfField token={csrf} />
       {problem ? (
         <div className="notice" data-problem={problem} role="alert">
@@ -317,35 +497,19 @@ function EnquiryForm({
           {PROBLEM_TEXT[problem]}
         </div>
       ) : null}
-      <div className="field">
-        <label htmlFor="enquiry-name">Your name</label>
-        <input
-          id="enquiry-name"
-          name="name"
-          autoComplete="name"
-          required
-          minLength={2}
-          maxLength={80}
-        />
-      </div>
-      <div className="field">
-        <label htmlFor="enquiry-email">Your email</label>
-        <input
-          id="enquiry-email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          maxLength={254}
-          aria-describedby="enquiry-email-hint"
-        />
-        <span id="enquiry-email-hint" className="small muted">
-          The provider replies to this address.
-        </span>
-      </div>
+      {kept ? (
+        <div className="notice blue" role="status">
+          Your message is kept. Check it and send.
+        </div>
+      ) : null}
+      <p className="small muted">
+        Sending as <strong>{sender}</strong>. {provider} replies to this
+        address.
+      </p>
       <div className="field">
         <label htmlFor="enquiry-message">Your message</label>
         <textarea
+          ref={box}
           id="enquiry-message"
           name="message"
           required
@@ -369,7 +533,7 @@ function EnquiryForm({
         <HumanCheck siteKey={siteKey} action="enquiry" />
       </div>
       <button className="btn" type="submit">
-        Send message →
+        Send enquiry →
       </button>
     </form>
   );

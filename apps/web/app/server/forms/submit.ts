@@ -33,6 +33,7 @@ export type Problem =
   | "invalid_input"
   | "consent_required"
   | "listing_not_available"
+  | "account_required"
   | "check_failed"
   | "rate_limited"
   | "unavailable";
@@ -41,6 +42,7 @@ export const PROBLEM_TEXT: Record<Problem, string> = {
   invalid_input: "Some details are missing or out of range. Check the form.",
   consent_required: "Tick the box to say we may use your details for this.",
   listing_not_available: "This listing isn't taking enquiries right now.",
+  account_required: "Sign in to send your enquiry. Your message is kept.",
   check_failed:
     "We couldn't confirm you're a person. Complete the check and send again.",
   rate_limited: "Too many messages from your connection. Wait a few minutes.",
@@ -51,6 +53,7 @@ export const PROBLEM_STATUS: Record<Problem, number> = {
   invalid_input: 400,
   consent_required: 400,
   listing_not_available: 409,
+  account_required: 401,
   check_failed: 400,
   rate_limited: 429,
   unavailable: 503,

@@ -86,6 +86,48 @@ describe("sign-up and confirmation", () => {
     expect((await again.send("/account")).status).toBe(200);
   });
 
+  it("a sign-up started from a business page comes back to it after confirming (D-097)", async () => {
+    const email = syntheticEmail("signup-return");
+    const back = "/p/ca7c1000-0000-4000-8000-000000000001#enquiry";
+    const browser = new Browser();
+    const page = await browser.send(
+      `/auth/sign-up?returnTo=${encodeURIComponent(back)}`,
+    );
+    expect(page.body).toContain(`name="returnTo" value="${back}"`);
+    expect(page.body).toContain(
+      `/auth/sign-in?returnTo=${encodeURIComponent(back)}`,
+    );
+    const created = await browser.send("/auth/sign-up", {
+      form: { email, password: PASSWORD, consent: "on", returnTo: back },
+    });
+    expect(created.status).toBe(302);
+    const hash =
+      new URL(
+        confirmLink((await mailTo(email))[0] ?? ""),
+        "http://localhost:5173",
+      ).searchParams.get("token_hash") ?? "";
+    // Same browser: straight back to the business page, signed in.
+    const confirmed = await browser.send("/auth/confirm", {
+      form: { token_hash: hash, type: "email" },
+    });
+    expect(confirmed.status).toBe(302);
+    expect(confirmed.location).toBe(back);
+    // The return is used once.
+    expect(browser.jar.get("__Host-cx-return") ?? "").toBe("");
+    // A hostile returnTo is never remembered.
+    const other = new Browser();
+    await other.send("/auth/sign-up");
+    await other.send("/auth/sign-up", {
+      form: {
+        email: syntheticEmail("signup-hostile"),
+        password: PASSWORD,
+        consent: "on",
+        returnTo: "https://evil.example/p",
+      },
+    });
+    expect(other.jar.get("__Host-cx-return") ?? "").toBe("");
+  });
+
   it("shows a recoverable state for an invalid or already-used link", async () => {
     const browser = new Browser();
     await browser.send(

@@ -37,11 +37,7 @@ describe("parseEnquiry", () => {
   it("accepts a complete form", () => {
     expect(parseEnquiry(form(ENQUIRY))).toEqual({
       ok: true,
-      value: {
-        name: "Sam Sender",
-        email: "sam@example.test",
-        message: ENQUIRY.message,
-      },
+      value: { message: ENQUIRY.message },
     });
   });
   it("needs the consent box ticked", () => {
@@ -54,16 +50,15 @@ describe("parseEnquiry", () => {
       problem: "consent_required",
     });
   });
-  it("bounds every field", () => {
-    for (const bad of [
-      { name: "S" },
-      { name: "x".repeat(81) },
-      { name: "Sam\u0007" },
-      { message: "short" },
-      { message: "x".repeat(1001) },
-      { email: "nope" },
-    ])
+  it("bounds the message", () => {
+    for (const bad of [{ message: "short" }, { message: "x".repeat(1001) }])
       expect(parseEnquiry(form({ ...ENQUIRY, ...bad })).ok).toBe(false);
+  });
+  it("ignores any name or email the form sends (D-097: they come from the account)", () => {
+    const r = parseEnquiry(
+      form({ ...ENQUIRY, name: "Someone Else", email: "other@example.test" }),
+    );
+    expect(r).toEqual({ ok: true, value: { message: ENQUIRY.message } });
   });
   it("keeps line breaks in the message", () => {
     const r = parseEnquiry(
