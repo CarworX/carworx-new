@@ -1,4 +1,5 @@
-// GENERATED from the Sites preview home (#83 @ b88a8ca), verbatim.
+// GENERATED from the Sites preview home (#83 @ b88a8ca). D-097: the browse-first
+// home has no timeline or written-quote section, so those parts only run if present.
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -244,7 +245,7 @@
     pT = i + smooth01(clamp((f - .22) / .56));
     return true;
   };
-  drawBooking(0);
+  if (tlSec) drawBooking(0);
 
   /* ---------- product glimpse carousel (Lightspark-style focus) ---------- */
   const gstage = $('#gstage'), cards = $$('.gcard'), tabs = $$('.gtabs button');
@@ -331,7 +332,7 @@
     $$('.h2').forEach((h) => G.to($$('.ln>span', h), { yPercent: 0, y: 0, duration: 1.2, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: h, start: 'top 85%', once: true } }));
     // the quote's 7-day validity fills as you read
     const days = $$('#days i');
-    ScrollTrigger.create({ trigger: '#quote', start: 'top 75%', end: 'bottom 60%', scrub: .6,
+    if (days.length) ScrollTrigger.create({ trigger: '#quote', start: 'top 75%', end: 'bottom 60%', scrub: .6,
       onUpdate: (s) => days.forEach((d, i) => d.style.setProperty('--f', clamp(s.progress * 7 - i).toFixed(3))) });
     // dashboard: chart draws, numbers count up, the glow breathes with scroll
     ScrollTrigger.create({ trigger: '.dash', start: 'top 75%', once: true, onEnter: () => {
@@ -404,7 +405,7 @@
     });
     kick();
   }, { rootMargin: '120px 0px' });
-  $$('[data-loop]').forEach((el) => loopIO.observe(el)); loopIO.observe(tlSec);
+  $$('[data-loop]').forEach((el) => loopIO.observe(el)); if (tlSec) loopIO.observe(tlSec);
   addEventListener('scroll', kick, { passive: true });
   addEventListener('resize', () => { lastP = -1; kick(); });
   kick();
