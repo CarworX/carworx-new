@@ -152,7 +152,8 @@ describe("editing opening hours after listing", () => {
     expect(listing.body).toContain("07:30 – 16:00");
     expect(listing.body).toContain("08:00 – 13:00");
     expect(listing.body).toMatch(
-      /<th scope="row">Sunday<\/th><td>Closed<\/td>/,
+      // On a Sunday the row also carries the "Today" tag.
+      /<th scope="row">Sunday(?:<!-- --> <span class="tag">Today<\/span>)?<\/th><td>Closed<\/td>/,
     );
     expect((listing.body.match(/aria-current="date"/g) ?? []).length).toBe(1);
     expect(listing.body).toMatch(/data-open-status="(open|closed)"/);
