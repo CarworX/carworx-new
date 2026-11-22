@@ -55,15 +55,30 @@ export type PageModel =
       }[];
       moreAll: string | null;
     }
-  | { kind: "invalid_area"; area: string; category: string; radius: number }
-  | { kind: "no_area"; area: string; category: string; radius: number }
+  // Each area problem keeps the name words, so fixing only the area still
+  // searches for them.
+  | {
+      kind: "invalid_area";
+      area: string;
+      category: string;
+      radius: number;
+      q: string;
+    }
+  | {
+      kind: "no_area";
+      area: string;
+      category: string;
+      radius: number;
+      q: string;
+    }
   | {
       kind: "area_unavailable";
       area: string;
       category: string;
       radius: number;
+      q: string;
     }
-  | { kind: "choose"; area: string; choices: Choice[] }
+  | { kind: "choose"; area: string; choices: Choice[]; q: string }
   | { kind: "rate_limited"; retryAfterSeconds: number }
   | { kind: "unavailable" }
   | { kind: "bad_request" }
@@ -237,6 +252,7 @@ export async function buildSearchPage(
         area: areaText.slice(0, 80),
         category,
         radius,
+        q: words,
       });
     const quota = await deps.quota();
     if (quota.kind !== "allowed")
@@ -245,6 +261,7 @@ export async function buildSearchPage(
         area,
         category,
         radius,
+        q: words,
       });
     const found = await deps.geocode(area);
     if (found.kind === "unavailable" || found.kind === "invalid")
@@ -253,14 +270,16 @@ export async function buildSearchPage(
         area,
         category,
         radius,
+        q: words,
       });
     const candidates: AreaCandidate[] = found.candidates;
     if (candidates.length === 0)
-      return withCookie({ kind: "no_area", area, category, radius });
+      return withCookie({ kind: "no_area", area, category, radius, q: words });
     if (candidates.length > 1)
       return withCookie({
         kind: "choose",
         area,
+        q: words,
         choices: candidates.map((c) => ({
           label: c.label,
           href: searchHref({

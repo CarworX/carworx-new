@@ -234,6 +234,57 @@ describe("enquiry on /p/:publicId", () => {
     expect(count("enquiries", "sender_email", address)).toBe(0);
   });
 
+  it("without JavaScript the message survives sign-in and is sent, then forgotten", async () => {
+    const address = email("nojs-draft");
+    cleanUp(address);
+    const { data } = await admin.auth.admin.createUser({
+      email: address,
+      password: PASSWORD,
+      email_confirm: true,
+    });
+    onTestFinished(async () => {
+      if (data.user) {
+        sql(
+          `delete from public.enquiries where sender_user_id = '${data.user.id}'`,
+        );
+        await admin.auth.admin.deleteUser(data.user.id);
+      }
+    });
+    const b = browser();
+    await b.send(`/p/${SEED_FIXED}`);
+    const asked = await b.send(`/p/${SEED_FIXED}`, {
+      form: { message: "Synthetic: kept without JavaScript" },
+    });
+    expect(asked.status).toBe(401);
+    expect(b.jar.get("__Host-cx-draft") ?? "").not.toBe("");
+    // Sign in through the step's link, as a browser without JavaScript would.
+    const back = `/p/${SEED_FIXED}#enquiry`;
+    await b.send(`/auth/sign-in?returnTo=${encodeURIComponent(back)}`);
+    const signedIn = await b.send("/auth/sign-in", {
+      form: {
+        intent: "password",
+        email: address,
+        password: PASSWORD,
+        returnTo: back,
+      },
+    });
+    expect(signedIn.location).toBe(back);
+    const page = await b.send(`/p/${SEED_FIXED}`);
+    expect(page.body).toContain(
+      ">Synthetic: kept without JavaScript</textarea>",
+    );
+    const sent = await b.send(`/p/${SEED_FIXED}`, {
+      form: {
+        message: "Synthetic: kept without JavaScript",
+        consent: "on",
+        "cf-turnstile-response": DUMMY_TOKEN,
+      },
+    });
+    expect(sent.status).toBe(302);
+    expect(count("enquiries", "sender_email", address)).toBe(1);
+    expect(b.jar.get("__Host-cx-draft") ?? "").toBe("");
+  });
+
   it("signing in from the step comes straight back to the business page", async () => {
     const address = email("returnto");
     cleanUp(address);

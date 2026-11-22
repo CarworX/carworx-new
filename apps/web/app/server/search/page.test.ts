@@ -359,6 +359,34 @@ describe("search page model", () => {
     expect(geocodes).toEqual(["Sandton", "Rosebank"]);
   });
 
+  it("keeps the name words when the area needs correcting", async () => {
+    const none = (): Promise<GeocodeResult> =>
+      Promise.resolve({ kind: "ok", candidates: [] });
+    const down = (): Promise<GeocodeResult> =>
+      Promise.resolve({ kind: "unavailable" });
+    const two = (): Promise<GeocodeResult> =>
+      Promise.resolve({
+        kind: "ok",
+        candidates: [
+          { label: "Sandton, Gauteng", lat: -26.1071, lng: 28.0567 },
+          { label: "Sandton, Other", lat: -26.2, lng: 28.1 },
+        ],
+      });
+    const cases: [string, Partial<PageDeps>, string][] = [
+      ["?q=shine&area=%3C%3E", {}, "invalid_area"],
+      ["?q=shine&area=Nowhere", { geocode: none }, "no_area"],
+      ["?q=shine&area=Sandton", { geocode: down }, "area_unavailable"],
+      ["?q=shine&area=Sandton", { geocode: two }, "choose"],
+    ];
+    for (const [query, over, kind] of cases) {
+      const { model } = await buildSearchPage(req(query), deps(over));
+      expect(model.kind).toBe(kind);
+      expect("q" in model ? model.q : null).toBe("shine");
+      if (model.kind === "choose")
+        for (const c of model.choices) expect(c.href).toContain("q=shine");
+    }
+  });
+
   it("offers choices for an ambiguous area and never searches yet", async () => {
     const calls: SearchArgs[] = [];
     const { model } = await buildSearchPage(
