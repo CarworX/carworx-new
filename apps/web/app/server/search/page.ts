@@ -1,5 +1,8 @@
 /**
- * The /search page model (P2-3). One rate-limit decision per request, then:
+ * The /search page model (P2-3; D-097 keyword search). With no area and no
+ * point, the page browses every live listing (no location, no distance),
+ * narrowed by name words (`q`) and a category. One rate-limit decision per
+ * request, then:
  * area text -> daily geocode quota -> temporary geocode (never stored) ->
  * the shared P2-2 core. "More" links carry only rounded coordinates, the
  * visitor's own area label and the signed cursors; they never re-geocode.
@@ -12,6 +15,7 @@ import { normaliseArea } from "../geo/geocode";
 import { signMapPins } from "../geo/staticMap";
 import {
   pgRound,
+  normaliseWords,
   ensureSearchSession,
   runSearch,
   RADII,
@@ -34,7 +38,23 @@ export interface Choice {
 }
 
 export type PageModel =
-  | { kind: "start"; category: string; radius: number }
+  | { kind: "invalid_words"; q: string; category: string; radius: number }
+  | {
+      kind: "browse";
+      /** The name words searched for ("" for none). */
+      q: string;
+      category: string;
+      radius: number;
+      body: SearchBody;
+      /** Same words, one link per category ("" is all). */
+      categoryLinks: {
+        slug: string;
+        label: string;
+        href: string;
+        current: boolean;
+      }[];
+      moreAll: string | null;
+    }
   | { kind: "invalid_area"; area: string; category: string; radius: number }
   | { kind: "no_area"; area: string; category: string; radius: number }
   | {
@@ -53,6 +73,8 @@ export type PageModel =
       lat: string;
       lng: string;
       near: string;
+      /** The name words searched for ("" for none). */
+      q?: string;
       category: string;
       radius: number;
       body: SearchBody;
@@ -81,17 +103,34 @@ export interface PageResult {
 const round3 = (n: number) => pgRound(n, 3);
 const NEAR = /^[\p{L}\p{N} .,'’()-]{1,120}$/u;
 
+function browseHref(p: {
+  q: string;
+  category: string;
+  all_cursor?: string;
+}): string {
+  const q = new URLSearchParams();
+  if (p.q) q.set("q", p.q);
+  if (p.category) q.set("category", p.category);
+  if (p.all_cursor) q.set("all_cursor", p.all_cursor);
+  const text = q.toString();
+  return text ? `/search?${text}` : "/search";
+}
+
 function searchHref(p: {
   lat: string;
   lng: string;
   near: string;
   category: string;
   radius: number;
+  q?: string;
   fixed_cursor?: string;
   mobile_cursor?: string;
   map?: boolean;
 }): string {
-  const q = new URLSearchParams({ lat: p.lat, lng: p.lng });
+  const q = new URLSearchParams();
+  if (p.q) q.set("q", p.q);
+  q.set("lat", p.lat);
+  q.set("lng", p.lng);
   if (p.near) q.set("near", p.near);
   if (p.category) q.set("category", p.category);
   q.set("radius", String(p.radius));
@@ -120,8 +159,17 @@ export async function buildSearchPage(
   // current point so refining keeps it, and typing a new area replaces it.
   const byArea = areaText !== "";
   const hasPoint = !byArea && latText !== "" && lngText !== "";
-  if (!hasPoint && !byArea)
-    return { model: { kind: "start", category, radius } };
+  const qText = (get("q") ?? "").replace(/\s+/g, " ").trim();
+  const words = qText === "" ? "" : normaliseWords(qText);
+  if (words === null)
+    return {
+      model: {
+        kind: "invalid_words",
+        q: qText.slice(0, 60),
+        category,
+        radius,
+      },
+    };
 
   const resolved = ensureSearchSession(request);
   const cookie = resolved.cookie;
@@ -138,6 +186,44 @@ export async function buildSearchPage(
       kind: "rate_limited",
       retryAfterSeconds: checked.retryAfterSeconds,
     });
+
+  // No area and no point: browse every live listing (D-097).
+  if (!hasPoint && !byArea) {
+    const params = new URLSearchParams();
+    if (words) params.set("q", words);
+    if (category) params.set("category", category);
+    const allCursor = get("all_cursor");
+    if (allCursor) params.set("all_cursor", allCursor);
+    const outcome = await runSearch(request, params, {
+      ...deps,
+      session: resolved,
+      checked,
+    });
+    if (outcome.status !== 200)
+      return withCookie(
+        outcome.status === 400
+          ? { kind: "bad_request" }
+          : { kind: "unavailable" },
+      );
+    return withCookie({
+      kind: "browse",
+      q: words,
+      category,
+      radius,
+      body: outcome.body,
+      categoryLinks: [
+        { slug: "", label: "All services" },
+        ...CATEGORIES.map((c) => ({ slug: c.slug, label: c.label })),
+      ].map((c) => ({
+        ...c,
+        href: browseHref({ q: words, category: c.slug }),
+        current: c.slug === category,
+      })),
+      moreAll: outcome.body.all?.next
+        ? browseHref({ q: words, category, all_cursor: outcome.body.all.next })
+        : null,
+    });
+  }
 
   let lat = latText;
   let lng = lngText;
@@ -183,6 +269,7 @@ export async function buildSearchPage(
             near: c.label,
             category,
             radius,
+            q: words,
           }),
         })),
       });
@@ -194,6 +281,7 @@ export async function buildSearchPage(
   }
 
   const params = new URLSearchParams({ lat, lng, radius: String(radius) });
+  if (words) params.set("q", words);
   if (category) params.set("category", category);
   for (const key of ["fixed_cursor", "mobile_cursor"]) {
     const v = get(key);
@@ -211,7 +299,7 @@ export async function buildSearchPage(
         ? { kind: "bad_request" }
         : { kind: "unavailable" },
     );
-  const base = { lat, lng, near, category };
+  const base = { lat, lng, near, category, q: words };
   const currentFixed = get("fixed_cursor");
   const currentMobile = get("mobile_cursor");
   const pins = (outcome.body.fixed?.items ?? []).flatMap((f) =>
@@ -239,6 +327,7 @@ export async function buildSearchPage(
     lat,
     lng,
     near,
+    q: words,
     category,
     radius,
     body: outcome.body,

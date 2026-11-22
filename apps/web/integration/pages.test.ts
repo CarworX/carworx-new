@@ -134,6 +134,37 @@ describe("public pages without JavaScript", () => {
     expect(reply.body).not.toMatch(/26\.112233|28\.112233/);
   });
 
+  it("search without an area browses every live business (D-097)", async () => {
+    const reply = await browser().send("/search");
+    expect(reply.status).toBe(200);
+    expect(reply.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(reply.body).toContain("Businesses you can explore");
+    expect(reply.body).toContain(`/p/${SEED_FIXED}`);
+    expect(reply.body).toContain(`/p/${SEED_MOBILE}`);
+    expect(reply.body).not.toContain(SEED_PENDING);
+    // Not location-filtered: no distance, no coverage claim.
+    expect(reply.body).not.toContain("straight-line");
+    expect(reply.body).not.toContain("serves your area (approximate)");
+    expect(reply.body).not.toMatch(/26\.112233|28\.112233/);
+  });
+
+  it("name words find a business with no area, and narrow an area search", async () => {
+    const byName = await browser().send("/search?q=synthetic+MOBILE&area=");
+    expect(byName.status).toBe(200);
+    expect(byName.body).toContain("Businesses matching “synthetic MOBILE”");
+    expect(byName.body).toContain(`/p/${SEED_MOBILE}`);
+    expect(byName.body).not.toContain(`/p/${SEED_FIXED}`);
+    const located = await browser().send(
+      "/search?q=fixed+provider&lat=-26.2&lng=28.04&near=Johannesburg",
+    );
+    expect(located.status).toBe(200);
+    expect(located.body).toContain(`/p/${SEED_FIXED}`);
+    expect(located.body).not.toContain(`/p/${SEED_MOBILE}`);
+    const bad = await browser().send("/search?q=%3Cb%3E");
+    expect(bad.status).toBe(400);
+    expect(bad.body).toContain("Check what you typed.");
+  });
+
   it("the results form refines the same point without JavaScript", async () => {
     const reply = await browser().send(
       "/search?lat=-26.2&lng=28.04&near=Johannesburg",
