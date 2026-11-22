@@ -54,7 +54,23 @@ const HEAD = (() => {
 })();
 /** The hero's floating objects, as drawn in the preview. */
 const FLOATS = cut('<div class="floats"', '<div class="hero-copy">');
-const KEPT = ["glimpse", "fines", "business"].map(section).join("\n");
+// The business band's two switches were buttons with aria-selected and no
+// role; as tabs they pass the accessibility audit (Lighthouse a11y >= 95).
+const KEPT = ["glimpse", "fines", "business"]
+  .map(section)
+  .join("\n")
+  .replace(
+    '<div class="ptabs" id="dtabs">',
+    '<div class="ptabs" id="dtabs" role="tablist" aria-label="Dashboard view">',
+  )
+  .replace(
+    '<div class="ptabs" id="ctabs">',
+    '<div class="ptabs" id="ctabs" role="tablist" aria-label="Chart range">',
+  )
+  .replace(
+    /<button aria-selected="(true|false)" data-(p|r)=/g,
+    '<button role="tab" aria-selected="$1" data-$2=',
+  );
 const FOOTER = markup.slice(markup.indexOf("</main>") + "</main>".length);
 
 export const links: Route.LinksFunction = () => [
