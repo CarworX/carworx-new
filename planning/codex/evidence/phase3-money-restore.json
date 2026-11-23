@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "status": "passed",
+  "revision": "2ef8951871cd8df95fecc7af2423c6189850dbdf",
+  "runtime": "native",
+  "rlsAssertions": 1099,
+  "privateObjects": 2,
+  "tenantRecords": 4,
+  "tablesExported": 76,
+  "tablesExcluded": { "managed": 3, "ephemeral": 12 },
+  "storageObjects": 2,
+  "appRows": 133,
+  "authIdentities": 4,
+  "exportMs": 5163,
+  "restoreAndVerifyMs": 48077,
+  "payloadBytes": 1044822,
+  "negativeChecks": 8
+}
