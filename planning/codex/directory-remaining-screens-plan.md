@@ -6,7 +6,7 @@ Owner request, 2026-11-22 SAST. Complements [booking staging plan](phase3-stagin
 
 Inspected main `70d10b5fb9f8de119a58d3f9a85316134dc52964`, particularly `apps/web/app/auth/routes.ts`, `routes/provider.tsx`, `routes/provider.setup.$task.$step.tsx`, `routes/account.$tab.tsx` and registered admin routes. Many pages have existing loaders/actions; they need design ports and hosted verification rather than wholesale backend replacement. Whether a page is missing, unreachable, unstyled, blocked by membership/MFA or genuinely unavailable must be recorded separately during the route audit.
 
-Use the current hosted Sites source, version 4 / `9a9c59aeae65c71a50b0faf1b30f088d8a512562`, as the source of the preview files under `dist/onboarding/{setup,staff,account,admin}` and their `_shared` assets. Preserve exact layouts, copy, fonts, objects and motion where supported; D-097 changes the home only. Reuse the existing app tokens/components when visually equivalent. Do not replace these screens with a new dashboard design. Record necessary behavior/copy deviations when the directory backend lacks a preview feature; show an honest unavailable state instead of simulated success.
+Use the existing CarworX app layout, components and design tokens. Use protected staging to review actual screens, actions and data. The owner paused ChatGPT Sites on 2026-11-23.
 
 These groups target `main` for the directory release. Booking, quote, earnings, payment, chat and review functionality that depends on Phase 3 remains on `phase-3`; link only when that capability is actually deployed. Integrate directory changes into the separate Phase 3 candidate before its hosted test round. Do not promote #102 just to expose a directory settings page.
 
@@ -41,7 +41,7 @@ Reference: `dist/onboarding/staff/index.html`, relevant setup/team screens. App:
 | Staff home / navigation | Staff view of `/provider` or a newly registered route if required by the preview | Only allowed business/team actions appear; owner/admin tools are inaccessible through direct URLs |
 | Team management | Reuse existing actions where present; explicitly inventory gaps for removal, role change, revoke and decline | Supported controls change real records with audit evidence; unsupported controls stay unavailable until implemented and reviewed |
 
-Email invitation delivery is not currently available in the team share screen. Keep a functional copy/share-link route without claiming email was sent. Wire actual delivery only after the mail path and approved-recipient policy are verified; preserve token confidentiality. Do not publish real invite links into screenshots or Sites.
+Email invitation delivery is not currently available in the team share screen. Keep a functional copy/share-link route without claiming email was sent. Wire actual delivery only after the mail path and approved-recipient policy are verified; preserve token confidentiality. Keep real invite links out of screenshots.
 
 ## Group 3 — account, settings and security
 
@@ -81,7 +81,7 @@ Only preview controls backed by a permitted action become enabled. For any missi
 
 ## Implementation order and PR acceptance
 
-1. **Route/access inventory and shared shell:** one checklist mapping every preview screen/hash to an app route, existing action and authorized role. Capture baseline screenshots and distinguish permission/data problems from missing UI. Do not deploy an old branch over D-097. Shared shell changes remain narrow and preserve directory navigation.
+1. **Route/access inventory and shared shell:** one checklist mapping every owner journey to an app route, existing action and authorized role. Capture baseline screenshots and distinguish permission/data problems from missing UI. Do not deploy an old branch over D-097. Shared shell changes remain narrow and preserve directory navigation.
 2. **Business setup PR:** implement Group 1; add customer-to-provider entry links and organization switching. Keep booking-dependent cards and cover upload capability honest.
 3. **Staff PR:** implement Group 2 against Group 1. Make valid synthetic invite, sign-in, acceptance and restricted profile journeys usable end to end.
 4. **Account/security PR:** implement Group 3. Reuse existing session/MFA logic; audit and test sensitive actions independently from styling.
@@ -95,10 +95,14 @@ Each application PR requires tests appropriate to its behavioral changes, exact-
 - Use separate synthetic customer, owner, manager, staff, removed-staff and admin fixtures; no credentials or invite links in Git. Supply private sign-in instructions, not publicly documented passwords.
 - Through Cloudflare Access, verify each authorized route, form action and return path against the same version. Repeat direct-URL access with a wrong role, wrong organisation and missing MFA. Do not count Access's redirect as an application pass.
 - For each screen cover default, empty, loading, validation error, server failure, success/reload, denied and unavailable states where applicable. Forms retain input after recoverable failures. Personal pages use private/no-store headers.
-- Compare the actual screen with the matching Sites page at desktop/tablet/390px phone widths; check menu, scrolling, focus, keyboard, real zoom and accessible labels. Native device/screen-reader checks stay open until actually done. Browser testing is currently unavailable in this chat and is not claimed by this planning work.
+- Test the actual staging screen at desktop, tablet and 390 px phone widths. Check the menu, scrolling, focus, keyboard, zoom and accessible labels. Record the manual checks completed.
 - Owner walkthrough: accepted provider -> setup -> invite staff -> staff joins -> own profile -> owner changes permitted settings -> customer updates profile/security -> admin reviews a synthetic application/claim/support case -> audit entry appears. Include opening hours and membership isolation.
-- Publish a short route/role guide, screenshots, expected results and known gaps with the exact staging SHA/version. Refresh Sites at completed group milestones; it remains a simulation with the current restricted audience. Do not introduce scheduled follow-up updates.
+- Publish a short route and role guide, screenshots, expected results and known gaps with the exact staging SHA and Worker version.
 
 ## Boundaries and follow-up capabilities
 
 Cover-photo storage, unsupported privacy export/account closure, unimplemented notification controls, and optional email step-up require explicit implementation contracts if selected; a pixel-perfect port cannot fabricate these backends. Existing task tests are evidence only for the exact source they ran on; a page list or successful build is not a hosted acceptance result. Keep the mail/hook, scoped workflow-token, backup/restore and launch gates visible alongside these screens.
+
+## 2026-11-23 staging delivery
+
+The first four groups are merged as #135–#138. Start with the end-to-end business application and claim walkthrough in [#141](https://github.com/CarworX/carworx-new/pull/141). The remaining team, notifications, media, data and business controls follow the [finish-build plan](https://github.com/CarworX/carworx-new/pull/140). Use the protected staging walkthrough for acceptance.
