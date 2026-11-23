@@ -348,3 +348,7 @@ Business setup #135 and staff #136 passed GitHub checks and merged to main under
 ## 2026-11-23 — Phase 3 staging candidate (Codex)
 
 Integrated directory main `09a08bb` into Phase 3 `e4722c6` on a separate candidate branch. Preserved both decision records in the merge. Added listing-to-booking, customer booking list and business work queue entry points. Sign-in returns to the requested booking, quote or checkout path. A live listing without an offer has an enquiry fallback. No hosted deployment, schema apply or payment configuration. Shared A23, A29 and A35 still require a frozen staging candidate and test-mode setup.
+
+## 2026-11-23 — Business application and claims for staging (Codex)
+
+Owner paused ChatGPT Sites work and requested functional staging journeys. Get listed now offers a live-directory claim picker and a direct link to the existing signed-in claim review form. The new-business draft stays available. The application confirmation directs owners to the dashboard for review status. Setup explains which settings are ready with defaults, and the admin overview no longer marks Today as the current page. The staging walkthrough replaces the Sites comparison with role-based desktop and phone checks. Existing schema and claim proof references are reused. Local TypeScript, scoped lint, 591 web unit tests, staging build and a built-Worker smoke test against disposable Supabase passed. Hosted staging still requires exact-head review and signed-in acceptance.

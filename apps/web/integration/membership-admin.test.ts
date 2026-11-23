@@ -122,6 +122,9 @@ describe("admin pages need a listed admin AND an aal2 (TOTP) session", () => {
     const allowed = await browser.send("/admin");
     expect(allowed.status).toBe(200);
     expect(allowed.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(allowed.body).not.toMatch(
+      /href="\/admin\/today" aria-current="page"/,
+    );
     expect(
       Number(attr(allowed.body, "data-admin-organisations")),
     ).toBeGreaterThan(0);

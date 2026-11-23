@@ -18,6 +18,7 @@ export const authRoutes: RouteConfigEntry[] = [
   // P2-4 (Claude 21): signed-in provider pages.
   route("provider", "routes/provider.tsx"),
   route("provider/apply", "routes/provider.apply.tsx"),
+  route("provider/get-listed/claim", "routes/provider.get-listed.claim.tsx"),
   route("provider/get-listed/:step", "routes/provider.get-listed.$step.tsx"),
   route("provider/setup/:task/:step", "routes/provider.setup.$task.$step.tsx"),
   // Claude 26: per-day opening hours after listing (owner/manager edit).
