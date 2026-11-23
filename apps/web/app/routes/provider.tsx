@@ -23,7 +23,16 @@ import { StatusLabel } from "../ui/Chip";
 import { TextField } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
 import { PublicShell } from "../ui/public/PublicShell";
+import kitCss from "../sites/onboarding/kit.css?url";
+import setupCss from "../sites/onboarding/setup.css?url";
+import extraCss from "../sites/onboarding/extra.css?url";
 import type { Route } from "./+types/provider";
+
+export const links: Route.LinksFunction = () => [
+  { rel: "stylesheet", href: kitCss },
+  { rel: "stylesheet", href: setupCss },
+  { rel: "stylesheet", href: extraCss },
+];
 
 export const meta: Route.MetaFunction = () => [
   { title: "Your business · CarworX" },
@@ -120,9 +129,12 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const [orgs, listings, members, actionable, own] = await Promise.all([
     db
       .from("organisations")
-      .select("id, name")
+      .select("id, name, setup_done")
       .in("id", orgIds)
-      .overrideTypes<{ id: string; name: string }[], { merge: false }>(),
+      .overrideTypes<
+        { id: string; name: string; setup_done: string[] | null }[],
+        { merge: false }
+      >(),
     db
       .from("listings")
       .select(
@@ -376,6 +388,8 @@ export default function Provider({
           <h2 className="type-title">{org.name}</h2>
           <SetupHub
             org={org.id}
+            orgName={org.name}
+            done={org.setup_done ?? []}
             role={org.role}
             live={org.listings.some((listing) => listing.status === "live")}
             hoursListing={

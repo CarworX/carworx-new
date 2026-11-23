@@ -17,6 +17,7 @@ The Sites preview (#83 @ `b88a8ca`) is being ported screen by screen, exactly, o
 - **Home (#122):** the booking timeline, quote card, phone carousel and business dashboard are illustrations, not live data. Their real screens belong to `phase-3`.
 - **Search, listing, category (#123, #125):** per-service prices have no backend in the directory launch, so they read "Free to enquire" / "Ask for a price". "Request a booking" is on `phase-3`; the listing's side card is the real enquiry form.
 - **Business application (get-listed):** the preview's in-flow claim path (choose your listing, upload proof) is not wired; its tile links to search, and claims go through each listing's existing claim form. Different hours per day are set after approval on the hours page.
+- **Business setup hub (port group 1a):** "Team sign-in security" keeps its look but is inert until team two-step enforcement (O7) ships; the database refuses any policy but optional. "Cover photo" opens the existing details screen; photo upload has no backend yet. The preview's owner bar (Today, Requests, Earnings, …) comes with the dashboard port (1c).
 - **Still to port on main:** business setup and dashboard, staff, account (with security) and admin. **On `phase-3`:** booking, quote, checkout and the booking dashboard.
 
 ## External blockers and gates

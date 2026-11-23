@@ -5,6 +5,9 @@
 #                                  chips, segment bar, listing card, nav).
 #   app/sites/onboarding/apply.css the application page's own styles,
 #                                  scoped under .ob-apply.
+#   app/sites/onboarding/setup.css the hub layout (_shared/hub.css) and the
+#                                  Finish setup page's own styles
+#                                  (setup/index.html), scoped under .ob-setup.
 # The app's Studio layer (styles/studio.css) already provides tokens and the
 # cx- components, so tokens.css and studio.css are not copied. Re-run to
 # regenerate from the preview.
@@ -59,5 +62,12 @@ assert ".norail" not in style
 style = style.replace("rise", "ob-rise")
 open(f"{OUT}/app/sites/onboarding/apply.css", "w", encoding="utf-8").write(
     HEAD.format(src="phase1/index.html") + scope(style, ".ob-apply") + "\n"
+)
+hub = open(f"{P}/onboarding/_shared/hub.css", encoding="utf-8").read()
+h = open(f"{P}/onboarding/setup/index.html", encoding="utf-8").read()
+setup = re.search(r"<style>(.*?)</style>", h, flags=re.S).group(1)
+both = (hub + "\n" + setup).replace("rise", "ob-rise")
+open(f"{OUT}/app/sites/onboarding/setup.css", "w", encoding="utf-8").write(
+    HEAD.format(src="_shared/hub.css + setup/index.html") + scope(both, ".ob-setup") + "\n"
 )
 print("ok")

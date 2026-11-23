@@ -63,6 +63,9 @@ describe("team setup through the Worker", () => {
     const home = await f.ownerBrowser.send("/provider");
     expect(home.status).toBe(200);
     expect(home.body).toContain("Finish setup");
+    // The ported hub (port group 1): nothing done yet.
+    expect(home.body).toContain('aria-label="0 of 5 setup tasks done"');
+    expect(home.body).toMatch(/data-task="team"[\s\S]*?To do/);
     await f.ownerBrowser.send(f.path("team", "share"));
     const created = await f.ownerBrowser.send(f.path("team", "share"), {
       form: { intent: "create-link", role: "staff" },
@@ -103,6 +106,12 @@ describe("team setup through the Worker", () => {
         })
       ).status,
     ).toBe(302);
+    // Saving a choice marks its task done; so did creating the invite.
+    const hub = await f.ownerBrowser.send("/provider");
+    expect(hub.body).toContain('aria-label="2 of 5 setup tasks done"');
+    expect(hub.body).toMatch(/data-task="team"[^>]*>[\s\S]*?>Done</);
+    expect(hub.body).toMatch(/data-task="assign"[^>]*>[\s\S]*?>Done</);
+    expect(hub.body).toMatch(/data-task="contact"[^>]*>[\s\S]*?>To do</);
     await staffBrowser.send(f.path("profile"));
     expect(
       (

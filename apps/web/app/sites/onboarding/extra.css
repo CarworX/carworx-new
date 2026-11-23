@@ -60,3 +60,25 @@ a.ob-tile {
 .ob-page svg.ob-ic {
   display: inline-block;
 }
+
+/* Port group 1: the Finish setup hub sits under the page's own h1, so its
+ * title is an h2 with the preview's h1 look (setup.css .hubhead h1). */
+.ob-setup .hubhead h2 {
+  font: 500 40px/44px var(--font-sans);
+  letter-spacing: -0.035em;
+}
+@media (max-width: 640px) {
+  .ob-setup .hubhead h2 {
+    font-size: 28px;
+    line-height: 32px;
+  }
+}
+/* Tailwind's own `ring` utility shares the preview's class name; the hub's
+ * progress ring must not get its box-shadow outline. The hub is as wide as
+ * the preview's page (880px main, 16px padding). */
+.ob-setup .ring {
+  box-shadow: none;
+}
+.ob-setup[data-hub] {
+  max-width: 848px;
+}

@@ -176,6 +176,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     if (result.error !== null) return fail(teamProblem(result.error));
     if (typeof result.data !== "string" || !INVITE_TOKEN.test(result.data))
       return fail("unavailable");
+    await markDone(signedIn, organisation.id, "team");
     // The raw secret is returned once to this private response and never logged/stored.
     const inviteUrl = new URL(
       `/join/${result.data}`,
@@ -192,6 +193,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       p: settings,
     });
     if (result.error !== null) return fail(teamProblem(result.error));
+    await markDone(signedIn, organisation.id, params.task);
   } else if (params.task === "profile") {
     const services = await teamServices(signedIn, organisation.id);
     const profile = staffProfile(
@@ -207,6 +209,28 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     if (result.error !== null) return fail(teamProblem(result.error));
   } else return fail("invalid_input");
   return throwRedirect("/provider?done=1", signedIn.headers);
+}
+
+/**
+ * Records a finished setup task for the hub's Done badges and progress ring
+ * (organisations.setup_done). Best effort: the choice itself is already
+ * saved, so a failure here never fails the request.
+ */
+async function markDone(
+  signedIn: {
+    supabase: { rpc: (fn: string, args: object) => PromiseLike<unknown> };
+  },
+  org: string,
+  task: "team" | "assign" | "contact" | "secure" | "cover",
+) {
+  try {
+    await signedIn.supabase.rpc("mark_setup_task", {
+      p_org: org,
+      p_task: task,
+    });
+  } catch {
+    // The hub shows "To do" until the next save; nothing else depends on it.
+  }
 }
 
 export default function TeamSetup({
