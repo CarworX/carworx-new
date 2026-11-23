@@ -3,7 +3,14 @@ import { randomUUID } from "node:crypto";
 import { Client } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { Browser, sql, stack, workerEnv } from "./harness";
+import {
+  Browser,
+  createConfirmedUser,
+  signIn,
+  sql,
+  stack,
+  workerEnv,
+} from "./harness";
 
 /**
  * P2-3 public pages through the built Worker, server-rendered with no client
@@ -80,6 +87,26 @@ describe("catalogue matches the design taxonomy", () => {
 });
 
 describe("public pages without JavaScript", () => {
+  it("links a listing to booking, preserves the return path and explains unavailable booking", async () => {
+    const b = browser();
+    const book = `/book/${SEED_FIXED}`;
+    const listing = await b.send(`/p/${SEED_FIXED}`);
+    expect(listing.status).toBe(200);
+    expect(listing.body).toContain(`href="${book}"`);
+    expect((await b.send(book)).location).toBe(
+      `/auth/sign-in?returnTo=${encodeURIComponent(book)}`,
+    );
+    const customer = await createConfirmedUser("booking-entry");
+    const signedIn = await signIn(customer.email, undefined, book);
+    const empty = await signedIn.send(book);
+    expect(empty.status).toBe(200);
+    expect(empty.body).toMatch(/Online booking isn.{0,8}t available/);
+    expect(empty.body).toContain(`href="/p/${SEED_FIXED}#enquiry"`);
+    expect((await signedIn.send(`/book/${SEED_PENDING}`)).status).toBe(404);
+    const account = await signedIn.send("/account");
+    expect(account.body).toContain('href="/bookings"');
+  });
+
   it("home links to search and has the five service keys", async () => {
     const reply = await browser().send("/");
     expect(reply.status).toBe(200);

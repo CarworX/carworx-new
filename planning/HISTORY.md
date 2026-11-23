@@ -344,3 +344,7 @@ Owner approved the finish plan and delegated implementation, Codex review and sa
 ## 2026-11-22 — Directory workspace implementation (Codex)
 
 Business setup #135 and staff #136 passed GitHub checks and merged to main under D-091. #137 adds Sites account settings and scoped active membership links. Admin follow-up adds Sites-inspired queue, audit and dashboard presentation with existing native AAL2 and database actions. These ports retain the existing schema. Combined local TypeScript, focused lint, staging build and Wrangler dry-run passed. See planning/runbooks/directory-staging-walkthrough.md for the owner test paths. Browser parity and hosted acceptance require their own evidence, and independent review is required before the staging deployment in the approved plan.
+
+## 2026-11-23 — Phase 3 staging candidate (Codex)
+
+Integrated directory main `09a08bb` into Phase 3 `e4722c6` on a separate candidate branch. Preserved both decision records in the merge. Added listing-to-booking, customer booking list and business work queue entry points. Sign-in returns to the requested booking, quote or checkout path. A live listing without an offer has an enquiry fallback. No hosted deployment, schema apply or payment configuration. Shared A23, A29 and A35 still require a frozen staging candidate and test-mode setup.

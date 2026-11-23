@@ -314,8 +314,11 @@ export default function ListingPage({
             <h2>What happens next?</h2>
             <p>
               Send a message from your free account. The business replies to
-              your account email. Nothing is booked or paid through CarworX.
+              your account email. Sending an enquiry does not book a service.
             </p>
+            <a className="btn secondary" href={`/book/${listing.public_id}`}>
+              Check booking availability
+            </a>
           </article>
           <p className="small">
             <a href={`/provider/claim/${listing.public_id}`}>
