@@ -117,7 +117,9 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    min-height: 44px;
+    /* The Studio NotFound design: 40 px chips (36 px on phones); both
+     * clear the WCAG 2.2 AA 24 px target size. */
+    height: 40px;
     padding: 0 14px 0 6px;
     border-radius: var(--radius-pill);
     background: var(--frost);
@@ -150,7 +152,8 @@
       gap: 4px 16px;
     }
     .cx-404 .svc a {
-      padding: 0 12px;
+      height: 36px;
+      padding: 0 10px;
       font-size: 12.5px;
     }
     .cx-404 .svc img {

@@ -148,6 +148,7 @@ describe("provider draft allowlist", () => {
         { day: 1, opens: "08:00", closes: "17:00" },
         { day: 6, opens: "08:00", closes: "13:00" },
       ],
+      trading_since: null,
       step: 5,
     });
     expect(
@@ -156,6 +157,42 @@ describe("provider draft allowlist", () => {
     expect(
       parseStep(form({ description: input.description }), "about", services),
     ).toBeNull();
+  });
+  it("applies the preview's shared times to each ticked day", () => {
+    const shared = {
+      description: "Hand wash only. Same-day service.",
+      "open-1": "on",
+      "open-2": "on",
+      "open-6": "on",
+      opens: "07:30",
+      closes: "16:00",
+    };
+    expect(parseStep(form(shared), "about", services)).toMatchObject({
+      hours: [
+        { day: 1, opens: "07:30", closes: "16:00" },
+        { day: 2, opens: "07:30", closes: "16:00" },
+        { day: 6, opens: "07:30", closes: "16:00" },
+      ],
+    });
+    expect(
+      parseStep(form({ ...shared, closes: "07:00" }), "about", services),
+    ).toBeNull();
+  });
+  it("saves an optional trading-since date and refuses impossible ones", () => {
+    const base = {
+      description: "Hand wash only. Same-day service.",
+      "open-1": "on",
+      opens: "08:00",
+      closes: "17:00",
+    };
+    expect(
+      parseStep(form({ ...base, since: "2014-03-01" }), "about", services),
+    ).toMatchObject({ trading_since: "2014-03-01" });
+    expect(parseStep(form(base), "about", services)).toMatchObject({
+      trading_since: null,
+    });
+    for (const since of ["1949-12-31", "2014-02-30", "3000-01-01", "soon"])
+      expect(parseStep(form({ ...base, since }), "about", services)).toBeNull();
   });
   it("does not skip missing prerequisites", () => {
     expect(incompleteStep(null)).toBe("business");

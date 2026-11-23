@@ -101,6 +101,9 @@ describe("admin pages need a listed admin AND an aal2 (TOTP) session", () => {
     expect(refused.status).toBe(302);
     expect(refused.location).toBe("/auth/mfa?returnTo=%2Fadmin");
     expect(refused.body).not.toContain("data-admin-organisations");
+    const refusedToday = await browser.send("/admin/today");
+    expect(refusedToday.status).toBe(302);
+    expect(refusedToday.body).not.toContain("data-admin-today");
 
     // Database API with the same aal1 token: T2's policies return nothing.
     const aal1 = browser.session().access_token;
@@ -122,6 +125,10 @@ describe("admin pages need a listed admin AND an aal2 (TOTP) session", () => {
     expect(
       Number(attr(allowed.body, "data-admin-organisations")),
     ).toBeGreaterThan(0);
+    const today = await browser.send("/admin/today");
+    expect(today.status).toBe(200);
+    expect(today.body).toContain("data-admin-today");
+    expect(today.body).toMatch(/href="\/admin\/today" aria-current="page"/);
 
     const aal2 = browser.session().access_token;
     expect(jwtClaims(aal2)["aal"]).toBe("aal2");

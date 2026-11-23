@@ -63,9 +63,11 @@ describe("team setup through the Worker", () => {
     const home = await f.ownerBrowser.send("/provider");
     expect(home.status).toBe(200);
     expect(home.body).toContain("Finish setup");
+    expect(home.body).toContain('aria-label="Setup tasks configured"');
+    expect(home.body).toContain("Set hours");
     await f.ownerBrowser.send(f.path("team", "share"));
     const created = await f.ownerBrowser.send(f.path("team", "share"), {
-      form: { intent: "create-link", role: "staff" },
+      form: { intent: "create-link", role: "staff", email: staff.email },
     });
     expect(created.status).toBe(200);
     expect(created.headers.get("Cache-Control")).toBe("private, no-store");
@@ -79,6 +81,21 @@ describe("team setup through the Worker", () => {
       token,
     );
 
+    const wrongAccount = await signIn(
+      (await createConfirmedUser("team-wrong")).email,
+    );
+    await wrongAccount.send(new URL(link).pathname);
+    await wrongAccount.send("/join");
+    expect(
+      (await wrongAccount.send("/join", { form: { intent: "accept" } })).status,
+    ).toBe(400);
+
+    const signedOut = new Browser();
+    await signedOut.send(new URL(link).pathname);
+    const signInChoices = await signedOut.send("/join");
+    expect(signInChoices.body).toContain("/auth/sign-up?returnTo=%2Fjoin");
+    expect(signInChoices.body).not.toContain(token);
+
     const staffBrowser = await signIn(staff.email);
     const opened = await staffBrowser.send(new URL(link).pathname);
     expect(opened.status).toBe(302);
@@ -90,6 +107,7 @@ describe("team setup through the Worker", () => {
       form: { intent: "accept" },
     });
     expect(accepted.status).toBe(302);
+    expect(accepted.location).toBe(`/provider?done=1#business-${f.org}`);
     expect(staffBrowser.jar.has("__Host-cx-invite")).toBe(false);
     const staffHome = await staffBrowser.send("/provider");
     expect(staffHome.body).toContain("data-staff-home");

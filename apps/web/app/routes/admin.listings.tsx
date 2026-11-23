@@ -4,7 +4,7 @@ import { QueueFilters } from "../admin-onboarding/QueueFilters";
 import { throwStatus } from "../auth/http.server";
 import { requireAdmin } from "../server/providers/admin.server";
 import { PAGE_SIZE, parsePage } from "../server/providers/forms";
-import { AdminShell, Pager } from "../ui/admin/AdminShell";
+import { AdminShell, Pager, QueueRowLink } from "../ui/admin/AdminShell";
 import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/admin.listings";
 
@@ -91,24 +91,24 @@ export default function AdminListings({ loaderData }: Route.ComponentProps) {
       ) : (
         <ul className="grid gap-3" data-admin-list={status}>
           {rows.map((r) => (
-            <li
-              key={r.public_id}
-              className="rounded-2xl bg-[var(--surface)] p-4"
-              data-row={r.public_id}
-            >
-              <a className="cx-tlink" href={`/admin/listings/${r.public_id}`}>
-                {r.display_name}
-              </a>
-              <p className="type-body mt-1">
-                {r.mode === "fixed"
-                  ? "Workshop"
-                  : r.mode === "both"
-                    ? "Workshop + mobile"
-                    : "Mobile"}{" "}
-                · {r.metro} · {status === "submitted" ? "sent" : "created"}{" "}
-                {(r.submitted_at ?? r.created_at).slice(0, 10)}
-                {status === "all" ? ` · ${r.status}` : ""}
-              </p>
+            <li key={r.public_id} data-row={r.public_id}>
+              <QueueRowLink
+                href={`/admin/listings/${r.public_id}`}
+                icon="bay"
+                title={r.display_name}
+                description={
+                  <>
+                    {r.mode === "fixed"
+                      ? "Workshop"
+                      : r.mode === "both"
+                        ? "Workshop + mobile"
+                        : "Mobile"}{" "}
+                    · {r.metro} · {status === "submitted" ? "sent" : "created"}{" "}
+                    {(r.submitted_at ?? r.created_at).slice(0, 10)}
+                    {status === "all" ? ` · ${r.status}` : ""}
+                  </>
+                }
+              />
             </li>
           ))}
         </ul>

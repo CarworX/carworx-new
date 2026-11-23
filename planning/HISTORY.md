@@ -340,3 +340,7 @@ Owner approved the finish plan and delegated implementation, Codex review and sa
 - 2026-11-13 16:56 UTC — Codex: #97 ready-for-review CI reached RLS and failed; aligned 50_email_outbox capability assertion with migration cap 5 (was 3). Disposable native stack: all 30 O5 pgTAP assertions passed. No merge. Agent: codex
 
 - 2026-11-14 UTC — Codex: owner requested a non-conflicting coordination pass. Repaired #122 source ancestry at c0580cb without file changes; exact source preflight passes after author metadata normalization. Independently reviewed #121 @a8cf258 (fresh 37/37 invoice SQL assertions; all seven checks green) and merged into phase-3 at 4c9075d. Imported that head into #107; final CI/restore verification pending. Claude owns #123/#124 and the held #119 redo. No deploy, seed, invoice/VAT activation or sends. Agent: codex
+
+## 2026-11-22 — Directory workspace implementation (Codex)
+
+Business setup #135 and staff #136 passed GitHub checks and merged to main under D-091. #137 adds Sites account settings and scoped active membership links. Admin follow-up adds Sites-inspired queue, audit and dashboard presentation with existing native AAL2 and database actions. These ports retain the existing schema. Combined local TypeScript, focused lint, staging build and Wrangler dry-run passed. See planning/runbooks/directory-staging-walkthrough.md for the owner test paths. Browser parity and hosted acceptance require their own evidence, and independent review is required before the staging deployment in the approved plan.

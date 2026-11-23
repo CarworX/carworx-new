@@ -1,0 +1,62 @@
+/* App-only additions to the generated kit.css and apply.css. The preview has
+ * no server map, server search results or form errors, so these are new. */
+
+/* The live map is a Mapbox image (640 × 360), so the box keeps that ratio
+ * and a tap maps straight to the image's pixels. */
+.ob-map.ob-map-live {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: 0;
+}
+.ob-map.ob-map-live img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ob-map.ob-map-closed {
+  display: grid;
+  place-items: center;
+  cursor: default;
+}
+.ob-map .ob-ic,
+.ob-maprow .ob-ic {
+  width: 18px;
+  height: 18px;
+}
+.ob-results .ob-result {
+  display: grid;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+.ob-results li:has(.ob-result) {
+  padding: 0;
+}
+.ob-results .ob-result:hover {
+  background: var(--canvas);
+}
+/* A server problem above the card. */
+.ob-problem {
+  margin-bottom: 16px;
+}
+/* The step form's fields sit straight in the card grid, as in the preview. */
+.ob-apply .ob-form {
+  display: contents;
+}
+/* "Claim an existing listing" is a link to search, drawn as a tile. */
+a.ob-tile {
+  color: inherit;
+  text-decoration: none;
+}
+/* Tailwind's preflight makes every svg a block; the preview's icons are
+ * inline, as in a browser's default styles. */
+.ob-page svg.ob-ic {
+  display: inline-block;
+}

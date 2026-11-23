@@ -11,6 +11,7 @@ import {
 import type { Route } from "./+types/root";
 import geist from "./styles/fonts/Geist-latin.woff2?url";
 import stylesheet from "./styles/app.css?url";
+import { NavigationLoader } from "./ui/states/NavigationLoader";
 import { NotFound } from "./ui/states/NotFound";
 
 // The Studio stylesheet and the self-hosted text face (G13). Geist is
@@ -28,7 +29,8 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en-ZA">
+    // Page scripts (the home page) set classes on <html> before hydration.
+    <html lang="en-ZA" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -45,7 +47,12 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <NavigationLoader />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

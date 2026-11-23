@@ -76,7 +76,10 @@ export default function AdminSupportCase({
   const { row } = loaderData;
   return (
     <AdminShell title="Support case">
-      <div className="grid max-w-[65ch] gap-3" data-case-status={row.status}>
+      <div
+        className="cx-admin-panel max-w-[65ch]"
+        data-case-status={row.status}
+      >
         <p className="type-body">
           <b>{TOPICS.find((t) => t.value === row.topic)?.label ?? row.topic}</b>{" "}
           · {sast(row.created_at)}

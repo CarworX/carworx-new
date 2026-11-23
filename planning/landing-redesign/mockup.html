@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CarworX landing redesign · mockup v1</title>
+<style>
+@font-face{font-family:Geist;src:url(../../apps/web/public/email/Geist-latin.woff2) format("woff2");font-weight:100 900}
+@font-face{font-family:"Geist Mono";src:url(../../apps/web/public/email/GeistMono-latin.woff2) format("woff2")}
+:root{--canvas:#f2f1ee;--canvas2:#e9e7e2;--dot:rgba(13,15,18,.12);--surface:#fff;--hair:rgba(13,15,18,.09);--line:#dedcd6;--ink:#0d0f12;--graphite:#1c2128;--muted:#5b6470;--quiet:#727a85;--blue:#3d6dff;--sky:#e3eaff;--signal:#ff3b0a;--peach:#ffe3d4;--ok:#1e6b45;--okbg:#e7f4ec;--note:#ffe9a6}
+*{box-sizing:border-box;margin:0}
+body{font-family:Geist,system-ui,sans-serif;color:var(--ink);background:#cfcdc8;padding:40px;display:flex;flex-direction:column;gap:48px;align-items:flex-start}
+.label{font:600 13px "Geist Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#333;margin-bottom:12px}
+.frame{background:var(--canvas);background-image:radial-gradient(var(--dot) 1px,transparent 1px);background-size:22px 22px;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.18)}
+.desk{width:1280px}.phone{width:390px;border-radius:44px;border:10px solid #111;position:relative}
+.row-frames{display:flex;gap:40px;align-items:flex-start}
+/* header */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin:18px 32px 0;padding:12px 14px 12px 22px;background:rgba(255,255,255,.82);border:1px solid var(--hair);border-radius:999px;backdrop-filter:blur(8px)}
+.hdr img{height:22px;display:block}
+.nav{display:flex;gap:28px;font-size:14px;color:var(--graphite)}
+.auth{display:flex;gap:10px;align-items:center;font-size:14px;font-weight:500}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:11px 18px;font:600 14px Geist,sans-serif;border:0;white-space:nowrap}
+.btn.dark{background:var(--ink);color:#fff}.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.btn.blue{background:var(--blue);color:#fff}
+.arrow{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);font-size:12px}
+/* hero */
+.hero{text-align:center;padding:56px 32px 28px}
+.pill{display:inline-flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--hair);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--graphite)}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--signal)}
+h1{font-size:64px;line-height:1.02;letter-spacing:-.035em;font-weight:500;margin:18px 0 10px}
+h1 span{color:#6e7682}
+.lead{color:var(--muted);font-size:17px;max-width:560px;margin:0 auto}
+/* search */
+.search{margin:28px auto 0;max-width:900px;background:#fff;border:1px solid var(--hair);border-radius:24px;padding:10px;display:flex;gap:8px;box-shadow:0 14px 40px rgba(13,15,18,.08);text-align:left}
+.fld{flex:1;border-radius:16px;padding:10px 16px;background:var(--canvas)}
+.fld b{display:block;font-size:12px;font-weight:600;color:var(--graphite)}
+.fld span{font-size:15px;color:var(--quiet)}
+.fld.where{flex:.8}
+.loc{align-self:center;font-size:13px;color:var(--blue);font-weight:600;padding:0 8px;white-space:nowrap}
+.search .btn{padding:0 26px;font-size:15px}
+.free{margin-top:14px;font-size:13px;color:var(--muted);display:flex;gap:18px;justify-content:center}
+.free em{font-style:normal;color:var(--ok);font-weight:600}
+/* categories */
+.sec{padding:30px 48px 8px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+.sec-h h2{font-size:26px;letter-spacing:-.02em;font-weight:600}
+.sec-h a{font-size:14px;color:var(--blue);font-weight:600;text-decoration:none}
+.eyebrow{font:500 11px "Geist Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--quiet);margin-bottom:6px}
+.cats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.cat{background:linear-gradient(#fff,#f7f6f3);border:1px solid var(--hair);border-radius:20px;padding:16px;box-shadow:0 6px 0 var(--canvas2),0 10px 24px rgba(13,15,18,.06);position:relative}
+.cat img{width:46px;height:46px}
+.cat h3{font-size:15px;font-weight:600;margin-top:18px;line-height:1.2}
+.cat p{font-size:12px;color:var(--muted);margin-top:4px}
+.cat small{position:absolute;top:14px;right:16px;font:12px "Geist Mono",monospace;color:var(--quiet)}
+/* biz cards */
+.chips{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.chip{font-size:13px;padding:7px 14px;border-radius:999px;background:#fff;border:1px solid var(--line)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:#fff;border:1px solid var(--hair);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.card .top{display:flex;gap:12px}
+.card .top img{width:44px;height:44px}
+.card h4{font-size:17px;font-weight:600}
+.card .where{font-size:13px;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font:500 11px "Geist Mono",monospace;background:var(--okbg);color:var(--ok);padding:3px 8px;border-radius:6px}
+.tag.grey{background:var(--canvas);color:var(--graphite)}
+.svc{border-top:1px solid var(--line);padding-top:10px;font-size:13px;display:flex;flex-direction:column;gap:6px}
+.svc div{display:flex;justify-content:space-between}.svc span{color:var(--muted)}
+.acts{display:flex;gap:8px;align-items:center;margin-top:auto}
+.acts .btn{padding:9px 14px;font-size:13px}
+.lock{font-size:12px;color:var(--quiet)}
+/* how */
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{background:#fff;border:1px solid var(--hair);border-radius:20px;padding:20px}
+.step .n{font:600 12px "Geist Mono",monospace;color:var(--quiet)}
+.step h3{font-size:18px;margin:10px 0 6px;font-weight:600}
+.step p{font-size:14px;color:var(--muted)}
+.step .badge{display:inline-block;margin-top:12px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px}
+.b-open{background:var(--okbg);color:var(--ok)}.b-acc{background:var(--sky);color:#2a54d4}
+.band{margin:30px 48px 0;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.band>div{border-radius:22px;padding:24px}
+.band .fines{background:var(--peach)}.band .biz{background:var(--ink);color:#fff}
+.band h3{font-size:20px;margin-bottom:6px}.band p{font-size:14px;opacity:.8;margin-bottom:14px}
+.foot{margin-top:40px;background:var(--ink);color:#fff;padding:28px 48px;display:flex;justify-content:space-between;font-size:13px}
+.foot img{height:20px}
+.foot nav{display:flex;gap:18px;opacity:.8}
+/* phone */
+.phone .hdr{margin:12px 12px 0;padding:10px 10px 10px 16px}
+.phone .hdr img{height:19px}
+.ham{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:16px}
+.phone .auth .btn{padding:8px 14px;font-size:13px}
+.phone .hero{padding:28px 18px 10px}
+.phone h1{font-size:40px}
+.phone .lead{font-size:15px}
+.phone .search{flex-direction:column;border-radius:22px;margin-top:20px}
+.phone .search .btn{padding:14px;justify-content:center}
+.phone .loc{align-self:flex-start;padding:2px 8px}
+.phone .free{flex-direction:column;gap:4px;font-size:12px}
+.phone .sec{padding:22px 16px 4px}
+.phone .sec-h h2{font-size:21px}
+.hscroll{display:flex;gap:10px;overflow:hidden}
+.phone .cat{min-width:120px;padding:12px}.phone .cat img{width:36px;height:36px}.phone .cat h3{font-size:13px;margin-top:12px}
+.phone .grid{grid-template-columns:1fr}
+.phone .chips{flex-wrap:nowrap;overflow:hidden}
+.phone .how{grid-template-columns:1fr}
+.status{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font-size:14px;font-weight:600}
+/* gate sheet */
+.dim{position:absolute;inset:0;background:rgba(13,15,18,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:28px 28px 0 0;padding:14px 22px 30px}
+.grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 18px}
+.sheet h3{font-size:22px;letter-spacing:-.02em;margin-bottom:6px}
+.sheet p{font-size:14px;color:var(--muted);margin-bottom:16px}
+.sheet .btn{width:100%;justify-content:center;padding:14px;font-size:15px;margin-bottom:10px}
+.keep{background:var(--sky);border-radius:14px;padding:12px 14px;font-size:13px;color:#2a54d4;margin-bottom:16px}
+.listing-bg{padding:16px}
+.listing-bg .card{margin-top:10px}
+.modal-desk{position:relative}
+.callout{position:absolute;background:var(--note);font:600 13px "Geist Mono",monospace;padding:8px 12px;border-radius:8px;box-shadow:0 6px 16px rgba(0,0,0,.15);transform:rotate(-2deg);max-width:230px;line-height:1.35;z-index:5}
+</style>
+</head>
+<body>
+
+<!-- ================= DESKTOP ================= -->
+<section id="desktop">
+<div class="label">Desktop · 1280px · landing page (signed out)</div>
+<div class="frame desk" style="position:relative">
+  <div class="callout" style="top:250px;left:40px">① Search is the first thing you see: service <u>or</u> business name + area</div>
+  <div class="callout" style="top:560px;right:30px">② Categories with live counts: one click to browse</div>
+  <div class="callout" style="top:905px;left:520px;max-width:330px">③ Real businesses right on the home page, no account needed</div>
+  <div class="callout" style="top:1080px;right:20px;max-width:210px">④ 🔒 Only Book / Enquire asks you to sign in</div>
+
+  <header class="hdr">
+    <img src="../../apps/web/public/assets/core/carworx-lockup-horizontal-ink.svg" alt="CarworX">
+    <nav class="nav"><span>Find a service</span><span>Fines &amp; admin</span><span>For businesses</span></nav>
+    <div class="auth"><span>Sign in</span><span class="btn dark">Sign up <span class="arrow">→</span></span></div>
+  </header>
+
+  <div class="hero">
+    <span class="pill"><i></i>Pilot · CarworX fee R0</span>
+    <h1>Car care, booked properly.<br><span>Nearby, and in writing.</span></h1>
+    <p class="lead">Washes, repairs, glass and tyres from businesses near you. Look around freely. You pay the business directly.</p>
+    <div class="search">
+      <div class="fld"><b>What do you need?</b><span>Service or business name, e.g. “tyre fitment”</span></div>
+      <div class="fld where"><b>Where?</b><span>Suburb, town or postcode</span></div>
+      <span class="loc">◎ Use my location</span>
+      <span class="btn dark">Search <span class="arrow">→</span></span>
+    </div>
+    <div class="free"><span><em>✓ Free to browse</em> · no account needed</span><span>🔒 Sign in only to book or send an enquiry</span></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><div><div class="eyebrow">Browse by category</div><h2>What does your car need?</h2></div><a>All services →</a></div>
+    <div class="cats">
+      <div class="cat"><small>01</small><img src="../design/brand/exports/studio/objects/carworx-object-wash-detailing.svg"><h3>Wash &amp; Detailing</h3><p>4 businesses</p></div>
+      <div class="cat"><small>02</small><img src="../design/brand/exports/studio/objects/carworx-object-repairs-maintenance.svg"><h3>Repairs &amp; Maintenance</h3><p>3 businesses</p></div>
+      <div class="cat"><small>03</small><img src="../design/brand/exports/studio/objects/carworx-object-glass-repair.svg"><h3>Glass Repair &amp; Replacement</h3><p>2 businesses</p></div>
+      <div class="cat"><small>04</small><img src="../design/brand/exports/studio/objects/carworx-object-tyres-alignment.svg"><h3>Tyres &amp; Wheel Alignment</h3><p>2 businesses</p></div>
+      <div class="cat"><small>05</small><img src="../design/brand/exports/studio/objects/carworx-object-fines-admin.svg"><h3>Fines &amp; Vehicle Admin</h3><p>Guides, free</p></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><div><div class="eyebrow">On CarworX now</div><h2>Businesses you can explore</h2></div><a>See all 14 →</a></div>
+    <div class="chips"><span class="chip on">All</span><span class="chip">Wash</span><span class="chip">Repairs</span><span class="chip">Glass</span><span class="chip">Tyres</span><span class="chip">Comes to you</span></div>
+    <div class="grid">
+      <div class="card"><div class="top"><img src="../design/brand/exports/studio/objects/carworx-object-wash-detailing.svg"><div><h4>Shine Studio</h4><div class="where">Rosebank · Johannesburg</div></div></div>
+        <div class="tags"><span class="tag">Identity checked</span><span class="tag">Premises visited</span></div>
+        <div class="svc"><div>Full wash &amp; vacuum<span>Open today 08:00–17:00</span></div><div>Interior detail<span>2 more services</span></div></div>
+        <div class="acts"><span class="btn dark">View business →</span><span class="lock">🔒 Book after sign in</span></div></div>
+      <div class="card"><div class="top"><img src="../design/brand/exports/studio/objects/carworx-object-tyres-alignment.svg"><div><h4>Tread Right Tyres</h4><div class="where">Pretoria East</div></div></div>
+        <div class="tags"><span class="tag">Identity checked</span></div>
+        <div class="svc"><div>Tyre fitment<span>Open today 07:30–17:30</span></div><div>Wheel alignment<span>1 more service</span></div></div>
+        <div class="acts"><span class="btn dark">View business →</span><span class="lock">🔒 Book after sign in</span></div></div>
+      <div class="card"><div class="top"><img src="../design/brand/exports/studio/objects/carworx-object-glass-repair.svg"><div><h4>Cape Mobile Glass</h4><div class="where">Comes to you · Cape Town</div></div></div>
+        <div class="tags"><span class="tag">Identity checked</span><span class="tag grey">Mobile</span></div>
+        <div class="svc"><div>Chip repair<span>Mon–Sat</span></div><div>Windscreen replacement<span>Written quote</span></div></div>
+        <div class="acts"><span class="btn dark">View business →</span><span class="lock">🔒 Enquire after sign in</span></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><div><div class="eyebrow">How it works</div><h2>Look first. Sign up when you're ready.</h2></div></div>
+    <div class="how">
+      <div class="step"><div class="n">01</div><h3>Explore</h3><p>Search, compare businesses, services, hours and checks.</p><span class="badge b-open">No account needed</span></div>
+      <div class="step"><div class="n">02</div><h3>Create a free account</h3><p>Takes under a minute. We keep your search and the business you picked.</p><span class="badge b-acc">When you're ready</span></div>
+      <div class="step"><div class="n">03</div><h3>Book or enquire</h3><p>Accepted within 2 business hours. Paid to the business directly.</p><span class="badge b-acc">Signed in</span></div>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="fines"><h3>Fines &amp; vehicle admin</h3><p>Straight answers on fines, licence discs and roadworthy, free to read.</p><span class="btn ghost">Read the guides →</span></div>
+    <div class="biz"><h3>Run a car-care business?</h3><p>Get listed free during the pilot. Customers find you, then book or enquire.</p><span class="btn ghost">List your business →</span></div>
+  </div>
+
+  <footer class="foot"><img src="../../apps/web/public/assets/core/carworx-lockup-horizontal-white.svg"><nav><span>Find a service</span><span>Fines guidance</span><span>For businesses</span><span>Privacy</span><span>Terms</span></nav></footer>
+</div>
+</section>
+
+<!-- ================= DESKTOP GATE ================= -->
+<section id="desktop-gate">
+<div class="label">Desktop · what happens when a signed-out visitor taps “Send enquiry” on a business page</div>
+<div class="frame desk modal-desk" style="height:560px">
+  <header class="hdr">
+    <img src="../../apps/web/public/assets/core/carworx-lockup-horizontal-ink.svg" alt="CarworX">
+    <nav class="nav"><span>Find a service</span><span>Fines &amp; admin</span><span>For businesses</span></nav>
+    <div class="auth"><span>Sign in</span><span class="btn dark">Sign up <span class="arrow">→</span></span></div>
+  </header>
+  <div style="padding:30px 48px;display:grid;grid-template-columns:1.4fr 1fr;gap:20px">
+    <div class="card" style="height:380px"><div class="top"><img src="../design/brand/exports/studio/objects/carworx-object-wash-detailing.svg"><div><h4 style="font-size:28px">Shine Studio</h4><div class="where">Rosebank · Johannesburg</div></div></div><div class="tags"><span class="tag">Identity checked</span><span class="tag">Premises visited</span></div><div class="svc"><div>Full wash &amp; vacuum<span>Open today</span></div><div>Interior detail<span>Open today</span></div><div>Engine bay clean<span>Open today</span></div></div></div>
+    <div class="card"><h4>Send Shine Studio a message</h4><div class="fld"><span>Your message…</span></div><span class="btn dark" style="justify-content:center">Send enquiry →</span></div>
+  </div>
+  <div class="dim" style="border-radius:18px"></div>
+  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:440px;background:#fff;border-radius:24px;padding:28px">
+    <h3 style="font-size:24px;letter-spacing:-.02em;margin-bottom:6px">Sign in to send your enquiry</h3>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:14px">A free account lets Shine Studio reply to you, and keeps your bookings and messages in one place.</p>
+    <div class="keep">✓ Your message is kept. You'll come straight back here.</div>
+    <span class="btn dark" style="width:100%;justify-content:center;padding:14px;margin-bottom:10px">Create free account</span>
+    <span class="btn ghost" style="width:100%;justify-content:center;padding:14px">I already have an account</span>
+  </div>
+</div>
+</section>
+
+<!-- ================= PHONE ================= -->
+<section id="phones">
+<div class="label">Phone · 390px · landing (left) and sign-in step (right)</div>
+<div class="row-frames">
+<div class="frame phone">
+  <div class="status"><span>09:41</span><span>●●● 5G ▮</span></div>
+  <header class="hdr">
+    <img src="../../apps/web/public/assets/core/carworx-lockup-horizontal-ink.svg" alt="CarworX">
+    <div class="auth"><span class="btn dark">Sign in</span><span class="ham">☰</span></div>
+  </header>
+  <div class="hero">
+    <span class="pill"><i></i>Pilot · CarworX fee R0</span>
+    <h1>Car care, booked properly.<br><span>Nearby, and in writing.</span></h1>
+    <p class="lead">Look around freely. You pay the business directly.</p>
+    <div class="search">
+      <div class="fld"><b>What do you need?</b><span>Service or business name</span></div>
+      <div class="fld"><b>Where?</b><span>Suburb or postcode</span></div>
+      <span class="loc">◎ Use my location</span>
+      <span class="btn dark">Search →</span>
+    </div>
+    <div class="free"><span><em>✓ Free to browse</em> · no account needed</span><span>🔒 Sign in only to book or enquire</span></div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><h2>Browse by category</h2><a>All →</a></div>
+    <div class="hscroll">
+      <div class="cat"><img src="../design/brand/exports/studio/objects/carworx-object-wash-detailing.svg"><h3>Wash &amp; Detailing</h3><p>4 businesses</p></div>
+      <div class="cat"><img src="../design/brand/exports/studio/objects/carworx-object-repairs-maintenance.svg"><h3>Repairs</h3><p>3 businesses</p></div>
+      <div class="cat"><img src="../design/brand/exports/studio/objects/carworx-object-glass-repair.svg"><h3>Glass</h3><p>2 businesses</p></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><h2>Explore businesses</h2><a>All 14 →</a></div>
+    <div class="chips"><span class="chip on">All</span><span class="chip">Wash</span><span class="chip">Repairs</span><span class="chip">Glass</span></div>
+    <div class="grid">
+      <div class="card"><div class="top"><img src="../design/brand/exports/studio/objects/carworx-object-wash-detailing.svg"><div><h4>Shine Studio</h4><div class="where">Rosebank · Johannesburg</div></div></div>
+        <div class="tags"><span class="tag">Identity checked</span><span class="tag">Premises visited</span></div>
+        <div class="svc"><div>Full wash &amp; vacuum<span>Open today</span></div></div>
+        <div class="acts"><span class="btn dark">View business →</span><span class="lock">🔒 Book after sign in</span></div></div>
+      <div class="card"><div class="top"><img src="../design/brand/exports/studio/objects/carworx-object-tyres-alignment.svg"><div><h4>Tread Right Tyres</h4><div class="where">Pretoria East</div></div></div>
+        <div class="tags"><span class="tag">Identity checked</span></div>
+        <div class="svc"><div>Tyre fitment<span>Open today</span></div></div>
+        <div class="acts"><span class="btn dark">View business →</span><span class="lock">🔒 Book after sign in</span></div></div>
+    </div>
+  </div>
+  <div style="height:24px"></div>
+</div>
+
+<div class="frame phone" style="height:844px">
+  <div class="status"><span>09:41</span><span>●●● 5G ▮</span></div>
+  <header class="hdr">
+    <img src="../../apps/web/public/assets/core/carworx-lockup-horizontal-ink.svg" alt="CarworX">
+    <div class="auth"><span class="btn dark">Sign in</span><span class="ham">☰</span></div>
+  </header>
+  <div class="listing-bg">
+    <div class="card"><div class="top"><img src="../design/brand/exports/studio/objects/carworx-object-wash-detailing.svg"><div><h4 style="font-size:24px">Shine Studio</h4><div class="where">Rosebank · Johannesburg</div></div></div>
+      <div class="tags"><span class="tag">Identity checked</span><span class="tag">Premises visited</span></div>
+      <div class="svc"><div>Full wash &amp; vacuum<span>Open today</span></div><div>Interior detail<span>Open today</span></div></div>
+      <span class="btn dark" style="justify-content:center">Send enquiry →</span></div>
+  </div>
+  <div class="dim"></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <h3>Sign in to send your enquiry</h3>
+    <p>A free account lets Shine Studio reply to you, and keeps your bookings and messages in one place.</p>
+    <div class="keep">✓ Your message is kept. You'll come straight back here.</div>
+    <span class="btn dark">Create free account</span>
+    <span class="btn ghost">I already have an account</span>
+  </div>
+</div>
+</div>
+</section>
+</body>
+</html>

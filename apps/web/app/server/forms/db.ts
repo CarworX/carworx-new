@@ -10,7 +10,9 @@ import { Client } from "pg";
 import type { Demand, Enquiry, Support } from "./parse";
 
 export const SQL = {
-  enquiry: "select public.submit_enquiry($1, $2, $3, $4, true, $5)",
+  // D-097: the signed-in user's id, validated by the Auth server in the
+  // route; the database reads the sender's name and email from the account.
+  enquiry: "select public.submit_enquiry($1, $2, $3, true, $4)",
   demand: "select public.capture_demand($1, $2, $3, true, $4)",
   support: "select public.open_support_case($1, $2, $3)",
 } as const;
@@ -20,9 +22,14 @@ export type DbOutcome =
   | "invalid_input"
   | "consent_required"
   | "listing_not_available"
+  | "account_required"
   | "unavailable";
 
-const KEYS = new Set(["consent_required", "listing_not_available"]);
+const KEYS = new Set([
+  "consent_required",
+  "listing_not_available",
+  "account_required",
+]);
 
 /** Fixed keys only; a database message is never shown or logged. */
 export function outcomeFrom(error: unknown): DbOutcome {
@@ -57,8 +64,8 @@ export function createFormsDb(connectionString: string) {
     }
   }
   return {
-    enquiry: (listing: string, e: Enquiry, notice: string) =>
-      run(SQL.enquiry, [listing, e.name, e.email, e.message, notice]),
+    enquiry: (listing: string, userId: string, e: Enquiry, notice: string) =>
+      run(SQL.enquiry, [listing, userId, e.message, notice]),
     demand: (d: Demand, notice: string) =>
       run(SQL.demand, [d.email, d.category, d.province, notice]),
     support: (s: Support) => run(SQL.support, [s.email, s.topic, s.message]),

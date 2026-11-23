@@ -13,7 +13,11 @@ grant execute on all functions in schema extensions to anon, authenticated, form
 insert into auth.users (id, email, email_confirmed_at) values
   ('b6000000-0000-4000-8000-000000000001', 'olga.owner@example.test', now()),
   ('b6000000-0000-4000-8000-000000000005', 'ada.admin@example.test', now()),
-  ('b6000000-0000-4000-8000-000000000006', 'max.unrelated@example.test', now());
+  ('b6000000-0000-4000-8000-000000000006', 'max.unrelated@example.test', now()),
+  -- D-097: enquiry senders are accounts. Sam is confirmed; Una is not yet.
+  ('b6000000-0000-4000-8000-000000000007', 'Sam.Sender@Example.test', now()),
+  ('b6000000-0000-4000-8000-000000000008', 'una.unconfirmed@example.test', null);
+insert into public.profiles(id, display_name) values ('b6000000-0000-4000-8000-000000000007', 'Sam Sender');
 -- Own catalogue fixtures: recovery CI (K4) runs without the seed.
 insert into public.categories(slug,name) values ('p25-cat','P2-5 test category (synthetic)');
 insert into public.services(slug,category_slug,name) values ('p25-svc','p25-cat','P2-5 test service (synthetic)');
@@ -28,7 +32,7 @@ insert into public.listings(public_id,organisation_id,service_slug,display_name,
 select plan(74);
 
 -- ===== Who may call what ====================================================
-select ok(has_function_privilege('forms_server','public.submit_enquiry(uuid,text,text,text,boolean,text)','execute')
+select ok(has_function_privilege('forms_server','public.submit_enquiry(uuid,uuid,text,boolean,text)','execute')
   and has_function_privilege('forms_server','public.capture_demand(text,text,text,boolean,text)','execute')
   and has_function_privilege('forms_server','public.open_support_case(text,text,text)','execute'),
   'forms_server can execute the three submit wrappers');
@@ -38,13 +42,13 @@ select ok(not has_function_privilege('forms_server','public.admin_close_support_
   'forms_server cannot execute admin functions or the purge');
 select is_empty($$
   select r.rolname, f.sig from (values ('anon'),('authenticated'),('service_role'),('public')) r(rolname),
-    (values ('public.submit_enquiry(uuid,text,text,text,boolean,text)'),('private.submit_enquiry(uuid,text,text,text,boolean,text)'),
+    (values ('public.submit_enquiry(uuid,uuid,text,boolean,text)'),('private.submit_enquiry(uuid,uuid,text,boolean,text)'),
             ('public.capture_demand(text,text,text,boolean,text)'),('private.capture_demand(text,text,text,boolean,text)'),
             ('public.open_support_case(text,text,text)'),('private.open_support_case(text,text,text)')) f(sig)
   where r.rolname <> 'public' and has_function_privilege(r.rolname, f.sig, 'execute')$$,
   'anon, authenticated and service_role cannot execute any submit function');
 select is_empty($$select p.oid from pg_proc p where p.oid in (
-    'public.submit_enquiry(uuid,text,text,text,boolean,text)'::regprocedure, 'public.capture_demand(text,text,text,boolean,text)'::regprocedure,
+    'public.submit_enquiry(uuid,uuid,text,boolean,text)'::regprocedure, 'public.capture_demand(text,text,text,boolean,text)'::regprocedure,
     'public.open_support_case(text,text,text)'::regprocedure)
   and exists (select from aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a where a.grantee = 0 and a.privilege_type = 'EXECUTE')$$,
   'PUBLIC has no EXECUTE on the submit wrappers');
@@ -89,27 +93,27 @@ grant forms_server to postgres with set true, inherit false;
 -- Test-only (rolled back): pgTAP lives in extensions.
 grant usage on schema extensions to forms_server;
 set local role forms_server;
-select lives_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','Sam Sender','Sam.Sender@Example.test','Synthetic enquiry: do you do weekend washes?',true,'privacy-2026-11-11')$$,
-  'enquiry to a live listing is accepted');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','Sam Sender','sam@example.test','Synthetic enquiry message',false,'privacy-2026-11-11')$$,
+select lives_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','b6000000-0000-4000-8000-000000000007','Synthetic enquiry: do you do weekend washes?',true,'privacy-2026-11-11')$$,
+  'enquiry from a confirmed account to a live listing is accepted');
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','b6000000-0000-4000-8000-000000000007','Synthetic enquiry message',false,'privacy-2026-11-11')$$,
   'P0001','consent_required','unticked consent is refused');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','Sam Sender','sam@example.test','Synthetic enquiry message',null,'privacy-2026-11-11')$$,
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','b6000000-0000-4000-8000-000000000007','Synthetic enquiry message',null,'privacy-2026-11-11')$$,
   'P0001','consent_required','missing consent is refused');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000002','Sam Sender','sam@example.test','Synthetic enquiry message',true,'privacy-2026-11-11')$$,
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000002','b6000000-0000-4000-8000-000000000007','Synthetic enquiry message',true,'privacy-2026-11-11')$$,
   'P0001','listing_not_available','a listing that is not live is refused');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-0000000000ff','Sam Sender','sam@example.test','Synthetic enquiry message',true,'privacy-2026-11-11')$$,
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-0000000000ff','b6000000-0000-4000-8000-000000000007','Synthetic enquiry message',true,'privacy-2026-11-11')$$,
   'P0001','listing_not_available','an unknown listing gets the same refusal');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','Sam Sender','not-an-email','Synthetic enquiry message',true,'privacy-2026-11-11')$$,
-  '22023',null,'a malformed email is refused');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','Sam Sender','sam@example..test','Synthetic enquiry message',true,'privacy-2026-11-11')$$,
-  '22023',null,'a double dot in the domain is refused');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','Sam Sender','sam@example.test','short',true,'privacy-2026-11-11')$$,
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001',null,'Synthetic enquiry message',true,'privacy-2026-11-11')$$,
+  'P0001','account_required','D-097: an enquiry without an account is refused');
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','b6000000-0000-4000-8000-000000000008','Synthetic enquiry message',true,'privacy-2026-11-11')$$,
+  'P0001','account_required','D-097: an unconfirmed account is refused');
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','b6000000-0000-4000-8000-0000000000ff','Synthetic enquiry message',true,'privacy-2026-11-11')$$,
+  'P0001','account_required','D-097: an unknown account id is refused');
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','b6000000-0000-4000-8000-000000000007','short',true,'privacy-2026-11-11')$$,
   '22023',null,'a too-short message is refused');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','Sam Sender','sam@example.test',repeat('x',1001),true,'privacy-2026-11-11')$$,
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','b6000000-0000-4000-8000-000000000007',repeat('x',1001),true,'privacy-2026-11-11')$$,
   '22023',null,'a too-long message is refused');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001',E'Sam\u0007','sam@example.test','Synthetic enquiry message',true,'privacy-2026-11-11')$$,
-  '22023',null,'a control character in the name is refused');
-select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','Sam Sender','sam@example.test','Synthetic enquiry message',true,'Bad Notice!')$$,
+select throws_ok($$select public.submit_enquiry('b6200000-0000-4000-8000-000000000001','b6000000-0000-4000-8000-000000000007','Synthetic enquiry message',true,'Bad Notice!')$$,
   '22023',null,'a malformed notice version is refused');
 
 select lives_ok($$select public.capture_demand('Dana.Demand@example.test','p25-cat','gauteng',true,'privacy-2026-11-11')$$,
@@ -135,7 +139,8 @@ reset role;
 
 -- ===== What was stored ======================================================
 select is((select count(*)::int from public.enquiries where listing_public_id = 'b6200000-0000-4000-8000-000000000001'), 1, 'one enquiry stored');
-select is((select sender_email from public.enquiries where listing_public_id = 'b6200000-0000-4000-8000-000000000001'), 'sam.sender@example.test', 'email is lower-cased');
+select is((select sender_email || '|' || sender_name || '|' || sender_user_id from public.enquiries where listing_public_id = 'b6200000-0000-4000-8000-000000000001'),
+  'sam.sender@example.test|Sam Sender|b6000000-0000-4000-8000-000000000007', 'name and email come from the account (email lower-cased) and the row is linked to it');
 select is((select organisation_id from public.enquiries where listing_public_id = 'b6200000-0000-4000-8000-000000000001'), 'b6100000-0000-4000-8000-00000000000a'::uuid, 'enquiry records the listing organisation');
 select ok((select c.purpose = 'enquiry_share_with_provider' and c.method = 'checkbox_unticked_default' and c.notice_version = 'privacy-2026-11-11' and c.retain_until is null
   from public.enquiries e join public.consents c on c.id = e.consent_id), 'enquiry consent recorded with purpose, method and notice');
@@ -228,10 +233,11 @@ select is_empty($$select id from public.audit_log where target_table in ('consen
 
 -- A listing cascade must start the same retention clock as expiry purge.
 savepoint cascade_consent;
+insert into auth.users (id, email, email_confirmed_at) values ('b6000000-0000-4000-8000-000000000009', 'cascade@example.test', now());
 insert into public.listings(public_id,organisation_id,service_slug,display_name,description,metro,mode,status,provenance_kind,provenance_reference)
 values ('b6200000-0000-4000-8000-000000000003','b6100000-0000-4000-8000-00000000000a','p25-svc','Cascade listing','Synthetic cascade fixture','Gauteng','mobile','live','admin_import','synthetic-cascade');
 set local role forms_server;
-select public.submit_enquiry('b6200000-0000-4000-8000-000000000003','Synthetic Sender','cascade@example.test','Synthetic cascade enquiry',true,'privacy-2026-11-11');
+select public.submit_enquiry('b6200000-0000-4000-8000-000000000003','b6000000-0000-4000-8000-000000000009','Synthetic cascade enquiry',true,'privacy-2026-11-11');
 reset role;
 select lives_ok($$delete from public.listings where public_id='b6200000-0000-4000-8000-000000000003'$$, 'listing cascade succeeds');
 select is((select count(*) from public.enquiries where sender_email='cascade@example.test'),0::bigint,'cascade removes enquiry');
@@ -241,5 +247,6 @@ update public.consents set retain_until = now() - interval '1 day' where subject
 do $$ begin perform private.purge_expired_forms(); end $$;
 select is((select count(*) from public.consents where subject_email='cascade@example.test'),0::bigint,'ended cascade consent is eventually purged');
 rollback to savepoint cascade_consent;
+insert into auth.users (id, email, email_confirmed_at) values ('b6000000-0000-4000-8000-000000000009', 'cascade@example.test', now());
 select * from finish();
 rollback;

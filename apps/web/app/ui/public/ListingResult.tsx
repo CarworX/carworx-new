@@ -1,6 +1,6 @@
 import { topCategoryOf } from "../../catalogue/taxonomy";
 import { StatusLabel } from "../Chip";
-import { ResultCard } from "../ResultCard";
+import { Icon } from "../Icon";
 import { SERVICES } from "../services";
 
 export interface ListingSummary {
@@ -30,38 +30,58 @@ export function ListingResult({
 }) {
   const key = topCategoryOf(listing.category_slug)?.key ?? "repairs";
   const thumb = SERVICES.find((s) => s.key === key)?.object ?? "";
+  const where = whereText(listing, matched);
+  return (
+    <article className="cx-lcard">
+      <div className="top">
+        <span className="th">
+          <img src={thumb} alt="" width={64} height={64} />
+        </span>
+        <div className="who">
+          {listing.verification_labels.length > 0 ? (
+            <div className="lbls">
+              {listing.verification_labels.map((label) => (
+                <StatusLabel key={label}>{label}</StatusLabel>
+              ))}
+            </div>
+          ) : null}
+          <h3>
+            <a href={`/p/${listing.public_id}`}>{listing.display_name}</a>
+          </h3>
+          <p className="m">{where}</p>
+        </div>
+        <p className="pr">
+          Free
+          <small>to enquire</small>
+        </p>
+      </div>
+      <div className="bot">
+        <p className="svc">{listing.service_name}</p>
+        <span className="go" aria-hidden="true">
+          View business
+          <Icon name="arrow" size="sm" />
+        </span>
+      </div>
+    </article>
+  );
+}
+
+/** Where a listing is, in words. Mobile providers never get a place or a
+ * distance; browsing lists never claim coverage. */
+export function whereText(listing: ListingSummary, matched: boolean): string {
   const hasDistance =
     listing.distance_km !== undefined && listing.distance_km !== null;
   // A both-business (premises and comes to you) found through its service
   // area shows no distance: only that it comes to you and has premises.
-  const where =
-    listing.mode === "mobile"
+  return listing.mode === "mobile"
+    ? matched
+      ? `Comes to you · ${listing.metro} · serves your area (approximate)`
+      : `Comes to you · ${listing.metro}`
+    : listing.mode === "both" && !hasDistance
       ? matched
-        ? `Comes to you · ${listing.metro} · serves your area (approximate)`
-        : `Comes to you · ${listing.metro}`
-      : listing.mode === "both" && !hasDistance
-        ? matched
-          ? `Comes to you · serves your area (approximate) · also has premises in ${listing.metro}`
-          : `Comes to you · also has premises in ${listing.metro}`
-        : hasDistance
-          ? `${listing.metro} · ${(listing.distance_km ?? 0).toFixed(1)} km straight-line`
-          : listing.metro;
-  return (
-    <ResultCard
-      name={listing.display_name}
-      href={`/p/${listing.public_id}`}
-      meta={`${listing.service_name} · ${where}`}
-      thumb={thumb}
-      price="Enquire"
-      labels={
-        listing.verification_labels.length > 0 ? (
-          <>
-            {listing.verification_labels.map((label) => (
-              <StatusLabel key={label}>{label}</StatusLabel>
-            ))}
-          </>
-        ) : undefined
-      }
-    />
-  );
+        ? `Comes to you · serves your area (approximate) · also has premises in ${listing.metro}`
+        : `Comes to you · also has premises in ${listing.metro}`
+      : hasDistance
+        ? `${listing.metro} · ${(listing.distance_km ?? 0).toFixed(1)} km straight-line`
+        : listing.metro;
 }

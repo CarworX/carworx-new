@@ -47,21 +47,21 @@ select l.public_id, l.organisation_id,
 from public.listings l where l.organisation_id = '5ea0c000-0000-4000-8000-0000000000a1' and l.mode = 'mobile';
 
 -- Structure and grants ------------------------------------------------------------
-select is(pg_get_userbyid((select proowner from pg_proc where oid = 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid,integer)'::regprocedure))::text,
+select is(pg_get_userbyid((select proowner from pg_proc where oid = 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid[],uuid,integer)'::regprocedure))::text,
   'listing_eligibility', 'eligibility helper owned by listing_eligibility');
-select is(pg_get_userbyid((select proowner from pg_proc where oid = 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)'::regprocedure))::text,
+select is(pg_get_userbyid((select proowner from pg_proc where oid = 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text)'::regprocedure))::text,
   'listing_projection', 'wrapper owned by listing_projection');
 select is_empty($$select p.oid::regprocedure::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
   where n.nspname in ('api','private') and p.proname in ('search_listings','mobile_eligible_ids')
   and not (p.prosecdef and p.provolatile = 's' and p.proconfig @> array['search_path=""'])$$,
   'both functions are STABLE SECURITY DEFINER with an empty search_path (A17: no writes)');
-select ok(not has_function_privilege('anon', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'anon cannot execute wrapper');
-select ok(not has_function_privilege('authenticated', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'authenticated cannot execute wrapper');
-select ok(not has_function_privilege('service_role', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'service_role cannot execute wrapper');
-select ok(has_function_privilege('catalogue_server', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer)', 'execute'), 'catalogue_server can execute wrapper');
-select ok(not has_function_privilege('catalogue_server', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid,integer)', 'execute')
-  and not has_function_privilege('anon', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid,integer)', 'execute')
-  and not has_function_privilege('authenticated', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid,integer)', 'execute'),
+select ok(not has_function_privilege('anon', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text)', 'execute'), 'anon cannot execute wrapper');
+select ok(not has_function_privilege('authenticated', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text)', 'execute'), 'authenticated cannot execute wrapper');
+select ok(not has_function_privilege('service_role', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text)', 'execute'), 'service_role cannot execute wrapper');
+select ok(has_function_privilege('catalogue_server', 'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text)', 'execute'), 'catalogue_server can execute wrapper');
+select ok(not has_function_privilege('catalogue_server', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid[],uuid,integer)', 'execute')
+  and not has_function_privilege('anon', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid[],uuid,integer)', 'execute')
+  and not has_function_privilege('authenticated', 'private.mobile_eligible_ids(double precision,double precision,text[],uuid[],uuid[],uuid,integer)', 'execute'),
   'only the projection owner can execute the eligibility helper');
 select ok(not has_schema_privilege('anon', 'api', 'usage') and not has_schema_privilege('authenticated', 'api', 'usage')
   and not has_schema_privilege('catalogue_server', 'private', 'usage'), 'no client usage on api; server has no usage on private');

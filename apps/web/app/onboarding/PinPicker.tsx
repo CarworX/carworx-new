@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useFetcher } from "react-router";
 import { CsrfField } from "../auth/ui";
 import { CSRF_FIELD } from "../server/security/csrf";
-import { Button } from "../ui/Button";
-import { TextField } from "../ui/Field";
+import { ObIcon } from "../sites/onboarding/kit";
 import type { AreaCandidate } from "../server/geo/geocode";
 import {
   DEFAULT_CENTRE,
@@ -26,11 +25,18 @@ export function PinPicker({
   action,
   initial,
   mapEnabled,
+  title,
+  hint,
+  privateBase,
 }: {
   csrf: string;
   action: string;
   initial: SelectedPin | null;
   mapEnabled: boolean;
+  title: string;
+  hint: string;
+  /** Mobile only: the pin is a private base, never shown. */
+  privateBase: boolean;
 }) {
   const places = useFetcher<GeoReply>();
   const map = useFetcher<GeoReply>();
@@ -87,181 +93,223 @@ export function PinPicker({
     );
   }
   return (
-    <section className="grid gap-4" aria-label="Choose your location">
+    <div
+      className="ob-q ob-q-pin"
+      role="group"
+      aria-labelledby="q-pin-t"
+      aria-describedby="q-pin-h"
+    >
+      <p className="ob-qt" id="q-pin-t">
+        {title}
+      </p>
+      <p className="ob-qh" id="q-pin-h">
+        {hint}
+      </p>
       {mapEnabled ? (
         <>
-          <places.Form
-            method="post"
-            action={action}
-            className="flex flex-wrap items-end gap-2"
-          >
+          <places.Form method="post" action={action} className="ob-mapsearch">
             <CsrfField token={csrf} />
             <input type="hidden" name="intent" value="locate" />
-            <TextField
-              label="Find a place on the map"
+            <label className="cx-vh" htmlFor="ms-pin">
+              Search for an address or place
+            </label>
+            <input
+              className="ob-input"
+              id="ms-pin"
+              type="search"
               name="place"
               minLength={2}
               maxLength={120}
               required
-              hint="Search only moves the map. It does not fill your public address or save a pin."
+              autoComplete="off"
+              placeholder="Search an address or place"
+              aria-describedby="ms-pin-note"
             />
-            <Button type="submit" busy={places.state !== "idle"}>
+            <button type="submit" className="cx-vh">
               Find place
-            </Button>
+            </button>
+            <span className="cx-vh" id="ms-pin-note">
+              Search only moves the map. It does not fill your public address or
+              save a pin.
+            </span>
+            {places.data?.candidates?.length ? (
+              <ul className="ob-results" aria-label="Places found">
+                {places.data.candidates.map((candidate, i) => (
+                  <li key={i}>
+                    <button
+                      type="button"
+                      className="ob-result"
+                      onClick={() => {
+                        recenter(candidate);
+                      }}
+                    >
+                      <b>{candidate.label}</b>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </places.Form>
-          {places.data?.candidates?.length ? (
-            <ul className="grid gap-2" aria-label="Places found">
-              {places.data.candidates.map((candidate, i) => (
-                <li key={i}>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      recenter(candidate);
-                    }}
-                  >
-                    {candidate.label}
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
           {places.data?.candidates?.length === 0 ? (
-            <p role="status">No places found. Try a nearby street or suburb.</p>
+            <p className="ob-qh" role="status">
+              No places found. Try a nearby street or suburb.
+            </p>
           ) : null}
           {places.data?.problem ? (
-            <p role="alert">{places.data.problem}</p>
-          ) : null}
-          {!display ? (
-            <Button
-              type="button"
-              onClick={() => {
-                recenter(initial ?? DEFAULT_CENTRE);
-              }}
-              busy={map.state !== "idle"}
-            >
-              Open location map
-            </Button>
+            <p className="ob-err" role="alert">
+              {places.data.problem}
+            </p>
           ) : null}
           {display ? (
-            <>
-              <p className="type-caption">
-                Tap the exact spot. With a keyboard, use the arrow keys to move
-                the crosshair, then Enter to choose.
-              </p>
-              <button
-                type="button"
-                className="relative block w-full overflow-hidden rounded-xl"
-                aria-label="Location map. Arrow keys move the crosshair; Enter chooses its position."
-                onClick={(event) => {
-                  const bounds = event.currentTarget.getBoundingClientRect();
-                  const x =
-                    event.detail === 0
-                      ? cursor.x
-                      : ((event.clientX - bounds.left) / bounds.width) *
-                        PICKER_WIDTH;
-                  const y =
-                    event.detail === 0
-                      ? cursor.y
-                      : ((event.clientY - bounds.top) / bounds.height) *
-                        PICKER_HEIGHT;
-                  const selected = pixelPin(display.centre, x, y);
-                  if (selected) {
-                    setPin(selected);
-                    setCursor({ x, y });
-                  }
-                }}
-                onKeyDown={(event) => {
-                  const moves: Record<string, [number, number]> = {
-                    ArrowLeft: [-10, 0],
-                    ArrowRight: [10, 0],
-                    ArrowUp: [0, -10],
-                    ArrowDown: [0, 10],
-                  };
-                  const move = moves[event.key];
-                  if (!move) return;
-                  event.preventDefault();
-                  setCursor((current) => ({
-                    x: Math.max(0, Math.min(PICKER_WIDTH, current.x + move[0])),
-                    y: Math.max(
-                      0,
-                      Math.min(PICKER_HEIGHT, current.y + move[1]),
-                    ),
-                  }));
+            <button
+              type="button"
+              className="ob-map ob-map-live"
+              aria-label="Location map. Arrow keys move the pin; Enter drops it."
+              onClick={(event) => {
+                const bounds = event.currentTarget.getBoundingClientRect();
+                const x =
+                  event.detail === 0
+                    ? cursor.x
+                    : ((event.clientX - bounds.left) / bounds.width) *
+                      PICKER_WIDTH;
+                const y =
+                  event.detail === 0
+                    ? cursor.y
+                    : ((event.clientY - bounds.top) / bounds.height) *
+                      PICKER_HEIGHT;
+                const selected = pixelPin(display.centre, x, y);
+                if (selected) {
+                  setPin(selected);
+                  setCursor({ x, y });
+                }
+              }}
+              onKeyDown={(event) => {
+                const moves: Record<string, [number, number]> = {
+                  ArrowLeft: [-10, 0],
+                  ArrowRight: [10, 0],
+                  ArrowUp: [0, -10],
+                  ArrowDown: [0, 10],
+                };
+                const move = moves[event.key];
+                if (!move) return;
+                event.preventDefault();
+                setCursor((current) => ({
+                  x: Math.max(0, Math.min(PICKER_WIDTH, current.x + move[0])),
+                  y: Math.max(0, Math.min(PICKER_HEIGHT, current.y + move[1])),
+                }));
+              }}
+            >
+              <img
+                src={display.image}
+                alt="Mapbox map. Tap or use the arrow keys to choose a location."
+                width={PICKER_WIDTH}
+                height={PICKER_HEIGHT}
+              />
+              <svg
+                className="pin"
+                viewBox="0 0 34 44"
+                aria-hidden="true"
+                style={{
+                  left: `${String((cursor.x / PICKER_WIDTH) * 100)}%`,
+                  top: `${String((cursor.y / PICKER_HEIGHT) * 100)}%`,
                 }}
               >
-                <img
-                  src={display.image}
-                  alt="Mapbox map. Tap or use the crosshair to choose a location."
-                  width={PICKER_WIDTH}
-                  height={PICKER_HEIGHT}
-                  className="block h-auto w-full"
+                <path
+                  d="M17 43s15-14 15-26A15 15 0 0 0 2 17c0 12 15 26 15 26Z"
+                  fill="#0d0f12"
                 />
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute text-2xl font-bold text-black"
-                  style={{
-                    left: `${String((cursor.x / PICKER_WIDTH) * 100)}%`,
-                    top: `${String((cursor.y / PICKER_HEIGHT) * 100)}%`,
-                    transform: "translate(-50%, -50%)",
-                    textShadow: "0 0 3px white",
-                  }}
-                >
-                  +
-                </span>
+                <circle cx="17" cy="17" r="5.5" fill="#fff" />
+              </svg>
+            </button>
+          ) : (
+            <div className="ob-map ob-map-closed">
+              <button
+                type="button"
+                className="cx-btn outlined sm"
+                aria-busy={map.state !== "idle" || undefined}
+                onClick={() => {
+                  recenter(initial ?? DEFAULT_CENTRE);
+                }}
+              >
+                <ObIcon name="pin" /> Open the map
               </button>
-            </>
+            </div>
+          )}
+          {map.data?.problem ? (
+            <p className="ob-err" role="alert">
+              {map.data.problem}
+            </p>
           ) : null}
-          {map.data?.problem ? <p role="alert">{map.data.problem}</p> : null}
         </>
       ) : (
-        <p className="type-caption">
-          Map search is temporarily unavailable. You can still choose your
-          device location.
+        <p className="ob-qh">
+          Map search is temporarily unavailable. You can still use your device
+          location.
         </p>
       )}
-      <div>
-        <Button
+      <div className="ob-maprow">
+        <p className="ob-pinread" role="status">
+          {pin
+            ? `Pin dropped (${pin.source === "device" ? "your location" : "map tap"})`
+            : "Search, tap the map, or use your location"}
+          {pin ? (
+            <small>
+              {pin.lat.toFixed(5)}, {pin.lng.toFixed(5)}
+            </small>
+          ) : null}
+        </p>
+        <button
           type="button"
+          className="cx-btn outlined sm"
+          aria-busy={locating || undefined}
           onClick={() => {
             setPermission(true);
           }}
-          busy={locating}
         >
-          Use my location
-        </Button>
+          <ObIcon name="loc" /> Use my location
+        </button>
       </div>
       {permission ? (
-        <div
-          className="cx-surface grid gap-3 rounded-xl p-4"
-          role="group"
-          aria-label="Location permission"
-        >
-          <p>
-            CarworX will ask your browser for your current location once. Only
-            continue when you are at your business premises or mobile base. Your
-            mobile base stays private.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="primary" onClick={device}>
-              Continue to browser permission
-            </Button>
-            <Button
-              type="button"
-              onClick={() => {
-                setPermission(false);
-              }}
-            >
-              Cancel
-            </Button>
+        <div className="ob-perm" role="region" aria-label="Location permission">
+          <span className="ic">
+            <ObIcon name="loc" />
+          </span>
+          <div>
+            <b>Allow CarworX to use your location?</b>
+            <p>
+              {privateBase
+                ? "Your device's location becomes your private base, which customers never see. "
+                : "Your device's location becomes your premises pin, which customers see on your listing. "}
+              Only continue while you&apos;re at your{" "}
+              {privateBase ? "base" : "premises"}. We read it once and
+              don&apos;t track you. Your browser will ask you next.
+            </p>
+            <div className="acts">
+              <button
+                type="button"
+                className="cx-btn primary sm"
+                onClick={device}
+              >
+                Allow location
+              </button>
+              <button
+                type="button"
+                className="ob-link"
+                onClick={() => {
+                  setPermission(false);
+                }}
+              >
+                Not now
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
-      {deviceError ? <p role="alert">{deviceError}</p> : null}
-      <p role="status">
-        {pin
-          ? `Location chosen (${pin.source === "device" ? "your device" : "map tap"}): ${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}. Your mobile base is never shown publicly.`
-          : "No location chosen yet. Choose a map pin or your device location before continuing."}
-      </p>
+      {deviceError ? (
+        <p className="ob-err" role="alert">
+          {deviceError}
+        </p>
+      ) : null}
       {/* Associated with the separate application form, never the lookup forms. */}
       <input
         form="application-step"
@@ -281,6 +329,6 @@ export function PinPicker({
         name="pinSource"
         value={pin?.source ?? ""}
       />
-    </section>
+    </div>
   );
 }

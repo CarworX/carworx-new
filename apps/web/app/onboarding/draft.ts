@@ -157,7 +157,17 @@ export function parseStep(
   if (step === "about") {
     const description = field(form, "description").replace(/\r\n?/g, "\n");
     const hours = parseHoursForm(form, { requireOpenDay: true });
+    // Optional. A real calendar date from 1950 up to today; blank clears it.
+    const since = field(form, "since");
+    const sinceOk =
+      since === "" ||
+      (/^\d{4}-\d{2}-\d{2}$/.test(since) &&
+        !Number.isNaN(Date.parse(`${since}T00:00:00Z`)) &&
+        new Date(`${since}T00:00:00Z`).toISOString().slice(0, 10) === since &&
+        since >= "1950-01-01" &&
+        since <= new Date().toISOString().slice(0, 10));
     if (
+      !sinceOk ||
       description.length < 10 ||
       description.length > 2000 ||
       // eslint-disable-next-line no-control-regex -- only newline is permitted in multiline text
@@ -165,7 +175,12 @@ export function parseStep(
       !hours.ok
     )
       return null;
-    return { description, hours: hours.hours, step: 5 };
+    return {
+      description,
+      hours: hours.hours,
+      trading_since: since || null,
+      step: 5,
+    };
   }
   return null;
 }

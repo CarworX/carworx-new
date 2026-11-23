@@ -57,6 +57,11 @@ export async function getSignedIn(
   };
 }
 
+/** Whether the request carries a session cookie at all (no network call). */
+export function hasSessionCookie(request: Request): boolean {
+  return readCookies(request).some((c) => SESSION_CHUNK.test(c.name));
+}
+
 export function signInUrl(request: Request, appOrigin: string): string {
   const url = new URL(request.url);
   const returnTo = safeReturnTo(`${url.pathname}${url.search}`, appOrigin);

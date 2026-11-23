@@ -1,0 +1,21 @@
+| width | position       | pixels differing (>24/255) |
+| ----- | -------------- | -------------------------- |
+| 1280  | top            | 17.0%                      |
+| 1280  | timeline-start | 1.8%                       |
+| 1280  | timeline-mid   | 1.9%                       |
+| 1280  | timeline-end   | 1.9%                       |
+| 1280  | quote          | 1.7%                       |
+| 1280  | fines          | 1.7%                       |
+| 1280  | app            | 2.9%                       |
+| 1280  | business       | 1.3%                       |
+| 1280  | bottom         | 10.5%                      |
+| 390   | top            | 32.3%                      |
+| 390   | timeline-start | 1.2%                       |
+| 390   | timeline-mid   | 1.3%                       |
+| 390   | timeline-end   | 1.3%                       |
+| 390   | quote          | 0.3%                       |
+| 390   | fines          | 0.8%                       |
+| 390   | app            | 1.4%                       |
+| 390   | business       | 0.7%                       |
+| 390   | bottom         | 18.9%                      |
+| 390   | menu-open      | 28.5%                      |

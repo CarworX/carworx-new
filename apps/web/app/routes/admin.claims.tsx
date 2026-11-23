@@ -4,7 +4,7 @@ import { QueueFilters } from "../admin-onboarding/QueueFilters";
 import { throwStatus } from "../auth/http.server";
 import { requireAdmin } from "../server/providers/admin.server";
 import { PAGE_SIZE, parsePage, sast } from "../server/providers/forms";
-import { AdminShell, Pager } from "../ui/admin/AdminShell";
+import { AdminShell, Pager, QueueRowLink } from "../ui/admin/AdminShell";
 import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/admin.claims";
 
@@ -79,22 +79,20 @@ export default function AdminClaims({ loaderData }: Route.ComponentProps) {
       ) : (
         <ul className="grid gap-3" data-admin-list="claims">
           {rows.map((r) => (
-            <li
-              key={r.id}
-              className="rounded-2xl bg-[var(--surface)] p-4"
-              data-row={r.id}
-              data-claim-status={r.status}
-            >
-              <a className="cx-tlink" href={`/admin/claims/${r.id}`}>
-                {r.status === "disputed" ? "Disputed claim" : "Claim"} on
-                listing {r.listing_public_id.slice(0, 8)}
-              </a>
-              <p className="type-body mt-1">
-                {r.evidence_kind === "business_email"
-                  ? "Business email"
-                  : "Document"}{" "}
-                · {sast(r.created_at)} · {r.status}
-              </p>
+            <li key={r.id} data-row={r.id} data-claim-status={r.status}>
+              <QueueRowLink
+                href={`/admin/claims/${r.id}`}
+                icon={r.status === "disputed" ? "alert" : "shield"}
+                title={`${r.status === "disputed" ? "Disputed claim" : "Claim"} on listing ${r.listing_public_id.slice(0, 8)}`}
+                description={
+                  <>
+                    {r.evidence_kind === "business_email"
+                      ? "Business email"
+                      : "Document"}{" "}
+                    · {sast(r.created_at)} · {r.status}
+                  </>
+                }
+              />
             </li>
           ))}
         </ul>

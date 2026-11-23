@@ -1,9 +1,12 @@
 /**
- * GET /api/search handler (P2-2, Claude 19 §2–§4).
+ * GET /api/search handler (P2-2, Claude 19 §2–§4; D-097 keyword search).
  *
  * Order: rate limit (every request counts) -> strict input parsing -> cursor
  * verification -> bounded database wrapper. Fixed premises and mobile
  * providers are separate groups with separate cursors; they are never mixed.
+ * With no location at all, one "all" group browses every live listing
+ * (newest verified first) and carries no distance. `q` (business or service
+ * name words) narrows any group.
  * Responses are always `private, no-store`. Failures carry fixed error codes
  * and no detail; logs carry fixed labels only.
  */
@@ -28,7 +31,10 @@ export const MAX_LIMIT = 20;
 const SLUG = /^[a-z][a-z0-9-]{0,79}$/;
 const DECIMAL = /^-?\d{1,3}(?:\.\d{1,8})?$/;
 const SESSION = /^[0-9a-f]{32}$/;
+/** Name words: letters, digits and a few marks; 2–60 characters. */
+const WORDS = /^[\p{L}\p{N} .,'’&()/-]{2,60}$/u;
 const ALLOWED = new Set([
+  "q",
   "lat",
   "lng",
   "service",
@@ -37,18 +43,28 @@ const ALLOWED = new Set([
   "limit",
   "fixed_cursor",
   "mobile_cursor",
+  "all_cursor",
 ]);
 
+/** Trims and collapses spaces; null when empty or not allowed. */
+export function normaliseWords(text: string | null): string | null {
+  if (text === null) return null;
+  const words = text.replace(/\s+/g, " ").trim();
+  return WORDS.test(words) ? words : null;
+}
+
 export interface SearchArgs {
-  lat: number;
-  lng: number;
+  /** Null (with lng and radius) only for the "all" group. */
+  lat: number | null;
+  lng: number | null;
   service: string | null;
   category: string | null;
-  radius: number;
+  radius: number | null;
   group: SearchGroup;
   afterBucket: number | null;
   afterId: string | null;
   limit: number;
+  q: string | null;
 }
 export interface SearchRow {
   public_id: string;
@@ -65,6 +81,8 @@ export interface SearchRow {
   public_longitude: number | null;
   verification_labels: string[];
   distance_bucket: number | null;
+  /** "all" group only: whole day of the newest verification (0 = none). */
+  browse_rank?: number | null;
 }
 export interface SearchDeps {
   /** A session already resolved by the caller (the /search page). */
@@ -84,14 +102,17 @@ export interface SearchDeps {
 }
 
 interface Query {
-  lat: number;
-  lng: number;
+  /** Both null: browse without a location (the "all" group). */
+  lat: number | null;
+  lng: number | null;
+  q: string | null;
   service: string | null;
   category: string | null;
   radius: number;
   limit: number;
   fixedCursor: string | null;
   mobileCursor: string | null;
+  allCursor: string | null;
 }
 
 function json(
@@ -116,13 +137,34 @@ function parse(params: URLSearchParams): Query | null {
     seen.add(key);
   }
   const get = (k: string) => params.get(k);
+  const qText = get("q");
+  const q = normaliseWords(qText);
+  if (qText !== null && (q === null || q !== qText)) return null;
   const latText = get("lat"),
     lngText = get("lng");
-  if (!latText || !lngText || !DECIMAL.test(latText) || !DECIMAL.test(lngText))
-    return null;
-  const lat = Number(latText),
+  let lat: number | null = null,
+    lng: number | null = null;
+  if (latText === null && lngText === null) {
+    // Browsing: no location, so no radius and no located cursors.
+    if (
+      get("radius") !== null ||
+      get("fixed_cursor") !== null ||
+      get("mobile_cursor") !== null
+    )
+      return null;
+  } else {
+    if (
+      !latText ||
+      !lngText ||
+      !DECIMAL.test(latText) ||
+      !DECIMAL.test(lngText) ||
+      get("all_cursor") !== null
+    )
+      return null;
+    lat = Number(latText);
     lng = Number(lngText);
-  if (!(lat >= -35 && lat <= -22 && lng >= 16 && lng <= 33)) return null;
+    if (!(lat >= -35 && lat <= -22 && lng >= 16 && lng <= 33)) return null;
+  }
   const service = get("service");
   if (service !== null && !SLUG.test(service)) return null;
   const category = get("category");
@@ -147,12 +189,14 @@ function parse(params: URLSearchParams): Query | null {
   return {
     lat,
     lng,
+    q,
     service,
     category,
     radius,
     limit,
     fixedCursor: get("fixed_cursor"),
     mobileCursor: get("mobile_cursor"),
+    allCursor: get("all_cursor"),
   };
 }
 
@@ -177,11 +221,21 @@ export function pgRound(x: number, dp: number): string {
  * so a cursor never carries over to a different rounded search point.
  */
 export function canonicalQuery(
-  q: Pick<Query, "lat" | "lng" | "service" | "category" | "radius" | "limit">,
+  q: Pick<Query, "lat" | "lng" | "service" | "category" | "radius" | "limit"> &
+    Partial<Pick<Query, "q">>,
   group: SearchGroup,
 ): string {
+  const words = q.q ? q.q.toLowerCase() : "";
+  if (group === "all" || q.lat === null || q.lng === null)
+    return [
+      "all",
+      q.service ?? "",
+      q.category ?? "",
+      String(q.limit),
+      words,
+    ].join("|");
   const dp = group === "fixed" ? 3 : 2;
-  return [
+  const parts = [
     group,
     pgRound(q.lat, dp),
     pgRound(q.lng, dp),
@@ -189,7 +243,11 @@ export function canonicalQuery(
     q.category ?? "",
     String(q.radius),
     String(q.limit),
-  ].join("|");
+  ];
+  // Name words are appended only when present, so a located cursor issued
+  // before keyword search existed still reads the same.
+  if (words) parts.push(words);
+  return parts.join("|");
 }
 
 function baseItem(row: SearchRow) {
@@ -227,6 +285,20 @@ function fixedItem(row: SearchRow): FixedItem {
     distance_kind: "straight-line",
   };
 }
+/** A browsed listing: no distance; a public address only for premises. */
+export type BrowseItem = ReturnType<typeof baseItem> & {
+  mode: "fixed" | "mobile" | "both";
+  public_address: string | null;
+};
+function browseItem(row: SearchRow): BrowseItem {
+  const mode =
+    row.mode === "mobile" || row.mode === "both" ? row.mode : "fixed";
+  return {
+    ...baseItem(row),
+    mode,
+    public_address: mode === "mobile" ? null : row.public_address,
+  };
+}
 function mobileItem(row: SearchRow): MobileItem {
   return {
     ...baseItem(row),
@@ -245,16 +317,18 @@ async function page(
   after: FixedAfter | MobileAfter | null,
   now: number,
 ) {
+  const located = group !== "all";
   const rows = await deps.search({
-    lat: q.lat,
-    lng: q.lng,
+    lat: located ? q.lat : null,
+    lng: located ? q.lng : null,
     service: q.service,
     category: q.category,
-    radius: q.radius,
+    radius: located ? q.radius : null,
     group,
     afterBucket: after && "bucket" in after ? after.bucket : null,
     afterId: after ? after.id : null,
     limit: q.limit + 1,
+    q: q.q,
   });
   const visible = rows.slice(0, q.limit);
   const last = visible.at(-1);
@@ -266,7 +340,9 @@ async function page(
           canonicalQuery(q, group),
           group === "fixed"
             ? { bucket: last.distance_bucket ?? 0, id: last.public_id }
-            : { id: last.public_id },
+            : group === "all"
+              ? { bucket: last.browse_rank ?? 0, id: last.public_id }
+              : { id: last.public_id },
           now,
         )
       : null;
@@ -298,7 +374,11 @@ export interface SearchItemGroup<T> {
 export interface SearchBody {
   fixed: SearchItemGroup<FixedItem> | null;
   mobile: SearchItemGroup<MobileItem> | null;
-  radius_km: number;
+  /** Browsing without a location: every live listing, no distance. */
+  all?: SearchItemGroup<BrowseItem> | null;
+  /** Null when browsing without a location. */
+  radius_km: number | null;
+  q?: string | null;
   widened: false;
 }
 export type SearchOutcome =
@@ -347,6 +427,39 @@ export async function runSearch(
   if (!search || !cursorKey || cursorKey.length < 32)
     return { status: 503, error: "search_unavailable", cookie };
 
+  if (q.lat === null || q.lng === null) {
+    const allAfter = q.allCursor
+      ? await readCursor(
+          cursorKey,
+          "all",
+          canonicalQuery(q, "all"),
+          q.allCursor,
+          now,
+        )
+      : null;
+    if (q.allCursor && !allAfter)
+      return { status: 400, error: "invalid_cursor", cookie };
+    try {
+      const ready = { ...deps, search, cursorKey };
+      const allPage = await page(ready, q, "all", allAfter, now);
+      return {
+        status: 200,
+        body: {
+          fixed: null,
+          mobile: null,
+          all: { items: allPage.visible.map(browseItem), next: allPage.next },
+          radius_km: null,
+          q: q.q,
+          widened: false,
+        },
+        cookie,
+      };
+    } catch {
+      console.error("search-db-unavailable");
+      return { status: 503, error: "search_unavailable", cookie };
+    }
+  }
+
   const fixedAfter = q.fixedCursor
     ? await readCursor(
         cursorKey,
@@ -387,7 +500,7 @@ export async function runSearch(
       : null;
     return {
       status: 200,
-      body: { fixed, mobile, radius_km: q.radius, widened: false },
+      body: { fixed, mobile, radius_km: q.radius, q: q.q, widened: false },
       cookie,
     };
   } catch {
