@@ -90,7 +90,10 @@ export default function ClaimPicker({ loaderData }: Route.ComponentProps) {
       ) : results.length === 0 ? (
         <p>No listings found. Try another name or start a new application.</p>
       ) : (
-        <ul aria-label="Matching listings" className="list-none pl-0">
+        <ul
+          aria-label="Matching listings"
+          style={{ listStyle: "none", paddingInlineStart: 0 }}
+        >
           {results.map((listing) => (
             <li className="card" key={listing.public_id}>
               <h2>{listing.display_name}</h2>
