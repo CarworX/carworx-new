@@ -107,6 +107,30 @@ describe("public pages without JavaScript", () => {
     expect(account.body).toContain('href="/bookings"');
   });
 
+  it("accepts a written quote request using the full advertised note length", async () => {
+    const offer = randomUUID();
+    sql(`
+      insert into public.service_offers
+        (id, organisation_id, listing_public_id, name, pricing, duration_minutes, resource_kind)
+      select '${offer}', organisation_id, public_id, 'Synthetic inspection', 'quote', 60, 'bay'
+      from public.listings where public_id = '${SEED_FIXED}';
+    `);
+    const customer = await createConfirmedUser("quote-notes");
+    const book = `/book/${SEED_FIXED}`;
+    const signedIn = await signIn(customer.email, undefined, book);
+    expect((await signedIn.send(book)).body).toContain("Ask for a quote");
+    const response = await signedIn.send(book, {
+      form: {
+        intent: "quote",
+        offer,
+        note: "Please inspect the synthetic vehicle. ".repeat(20),
+      },
+    });
+    expect(response.status).toBe(302);
+    expect(response.location).toMatch(/^\/quotes\/[0-9a-f-]{36}$/);
+    expect((await signedIn.send(response.location ?? "")).status).toBe(200);
+  });
+
   it("home links to search and has the five service keys", async () => {
     const reply = await browser().send("/");
     expect(reply.status).toBe(200);

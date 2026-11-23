@@ -124,8 +124,6 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     );
   const offer = field(form, "offer");
   if (!UUID.test(offer)) return fail("invalid_input");
-  const note = parseOptionalText(form, "note", 500);
-  if (note === false) return fail("invalid_input");
 
   if (form.get("intent") === "quote") {
     const quoteNote = parseText(form, "note", 10, 1000);
@@ -138,6 +136,8 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     return throwRedirect(`/quotes/${String(id)}`, signedIn.headers);
   }
 
+  const note = parseOptionalText(form, "note", 500);
+  if (note === false) return fail("invalid_input");
   const startsAt = parseInstant(form, "starts_at");
   if (startsAt === null) return fail("invalid_input");
 
