@@ -92,7 +92,7 @@ export function SetupHub({
       title: "Who gets the booking",
       description: "Customers choose a person, or your business assigns one.",
       icon: "list",
-      status: "Configured",
+      status: "Ready to use",
       ready: true,
     },
     ...(role === "owner"
@@ -103,7 +103,7 @@ export function SetupHub({
             description:
               "Choose the customer details staff may see for their bookings.",
             icon: "lock" as const,
-            status: "Configured",
+            status: "Ready to use",
             ready: true,
           },
         ]
@@ -125,13 +125,14 @@ export function SetupHub({
           <p className="type-label text-quiet">{name} · Live</p>
           <h3>Finish setup</h3>
           <p className="type-body">
-            Your listing is already in search. Choose a task in any order.
+            Your listing is already in search. Booking and staff visibility
+            settings are ready with defaults, and you can change them any time.
           </p>
         </div>
         <div className="cx-setup-ring">
           <progress
             className="sr-only"
-            aria-label="Setup tasks configured"
+            aria-label="Setup tasks ready"
             value={ready}
             max={available.length}
           />

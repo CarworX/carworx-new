@@ -32,7 +32,7 @@ export function AdminShell({
     pathname === "/admin/listings" || pathname.startsWith("/admin/listings/")
       ? `/admin/listings?status=${listStatus === "live" || listStatus === "suspended" ? listStatus : "submitted"}`
       : pathname === "/admin"
-        ? "/admin/today"
+        ? null
         : pathname.split("/").slice(0, 3).join("/");
   return (
     <PublicShell signedIn>

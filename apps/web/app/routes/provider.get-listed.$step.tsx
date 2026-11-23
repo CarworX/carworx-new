@@ -452,7 +452,7 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
                     : loaderData.status === "draft" ||
                         loaderData.status === "suspended"
                       ? "Open your business dashboard to see its current review status and any feedback. Only an approved listing appears in search."
-                      : "A CarworX admin checks every application before anything changes in search, and records how they checked it. We'll email you at your sign-in address either way."}
+                      : "A CarworX admin checks every application before it appears in search. Open your business dashboard to see the review status and any feedback."}
                 </p>
                 {live ||
                 loaderData.status === "draft" ||
@@ -700,14 +700,16 @@ function Application({ loaderData, actionData }: Route.ComponentProps) {
                           <b>List a new business</b>
                           <small>Start fresh. Takes about 2 minutes.</small>
                         </label>
-                        <a className="ob-tile" href="/search">
+                        <a
+                          className="ob-tile"
+                          href="/provider/get-listed/claim"
+                        >
                           <span className="ic">
                             <ObIcon name="flag" />
                           </span>
                           <b>Claim an existing listing</b>
                           <small>
-                            Your business is already on CarworX and you run it.
-                            Find it, then tap Claim.
+                            Find your business on CarworX and request access.
                           </small>
                         </a>
                       </div>
