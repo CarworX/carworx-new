@@ -63,7 +63,8 @@ describe("team setup through the Worker", () => {
     const home = await f.ownerBrowser.send("/provider");
     expect(home.status).toBe(200);
     expect(home.body).toContain("Finish setup");
-    expect(home.body).toContain('aria-label="Setup tasks configured"');
+    expect(home.body).toContain('aria-label="Setup tasks ready"');
+    expect(home.body).toContain("settings are ready with defaults");
     expect(home.body).toContain("Set hours");
     await f.ownerBrowser.send(f.path("team", "share"));
     const created = await f.ownerBrowser.send(f.path("team", "share"), {

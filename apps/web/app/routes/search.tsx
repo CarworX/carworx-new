@@ -1,25 +1,12 @@
 import { data } from "react-router";
 
 import { CATEGORIES, findCategory } from "../catalogue/taxonomy";
-import { geocodeArea } from "../server/geo/geocode";
-import {
-  checkQuota,
-  checkSearchLimits,
-  type LimiterNamespace,
-} from "../server/search/limiter";
-import { buildSearchPage, type PageModel } from "../server/search/page";
+import { cataloguePage } from "../server/search/catalogue-page.server";
+import type { PageModel } from "../server/search/page";
 import { ListingCard } from "../sites/ListingCard";
 import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
 import { UseMyLocation } from "../sites/UseMyLocation";
 import type { Route } from "./+types/search";
-
-interface SearchEnv {
-  CATALOGUE_DB?: { connectionString?: unknown };
-  SEARCH_LIMITER?: LimiterNamespace;
-  SEARCH_LIMITER_SALT?: string;
-  SEARCH_CURSOR_KEY?: string;
-  MAPBOX_SERVER_TOKEN?: string;
-}
 
 const STATUS: Partial<Record<PageModel["kind"], number>> = {
   rate_limited: 429,
@@ -29,28 +16,10 @@ const STATUS: Partial<Record<PageModel["kind"], number>> = {
 };
 
 export async function loader({ request, context }: Route.LoaderArgs) {
-  const env = context.cloudflare.env as unknown as SearchEnv;
-  const connection = env.CATALOGUE_DB?.connectionString;
-  const search =
-    typeof connection === "string" && connection.length > 0
-      ? (await import("../server/search/db")).createCatalogueSearch(connection)
-      : undefined;
-  const { model, cookie } = await buildSearchPage(request, {
-    cursorKey: env.SEARCH_CURSOR_KEY,
-    limits: (ip, session) =>
-      checkSearchLimits(
-        env.SEARCH_LIMITER,
-        env.SEARCH_LIMITER_SALT,
-        ip,
-        session,
-      ),
-    search,
-    quota: () => checkQuota(env.SEARCH_LIMITER, "geocode"),
-    geocode: (area) => geocodeArea(area, env.MAPBOX_SERVER_TOKEN),
-    mapEnabled:
-      typeof env.MAPBOX_SERVER_TOKEN === "string" &&
-      env.MAPBOX_SERVER_TOKEN.length >= 20,
-  });
+  const { model, cookie } = await cataloguePage(
+    request,
+    context.cloudflare.env,
+  );
   const headers = new Headers({ "Cache-Control": "private, no-store" });
   if (cookie) headers.append("Set-Cookie", cookie);
   if (model.kind === "rate_limited")
