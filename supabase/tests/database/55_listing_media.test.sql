@@ -31,7 +31,7 @@ insert into public.listings(public_id, organisation_id, service_slug, display_na
   ('d5520000-0000-4000-8000-000000000001', 'd5510000-0000-4000-8000-000000000001', 'm3-wash', 'Cover wash (synthetic)', 'Synthetic cover listing', 'Gauteng', 'mobile', 'live', 'admin_import', 'synthetic'),
   ('d5520000-0000-4000-8000-000000000002', 'd5510000-0000-4000-8000-000000000002', 'm3-wash', 'Other wash (synthetic)', 'Synthetic other listing', 'Gauteng', 'mobile', 'draft', 'admin_import', 'synthetic');
 
-select plan(38);
+select plan(40);
 
 -- ===== Grants ===============================================================
 select ok(not has_function_privilege('anon', 'public.set_listing_cover(uuid, text, text, integer, integer, integer)', 'execute'),
@@ -91,6 +91,17 @@ select is((select count(*)::integer from public.listing_covers where listing_pub
   'still one cover per listing');
 select is((select reason from private.media_deletions where object_key = 'covers/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg'), 'replaced',
   'the replaced file is queued for deletion');
+set local request.jwt.claims = '{"sub":"d5500000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.set_listing_cover('d5520000-0000-4000-8000-000000000001', 'covers/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg', 'image/jpeg', 1000, 800, 600)$$,
+  '22023', null, 'a retired key can never become a cover again');
+reset role;
+-- Even if a queued key were somehow in use, it is never offered for deletion.
+insert into private.media_deletions(object_key, reason) values ('covers/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.webp', 'replaced');
+select is((select count(*)::integer from public.claim_media_deletions(100) k where k = 'covers/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.webp'), 0,
+  'a key in use is never claimed for deletion');
+delete from private.media_deletions where object_key = 'covers/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.webp';
+update private.media_deletions set claimed_at = null;
 
 -- ===== Suspended or draft listings show nothing ==============================
 insert into public.listing_covers(listing_public_id, organisation_id, object_key, content_type, bytes, width, height)

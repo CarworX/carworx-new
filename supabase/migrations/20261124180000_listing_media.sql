@@ -120,6 +120,11 @@ begin
   if not private.has_org_role(v_org, array['owner','manager']) then
     raise exception 'not_allowed' using errcode = '42501';
   end if;
+  -- A retired key (queued for deletion) never becomes a cover again: the
+  -- retention run would delete the live file (Codex review on #146).
+  if exists (select from private.media_deletions d where d.object_key = p_key) then
+    perform private.bad_input();
+  end if;
   insert into public.listing_covers(listing_public_id, organisation_id, object_key, content_type, bytes, width, height, uploaded_by)
     values (p_listing, v_org, p_key, p_type, p_bytes, p_width, p_height, v_uid)
   on conflict (listing_public_id) do update set object_key = excluded.object_key,
@@ -192,7 +197,9 @@ begin
   return query
     update private.media_deletions d set claimed_at = now()
     where d.object_key in (select x.object_key from private.media_deletions x
-                           where x.claimed_at is null or x.claimed_at < now() - interval '1 hour'
+                           where (x.claimed_at is null or x.claimed_at < now() - interval '1 hour')
+                             -- Never offer a key that is in use (belt and braces).
+                             and not exists (select from public.listing_covers c where c.object_key = x.object_key)
                            order by x.queued_at limit p_limit for update skip locked)
     returning d.object_key;
 end $$;

@@ -261,8 +261,20 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       p_height: clean.height,
     });
     if (saved.error !== null) {
-      // Nothing points at the file: remove it now rather than leave an orphan.
-      await media.delete(key).catch(() => undefined);
+      // The save may have committed even though its reply was lost. Delete
+      // the file only when the database clearly does not point at it; if the
+      // check itself fails, keep it (a stray file beats a broken cover).
+      const check = await signedIn.supabase
+        .from("listing_covers")
+        .select("object_key")
+        .eq("object_key", key)
+        .maybeSingle();
+      if (check.error === null && check.data !== null)
+        return throwRedirect(
+          setupHref(organisation.id, "cover"),
+          signedIn.headers,
+        );
+      if (check.error === null) await media.delete(key).catch(() => undefined);
       return fail(teamProblem(saved.error));
     }
     return throwRedirect(setupHref(organisation.id, "cover"), signedIn.headers);
