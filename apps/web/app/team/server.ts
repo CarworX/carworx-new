@@ -84,6 +84,11 @@ export interface TeamMemberRow {
   display_name: string | null;
 }
 
+/** Characters as PostgreSQL's char_length counts them (code points). */
+function codePoints(value: string) {
+  return value.match(/[\s\S]/gu)?.length ?? 0;
+}
+
 /** Treat the RPC response as untrusted: keep only the four fields, checked. */
 export function readTeamMembers(value: unknown): TeamMemberRow[] | null {
   if (!Array.isArray(value) || value.length > 100) return null;
@@ -103,7 +108,8 @@ export function readTeamMembers(value: unknown): TeamMemberRow[] | null {
       (c.role !== "owner" && c.role !== "manager" && c.role !== "staff") ||
       !("display_name" in c) ||
       (c.display_name !== null &&
-        (typeof c.display_name !== "string" || c.display_name.length > 120))
+        (typeof c.display_name !== "string" ||
+          codePoints(c.display_name) > 120))
     )
       return null;
     rows.push({

@@ -30,6 +30,15 @@ describe("team member list boundary", () => {
     ).toMatchObject({ display_name: null });
   });
 
+  it("counts name length as the database does (code points)", () => {
+    // 120 supplementary characters: 240 UTF-16 units, 120 for char_length.
+    const name = "\u{1F697}".repeat(120);
+    expect(
+      readTeamMembers([{ ...row, display_name: name }])?.[0],
+    ).toMatchObject({ display_name: name });
+    expect(readTeamMembers([{ ...row, display_name: `${name}x` }])).toBeNull();
+  });
+
   it("rejects anything malformed", () => {
     expect(readTeamMembers(null)).toBeNull();
     expect(readTeamMembers([{ ...row, role: "admin" }])).toBeNull();
