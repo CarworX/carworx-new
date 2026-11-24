@@ -13,6 +13,7 @@ export interface MailConfig extends MailEnvelopeConfig {
   dailyLimit: number;
 }
 export type MailMessage =
+  | { kind: "security_alert"; to: string; expiresAt: string }
   | { kind: "invite"; to: string; token: string; expiresAt: string }
   | { kind: "security_code"; to: string; code: string; expiresAt: string }
   | {
@@ -162,7 +163,8 @@ function message(
     (kind !== "invite" &&
       kind !== "security_code" &&
       kind !== "auth_signup" &&
-      kind !== "auth_recovery")
+      kind !== "auth_recovery" &&
+      kind !== "security_alert")
   )
     return null;
   const expiresAt = m["expiresAt"];
@@ -170,9 +172,17 @@ function message(
   if (
     !Number.isFinite(expiry) ||
     expiry <= now ||
-    expiry > now + (kind === "invite" ? 7 * 86400_000 : 600_000)
+    expiry >
+      now +
+        (kind === "invite"
+          ? 7 * 86400_000
+          : kind === "security_alert"
+            ? 86400_000
+            : 600_000)
   )
     return null;
+  if (kind === "security_alert")
+    return { kind, to, expiresAt: expiresAt as string };
   if (
     kind === "invite" &&
     typeof m["token"] === "string" &&
@@ -243,6 +253,14 @@ async function open(
     : null;
 }
 function rendered(config: MailConfig, m: MailMessage) {
+  if (m.kind === "security_alert") {
+    return {
+      from: config.from,
+      to: [m.to],
+      subject: "CarworX email sign-in code used",
+      text: "An email code was just used for team access on your CarworX account. This did not verify an authenticator factor. If this was not you, change your password and sign out other sessions from Security.",
+    };
+  }
   if (m.kind === "auth_signup" || m.kind === "auth_recovery") {
     const link = new URL("/auth/confirm", config.origin);
     link.searchParams.set("token_hash", m.tokenHash);
@@ -276,6 +294,34 @@ function rendered(config: MailConfig, m: MailMessage) {
   };
 }
 
+/** Prepares ciphertext for an atomic domain transaction; never exposes plaintext. */
+export async function prepareMailEnvelope(
+  config: MailEnvelopeConfig,
+  logicalKey: string,
+  input: MailMessage,
+  now = Date.now,
+): Promise<{
+  template: MailMessage["kind"];
+  recipientHash: string;
+  envelope: string;
+  expiresAt: string;
+} | null> {
+  const m = message(input, now(), config);
+  if (!KEY.test(logicalKey) || m === null) return null;
+  const envelope = await seal(config.encryptionKey, logicalKey, m);
+  const hash = new Uint8Array(
+    await crypto.subtle.digest("SHA-256", encoder.encode(m.to)),
+  );
+  return {
+    template: m.kind,
+    recipientHash: Array.from(hash, (v) =>
+      v.toString(16).padStart(2, "0"),
+    ).join(""),
+    envelope,
+    expiresAt: m.expiresAt,
+  };
+}
+
 export function createMailEnqueuer(
   config: MailEnvelopeConfig,
   db: Pick<MailDatabase, "enqueue">,
@@ -285,22 +331,15 @@ export function createMailEnqueuer(
     logicalKey: string,
     input: MailMessage,
   ): Promise<"queued" | "invalid" | "unavailable"> => {
-    const m = message(input, now(), config);
-    if (!KEY.test(logicalKey) || m === null) return "invalid";
     try {
-      const envelope = await seal(config.encryptionKey, logicalKey, m);
-      const hash = new Uint8Array(
-        await crypto.subtle.digest("SHA-256", encoder.encode(m.to)),
-      );
-      const recipientHash = Array.from(hash, (v) =>
-        v.toString(16).padStart(2, "0"),
-      ).join("");
+      const ready = await prepareMailEnvelope(config, logicalKey, input, now);
+      if (ready === null) return "invalid";
       await db.enqueue(
         logicalKey,
-        m.kind,
-        recipientHash,
-        envelope,
-        m.expiresAt,
+        ready.template,
+        ready.recipientHash,
+        ready.envelope,
+        ready.expiresAt,
       );
       return "queued";
     } catch {

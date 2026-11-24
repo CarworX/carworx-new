@@ -357,8 +357,8 @@ test("D-073 rejects a complete D-071 record without independent approval", () =>
     assert.throws(() => verify(copy));
   }
 });
-test("staging and production run the R-2 retention cron once a day", () => {
+test("retention stays daily and only staging drains mail every minute", () => {
   const { staging, production } = sourceConfig().env;
-  for (const env of [staging, production])
-    assert.deepEqual(env.triggers, { crons: ["17 1 * * *"] });
+  assert.deepEqual(staging.triggers, { crons: ["17 1 * * *", "* * * * *"] });
+  assert.deepEqual(production.triggers, { crons: ["17 1 * * *"] });
 });
