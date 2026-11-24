@@ -1,4 +1,5 @@
 import { readTeamChanges, type TeamChange } from "../team/changes";
+import { UUID } from "../server/providers/forms";
 import { data } from "react-router";
 
 import { field, parseEmail } from "../auth/forms";
@@ -9,7 +10,10 @@ import {
   assignment,
   DAYS,
   INVITE_TOKEN,
+  initials,
   inviteRole,
+  memberRole,
+  ROLE_LABEL,
   setupHref,
   staffProfile,
   TEAM_PROBLEMS,
@@ -20,12 +24,14 @@ import {
 import {
   loadTeam,
   privateHeaders,
+  teamMembers,
   teamServices,
   type StaffProfile,
   type TeamInvite,
-  type TeamMembership,
+  type TeamMemberRow,
 } from "../team/server";
 import { Button, ButtonLink } from "../ui/Button";
+import { StatusLabel } from "../ui/Chip";
 import { ChoiceTiles, PickChips } from "../ui/Choice";
 import { TextField } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
@@ -49,6 +55,13 @@ const TITLES: Record<string, string> = {
   cover: "Cover photo",
   history: "Team changes",
 };
+
+/** "invite expires in 3 days", counted in whole days (an invite lasts 7). */
+function expiresIn(iso: string) {
+  const days = Math.ceil((Date.parse(iso) - Date.now()) / 86_400_000);
+  if (!Number.isFinite(days) || days <= 1) return "invite expires today";
+  return `invite expires in ${String(days)} days`;
+}
 
 export const meta: Route.MetaFunction = () => [
   { title: "Finish setup · CarworX" },
@@ -89,18 +102,11 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     .maybeSingle()
     .overrideTypes<StaffProfile | null, { merge: false }>();
   if (profile.error !== null) throwStatus(503, signedIn.headers);
-  let members: TeamMembership[] = [];
+  let members: TeamMemberRow[] = [];
   let invites: TeamInvite[] = [];
   if (params.task === "team") {
     const [people, pending] = await Promise.all([
-      signedIn.supabase
-        .from("memberships")
-        .select("id, organisation_id, user_id, role, status")
-        .eq("organisation_id", organisation.id)
-        .eq("status", "active")
-        .order("created_at")
-        .limit(100)
-        .overrideTypes<TeamMembership[], { merge: false }>(),
+      teamMembers(signedIn, organisation.id),
       signedIn.supabase
         .from("invites")
         .select("id, role, email, expires_at, used_at")
@@ -111,9 +117,8 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
         .limit(50)
         .overrideTypes<TeamInvite[], { merge: false }>(),
     ]);
-    if (people.error !== null || pending.error !== null)
-      throwStatus(503, signedIn.headers);
-    members = people.data;
+    if (pending.error !== null) throwStatus(503, signedIn.headers);
+    members = people;
     invites = pending.data;
   }
   let changes: TeamChange[] | null = [];
@@ -160,6 +165,28 @@ export async function action({ request, params, context }: Route.ActionArgs) {
         status: problem === "unavailable" ? 503 : 400,
       },
     );
+  if (params.task === "team" && intent === "set-role") {
+    // Owners only; the database checks it again, plus the last-owner rule.
+    const target = field(form, "membership");
+    const role = memberRole(field(form, "role"));
+    if (!UUID.test(target) || role === null) return fail("invalid_input");
+    if (membership.role !== "owner") return fail("not_allowed");
+    const result = await signedIn.supabase.rpc("set_member_role", {
+      p_membership: target,
+      p_role: role,
+    });
+    if (result.error !== null) return fail(teamProblem(result.error));
+    return throwRedirect(setupHref(organisation.id, "team"), signedIn.headers);
+  }
+  if (params.task === "team" && intent === "cancel-invite") {
+    const invite = field(form, "invite");
+    if (!UUID.test(invite)) return fail("invalid_input");
+    const result = await signedIn.supabase.rpc("revoke_invite", {
+      p_invite: invite,
+    });
+    if (result.error !== null) return fail(teamProblem(result.error));
+    return throwRedirect(setupHref(organisation.id, "team"), signedIn.headers);
+  }
   if (params.task === "team") {
     const role = inviteRole(field(form, "role"), membership.role);
     if (role === null) return fail("not_allowed");
@@ -238,18 +265,56 @@ export default function TeamSetup({
                 Everyone uses their own account. Owners and managers can invite
                 staff; only owners can invite managers.
               </p>
-              <ul className="grid gap-3">
-                {d.members.map((member) => (
-                  <li
-                    key={member.id}
-                    className="rounded-xl bg-[var(--surface)] p-4"
-                  >
-                    {member.user_id === d.membership.user_id
-                      ? "You"
-                      : `Team member ${member.id.slice(0, 8)}`}{" "}
-                    · {member.role}
-                  </li>
-                ))}
+              <ul className="cx-team-list">
+                {d.members.map((member) => {
+                  const self = member.user_id === d.membership.user_id;
+                  const name = member.display_name ?? "Name not set yet";
+                  return (
+                    <li key={member.id} data-member={member.id}>
+                      <span className="cx-team-av" aria-hidden="true">
+                        {initials(member.display_name)}
+                      </span>
+                      <span className="cx-team-who">
+                        <b>{self ? `${name} (you)` : name}</b>
+                        <small>{ROLE_LABEL[member.role]}</small>
+                      </span>
+                      <StatusLabel>Active</StatusLabel>
+                      {d.membership.role === "owner" &&
+                      !self &&
+                      member.role !== "owner" ? (
+                        <form method="post" className="cx-team-role">
+                          <CsrfField token={d.csrf} />
+                          <input type="hidden" name="intent" value="set-role" />
+                          <input
+                            type="hidden"
+                            name="membership"
+                            value={member.id}
+                          />
+                          <input
+                            type="hidden"
+                            name="role"
+                            value={
+                              member.role === "staff" ? "manager" : "staff"
+                            }
+                          />
+                          <button
+                            type="submit"
+                            className="cx-tlink"
+                            aria-label={
+                              member.role === "staff"
+                                ? `Make ${name} a manager`
+                                : `Make ${name} staff`
+                            }
+                          >
+                            {member.role === "staff"
+                              ? "Make manager"
+                              : "Make staff"}
+                          </button>
+                        </form>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
               {d.members.length === 100 ? (
                 <p className="type-caption">
@@ -259,17 +324,41 @@ export default function TeamSetup({
               {d.invites.length > 0 ? (
                 <section>
                   <h2 className="type-title">Pending invites</h2>
-                  <ul className="mt-3 grid gap-2">
+                  <ul className="cx-team-list mt-3">
                     {d.invites.map((invite) => (
-                      <li key={invite.id}>
-                        {invite.email ?? "One-time link"} · {invite.role} ·
-                        expires{" "}
-                        {new Date(invite.expires_at).toLocaleDateString(
-                          "en-ZA",
-                          {
-                            timeZone: "Africa/Johannesburg",
-                          },
-                        )}
+                      <li key={invite.id} data-invite={invite.id}>
+                        <span className="cx-team-av pending" aria-hidden="true">
+                          …
+                        </span>
+                        <span className="cx-team-who">
+                          <b>{invite.email ?? "One-time link"}</b>
+                          <small>
+                            {`${ROLE_LABEL[invite.role]} · ${expiresIn(invite.expires_at)}`}
+                          </small>
+                        </span>
+                        <StatusLabel tone="warn">Invited</StatusLabel>
+                        {d.membership.role === "owner" ||
+                        invite.role === "staff" ? (
+                          <form method="post" className="cx-team-role">
+                            <CsrfField token={d.csrf} />
+                            <input
+                              type="hidden"
+                              name="intent"
+                              value="cancel-invite"
+                            />
+                            <input
+                              type="hidden"
+                              name="invite"
+                              value={invite.id}
+                            />
+                            <button
+                              type="submit"
+                              className="cx-tlink cx-team-danger"
+                            >
+                              Cancel invite
+                            </button>
+                          </form>
+                        ) : null}
                       </li>
                     ))}
                   </ul>
