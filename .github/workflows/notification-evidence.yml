@@ -1,0 +1,88 @@
+name: Notification settings screenshots
+on:
+  push:
+    branches: [codex/notification-settings-evidence]
+permissions:
+  contents: read
+jobs:
+  screenshots:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          run_install: false
+      - name: Build and start disposable test services
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter @carworx/web run build
+          pnpm --filter @carworx/web exec playwright install chromium
+          pnpm exec supabase start > "$RUNNER_TEMP/notification-supabase.log" 2>&1
+      - name: Capture the real signed-in account page
+        run: |
+          export NOTIFICATION_IMAGES="$RUNNER_TEMP/notification-images"
+          mkdir -p "$NOTIFICATION_IMAGES"
+          git rev-parse HEAD^ > "$NOTIFICATION_IMAGES/source-commit.txt"
+          cp planning/design/onboarding/account/shots/driver-notifications.png "$NOTIFICATION_IMAGES/design-reference.png"
+          cat > apps/web/integration/notification-evidence.test.ts <<'TS'
+          import { existsSync, statSync } from "node:fs";
+          import { resolve, sep } from "node:path";
+          import { chromium } from "playwright";
+          import { expect, it } from "vitest";
+          import { APP, createConfirmedUser, signIn } from "./harness";
+
+          it("captures the signed-in notification settings at two viewports", async () => {
+            const user = await createConfirmedUser("screenshot-notifications");
+            const account = await signIn(user.email);
+            const path = "/account/notifications";
+            const reply = await account.send(path);
+            expect(reply.status).toBe(200);
+            const output = process.env.NOTIFICATION_IMAGES;
+            if (!output) throw new Error("Missing screenshot directory");
+            const assets = resolve("build/client");
+            const browser = await chromium.launch();
+            try {
+              for (const width of [1280, 390]) {
+                const page = await browser.newPage({
+                  viewport: { width, height: width === 390 ? 844 : 900 },
+                  javaScriptEnabled: false,
+                });
+                await page.route("**/*", async (route) => {
+                  const url = new URL(route.request().url());
+                  if (url.origin !== APP) return route.abort();
+                  if (url.pathname === path) {
+                    return route.fulfill({ contentType: "text/html", body: reply.body });
+                  }
+                  const file = resolve(assets, "." + url.pathname);
+                  if (file.startsWith(assets + sep) && existsSync(file) && statSync(file).isFile()) {
+                    return route.fulfill({ path: file });
+                  }
+                  return route.abort();
+                });
+                await page.goto(APP + path);
+                await page.getByRole("checkbox", { name: "Receive optional emails" }).waitFor();
+                await page.evaluate(() => document.fonts.ready.then(() => undefined));
+                expect(await page.evaluate(() => document.styleSheets.length)).toBeGreaterThan(0);
+                expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+                await page.screenshot({ path: resolve(output, "notifications-" + width + ".png"), fullPage: true });
+                await page.close();
+              }
+            } finally {
+              await browser.close();
+            }
+          });
+          TS
+          pnpm --filter @carworx/web exec vitest run --config vitest.integration.config.ts integration/notification-evidence.test.ts
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: account-notifications-design-comparison
+          path: ${{ runner.temp }}/notification-images
+          if-no-files-found: error
+          retention-days: 14
