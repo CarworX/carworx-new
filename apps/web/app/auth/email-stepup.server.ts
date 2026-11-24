@@ -151,9 +151,9 @@ export function createEmailStepupService(
           email: to,
           password,
         });
-        if (primary.error !== null || primary.data.user?.id !== auth.user.id)
+        if (primary.error !== null || primary.data.user.id !== auth.user.id)
           return { status: "invalid" };
-        const token = primary.data.session?.access_token;
+        const token = primary.data.session.access_token;
         if (typeof token !== "string") return { status: "invalid" };
         const current = await identity(
           auth.supabase,
