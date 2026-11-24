@@ -47,7 +47,7 @@ revoke all on function private.require_org_mfa(uuid) from public, anon, authenti
 
 -- Own identity/authorization metadata only, needed before protected org rows
 -- are visible. No names, contacts, settings, invites or other members' rows.
-create function public.my_org_memberships(p_org uuid default null)
+create function private.my_org_memberships(p_org uuid)
 returns table(id uuid, organisation_id uuid, user_id uuid, role text, status text, mfa_satisfied boolean)
 language sql volatile security definer set search_path = '' as $$
   select m.id, m.organisation_id, m.user_id, m.role, m.status,
@@ -56,6 +56,14 @@ language sql volatile security definer set search_path = '' as $$
   where m.user_id = auth.uid() and m.status = 'active'
     and (p_org is null or m.organisation_id = p_org)
   order by m.organisation_id;
+$$;
+revoke all on function private.my_org_memberships(uuid) from public, anon, authenticated, service_role;
+grant execute on function private.my_org_memberships(uuid) to authenticated;
+
+create function public.my_org_memberships(p_org uuid default null)
+returns table(id uuid, organisation_id uuid, user_id uuid, role text, status text, mfa_satisfied boolean)
+language sql volatile security invoker set search_path = '' as $$
+  select * from private.my_org_memberships(p_org);
 $$;
 revoke all on function public.my_org_memberships(uuid) from public, anon, authenticated, service_role;
 grant execute on function public.my_org_memberships(uuid) to authenticated;
