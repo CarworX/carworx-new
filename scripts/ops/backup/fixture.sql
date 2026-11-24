@@ -41,3 +41,7 @@ do $$ begin
       values ('00000000-0000-4000-8000-0000000000b1', 'email.bounced')$q$;
   end if;
 end $$;
+
+-- Persisted preferences must survive the same restore as the account.
+insert into public.notification_preferences(user_id, optional_email) values
+  ('5eed0000-0000-4000-8000-000000000001', true);

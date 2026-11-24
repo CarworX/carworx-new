@@ -28,12 +28,12 @@ jobs:
           pnpm exec supabase start > "$RUNNER_TEMP/notification-supabase.log" 2>&1
       - name: Run the repository database tests with visible assertions
         continue-on-error: true
-        run: pnpm run test:rls
+        run: CI_RLS_REPORT_DIR="$RUNNER_TEMP/notification-rls" pnpm run test:rls
       - name: Capture the real signed-in account page
         run: |
           export NOTIFICATION_IMAGES="$RUNNER_TEMP/notification-images"
           mkdir -p "$NOTIFICATION_IMAGES"
-          source_commit=8dd4940ceb8c3a1b6ef5b9c76868bbdccb44262f
+          source_commit=10ac7323dae7fbdca5ceedc870c78d169bfa5707
           git diff --exit-code "$source_commit" HEAD -- . ':(exclude).github/workflows/notification-evidence.yml'
           printf '%s\n' "$source_commit" > "$NOTIFICATION_IMAGES/source-commit.txt"
           cp planning/design/onboarding/account/shots/driver-notifications.png "$NOTIFICATION_IMAGES/design-reference.png"
