@@ -12,6 +12,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version-file: .node-version
@@ -29,7 +30,9 @@ jobs:
         run: |
           export NOTIFICATION_IMAGES="$RUNNER_TEMP/notification-images"
           mkdir -p "$NOTIFICATION_IMAGES"
-          git rev-parse HEAD^ > "$NOTIFICATION_IMAGES/source-commit.txt"
+          source_commit=a1d7bceaa9e182050bebb11aa132d9474a7f3668
+          git diff --exit-code "$source_commit" HEAD -- . ':(exclude).github/workflows/notification-evidence.yml'
+          printf '%s\n' "$source_commit" > "$NOTIFICATION_IMAGES/source-commit.txt"
           cp planning/design/onboarding/account/shots/driver-notifications.png "$NOTIFICATION_IMAGES/design-reference.png"
           cat > apps/web/integration/notification-evidence.test.ts <<'TS'
           import { existsSync, statSync } from "node:fs";
