@@ -283,7 +283,7 @@ begin
     raise exception 'not_allowed' using errcode = '42501';
   end if;
   perform private.require_org_mfa(p_org);
-end $;
+end $$;
 
 create or replace function private.provider_submit(p_adult boolean, p_probing_ack boolean, p_notice text) returns uuid
 language plpgsql volatile security definer set search_path = '' as $$
