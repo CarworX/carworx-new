@@ -23,3 +23,5 @@ delete from public.listing_claims where id = 'bac10000-0000-4000-8000-0000000000
 delete from public.listing_decisions where listing_public_id = 'ca7c1000-0000-4000-8000-000000000001' and decided_by = '5eed0000-0000-4000-8000-000000000004';
 delete from public.listing_services where listing_public_id = 'ca7c1000-0000-4000-8000-000000000001' and service_slug = 'service';
 delete from public.listing_hours where listing_public_id = 'ca7c1000-0000-4000-8000-000000000001' and day = 1;
+
+delete from public.notification_preferences where user_id = '5eed0000-0000-4000-8000-000000000001';

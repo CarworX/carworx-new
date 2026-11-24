@@ -348,6 +348,46 @@ export function createMailEnqueuer(
   };
 }
 
+export interface OptionalMailDatabase {
+  enqueueOptional(
+    recipientUserId: string,
+    key: string,
+    template: string,
+    recipientHash: string,
+    envelope: string,
+    expiresAt: string,
+  ): Promise<boolean>;
+}
+
+/** Pass the trusted account ID for the message's recipient. */
+export function createOptionalMailEnqueuer(
+  config: MailEnvelopeConfig,
+  db: OptionalMailDatabase,
+  now = Date.now,
+) {
+  return async (
+    recipientUserId: string,
+    logicalKey: string,
+    input: MailMessage,
+  ): Promise<"queued" | "skipped" | "invalid" | "unavailable"> => {
+    try {
+      const ready = await prepareMailEnvelope(config, logicalKey, input, now);
+      if (ready === null) return "invalid";
+      const queued = await db.enqueueOptional(
+        recipientUserId,
+        logicalKey,
+        ready.template,
+        ready.recipientHash,
+        ready.envelope,
+        ready.expiresAt,
+      );
+      return queued ? "queued" : "skipped";
+    } catch {
+      return "unavailable";
+    }
+  };
+}
+
 export function createMailService(
   config: MailConfig,
   db: MailDatabase,

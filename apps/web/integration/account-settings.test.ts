@@ -11,6 +11,74 @@ import {
 } from "./harness";
 
 // Real Worker -> Auth -> PostgREST/RLS. Synthetic users and names only.
+describe("account notification settings", () => {
+  it("saves and clears optional email using the server-rendered form", async () => {
+    const path = "/account/notifications";
+    const user = await createConfirmedUser("settings-notifications");
+    const browser = await signIn(user.email);
+    const before = await browser.send(path);
+    expect(before.status).toBe(200);
+    expect(before.headers.get("Cache-Control")).toMatch(/private.*no-store/);
+    expect(before.body).toContain("Receive optional emails");
+    expect(before.body).not.toMatch(
+      /<input(?=[^>]*name="optionalEmail")(?=[^>]*checked)[^>]*>/,
+    );
+
+    const saved = await browser.send(path, {
+      form: { intent: "notifications", optionalEmail: "on" },
+    });
+    expect(saved.status).toBe(200);
+    expect(saved.body).toContain("Your notification settings are saved.");
+    expect((await browser.send(path)).body).toMatch(
+      /<input(?=[^>]*name="optionalEmail")(?=[^>]*checked)[^>]*>/,
+    );
+
+    const rejected = await browser.send(path, {
+      form: { intent: "notifications", optionalEmail: "invalid" },
+    });
+    expect(rejected.status).toBe(400);
+
+    const withoutCsrf = await browser.send(path, {
+      form: { intent: "notifications" },
+      csrf: false,
+    });
+    expect(withoutCsrf.status).toBe(403);
+
+    const crossSite = await browser.send(path, {
+      form: { intent: "notifications" },
+      origin: "https://untrusted.example",
+    });
+    expect(crossSite.status).toBe(403);
+    expect((await browser.send(path)).body).toMatch(
+      /<input(?=[^>]*name="optionalEmail")(?=[^>]*checked)[^>]*>/,
+    );
+
+    sql(
+      "revoke execute on function public.save_notification_preferences(boolean) from authenticated",
+    );
+    try {
+      const failed = await browser.send(path, {
+        form: { intent: "notifications" },
+      });
+      expect(failed.status).toBe(503);
+      expect(failed.body).toContain("Please try again.");
+    } finally {
+      sql(
+        "grant execute on function public.save_notification_preferences(boolean) to authenticated",
+      );
+    }
+
+    const cleared = await browser.send(path, {
+      form: { intent: "notifications" },
+    });
+    expect(cleared.status).toBe(200);
+    expect((await browser.send(path)).body).not.toMatch(
+      /<input(?=[^>]*name="optionalEmail")(?=[^>]*checked)[^>]*>/,
+    );
+    expect((await new Browser().send(path)).status).toBe(302);
+  });
+});
+
 describe("canonical account profile", () => {
   it("shows only the caller's active businesses and role on Your work", async () => {
     const user = await createConfirmedUser("settings-work");

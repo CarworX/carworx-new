@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createMailService,
+  createOptionalMailEnqueuer,
   readMailConfig,
   type ClaimedMail,
   type MailConfig,
@@ -86,6 +87,37 @@ describe("transactional email", () => {
       readMailConfig(env, { ...security, approvedRecipients: null }),
     ).toBeNull();
     expect(readMailConfig(env, { ...security, environment: null })).toBeNull();
+  });
+
+  it("uses the recipient-scoped queue gate for optional mail", async () => {
+    const state = database();
+    const recipient = "d9400000-0000-4000-8000-000000000002";
+    const key = "invite/optional";
+    let allowed = false;
+    const optional = createOptionalMailEnqueuer(
+      config,
+      {
+        async enqueueOptional(userId, ...args) {
+          expect(userId).toBe(recipient);
+          if (!allowed) return false;
+          await state.db.enqueue(...args);
+          return true;
+        },
+      },
+      () => NOW,
+    );
+    expect(await optional(recipient, key, invite)).toBe("skipped");
+    expect(state.job()).toBeNull();
+    allowed = true;
+    expect(await optional(recipient, key, invite)).toBe("queued");
+    expect(state.job()?.logical_key).toBe(key);
+
+    const unavailable = createOptionalMailEnqueuer(
+      config,
+      { enqueueOptional: () => Promise.reject(new Error("unavailable")) },
+      () => NOW,
+    );
+    expect(await unavailable(recipient, key, invite)).toBe("unavailable");
   });
 
   it("stores an authenticated ciphertext and recipient hash, never the invite or address", async () => {
