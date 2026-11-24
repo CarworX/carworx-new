@@ -1,5 +1,7 @@
 begin;
+create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
+grant execute on all functions in schema extensions to authenticated;
 select plan(13);
 
 insert into auth.users (id, email) values
