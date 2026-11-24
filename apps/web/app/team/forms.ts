@@ -82,6 +82,8 @@ export type TeamProblem =
   | "invite_invalid"
   | "already_member"
   | "last_owner"
+  | "photo_invalid"
+  | "photo_too_large"
   | "unavailable";
 
 export const TEAM_PROBLEMS: Record<TeamProblem, string> = {
@@ -93,6 +95,9 @@ export const TEAM_PROBLEMS: Record<TeamProblem, string> = {
     "This invite cannot be used. It may have expired, been used, or belong to another email address. Ask the business for a new invite.",
   already_member:
     "You already belong to this business. Open your business home.",
+  photo_invalid:
+    "Use a JPEG, PNG or WebP photo (not animated), at most 6000 pixels on each side.",
+  photo_too_large: "Use a photo of 5 MB or less.",
   last_owner:
     "A business needs at least one owner. Transfer ownership to someone first.",
   unavailable: "This is temporarily unavailable. Please try again.",

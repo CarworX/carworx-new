@@ -374,6 +374,15 @@ function BusinessCard({ listing: l }: { listing: PublicListing }) {
   const where = l.mode === "mobile" ? `Comes to you · ${l.metro}` : l.metro;
   return (
     <article className="lp-card">
+      {l.cover_key ? (
+        <img
+          className="lp-cover"
+          src={`/media/${l.cover_key}`}
+          alt=""
+          loading="lazy"
+          data-cover
+        />
+      ) : null}
       <div className="lp-top">
         <img src={objectFor(l.category_slug)} alt="" width={44} height={44} />
         <div>

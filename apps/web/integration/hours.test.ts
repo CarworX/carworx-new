@@ -45,7 +45,7 @@ const visitor = (catalogue = true): Browser =>
   new Browser({
     ...workerEnv,
     ...(catalogue ? { CATALOGUE_DB: { connectionString: login() } } : {}),
-  } as unknown as typeof workerEnv & Record<string, string>);
+  });
 
 /** Monday to Friday 08:00–17:00 and Saturday 08:00–13:00, as posted. */
 const WEEK: Record<string, string> = {};

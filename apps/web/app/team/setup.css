@@ -2,6 +2,8 @@
 .cx-setup-hub,
 .cx-setup-flow {
   display: grid;
+  /* minmax(0, 1fr): a wide child (a file input) must not widen the page. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 20px;
   max-width: 880px;
 }
@@ -106,6 +108,7 @@
 
 .cx-setup-card {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
   background: var(--surface);
   border-radius: var(--radius-xl);
@@ -171,4 +174,26 @@
 }
 .cx-team-danger {
   color: var(--err);
+}
+
+/* Cover photo (finish-build PR 3). */
+.cx-cover-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+.cx-cover-item .grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+.cx-cover-item input[type="file"] {
+  width: 100%;
+  min-width: 0;
+}
+.cx-cover-img {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  background: var(--canvas-2);
 }

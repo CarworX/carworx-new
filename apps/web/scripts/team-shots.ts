@@ -103,7 +103,8 @@ const server = createServer((req, res) => {
     const file = normalize(join(clientDir, url.pathname));
     if (
       file.startsWith(clientDir) &&
-      url.pathname.startsWith("/assets/") &&
+      (url.pathname.startsWith("/assets/") ||
+        url.pathname.startsWith("/fonts/")) &&
       existsSync(file)
     ) {
       res.writeHead(200, {

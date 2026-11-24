@@ -13,6 +13,8 @@ export interface ListingSummary {
   verification_labels: string[];
   /** Fixed premises in search only: 0.1 km straight-line distance. */
   distance_km?: number | null;
+  /** R2 key of the cover photo (D-098), when the listing has one. */
+  cover_key?: string | null;
 }
 
 /**

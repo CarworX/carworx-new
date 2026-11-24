@@ -18,6 +18,8 @@ export interface PublicListing {
   public_latitude: number | null;
   public_longitude: number | null;
   verification_labels: string[];
+  /** R2 key of the listing's cover photo (D-098), or null. */
+  cover_key?: string | null;
 }
 
 export interface CatalogueConfig {
@@ -26,7 +28,7 @@ export interface CatalogueConfig {
 }
 
 const COLUMNS =
-  "public_id,display_name,description,metro,mode,service_slug,service_name,category_slug,category_name,public_address,public_latitude,public_longitude,verification_labels";
+  "public_id,display_name,description,metro,mode,service_slug,service_name,category_slug,category_name,public_address,public_latitude,public_longitude,verification_labels,cover_key";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const SLUG = /^[a-z][a-z0-9-]{0,79}$/;
 export const PAGE_SIZE = 20;
@@ -97,4 +99,59 @@ export async function listingById(
     send,
   );
   return rows[0] ?? null;
+}
+
+const COVER = /^covers\/[0-9a-f]{32}\.(?:jpg|png|webp)$/;
+
+/**
+ * Cover keys for a page of search results (D-098). Search rows come from
+ * api.search_listings, which has no cover column, so this one extra read
+ * fills them in. Fails soft: an error means cards show no photo.
+ */
+export async function coverKeys(
+  config: CatalogueConfig,
+  ids: readonly string[],
+  send: typeof fetch = fetch,
+): Promise<Map<string, string>> {
+  const wanted = ids.filter((id) => UUID.test(id)).slice(0, 100);
+  if (wanted.length === 0) return new Map();
+  try {
+    const rows = await read(
+      config,
+      new URLSearchParams({
+        select: "public_id,cover_key",
+        public_id: `in.(${wanted.join(",")})`,
+        cover_key: "not.is.null",
+      }),
+      send,
+    );
+    return new Map(
+      rows
+        .filter(
+          (r) => typeof r.cover_key === "string" && COVER.test(r.cover_key),
+        )
+        .map((r) => [r.public_id, r.cover_key as string]),
+    );
+  } catch {
+    return new Map();
+  }
+}
+
+/** True when this key is the current cover of a live listing. */
+export async function isPublicCover(
+  config: CatalogueConfig,
+  key: string,
+  send: typeof fetch = fetch,
+): Promise<boolean> {
+  if (!COVER.test(key)) return false;
+  const rows = await read(
+    config,
+    new URLSearchParams({
+      select: "public_id",
+      cover_key: `eq.${key}`,
+      limit: "1",
+    }),
+    send,
+  );
+  return rows.length === 1;
 }

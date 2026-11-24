@@ -56,7 +56,7 @@ function browser(extra: Record<string, unknown> = {}) {
     SEARCH_LIMITER: allowAll(),
     CATALOGUE_DB: { connectionString: login() },
     ...extra,
-  } as unknown as typeof workerEnv & Record<string, string>);
+  });
 }
 
 describe("catalogue matches the design taxonomy", () => {

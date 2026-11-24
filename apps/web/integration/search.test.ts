@@ -344,7 +344,7 @@ describe("built Worker /api/search", () => {
       ...workerEnv,
       ...secrets,
       SEARCH_LIMITER: await limiterNamespace(),
-    } as unknown as typeof workerEnv & Record<string, string>);
+    });
     const bad = await browser.send("/api/search?lat=-33.9&lng=18.4&radius=7");
     expect(bad.status).toBe(400);
     expect(bad.setCookies.join("")).toMatch(/__Host-cx-search=/);
@@ -358,7 +358,7 @@ describe("built Worker /api/search", () => {
       ...secrets,
       SEARCH_LIMITER: await limiterNamespace(),
       CATALOGUE_DB: { connectionString: connection },
-    } as unknown as typeof workerEnv & Record<string, string>);
+    });
     const first = await browser.send(
       "/api/search?lat=-33.9&lng=18.4&service=srch-int",
     );

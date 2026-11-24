@@ -24,6 +24,7 @@ import {
 } from "../server/forms/submit";
 import { UUID } from "../server/providers/forms";
 import { EnquiryGate, useEnquiryDraft } from "../sites/EnquiryGate";
+import coverCss from "../sites/cover.css?url";
 import gateCss from "../sites/gate.css?url";
 import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
 import { HumanCheck } from "../ui/public/HumanCheck";
@@ -160,6 +161,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 export const links: Route.LinksFunction = () => [
   ...SITES_LINKS,
   { rel: "stylesheet", href: gateCss },
+  { rel: "stylesheet", href: coverCss },
 ];
 
 /** The preview's listing view (app.js `listing()`), with the real listing. */
@@ -186,6 +188,14 @@ export default function ListingPage({
         {listing.metro}
       </div>
       <h1 className="title">{listing.display_name}</h1>
+      {listing.cover_key ? (
+        <img
+          className="cover-photo"
+          src={`/media/${listing.cover_key}`}
+          alt={`Cover photo of ${listing.display_name}`}
+          data-cover
+        />
+      ) : null}
       <p className="lead">{listing.description}</p>
       <div className="bar">
         {listing.verification_labels.map((label) => (

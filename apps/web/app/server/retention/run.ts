@@ -20,7 +20,7 @@ export type RetentionCounts = Record<Job, number>;
 
 export interface RetentionClient {
   connect(): Promise<unknown>;
-  query(sql: string): Promise<{ rows: unknown[] }>;
+  query(sql: string, params?: unknown[]): Promise<{ rows: unknown[] }>;
   end(): Promise<unknown>;
 }
 
@@ -88,4 +88,61 @@ export async function pgClient(
     statement_timeout: 60_000,
     query_timeout: 65_000,
   });
+}
+
+// ---------------------------------------------------------------------------
+// Cover photo files (finish-build PR 3, D-098). Replaced, removed and orphaned
+// covers are queued in the database; this step claims a batch of their R2
+// keys, deletes them from MEDIA and confirms. Keys are random: no personal
+// data. A run that dies between delete and confirm is retried an hour later
+// (deleting a missing key is a no-op).
+// ---------------------------------------------------------------------------
+export const MEDIA_BATCH = 500;
+const MEDIA_KEY = /^covers\/[0-9a-f]{32}\.(?:jpg|png|webp)$/;
+
+export interface MediaDeleter {
+  delete(keys: string[]): Promise<void>;
+}
+/** The same scoped client as the counts run (one retention_server login). */
+export type MediaClient = RetentionClient;
+
+export async function purgeMedia(
+  binding: { connectionString?: unknown } | undefined,
+  makeClient: (connectionString: string) => Promise<MediaClient>,
+  media: MediaDeleter | null,
+): Promise<{ deleted: number }> {
+  const connectionString = binding?.connectionString;
+  if (typeof connectionString !== "string" || connectionString === "")
+    throw new RetentionError("binding_missing");
+  if (media === null) throw new RetentionError("binding_missing");
+  const client = await makeClient(connectionString);
+  try {
+    await client.connect();
+    const claimed = await client.query(
+      "select k from public.claim_media_deletions($1) as k",
+      [MEDIA_BATCH],
+    );
+    const keys = claimed.rows.map((r) => (r as { k?: unknown }).k);
+    if (
+      !keys.every(
+        (k): k is string => typeof k === "string" && MEDIA_KEY.test(k),
+      )
+    )
+      throw new RetentionError("bad_result");
+    if (keys.length === 0) return { deleted: 0 };
+    await media.delete(keys);
+    const confirmed = await client.query(
+      "select public.confirm_media_deletions($1) as n",
+      [keys],
+    );
+    const n = (confirmed.rows[0] as { n?: unknown } | undefined)?.n;
+    if (typeof n !== "number" || !Number.isInteger(n) || n < 0)
+      throw new RetentionError("bad_result");
+    return { deleted: n };
+  } catch (error) {
+    if (error instanceof RetentionError) throw error;
+    throw new RetentionError("query_failed");
+  } finally {
+    await client.end().catch(() => undefined);
+  }
 }

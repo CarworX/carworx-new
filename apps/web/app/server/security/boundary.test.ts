@@ -4,6 +4,7 @@ import {
   checkMutation,
   finalizeResponse,
   MAX_FORM_BYTES,
+  MAX_UPLOAD_BYTES,
   withSecurityBoundary,
 } from "./boundary";
 import { CSRF_COOKIE, serializeAppCookie } from "./cookies";
@@ -93,6 +94,39 @@ describe("mutation checks", () => {
     );
     expect(result.status).toBe(403);
     expect(called).toBe(false);
+  });
+
+  it("allows a larger multipart body on the cover upload path only (D-098)", async () => {
+    const upload = (path: string, bytes: number, type = "multipart") => {
+      const form = new FormData();
+      form.set("csrf", TOKEN);
+      form.set("photo", new Blob([new Uint8Array(bytes)]), "cover.jpg");
+      const request = new Request(`${APP}${path}`, {
+        method: "POST",
+        body:
+          type === "multipart" ? form : `csrf=${TOKEN}&x=${"y".repeat(bytes)}`,
+        headers:
+          type === "multipart"
+            ? {}
+            : { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+      const headers = new Headers(request.headers);
+      headers.set("Origin", APP);
+      headers.set("Cookie", goodCookie);
+      return new Request(request, { headers });
+    };
+    const cover = "/provider/setup/cover/start";
+    const ok = await run(upload(cover, 4 * 1024 * 1024));
+    expect(ok.called).toBe(true);
+    for (const request of [
+      upload("/provider/setup/team/start", 4 * 1024 * 1024),
+      upload(cover, MAX_UPLOAD_BYTES),
+      upload(cover, 2 * MAX_FORM_BYTES, "urlencoded"),
+    ]) {
+      const refused = await run(request);
+      expect(refused.result.status).toBe(403);
+      expect(refused.called).toBe(false);
+    }
   });
 
   it("refuses every mutation when Auth settings are missing, but still serves pages", async () => {

@@ -93,6 +93,23 @@ test("staging and production bind every Hyperdrive config with distinct owner ID
   for (const b of staging.hyperdrive) assert.match(b.id, /^[a-f0-9]{32}$/);
   for (const b of production.hyperdrive) assert.doesNotMatch(b.id, /STAGING/);
 });
+test("every environment binds its own MEDIA bucket for cover photos (D-098)", () => {
+  const config = sourceConfig();
+  const names = [config, config.env.staging, config.env.production].map(
+    (env) => {
+      assert.deepEqual(
+        env.r2_buckets.map((b) => b.binding),
+        ["MEDIA"],
+      );
+      return env.r2_buckets[0].bucket_name;
+    },
+  );
+  assert.deepEqual(names, [
+    "carworx-media-local",
+    "carworx-media-staging",
+    "carworx-media-production",
+  ]);
+});
 function fixture() {
   return {
     pr: {

@@ -1,6 +1,11 @@
 import { createRequestHandler } from "react-router";
 
-import { pgClient, runRetention } from "../app/server/retention/run";
+import { mediaBucket } from "../app/server/media/cover.server";
+import {
+  pgClient,
+  purgeMedia,
+  runRetention,
+} from "../app/server/retention/run";
 import {
   MAIL_WEBHOOK_PATH,
   dispatchMailWebhook,
@@ -56,5 +61,8 @@ export default {
       .RETENTION_DB;
     const counts = await runRetention(binding, pgClient);
     console.log(JSON.stringify({ event: "retention", counts }));
+    // Cover photo files (D-098): counts only in the log.
+    const media = await purgeMedia(binding, pgClient, mediaBucket(env));
+    console.log(JSON.stringify({ event: "retention_media", ...media }));
   },
 } satisfies ExportedHandler<Env>;

@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { sql, sqlRows, stack } from "./harness";
+import { sql, sqlRows, stack, workerEnv } from "./harness";
 
 /**
  * R-2: the built Worker's daily cron, run as the real scoped retention_server
@@ -57,10 +57,14 @@ describe("R-2 retention cron (built Worker)", () => {
         await worker()
       ).scheduled(
         { cron: "17 1 * * *", scheduledTime: Date.now() },
-        { RETENTION_DB: { connectionString: login() } },
+        { RETENTION_DB: { connectionString: login() }, MEDIA: workerEnv.MEDIA },
         ctx,
       );
-      expect(log).toHaveBeenCalledTimes(1);
+      // The counts line, then the cover-file clean-up line (D-098).
+      expect(log).toHaveBeenCalledTimes(2);
+      const mediaLine = String(log.mock.calls[1]?.[0]);
+      expect(JSON.parse(mediaLine)).toMatchObject({ event: "retention_media" });
+      expect(mediaLine).not.toMatch(/covers\/|example\.test|postgres:/);
       const line = String(log.mock.calls[0]?.[0]);
       const parsed = JSON.parse(line) as {
         event: string;

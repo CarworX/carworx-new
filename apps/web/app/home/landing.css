@@ -472,3 +472,14 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Cover photos (finish-build PR 3, D-098). */
+.lp-cover {
+  display: block;
+  width: calc(100% + 36px);
+  margin: -18px -18px 0;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 20px 20px 0 0;
+  background: var(--canvas-2);
+}

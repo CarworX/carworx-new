@@ -45,3 +45,11 @@ end $$;
 -- Persisted preferences must survive the same restore as the account.
 insert into public.notification_preferences(user_id, optional_email) values
   ('5eed0000-0000-4000-8000-000000000001', true);
+
+-- Cover photos (finish-build PR 3, D-098): one cover row and one queued
+-- deletion, so both tables are really restored. Synthetic keys only.
+insert into public.listing_covers(listing_public_id, organisation_id, object_key, content_type, bytes, width, height)
+  select l.public_id, l.organisation_id, 'covers/' || repeat('b', 32) || '.jpg', 'image/jpeg', 1024, 640, 360
+  from public.listings l where l.public_id = 'ca7c1000-0000-4000-8000-000000000001';
+insert into private.media_deletions(object_key, reason)
+  values ('covers/' || repeat('c', 32) || '.png', 'replaced');

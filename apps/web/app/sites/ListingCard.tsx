@@ -1,3 +1,4 @@
+import "./cover.css";
 import { topCategoryOf } from "../catalogue/taxonomy";
 import { whereText, type ListingSummary } from "../ui/public/ListingResult";
 import { SERVICES } from "../ui/services";
@@ -17,6 +18,15 @@ export function ListingCard({
   const icon = SERVICES.find((s) => s.key === key)?.object ?? "";
   return (
     <article className="card">
+      {listing.cover_key ? (
+        <img
+          className="cover-photo card-cover"
+          src={`/media/${listing.cover_key}`}
+          alt=""
+          loading="lazy"
+          data-cover
+        />
+      ) : null}
       <div className="between">
         <div className="row">
           <img className="big-icon" src={icon} alt="" />

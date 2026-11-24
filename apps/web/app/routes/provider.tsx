@@ -223,6 +223,15 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   for (const d of decisions.data)
     if (!latest.has(d.listing_public_id)) latest.set(d.listing_public_id, d);
 
+  // Cover photo task status (D-098): which of my businesses have one.
+  const coverRows = await db
+    .from("listing_covers")
+    .select("organisation_id")
+    .in("organisation_id", controlled)
+    .overrideTypes<{ organisation_id: string }[], { merge: false }>();
+  if (coverRows.error !== null) throwStatus(503, signedIn.headers);
+  const covered = new Set(coverRows.data.map((c) => c.organisation_id));
+
   // Real names for the owner's "People with access" list (members only).
   const names = new Map<string, string | null>();
   for (const rows of await Promise.all(
@@ -252,6 +261,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
               .filter((m) => m.organisation_id === o.id)
               .map((m) => ({ ...m, name: names.get(m.user_id) ?? null }))
           : [],
+        hasCover: covered.has(o.id),
         hasTeam: members.data.some(
           (m) =>
             m.organisation_id === o.id &&
@@ -448,6 +458,7 @@ export default function Provider({
             hoursListing={org.hoursListing}
             configuredHours={org.configuredHours}
             hasTeam={org.hasTeam}
+            hasCover={org.hasCover}
           />
           {org.listings.map((l) => (
             <article
