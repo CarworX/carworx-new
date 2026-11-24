@@ -98,7 +98,8 @@ export async function pgClient(
 // (deleting a missing key is a no-op).
 // ---------------------------------------------------------------------------
 export const MEDIA_BATCH = 500;
-const MEDIA_KEY = /^covers\/[0-9a-f]{32}\.(?:jpg|png|webp)$/;
+const MEDIA_KEY =
+  /^(?:covers\/[0-9a-f]{32}\.(?:jpg|png|webp)|exports\/[0-9a-f]{32}\.json)$/;
 
 export interface MediaDeleter {
   delete(keys: string[]): Promise<void>;

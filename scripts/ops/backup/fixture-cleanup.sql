@@ -29,3 +29,5 @@ delete from public.notification_preferences where user_id = '5eed0000-0000-4000-
 delete from public.listing_covers where object_key = 'covers/' || repeat('b', 32) || '.jpg';
 delete from private.media_deletions where object_key in
   ('covers/' || repeat('b', 32) || '.jpg', 'covers/' || repeat('c', 32) || '.png');
+
+delete from private.data_exports where object_key = 'exports/' || repeat('d', 32) || '.json';

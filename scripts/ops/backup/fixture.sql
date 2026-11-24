@@ -53,3 +53,9 @@ insert into public.listing_covers(listing_public_id, organisation_id, object_key
   from public.listings l where l.public_id = 'ca7c1000-0000-4000-8000-000000000001';
 insert into private.media_deletions(object_key, reason)
   values ('covers/' || repeat('c', 32) || '.png', 'replaced');
+
+-- Data exports (finish-build PR 4a, D-098): one pending export row, so the
+-- table is really restored. Synthetic key and token hash only.
+insert into private.data_exports(user_id, object_key, token_hash)
+  values ('5eed0000-0000-4000-8000-000000000001', 'exports/' || repeat('d', 32) || '.json',
+    extensions.digest('bk1-synthetic-export-token', 'sha256'));
