@@ -85,9 +85,23 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     if (memberships.error !== null) throwStatus(503, signedIn.headers);
     work = memberships.data;
   }
+  let optionalEmail: boolean | null = false;
+  if (tab === "notifications") {
+    const preference = await signedIn.supabase
+      .from("notification_preferences")
+      .select("optional_email")
+      .eq("user_id", signedIn.user.id)
+      .maybeSingle()
+      .overrideTypes<{ optional_email: boolean }, { merge: false }>();
+    optionalEmail =
+      preference.error === null
+        ? (preference.data?.optional_email ?? false)
+        : null;
+  }
   return data(
     {
       tab,
+      optionalEmail,
       csrf: context.security.csrfToken,
       email: signedIn.user.email ?? "",
       name: profile.data?.display_name ?? "",
@@ -152,6 +166,19 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       }
     }
     return reply(true, "Your profile is saved.");
+  }
+  if (tab === "notifications" && intent === "notifications") {
+    const values = form.getAll("optionalEmail");
+    if (values.length > 1 || (values.length === 1 && values[0] !== "on"))
+      return reply(false, "Choose a valid email preference.", 400);
+
+    const { error } = await signedIn.supabase.rpc(
+      "save_notification_preferences",
+      { p_optional_email: values.length === 1 },
+    );
+    return error === null
+      ? reply(true, "Your notification settings are saved.")
+      : reply(false, "We couldn't save your settings. Please try again.", 503);
   }
   if (tab === "security" && intent === "sign-out-others") {
     const { error } = await signedIn.supabase.auth.signOut({ scope: "others" });
@@ -355,9 +382,39 @@ export default function Settings({
                 {loaderData.email}.
               </p>
               <p>
-                CarworX does not send marketing emails. Essential account
-                security messages cannot be turned off here.
+                Account security messages, receipts and booking-change messages
+                are always enabled.
               </p>
+              {loaderData.optionalEmail === null ? (
+                <>
+                  <StatusNote
+                    tone="err"
+                    title="We couldn't load your notification settings."
+                  />
+                  <ButtonLink href="/account/notifications">
+                    Try again
+                  </ButtonLink>
+                </>
+              ) : (
+                <form method="post" className="grid gap-4">
+                  <CsrfField token={csrf} />
+                  <input type="hidden" name="intent" value="notifications" />
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name="optionalEmail"
+                      value="on"
+                      defaultChecked={loaderData.optionalEmail}
+                      aria-describedby="optional-email-description"
+                    />
+                    Receive optional emails
+                  </label>
+                  <p id="optional-email-description">
+                    This preference applies as optional emails become available.
+                  </p>
+                  <Button type="submit">Save settings</Button>
+                </form>
+              )}
             </>
           ) : tab === "privacy" ? (
             <>

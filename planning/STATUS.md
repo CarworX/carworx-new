@@ -4,6 +4,8 @@ Updated 2026-11-13 (SAST) by Claude. **Launch order (D-093): the directory goes 
 
 ## Current work
 
+- Directory notification settings implementation is in review. The account form stores an optional-email preference, and optional producers can use the recipient-scoped mail gate. Team-invite delivery and hosted acceptance follow separately.
+
 - **main** (`7550b1a`) has Phases 1–2, onboarding (#84), the launch gaps (P-1 to P-3, R-1, R-2, BK-1, the no-JS forms) and the first O7 slice (#100, #101, #103: listing and removing authenticators).
 - **Staging Supabase** `gdiyrdqfkthtcglgqnts` has all 12 migrations on main plus the synthetic seed. The `catalogue_server`, `forms_server` and `retention_server` logins are set. The three Hyperdrive configs are made, with caching off over a direct connection (#96). Backups (D2) and retention (E4) are only partly done.
 - **The staging Worker is not deployed yet.** The cloud proxy rewrites the Authorization header on Cloudflare's asset upload, so the owner deploys from their own machine.

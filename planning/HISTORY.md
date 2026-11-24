@@ -352,3 +352,5 @@ Removed the workflow packager's APP_ORIGIN/SUPABASE_URL/CARWORX_ENV --var overri
 ## 2026-11-22 — Remaining directory screen plan (Codex)
 
 Owner requested page-by-page plans for business setup, staff, accounts and admin. Added planning/codex/directory-remaining-screens-plan.md and linked it from the booking staging plan in #134. Audited the registered main routes, existing loaders/actions, task/tab permissions and current Sites source (v4). Plan includes four implementation groups, existing versus missing capabilities, role/MFA isolation, visual parity and hosted acceptance. Cover uploads, invite email, unsupported privacy/preferences and optional step-up remain explicit dependencies rather than claimed functionality. Documentation only; git diff --check passed; no application tests, migrations or deployments performed for this planning addition.
+
+- 2026-11-24 16:24 UTC — Codex: implemented D-098 account notification settings, own-row RLS and recipient-scoped optional queueing. Added Worker, pgTAP and mail tests. Hosted acceptance and design comparisons remain open. Agent: codex

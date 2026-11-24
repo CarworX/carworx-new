@@ -1,9 +1,15 @@
 import { Client } from "pg";
 
-import type { ClaimedMail, MailDatabase } from "./outbox.server";
+import type {
+  ClaimedMail,
+  MailDatabase,
+  OptionalMailDatabase,
+} from "./outbox.server";
 
 /** Use MAIL_DB Hyperdrive with mail_server, never the broad service-role key. */
-export function createMailDatabase(connectionString: string): MailDatabase {
+export function createMailDatabase(
+  connectionString: string,
+): MailDatabase & OptionalMailDatabase {
   async function query<T>(sql: string, params: unknown[]): Promise<T[]> {
     const client = new Client({
       connectionString,
@@ -30,6 +36,21 @@ export function createMailDatabase(connectionString: string): MailDatabase {
       );
       if (rows[0] === undefined) throw new Error("mail_database_unavailable");
       return rows[0].id;
+    },
+    async enqueueOptional(
+      recipientUserId,
+      key,
+      template,
+      recipientHash,
+      envelope,
+      expiresAt,
+    ) {
+      const [row] = await query<{ queued: boolean }>(
+        "select private.enqueue_optional_mail($1,$2,$3,$4,$5,$6) as queued",
+        [recipientUserId, key, template, recipientHash, envelope, expiresAt],
+      );
+      if (row === undefined) throw new Error("mail_database_unavailable");
+      return row.queued;
     },
     async purge() {
       return (
