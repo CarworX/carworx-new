@@ -24,6 +24,13 @@ import { CSRF_FIELD, csrfTokenMatches, issueCsrfToken } from "./csrf";
  */
 export const PRIVATE_NO_STORE = "private, no-store";
 export const MAX_FORM_BYTES = 64 * 1024;
+/**
+ * The one exception to MAX_FORM_BYTES: the cover-photo upload (finish-build
+ * PR 3, D-098), multipart only, on this exact path. 5 MB of file plus the
+ * normal form allowance. Origin and CSRF checks are unchanged.
+ */
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024 + MAX_FORM_BYTES;
+const UPLOAD_PATHS = /^\/provider\/setup\/cover\/start$/;
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const PERSONAL_PATHS = /^\/(?:auth|account|admin|org|provider|join)(?:[/.]|$)/;
@@ -107,13 +114,18 @@ export async function checkMutation(
   ) {
     return { ok: false, reason: "content-type" };
   }
+  const limit =
+    mediaType === "multipart/form-data" &&
+    UPLOAD_PATHS.test(new URL(request.url).pathname)
+      ? MAX_UPLOAD_BYTES
+      : MAX_FORM_BYTES;
   const length = Number(request.headers.get("Content-Length") ?? "0");
-  if (!Number.isFinite(length) || length > MAX_FORM_BYTES) {
+  if (!Number.isFinite(length) || length > limit) {
     return { ok: false, reason: "too-large" };
   }
-  // Read at most MAX_FORM_BYTES + 1, then stop: a body without Content-Length
+  // Read at most limit + 1, then stop: a body without Content-Length
   // (chunked) must not be buffered whole before the limit applies.
-  const body = await readBounded(request.clone().body, MAX_FORM_BYTES);
+  const body = await readBounded(request.clone().body, limit);
   if (body === null) return { ok: false, reason: "too-large" };
   let form: FormData;
   try {

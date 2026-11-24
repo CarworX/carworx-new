@@ -48,7 +48,10 @@ select is_empty($$select c.relname from pg_class c join pg_namespace n on n.oid 
 select is_empty($$select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace
   where n.nspname in ('public','private','api')
   and has_function_privilege('retention_server', p.oid, 'execute')
-  and p.oid not in ('public.run_retention()'::regprocedure, 'private.run_retention()'::regprocedure)$$,
+  and p.oid not in ('public.run_retention()'::regprocedure, 'private.run_retention()'::regprocedure,
+    -- Finish-build PR 3 (D-098): R2 cover-file deletions (random keys only).
+    'public.claim_media_deletions(integer)'::regprocedure, 'private.claim_media_deletions(integer)'::regprocedure,
+    'public.confirm_media_deletions(text[])'::regprocedure, 'private.confirm_media_deletions(text[])'::regprocedure)$$,
   'retention_server can execute nothing else in public, private or api');
 select is_empty($$select rolname from pg_roles where rolname = 'retention_server'
   and not (rolcanlogin and rolconnlimit = 5 and not rolsuper and not rolbypassrls and not rolinherit and not rolcreaterole and not rolcreatedb)$$,

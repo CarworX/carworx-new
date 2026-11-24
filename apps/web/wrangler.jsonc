@@ -12,6 +12,7 @@
   "migrations": [
     { "tag": "search-limiter-v1", "new_sqlite_classes": ["SearchLimiter"] },
   ],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "carworx-media-local" }],
 
   "env": {
     "staging": {
@@ -25,6 +26,9 @@
           { "name": "SEARCH_LIMITER", "class_name": "SearchLimiter" },
         ],
       },
+      "r2_buckets": [
+        { "binding": "MEDIA", "bucket_name": "carworx-media-staging" },
+      ],
       "hyperdrive": [
         {
           "binding": "CATALOGUE_DB",
@@ -51,6 +55,9 @@
           { "name": "SEARCH_LIMITER", "class_name": "SearchLimiter" },
         ],
       },
+      "r2_buckets": [
+        { "binding": "MEDIA", "bucket_name": "carworx-media-production" },
+      ],
       "hyperdrive": [
         {
           "binding": "CATALOGUE_DB",

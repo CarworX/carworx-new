@@ -5,6 +5,7 @@ import {
   RETENTION_SQL,
   RetentionError,
   parseCounts,
+  purgeMedia,
   runRetention,
   type RetentionClient,
 } from "./run";
@@ -83,5 +84,66 @@ describe("R-2 retention runner", () => {
     ["extra row data", [...ROWS, { email: "x@example.test" }]],
   ])("rejects a result with %s", (_, rows) => {
     expect(() => parseCounts(rows)).toThrow(RetentionError);
+  });
+});
+
+describe("cover photo file clean-up (D-098)", () => {
+  const binding = { connectionString: "postgres://synthetic" };
+  const KEY = (c: string) => `covers/${c.repeat(32)}.jpg`;
+  function media() {
+    const deleted: string[][] = [];
+    return {
+      deleted,
+      bucket: {
+        delete: (keys: string[]) => {
+          deleted.push(keys);
+          return Promise.resolve();
+        },
+      },
+    };
+  }
+
+  it("claims keys, deletes them from R2, then confirms", async () => {
+    const m = media();
+    const answers = [
+      { rows: [{ k: KEY("a") }, { k: KEY("b") }] },
+      { rows: [{ n: 2 }] },
+    ];
+    const f = fake(() => Promise.resolve(answers.shift() ?? { rows: [] }));
+    expect(await purgeMedia(binding, f.make, m.bucket)).toEqual({
+      deleted: 2,
+    });
+    expect(m.deleted).toEqual([[KEY("a"), KEY("b")]]);
+    expect(f.calls).toHaveLength(2);
+    expect(f.ended()).toBe(1);
+  });
+
+  it("does nothing when the queue is empty", async () => {
+    const m = media();
+    const f = fake(() => Promise.resolve({ rows: [] }));
+    expect(await purgeMedia(binding, f.make, m.bucket)).toEqual({
+      deleted: 0,
+    });
+    expect(m.deleted).toEqual([]);
+  });
+
+  it("refuses any key that is not a cover key, and deletes nothing", async () => {
+    const m = media();
+    const f = fake(() => Promise.resolve({ rows: [{ k: "../secrets.txt" }] }));
+    await expect(purgeMedia(binding, f.make, m.bucket)).rejects.toThrow(
+      RetentionError,
+    );
+    expect(m.deleted).toEqual([]);
+    expect(f.ended()).toBe(1);
+  });
+
+  it("fails without the bucket or the database binding", async () => {
+    const f = fake(() => Promise.resolve({ rows: [] }));
+    await expect(purgeMedia(binding, f.make, null)).rejects.toThrow(
+      "binding_missing",
+    );
+    await expect(purgeMedia(undefined, f.make, media().bucket)).rejects.toThrow(
+      "binding_missing",
+    );
   });
 });

@@ -12,6 +12,7 @@ export function SetupHub({
   hoursListing,
   configuredHours,
   hasTeam,
+  hasCover = false,
 }: {
   org: string;
   name: string;
@@ -21,6 +22,8 @@ export function SetupHub({
   hoursListing?: string | undefined;
   configuredHours: boolean | null;
   hasTeam: boolean;
+  /** A listing of this business has a cover photo (D-098). */
+  hasCover?: boolean;
 }) {
   if (role === "staff")
     return (
@@ -111,11 +114,13 @@ export function SetupHub({
     {
       task: "cover",
       title: "Cover photo",
-      description: "Photo uploads follow a storage and privacy review.",
+      description: "The first thing customers see on your listing.",
       icon: "camera",
-      status: "Later",
+      status: hasCover ? "Added" : "Optional",
+      ready: hasCover,
     },
   ];
+  // The cover is optional, so it never counts against setup progress.
   const available = tasks.filter((task) => task.task !== "cover");
   const ready = available.filter((task) => task.ready).length;
   return (
@@ -170,9 +175,9 @@ export function SetupHub({
                 size="sm"
                 variant="outline"
                 href={task.href ?? setupHref(org, task.task)}
-                aria-label={`${task.task === "cover" ? "Details" : "Open"}: ${task.title}`}
+                aria-label={`Open: ${task.title}`}
               >
-                {task.task === "cover" ? "Details" : "Open"}
+                Open
               </ButtonLink>
               <span className="type-caption">{task.status}</span>
             </div>

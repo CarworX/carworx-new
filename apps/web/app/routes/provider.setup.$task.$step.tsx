@@ -1,5 +1,11 @@
 import { readTeamChanges, type TeamChange } from "../team/changes";
 import { UUID } from "../server/providers/forms";
+import {
+  coverUrl,
+  mediaBucket,
+  newCoverKey,
+} from "../server/media/cover.server";
+import { cleanImage, MAX_BYTES } from "../server/media/image";
 import { data } from "react-router";
 
 import { field, parseEmail } from "../auth/forms";
@@ -63,6 +69,13 @@ function expiresIn(iso: string) {
   return `invite expires in ${String(days)} days`;
 }
 
+interface CoverListing {
+  public_id: string;
+  display_name: string;
+  status: string;
+  cover: string | null;
+}
+
 export const meta: Route.MetaFunction = () => [
   { title: "Finish setup · CarworX" },
 ];
@@ -122,6 +135,38 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     invites = pending.data;
   }
   let changes: TeamChange[] | null = [];
+  let covers: CoverListing[] = [];
+  if (params.task === "cover") {
+    const [listings, current] = await Promise.all([
+      signedIn.supabase
+        .from("listings")
+        .select("public_id, display_name, status")
+        .eq("organisation_id", organisation.id)
+        .order("created_at")
+        .limit(20)
+        .overrideTypes<
+          { public_id: string; display_name: string; status: string }[],
+          { merge: false }
+        >(),
+      signedIn.supabase
+        .from("listing_covers")
+        .select("listing_public_id, object_key")
+        .eq("organisation_id", organisation.id)
+        .overrideTypes<
+          { listing_public_id: string; object_key: string }[],
+          { merge: false }
+        >(),
+    ]);
+    if (listings.error !== null || current.error !== null)
+      throwStatus(503, signedIn.headers);
+    covers = listings.data.map((l) => ({
+      ...l,
+      cover: coverUrl(
+        current.data.find((c) => c.listing_public_id === l.public_id)
+          ?.object_key,
+      ),
+    }));
+  }
   if (params.task === "history") {
     // Narrow projection only. audit_log itself stays admin-only under RLS.
     const result: { data: unknown; error: unknown } =
@@ -140,6 +185,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       members,
       invites,
       changes,
+      covers,
       inviteRole: inviteRole(
         new URL(request.url).searchParams.get("role") ?? "staff",
         membership.role,
@@ -165,6 +211,62 @@ export async function action({ request, params, context }: Route.ActionArgs) {
         status: problem === "unavailable" ? 503 : 400,
       },
     );
+  if (params.task === "cover") {
+    // Owners and managers only (staff get 404 in setup()); the database
+    // checks the role and the listing's business again.
+    const listing = field(form, "listing");
+    if (!UUID.test(listing)) return fail("invalid_input");
+    const own = await signedIn.supabase
+      .from("listings")
+      .select("public_id")
+      .eq("public_id", listing)
+      .eq("organisation_id", organisation.id)
+      .maybeSingle();
+    if (own.error !== null) return fail("unavailable");
+    if (own.data === null) return fail("not_allowed");
+    if (intent === "remove-cover") {
+      const removed = await signedIn.supabase.rpc("remove_listing_cover", {
+        p_listing: listing,
+      });
+      if (removed.error !== null) return fail(teamProblem(removed.error));
+      return throwRedirect(
+        setupHref(organisation.id, "cover"),
+        signedIn.headers,
+      );
+    }
+    if (intent !== "upload-cover") return fail("invalid_input");
+    const photo = form.get("photo");
+    if (!(photo instanceof File) || photo.size === 0)
+      return fail("photo_invalid");
+    if (photo.size > MAX_BYTES) return fail("photo_too_large");
+    // The real type comes from the bytes; every metadata block is dropped.
+    const clean = cleanImage(new Uint8Array(await photo.arrayBuffer()));
+    if (clean === null) return fail("photo_invalid");
+    const media = mediaBucket(context.cloudflare.env);
+    if (media === null) return fail("unavailable");
+    const key = newCoverKey(clean.extension);
+    try {
+      await media.put(key, clean.bytes, {
+        httpMetadata: { contentType: clean.type },
+      });
+    } catch {
+      return fail("unavailable");
+    }
+    const saved = await signedIn.supabase.rpc("set_listing_cover", {
+      p_listing: listing,
+      p_key: key,
+      p_type: clean.type,
+      p_bytes: clean.bytes.length,
+      p_width: clean.width,
+      p_height: clean.height,
+    });
+    if (saved.error !== null) {
+      // Nothing points at the file: remove it now rather than leave an orphan.
+      await media.delete(key).catch(() => undefined);
+      return fail(teamProblem(saved.error));
+    }
+    return throwRedirect(setupHref(organisation.id, "cover"), signedIn.headers);
+  }
   if (params.task === "team" && intent === "set-role") {
     // Owners only; the database checks it again, plus the last-owner rule.
     const target = field(form, "membership");
@@ -591,10 +693,73 @@ export default function TeamSetup({
             </form>
           ) : null}
           {d.task === "cover" ? (
-            <StatusNote title="Photo uploads are coming later">
-              Your listing stays live without a cover photo. Uploads will open
-              after the storage and privacy review.
-            </StatusNote>
+            <>
+              <p className="type-body">
+                The first thing customers see on your listing. It shows as soon
+                as you save it. Use a JPEG, PNG or WebP photo of up to 5 MB.
+                Location and camera details are removed before it is stored.
+              </p>
+              {d.covers.length === 0 ? (
+                <StatusNote title="No listing yet">
+                  Add a cover once your business has a listing.
+                </StatusNote>
+              ) : null}
+              {d.covers.map((l) => (
+                <section
+                  key={l.public_id}
+                  className="cx-cover-item"
+                  data-cover-listing={l.public_id}
+                >
+                  <h2 className="type-title">{l.display_name}</h2>
+                  {l.cover !== null ? (
+                    <img
+                      className="cx-cover-img"
+                      src={l.cover}
+                      alt={`Cover photo of ${l.display_name}`}
+                    />
+                  ) : (
+                    <p className="type-caption text-quiet">
+                      No cover photo yet.
+                    </p>
+                  )}
+                  <form
+                    method="post"
+                    encType="multipart/form-data"
+                    className="grid gap-3"
+                  >
+                    <CsrfField token={d.csrf} />
+                    <input type="hidden" name="intent" value="upload-cover" />
+                    <input type="hidden" name="listing" value={l.public_id} />
+                    <label className="grid gap-2">
+                      <span className="type-label">
+                        {l.cover === null
+                          ? "Choose a photo"
+                          : "Replace the photo"}
+                      </span>
+                      <input
+                        type="file"
+                        name="photo"
+                        accept="image/jpeg,image/png,image/webp"
+                        required
+                      />
+                    </label>
+                    <div>
+                      <Button type="submit">Save cover photo</Button>
+                    </div>
+                  </form>
+                  {l.cover !== null ? (
+                    <form method="post">
+                      <CsrfField token={d.csrf} />
+                      <input type="hidden" name="intent" value="remove-cover" />
+                      <input type="hidden" name="listing" value={l.public_id} />
+                      <button type="submit" className="cx-tlink cx-team-danger">
+                        Remove the photo
+                      </button>
+                    </form>
+                  ) : null}
+                </section>
+              ))}
+            </>
           ) : null}
           {d.task === "history" ? (
             d.changes === null ? (

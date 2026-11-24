@@ -1,0 +1,15 @@
+/* Cover photos (finish-build PR 3, D-098). Kept out of the generated app.css. */
+.cover-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 18px;
+  background: #f1f0ec;
+  margin: 16px 0;
+}
+.card .card-cover {
+  margin: -8px 0 16px;
+  border-radius: 12px;
+}

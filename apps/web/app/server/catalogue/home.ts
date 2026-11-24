@@ -9,7 +9,7 @@ import { CATEGORIES } from "../../catalogue/taxonomy";
 import type { CatalogueConfig, PublicListing } from "./public";
 
 const COLUMNS =
-  "public_id,display_name,description,metro,mode,service_slug,service_name,category_slug,category_name,public_address,public_latitude,public_longitude,verification_labels";
+  "public_id,display_name,description,metro,mode,service_slug,service_name,category_slug,category_name,public_address,public_latitude,public_longitude,verification_labels,cover_key";
 /** How many live listings the home considers before picking its cards. */
 const POOL = 60;
 export const HOME_CARDS = 6;

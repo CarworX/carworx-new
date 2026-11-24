@@ -95,7 +95,7 @@ function browser(extra: Record<string, unknown> = {}) {
     TURNSTILE_SITE_KEY: TEST_SITE_KEY_PASS,
     TURNSTILE_SECRET_KEY: TEST_SECRET_PASS,
     ...extra,
-  } as unknown as typeof workerEnv & Record<string, string>);
+  });
 }
 
 function email(label: string) {

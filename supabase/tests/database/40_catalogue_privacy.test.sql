@@ -75,7 +75,8 @@ grant execute on all functions in schema extensions to anon, authenticated;
 select plan(41);
 
 select is((select array_agg(column_name::text order by ordinal_position) from information_schema.columns where table_schema='public' and table_name='listing_public'),
-  array['public_id','display_name','description','metro','mode','service_slug','service_name','category_slug','category_name','public_address','public_latitude','public_longitude','verification_labels']::text[], 'exact public column set');
+  array['public_id','display_name','description','metro','mode','service_slug','service_name','category_slug','category_name','public_address','public_latitude','public_longitude','verification_labels','cover_key']::text[], 'exact public column set');
+-- cover_key (finish-build PR 3, D-098): the random R2 key of a live listing's cover.
 select is((select pg_get_userbyid(relowner)::text from pg_class where oid='public.listing_public'::regclass),'listing_projection','view has dedicated owner');
 select ok((select reloptions @> array['security_invoker=false','security_barrier=true'] from pg_class where oid='public.listing_public'::regclass),'view uses owner security with barrier');
 select is_empty($$select rolname from pg_roles where rolname in ('listing_projection','listing_eligibility','catalogue_server') and (rolsuper or rolbypassrls or (rolcanlogin and rolname <> 'catalogue_server') or rolcreaterole or rolcreatedb or rolinherit)$$,'capability roles are unprivileged; only the P2-2 server role can log in');

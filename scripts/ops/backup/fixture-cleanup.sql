@@ -25,3 +25,7 @@ delete from public.listing_services where listing_public_id = 'ca7c1000-0000-400
 delete from public.listing_hours where listing_public_id = 'ca7c1000-0000-4000-8000-000000000001' and day = 1;
 
 delete from public.notification_preferences where user_id = '5eed0000-0000-4000-8000-000000000001';
+
+delete from public.listing_covers where object_key = 'covers/' || repeat('b', 32) || '.jpg';
+delete from private.media_deletions where object_key in
+  ('covers/' || repeat('b', 32) || '.jpg', 'covers/' || repeat('c', 32) || '.png');

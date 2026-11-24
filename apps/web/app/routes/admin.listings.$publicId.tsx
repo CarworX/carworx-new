@@ -115,6 +115,13 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     .overrideTypes<{ id: string; display_name: string }[], { merge: false }>();
   if (names.error !== null) throwStatus(503, admin.headers);
   const nameOf = new Map(names.data.map((p) => [p.id, p.display_name]));
+  // Cover photo (D-098): admin read through the aal2 policy.
+  const cover = await db
+    .from("listing_covers")
+    .select("object_key")
+    .eq("listing_public_id", l.public_id)
+    .maybeSingle<{ object_key: string }>();
+  if (cover.error !== null) throwStatus(503, admin.headers);
   return data(
     {
       csrf: context.security.csrfToken,
@@ -125,6 +132,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
         address: branch.data?.public_address ?? null,
       },
       decisions: decisions.data,
+      cover: cover.data === null ? null : `/media/${cover.data.object_key}`,
       members: members.data.map((m) => ({
         id: m.id,
         role: m.role,
@@ -165,6 +173,12 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       p_suspend: intent === "suspend",
       p_reason: reason,
     }));
+  } else if (intent === "remove-cover") {
+    // D-098 take-down: aal2 admins only (checked again in the database),
+    // audited by the listing_covers trigger; the file is queued for deletion.
+    ({ error } = await admin.supabase.rpc("admin_remove_listing_cover", {
+      p_listing: params.publicId,
+    }));
   } else if (intent === "revoke") {
     // Former staff: admin membership RLS (aal2 inline), audited by trigger.
     const membership = parseId(form, "membership");
@@ -197,7 +211,7 @@ export default function AdminListing({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { listing: l, decisions, members, csrf, done } = loaderData;
+  const { listing: l, decisions, members, cover, csrf, done } = loaderData;
   return (
     <AdminShell title={l.display_name} listingStatus={l.status}>
       <div data-listing-status={l.status}>
@@ -311,6 +325,33 @@ export default function AdminListing({
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="mt-10 max-w-[65ch]" data-admin-cover>
+        <h2 className="type-title">Cover photo</h2>
+        {cover === null ? (
+          <p className="type-body mt-2">No cover photo.</p>
+        ) : (
+          <div className="mt-2 grid gap-3">
+            <img
+              src={cover}
+              alt={`Cover photo of ${l.display_name}`}
+              className="w-full max-w-md rounded-2xl"
+            />
+            <p className="type-caption">
+              Shown on the listing at once, with no pre-approval. Removing it
+              takes it off the listing now and deletes the file in the next
+              daily clean-up. The removal is recorded in the audit log.
+            </p>
+            <Form method="post">
+              <CsrfField token={csrf} />
+              <input type="hidden" name="intent" value="remove-cover" />
+              <Button type="submit" size="sm">
+                Remove photo
+              </Button>
+            </Form>
+          </div>
+        )}
       </section>
 
       <section className="mt-10 max-w-[65ch]">

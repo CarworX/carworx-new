@@ -34,10 +34,40 @@ function loadWorker(): Promise<Worker> {
   return worker;
 }
 
+/** An in-memory stand-in for the R2 bucket MEDIA (cover photos, D-098). */
+export const media = new Map<
+  string,
+  { bytes: Uint8Array<ArrayBuffer>; type: string }
+>();
+const mediaBucket = {
+  put(
+    key: string,
+    value: Uint8Array,
+    options: { httpMetadata: { contentType: string } },
+  ) {
+    media.set(key, {
+      bytes: new Uint8Array(value),
+      type: options.httpMetadata.contentType,
+    });
+    return Promise.resolve({ key });
+  },
+  get(key: string) {
+    const item = media.get(key);
+    return Promise.resolve(
+      item === undefined ? null : { body: new Blob([item.bytes]).stream() },
+    );
+  },
+  delete(keys: string | string[]) {
+    for (const key of Array.isArray(keys) ? keys : [keys]) media.delete(key);
+    return Promise.resolve();
+  },
+};
+
 export const workerEnv = {
   APP_ORIGIN: APP,
   SUPABASE_URL: stack.apiUrl,
   SUPABASE_PUBLISHABLE_KEY: stack.anonKey,
+  MEDIA: mediaBucket,
 };
 
 const ctx = { waitUntil() {}, passThroughOnException() {}, props: {} };
@@ -48,13 +78,15 @@ export interface Reply {
   setCookies: string[];
   location: string | null;
   body: string;
+  /** The raw response body (for images). */
+  bytes: Uint8Array;
 }
 
 /** A browser stand-in: a cookie jar plus the headers a browser would send. */
 export class Browser {
   readonly jar = new Map<string, string>();
   constructor(
-    readonly env: typeof workerEnv & Record<string, string> = workerEnv,
+    readonly env: typeof workerEnv & Record<string, unknown> = workerEnv,
   ) {}
 
   cookieHeader(): string {
@@ -73,18 +105,25 @@ export class Browser {
     init: {
       method?: string;
       form?: Record<string, string | string[]>;
+      /** A multipart form (file uploads); the CSRF field is added unless csrf: false. */
+      multipart?: FormData;
       headers?: Record<string, string>;
       origin?: string | null;
       csrf?: boolean;
       jar?: boolean;
     } = {},
   ): Promise<Reply> {
-    const method = init.method ?? (init.form ? "POST" : "GET");
+    const method =
+      init.method ?? (init.form || init.multipart ? "POST" : "GET");
     const headers = new Headers(init.headers);
     if (init.jar !== false && this.jar.size > 0)
       headers.set("Cookie", this.cookieHeader());
-    let body: string | undefined;
-    if (init.form !== undefined) {
+    let body: string | FormData | undefined;
+    if (init.multipart !== undefined) {
+      body = init.multipart;
+      if (init.csrf !== false && !body.has("csrf"))
+        body.set("csrf", this.csrf());
+    } else if (init.form !== undefined) {
       const form = new URLSearchParams();
       for (const [key, value] of Object.entries(init.form))
         for (const item of Array.isArray(value) ? value : [value])
@@ -113,12 +152,14 @@ export class Browser {
         this.jar.delete(name);
       else this.jar.set(name, value);
     }
+    const bytes = new Uint8Array(await response.arrayBuffer());
     return {
       status: response.status,
       headers: response.headers,
       setCookies,
       location: response.headers.get("Location"),
-      body: await response.text(),
+      body: new TextDecoder().decode(bytes),
+      bytes,
     };
   }
 
