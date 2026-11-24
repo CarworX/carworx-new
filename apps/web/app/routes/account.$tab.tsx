@@ -207,6 +207,24 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       `The authenticator is removed. ${steps.join(", and ").replace(/^./, (c) => c.toUpperCase())}.`,
     );
   }
+  if (tab === "work" && intent === "leave") {
+    const org = form.get("org");
+    if (typeof org !== "string" || !UUID.test(org))
+      return reply(false, "Choose a business to leave.", 400);
+    // The database checks membership and refuses the last owner.
+    const left = await signedIn.supabase.rpc("leave_team", { p_org: org });
+    if (left.error === null)
+      return reply(true, "You left the business. Its records stay with it.");
+    if (left.error.message === "last_owner")
+      return reply(
+        false,
+        "A business needs at least one owner. Transfer ownership to someone first.",
+        400,
+      );
+    if (left.error.code === "42501")
+      return reply(false, "You aren't a member of that business.", 403);
+    return reply(false, "We couldn't do that. Please try again.", 503);
+  }
   return reply(false, "Choose an action on this settings page.", 400);
 }
 
@@ -376,6 +394,36 @@ export default function Settings({
                   ))}
                 </ul>
               )}
+              {loaderData.work.map((membership) => (
+                <div
+                  key={membership.organisation_id}
+                  className="cx-account-leave"
+                  data-leave={membership.organisation_id}
+                >
+                  <h3 className="type-title">Leave this team</h3>
+                  <p>
+                    The people who run {membership.organisations.name} will see
+                    that you left. Its records stay with the business.
+                  </p>
+                  <form method="post">
+                    <CsrfField token={csrf} />
+                    <input type="hidden" name="intent" value="leave" />
+                    <input
+                      type="hidden"
+                      name="org"
+                      value={membership.organisation_id}
+                    />
+                    <Button
+                      type="submit"
+                      variant="outline"
+                      size="sm"
+                      className="danger"
+                    >
+                      {`Leave ${membership.organisations.name}`}
+                    </Button>
+                  </form>
+                </div>
+              ))}
             </>
           )}
         </section>

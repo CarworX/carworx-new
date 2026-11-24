@@ -105,3 +105,59 @@ export async function teamServices(signedIn: SignedIn, org: string) {
     .map((o) => ({ slug: o.slug, name: o.label }))
     .sort((a, b) => a.name.localeCompare(b.name));
 }
+
+export interface TeamMemberRow {
+  id: string;
+  user_id: string;
+  role: TeamRole;
+  display_name: string | null;
+}
+
+/** Characters as PostgreSQL's char_length counts them (code points). */
+function codePoints(value: string) {
+  return value.match(/[\s\S]/gu)?.length ?? 0;
+}
+
+/** Treat the RPC response as untrusted: keep only the four fields, checked. */
+export function readTeamMembers(value: unknown): TeamMemberRow[] | null {
+  if (!Array.isArray(value) || value.length > 100) return null;
+  const rows: TeamMemberRow[] = [];
+  for (const item of value) {
+    const c: unknown = item;
+    if (
+      typeof c !== "object" ||
+      c === null ||
+      !("id" in c) ||
+      typeof c.id !== "string" ||
+      !UUID.test(c.id) ||
+      !("user_id" in c) ||
+      typeof c.user_id !== "string" ||
+      !UUID.test(c.user_id) ||
+      !("role" in c) ||
+      (c.role !== "owner" && c.role !== "manager" && c.role !== "staff") ||
+      !("display_name" in c) ||
+      (c.display_name !== null &&
+        (typeof c.display_name !== "string" ||
+          codePoints(c.display_name) > 120))
+    )
+      return null;
+    rows.push({
+      id: c.id,
+      user_id: c.user_id,
+      role: c.role,
+      display_name: c.display_name,
+    });
+  }
+  return rows;
+}
+
+/** Active members with their display names; members of that business only. */
+export async function teamMembers(signedIn: SignedIn, org: string) {
+  const result: { data: unknown; error: unknown } = await signedIn.supabase.rpc(
+    "team_members",
+    { p_org: org },
+  );
+  const rows = result.error === null ? readTeamMembers(result.data) : null;
+  if (rows === null) throwStatus(503, signedIn.headers);
+  return rows;
+}

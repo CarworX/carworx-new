@@ -122,3 +122,53 @@
     padding: 20px;
   }
 }
+
+/* Team list (finish-build PR 1): avatar, name and role, status, action. */
+.cx-team-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cx-team-list > li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.cx-team-av {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--surface);
+  font: 500 15px var(--font-sans);
+}
+.cx-team-av.pending {
+  background: var(--canvas-2);
+  color: var(--muted);
+}
+.cx-team-who {
+  display: grid;
+  min-width: 0;
+}
+.cx-team-who b {
+  font-weight: 500;
+  overflow-wrap: break-word;
+}
+.cx-team-who small {
+  color: var(--muted);
+}
+.cx-team-role {
+  grid-column: 2 / -1;
+  justify-self: start;
+}
+.cx-team-danger {
+  color: var(--err);
+}

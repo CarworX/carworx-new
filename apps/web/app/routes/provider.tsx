@@ -1,4 +1,5 @@
 import { SetupHub } from "../team/Hub";
+import { teamMembers } from "../team/server";
 import { mailtoHref } from "../ui/mailto";
 import { data, Link } from "react-router";
 
@@ -222,6 +223,13 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   for (const d of decisions.data)
     if (!latest.has(d.listing_public_id)) latest.set(d.listing_public_id, d);
 
+  // Real names for the owner's "People with access" list (members only).
+  const names = new Map<string, string | null>();
+  for (const rows of await Promise.all(
+    owned.map((org) => teamMembers(signedIn, org)),
+  ))
+    for (const r of rows) names.set(r.user_id, r.display_name);
+
   const page = actionable.data.slice(0, CLAIMS_PAGE);
   const last = page.at(-1);
   const lastEnquiry = enquiries.data.slice(0, CLAIMS_PAGE).at(-1);
@@ -240,7 +248,9 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           .filter((l) => l.organisation_id === o.id)
           .map((l) => ({ ...l, decision: latest.get(l.public_id) ?? null })),
         members: owned.includes(o.id)
-          ? members.data.filter((m) => m.organisation_id === o.id)
+          ? members.data
+              .filter((m) => m.organisation_id === o.id)
+              .map((m) => ({ ...m, name: names.get(m.user_id) ?? null }))
           : [],
         hasTeam: members.data.some(
           (m) =>
@@ -532,7 +542,10 @@ export default function Provider({
                     <span>
                       {m.user_id === uid
                         ? "You"
-                        : `Team member ${m.id.slice(0, 8)}`}{" "}
+                        : (m.name ??
+                          (m.status === "active"
+                            ? "Name not set yet"
+                            : "Former member"))}{" "}
                       · {m.role} ·{" "}
                       {m.status === "active" ? "active" : "removed"}
                     </span>
