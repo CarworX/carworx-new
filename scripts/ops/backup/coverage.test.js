@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   PLATFORM,
@@ -13,7 +14,7 @@ import {
 const migrations = new URL("../../../supabase/migrations/", import.meta.url);
 
 test("every public and private table the migrations create is exported", () => {
-  const tables = migrationTables(migrations.pathname);
+  const tables = migrationTables(fileURLToPath(migrations));
   // Sanity: Phase 1, P2-1, P2-4, P2-5 and onboarding tables are all seen.
   for (const t of [
     "public.profiles",
@@ -27,6 +28,16 @@ test("every public and private table the migrations create is exported", () => {
     "public.demand_requests",
     "public.support_cases",
     "public.invites",
+    "public.bookings",
+    "public.reservations",
+    "private.payment_attempts",
+    "private.payment_inbox",
+    "private.payment_effects",
+    "private.payment_refunds",
+    "private.payment_disputes",
+    "private.payment_settlements",
+    "private.booking_notifications",
+    "private.booking_reviews",
   ])
     assert.ok(tables.includes(t), t);
   const plan = classify(tables);

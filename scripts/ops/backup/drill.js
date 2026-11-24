@@ -503,7 +503,11 @@ async function seed(config) {
     files.map(() => randomBytes(1024)),
   );
   // BK-1: synthetic rows in every Phase 2 and onboarding table too.
-  for (const file of ["supabase/seed.sql", "scripts/ops/backup/fixture.sql"])
+  for (const file of [
+    "supabase/seed.sql",
+    "scripts/ops/backup/fixture.sql",
+    "scripts/ops/backup/phase3-money-fixture.sql",
+  ])
     run("seed-" + file.split("/").pop(), "psql", [
       "-Xq",
       "-v",
@@ -796,7 +800,11 @@ async function drill() {
     // consent clocks, append-only guards) while the original rows replay, so
     // restored data is byte-for-byte the export, then switch them back on.
     const appTables = tables.filter((t) => /^(?:public|private)\./.test(t));
+    // Deferred foreign keys (reference loops, e.g. bookings <-> reservations)
+    // are checked before triggers come back: Postgres can't alter a table
+    // with pending trigger events, and the checks must pass anyway.
     const triggers = (state) =>
+      (state === "enable" ? "set constraints all immediate; " : "") +
       appTables
         .map((t) => {
           const [schema, name] = t.split(".");
@@ -833,6 +841,8 @@ async function drill() {
       restored.DB_URL,
       "-c",
       triggers("disable"),
+      "-f",
+      join(repo, "scripts/ops/backup/phase3-money-cleanup.sql"),
       "-f",
       join(repo, "scripts/ops/backup/fixture-cleanup.sql"),
       "-c",

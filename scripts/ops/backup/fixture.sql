@@ -41,3 +41,28 @@ do $$ begin
       values ('00000000-0000-4000-8000-0000000000b1', 'email.bounced')$q$;
   end if;
 end $$;
+-- Phase 3 bookings (#99): one synthetic row per bookings table.
+insert into public.resources(id, organisation_id, kind, name) values
+  ('b0c00000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','bay','Synthetic Bay');
+insert into public.resource_hours(resource_id, organisation_id, weekday, opens, closes) values
+  ('b0c00000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1',1,'08:00','17:00');
+insert into public.resource_closures(resource_id, organisation_id, during, reason) values
+  ('b0c00000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','[2030-01-02 08:00+02,2030-01-02 12:00+02)','Synthetic closure');
+insert into public.public_holiday_extras(day, name) values ('2030-01-03','Synthetic holiday');
+insert into public.service_offers(id, organisation_id, listing_public_id, name, pricing, price_minor, duration_minutes) values
+  ('b0c00000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-0000000000a1','ca7c1000-0000-4000-8000-000000000001','Synthetic Wash','fixed',45000,60);
+insert into public.bookings(id, organisation_id, customer_id, offer_id, during, accept_by, amount_minor) values
+  ('b0c00000-0000-4000-8000-000000000003','5eed0000-0000-4000-8000-0000000000a1','5eed0000-0000-4000-8000-000000000003','b0c00000-0000-4000-8000-000000000002','[2030-01-07 09:00+02,2030-01-07 10:00+02)','2030-01-06 12:00+02',45000);
+insert into public.reservations(resource_id, organisation_id, during, kind, booking_id) values
+  ('b0c00000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1','[2030-01-07 09:00+02,2030-01-07 10:00+02)','booking','b0c00000-0000-4000-8000-000000000003');
+insert into private.booking_event(booking_id, kind) values ('b0c00000-0000-4000-8000-000000000003','requested');
+insert into private.booking_addresses(booking_id, address) values ('b0c00000-0000-4000-8000-000000000003','1 Synthetic Street, Exampleville');
+insert into public.booking_assignments(booking_id, membership_id, organisation_id, assigned_by)
+  select 'b0c00000-0000-4000-8000-000000000003', id, organisation_id, '5eed0000-0000-4000-8000-000000000001' from public.memberships
+  where user_id = '5eed0000-0000-4000-8000-000000000002' and organisation_id = '5eed0000-0000-4000-8000-0000000000a1';
+insert into public.quotes(id, organisation_id, customer_id, offer_id) values
+  ('b0c00000-0000-4000-8000-000000000004','5eed0000-0000-4000-8000-0000000000a1','5eed0000-0000-4000-8000-000000000003','b0c00000-0000-4000-8000-000000000002');
+insert into public.quote_versions(quote_id, organisation_id, version, lines, total_minor, duration_minutes, valid_until, issued_by) values
+  ('b0c00000-0000-4000-8000-000000000004','5eed0000-0000-4000-8000-0000000000a1',1,'[{"label":"Synthetic line","amount_minor":45000}]',45000,60,'2030-01-10 00:00+02','5eed0000-0000-4000-8000-000000000001');
+insert into public.travel_bands(organisation_id, listing_public_id, up_to_km, travel_minutes) values
+  ('5eed0000-0000-4000-8000-0000000000a1','ca7c1000-0000-4000-8000-000000000001',10,15);

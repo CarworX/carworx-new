@@ -24,21 +24,43 @@ export const VERSION = "8.30.1";
 export const DIGEST =
   "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb";
 
-// Manual, exact prose exception for Claude's policy review, never a generated baseline.
-// The whole line is a Resend setup checklist; "retry/suppression" is not a credential.
-export const PROSE_DIGEST =
-  "e26004a8204052de2bb98025b77e9a30afc413c2ce14214eb18ee6c43c5e3f56";
-const PROSE_FILE = "planning/research/codex-vendor-access.md";
-const PROSE_COMMIT = "668466e234e65c92dfceba3037a34a9ca9e5bcbc";
-export function isProseException(finding, digest) {
-  return (
-    finding.RuleID === "generic-api-key" &&
-    finding.File === PROSE_FILE &&
-    finding.StartLine === 10 &&
-    finding.EndLine === 10 &&
-    ["", PROSE_COMMIT].includes(finding.Commit ?? "") &&
-    digest === PROSE_DIGEST
+// Manual, exact prose exceptions for Claude's policy review, never a generated
+// baseline. Each pins one rule, file, line, commit and the SHA-256 of that
+// line, so any edit to the line (or a real credential) is reported again.
+const PROSE_EXCEPTIONS = [
+  {
+    // The whole line is a Resend setup checklist; "retry/suppression" is not a credential.
+    file: "planning/research/codex-vendor-access.md",
+    line: 10,
+    commit: "668466e234e65c92dfceba3037a34a9ca9e5bcbc",
+    digest: "e26004a8204052de2bb98025b77e9a30afc413c2ce14214eb18ee6c43c5e3f56",
+    reason:
+      "Exact retry/suppression checklist prose; Claude policy review required",
+  },
+  {
+    // Phase 3 build note; "charge/refund/dispute" is a list of webhook kinds.
+    file: "planning/codex/41-phase3-build-progress.md",
+    line: 8,
+    commit: "db0ae78663a60c0fc42037f3ae41998269a91417",
+    digest: "309313f3c0e2d298c2fdf02fffd0366e5ff2e14537d5e36e901da453b9af548f",
+    reason:
+      "Exact charge/refund/dispute webhook-kind prose; Claude policy review required",
+  },
+];
+export const PROSE_DIGEST = PROSE_EXCEPTIONS[0].digest;
+const PROSE_FILE = PROSE_EXCEPTIONS[0].file;
+function proseEntry(finding) {
+  return PROSE_EXCEPTIONS.find(
+    (e) =>
+      finding.RuleID === "generic-api-key" &&
+      finding.File === e.file &&
+      finding.StartLine === e.line &&
+      finding.EndLine === e.line &&
+      ["", e.commit].includes(finding.Commit ?? ""),
   );
+}
+export function isProseException(finding, digest) {
+  return proseEntry(finding)?.digest === digest;
 }
 
 export function verifyChecksum(bytes, digest = DIGEST) {
@@ -101,23 +123,23 @@ function scan(binary, kind, cwd, privateDir, exceptions = []) {
     "Gitleaks exit/report mismatch",
   );
   const retained = findings.filter((finding) => {
-    if (!isProseException(finding, PROSE_DIGEST)) return true;
+    const entry = proseEntry(finding);
+    if (!entry) return true;
     const source = finding.Commit
-      ? execFileSync("git", ["show", `${PROSE_COMMIT}:${PROSE_FILE}`], {
+      ? execFileSync("git", ["show", `${entry.commit}:${entry.file}`], {
           cwd,
           encoding: "utf8",
           stdio: "pipe",
         })
-      : readFileSync(join(cwd, PROSE_FILE), "utf8");
+      : readFileSync(join(cwd, entry.file), "utf8");
     const digest = createHash("sha256")
-      .update(source.split(/\r?\n/)[9] ?? "")
+      .update(source.split(/\r?\n/)[entry.line - 1] ?? "")
       .digest("hex");
     if (!isProseException(finding, digest)) return true;
     exceptions.push({
       ...sanitize([finding])[0],
       source_line_sha256: digest,
-      reason:
-        "Exact retry/suppression checklist prose; Claude policy review required",
+      reason: entry.reason,
     });
     return false;
   });

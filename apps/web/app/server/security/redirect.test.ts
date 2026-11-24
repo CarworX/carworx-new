@@ -20,6 +20,11 @@ describe("safeReturnTo", () => {
     "/provider/claim/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
     "/p/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
     "/p/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20#enquiry",
+    "/book/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
+    "/book/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20?offer=1b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20&day=2026-11-24",
+    "/bookings/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20/review",
+    "/checkout/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
+    "/provider/bookings",
   ])("accepts %s", (path) => {
     expect(safeReturnTo(path, APP)).toBe(path);
   });
@@ -40,6 +45,8 @@ describe("safeReturnTo", () => {
     "/provider-evil",
     "/provider/elsewhere",
     "/provider/claim/not-a-listing",
+    "/book/not-a-listing",
+    "/book/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20?next=//evil.example",
     "/p/not-a-listing",
     "/p/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20?next=//evil.example",
     "/p/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20/elsewhere",

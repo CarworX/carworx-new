@@ -430,6 +430,15 @@ export default function Provider({
           data-org={org.id}
         >
           <h2 className="type-title">{org.name}</h2>
+          <ButtonLink
+            href={
+              org.role === "staff" ? "/provider/jobs" : "/provider/bookings"
+            }
+            variant="outline"
+            size="sm"
+          >
+            {org.role === "staff" ? "View assigned jobs" : "Manage bookings"}
+          </ButtonLink>
           <SetupHub
             org={org.id}
             name={org.name}

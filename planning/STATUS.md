@@ -1,5 +1,10 @@
 # Status
 
+Current coordination, 2026-11-14 UTC: see [the active-lane map](codex/45-coordination-map.md). #122 is approved and its source preflight passes after no-file-change ancestry repair c0580cb. #121 is reviewed and merged into phase-3 at 4c9075d. #107 incorporates that schema and awaits fresh CI and Claude review. #93/#94 are ready, awaiting reciprocal review. #119 is held; #123/#124 remain Claude-owned. Staging deployment and seed execution remain Claude's coordinated step; no hosted changes were made here. Shared staging acceptance remains open.
+
+## Earlier launch checkpoint (historical)
+
+
 Updated 2026-11-13 (SAST) by Claude. **Launch order (D-093): the directory goes live first; Phase 3 (bookings, quotes, payments, messaging) is a second release.** Both agents keep full build and merge authority, with reviews after merge (D-091). The launch plan is the [G-PROD checklist](runbooks/g-prod-checklist.md).
 
 ## Current work

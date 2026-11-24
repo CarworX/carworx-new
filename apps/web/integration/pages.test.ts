@@ -87,6 +87,50 @@ describe("catalogue matches the design taxonomy", () => {
 });
 
 describe("public pages without JavaScript", () => {
+  it("links a listing to booking, preserves the return path and explains unavailable booking", async () => {
+    const b = browser();
+    const book = `/book/${SEED_FIXED}`;
+    const listing = await b.send(`/p/${SEED_FIXED}`);
+    expect(listing.status).toBe(200);
+    expect(listing.body).toContain(`href="${book}"`);
+    expect((await b.send(book)).location).toBe(
+      `/auth/sign-in?returnTo=${encodeURIComponent(book)}`,
+    );
+    const customer = await createConfirmedUser("booking-entry");
+    const signedIn = await signIn(customer.email, undefined, book);
+    const empty = await signedIn.send(book);
+    expect(empty.status).toBe(200);
+    expect(empty.body).toMatch(/Online booking isn.{0,8}t available/);
+    expect(empty.body).toContain(`href="/p/${SEED_FIXED}#enquiry"`);
+    expect((await signedIn.send(`/book/${SEED_PENDING}`)).status).toBe(404);
+    const account = await signedIn.send("/account");
+    expect(account.body).toContain('href="/bookings"');
+  });
+
+  it("accepts a written quote request using the full advertised note length", async () => {
+    const offer = randomUUID();
+    sql(`
+      insert into public.service_offers
+        (id, organisation_id, listing_public_id, name, pricing, duration_minutes, resource_kind)
+      select '${offer}', organisation_id, public_id, 'Synthetic inspection', 'quote', 60, 'bay'
+      from public.listings where public_id = '${SEED_FIXED}';
+    `);
+    const customer = await createConfirmedUser("quote-notes");
+    const book = `/book/${SEED_FIXED}`;
+    const signedIn = await signIn(customer.email, undefined, book);
+    expect((await signedIn.send(book)).body).toContain("Ask for a quote");
+    const response = await signedIn.send(book, {
+      form: {
+        intent: "quote",
+        offer,
+        note: "Please inspect the synthetic vehicle. ".repeat(20),
+      },
+    });
+    expect(response.status).toBe(302);
+    expect(response.location).toMatch(/^\/quotes\/[0-9a-f-]{36}$/);
+    expect((await signedIn.send(response.location ?? "")).status).toBe(200);
+  });
+
   it("home links to search and has the five service keys", async () => {
     const reply = await browser().send("/");
     expect(reply.status).toBe(200);

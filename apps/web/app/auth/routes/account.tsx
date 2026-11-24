@@ -64,7 +64,8 @@ export default function Account({ loaderData }: Route.ComponentProps) {
       <h2>Your business listings</h2>
       <p>
         <Link to="/account/profile">Profile and settings</Link> ·{" "}
-        <Link to="/account/security">Security</Link>
+        <Link to="/account/security">Security</Link> ·{" "}
+        <Link to="/bookings">My bookings</Link>
       </p>
       <p>
         <Link to="/provider">See your listings, decisions and claims</Link> or{" "}
