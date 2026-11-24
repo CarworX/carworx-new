@@ -1,15 +1,42 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, onTestFinished } from "vitest";
 
 import {
   asUser,
   Browser,
   createConfirmedUser,
+  createOrganisation,
   signIn,
+  sql,
   sqlRows,
 } from "./harness";
 
 // Real Worker -> Auth -> PostgREST/RLS. Synthetic users and names only.
 describe("canonical account profile", () => {
+  it("shows only the caller's active businesses and role on Your work", async () => {
+    const user = await createConfirmedUser("settings-work");
+    const other = await createConfirmedUser("settings-work-other");
+    const active = await createOrganisation("Synthetic active workspace");
+    const revoked = await createOrganisation("Synthetic revoked workspace");
+    const unrelated = await createOrganisation("Synthetic unrelated workspace");
+    onTestFinished(() => {
+      sql(`delete from public.memberships where organisation_id in ('${active}','${revoked}','${unrelated}');
+        delete from public.organisations where id in ('${active}','${revoked}','${unrelated}');`);
+    });
+    sql(`insert into public.memberships(organisation_id,user_id,role,status) values
+      ('${active}','${user.id}','staff','active'),
+      ('${revoked}','${user.id}','staff','revoked'),
+      ('${unrelated}','${other.id}','owner','active');`);
+    const browser = await signIn(user.email);
+    const work = await browser.send("/account/work");
+    expect(work.status).toBe(200);
+    expect(work.headers.get("Cache-Control")).toMatch(/private.*no-store/);
+    expect(work.body).toContain("Synthetic active workspace");
+    expect(work.body).toContain(`/provider#business-${active}`);
+    expect(work.body).toContain(">Staff<");
+    expect(work.body).not.toContain("Synthetic revoked workspace");
+    expect(work.body).not.toContain("Synthetic unrelated workspace");
+  });
+
   it("creates and updates the canonical profile while ignoring Auth metadata", async () => {
     const user = await createConfirmedUser("settings-canonical", {
       user_metadata: { display_name: "Synthetic metadata is not the profile" },

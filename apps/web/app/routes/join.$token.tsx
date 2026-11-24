@@ -4,6 +4,7 @@ import { field } from "../auth/forms";
 import { throwRedirect } from "../auth/http.server";
 import { authRequest, getSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
+import { UUID } from "../server/providers/forms";
 import { INVITE_TOKEN, TEAM_PROBLEMS } from "../team/forms";
 import {
   clearInviteCookie,
@@ -13,7 +14,9 @@ import {
 import { privateHeaders } from "../team/server";
 import { Button, ButtonLink } from "../ui/Button";
 import { StatusNote } from "../ui/Note";
+import { Icon } from "../ui/Icon";
 import { PublicShell } from "../ui/public/PublicShell";
+import "../team/setup.css";
 import type { Route } from "./+types/join.$token";
 
 export const meta: Route.MetaFunction = () => [
@@ -79,7 +82,11 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     return fail("unavailable");
   }
   headers.append("Set-Cookie", clearInviteCookie());
-  return throwRedirect("/provider?done=1", headers);
+  const business =
+    typeof result.data === "string" && UUID.test(result.data)
+      ? `#business-${result.data}`
+      : "";
+  return throwRedirect(`/provider?done=1${business}`, headers);
 }
 
 export default function Join({ loaderData, actionData }: Route.ComponentProps) {
@@ -87,55 +94,63 @@ export default function Join({ loaderData, actionData }: Route.ComponentProps) {
     actionData?.problem ?? (!loaderData.hasInvite ? "invite_invalid" : null);
   return (
     <PublicShell signedIn={loaderData.signedIn}>
-      <div className="mx-auto grid max-w-[620px] gap-5">
-        <p className="type-label text-quiet">Your team</p>
-        <h1 className="type-display-lg">Work together on CarworX.</h1>
-        <p className="type-body">
-          Use your own account. This invite gives access to a business; it never
-          shares someone else’s sign-in.
-        </p>
-        {problem ? (
-          <StatusNote tone="warn" title="We couldn't use this invite.">
-            {TEAM_PROBLEMS[problem]}
-          </StatusNote>
-        ) : loaderData.signedIn ? (
-          <form method="post" action="/join" className="grid gap-4">
-            <CsrfField token={loaderData.csrf} />
-            <input type="hidden" name="intent" value="accept" />
-            <StatusNote title="Ready to join?">
-              Accept only if you were expecting an invite from this business.
-              The link works once and expires after seven days.
+      <div className="cx-setup-flow cx-join-flow">
+        <section className="cx-setup-card">
+          <div>
+            <p className="type-label text-quiet">Team invite</p>
+            <h1 className="type-display-lg">Join your team</h1>
+          </div>
+          <p className="type-body">
+            Use your own account. This invite gives access to a business; it
+            never shares someone else’s sign-in.
+          </p>
+          {problem ? (
+            <StatusNote tone="warn" title="We couldn't use this invite.">
+              {TEAM_PROBLEMS[problem]}
             </StatusNote>
-            <div>
-              <Button type="submit" variant="primary">
-                Accept invite
-              </Button>
-            </div>
-          </form>
-        ) : (
-          <>
-            <StatusNote title="Sign in with your own account.">
-              For an email invite, use the account with that verified email
-              address. This browser keeps the invite for ten minutes while you
-              sign in.
-            </StatusNote>
-            <div>
-              <ButtonLink href="/auth/sign-in?returnTo=%2Fjoin" arrow>
-                Sign in to join
-              </ButtonLink>
-            </div>
-            <p className="type-caption">
-              New here?{" "}
-              <a className="cx-tlink" href="/auth/sign-up">
-                Create your account
-              </a>
-              , then reopen the original invite link.
-            </p>
-          </>
-        )}
-        <a className="cx-tlink" href="/provider">
-          Your business home
-        </a>
+          ) : loaderData.signedIn ? (
+            <form method="post" action="/join" className="grid gap-4">
+              <CsrfField token={loaderData.csrf} />
+              <input type="hidden" name="intent" value="accept" />
+              <StatusNote title="Ready to join?">
+                Accept only if you were expecting an invite from this business.
+                The link works once and expires after seven days.
+              </StatusNote>
+              <div>
+                <Button type="submit" variant="primary">
+                  Accept invite
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <StatusNote title="Sign in with your own account.">
+                For an email invite, use the account with that verified email
+                address. This browser keeps the invite for ten minutes while you
+                sign in.
+              </StatusNote>
+              <div className="cx-invite-options">
+                <ButtonLink href="/auth/sign-in?returnTo=%2Fjoin" arrow>
+                  Sign in to join
+                </ButtonLink>
+                <ButtonLink
+                  href="/auth/sign-up?returnTo=%2Fjoin"
+                  variant="outline"
+                >
+                  Create your account
+                </ButtonLink>
+              </div>
+              <p className="type-caption flex items-start gap-2">
+                <Icon name="lock" size="sm" />
+                If the invitation expires while you confirm your email, reopen
+                your original link.
+              </p>
+            </>
+          )}
+          <a className="cx-tlink" href="/provider">
+            Your business home
+          </a>
+        </section>
       </div>
     </PublicShell>
   );

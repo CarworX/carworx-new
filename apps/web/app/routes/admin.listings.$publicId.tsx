@@ -199,7 +199,7 @@ export default function AdminListing({
 }: Route.ComponentProps) {
   const { listing: l, decisions, members, csrf, done } = loaderData;
   return (
-    <AdminShell title={l.display_name}>
+    <AdminShell title={l.display_name} listingStatus={l.status}>
       <div data-listing-status={l.status}>
         <StatusLabel
           tone={
@@ -225,7 +225,7 @@ export default function AdminListing({
           </StatusNote>
         </div>
       ) : null}
-      <dl className="mt-4 grid max-w-[65ch] gap-1 type-body">
+      <dl className="cx-admin-panel mt-4 max-w-[65ch] type-body">
         <dt className="type-label">Organisation</dt>
         <dd>{l.organisation}</dd>
         <dt className="type-label">Service</dt>

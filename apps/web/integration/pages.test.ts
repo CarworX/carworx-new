@@ -3,7 +3,14 @@ import { randomUUID } from "node:crypto";
 import { Client } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { Browser, sql, stack, workerEnv } from "./harness";
+import {
+  Browser,
+  createConfirmedUser,
+  signIn,
+  sql,
+  stack,
+  workerEnv,
+} from "./harness";
 
 /**
  * P2-3 public pages through the built Worker, server-rendered with no client
@@ -163,6 +170,34 @@ describe("public pages without JavaScript", () => {
     const bad = await browser().send("/search?q=%3Cb%3E");
     expect(bad.status).toBe(400);
     expect(bad.body).toContain("Check what you typed.");
+  });
+
+  it("finds a live listing in the business claim picker and opens its claim form", async () => {
+    const picker = "/provider/get-listed/claim";
+    const b = browser();
+    const matches = await b.send(`${picker}?q=synthetic+MOBILE&area=ignored`);
+    const claim = `/provider/claim/${SEED_MOBILE}`;
+    expect(matches.status).toBe(200);
+    expect(matches.body).toContain("Find your business");
+    expect(matches.body).toContain(`href="${claim}"`);
+    expect(matches.body).not.toContain(SEED_FIXED);
+    expect(matches.body).not.toContain(SEED_PENDING);
+    expect(matches.body).toContain('href="/provider/get-listed/business"');
+    expect((await b.send(claim)).location).toBe(
+      `/auth/sign-in?returnTo=${encodeURIComponent(claim)}`,
+    );
+    const claimant = await createConfirmedUser("claim-picker");
+    const signedIn = await signIn(claimant.email, undefined, claim);
+    const form = await signedIn.send(claim);
+    expect(form.status).toBe(200);
+    expect(form.body).toContain("Synthetic mobile provider");
+    expect(form.body).toContain("Nothing transfers when you send this claim.");
+
+    const empty = await b.send(`${picker}?q=synthetic+pending`);
+    expect(empty.status).toBe(200);
+    expect(empty.body).toContain("No listings found");
+    expect(empty.body).not.toContain(SEED_PENDING);
+    expect((await b.send(`${picker}?q=%3Cb%3E`)).status).toBe(400);
   });
 
   it("the results form refines the same point without JavaScript", async () => {

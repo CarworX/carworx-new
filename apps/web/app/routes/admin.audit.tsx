@@ -126,18 +126,17 @@ export default function AdminAudit({ loaderData }: Route.ComponentProps) {
       ) : (
         <ol className="mt-4 grid gap-2" data-admin-list="audit">
           {entries.map((e) => (
-            <li
-              key={e.id}
-              className="rounded-2xl bg-[var(--surface)] p-3"
-              data-audit={e.what}
-            >
-              <p className="type-body">
-                <b>{e.what}</b> · {e.when}
-              </p>
-              <p className="type-body">
-                by {e.actor} · row {e.target}
-                {e.details ? ` · ${e.details}` : ""}
-              </p>
+            <li key={e.id} className="cx-admin-audit-row" data-audit={e.what}>
+              <p className="cx-admin-audit-time">{e.when}</p>
+              <div>
+                <p className="type-body">
+                  <b>{e.what}</b>
+                </p>
+                <p className="type-body">
+                  by {e.actor} · row {e.target}
+                  {e.details ? ` · ${e.details}` : ""}
+                </p>
+              </div>
             </li>
           ))}
         </ol>
