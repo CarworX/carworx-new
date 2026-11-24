@@ -6,13 +6,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import tokens from "../../../../planning/design/brand/tokens.json";
 import { BookingTile, Receipt, StickyNote } from "../ui/Booking";
 import { Button, ButtonLink, QuietLink, TextLink } from "../ui/Button";
-import {
-  ActorChip,
-  Demo,
-  FilterChip,
-  StatusLabel,
-  TimeSlots,
-} from "../ui/Chip";
+import { ActorChip, FilterChip, StatusLabel, TimeSlots } from "../ui/Chip";
 import { measure, type RGBA, parseColor, ratio } from "../ui/contrast";
 import { PAIRS } from "../ui/contrast-pairs";
 import {
@@ -388,7 +382,6 @@ export default function DevComponents() {
                 <StatusLabel tone="info">Quote v2</StatusLabel>
                 <StatusLabel tone="warn">Expires 11:40</StatusLabel>
                 <StatusLabel tone="err">Payment failed</StatusLabel>
-                <Demo />
               </div>
               <TimeSlots
                 legend="Saturday times"
@@ -556,7 +549,6 @@ export default function DevComponents() {
                   thumb={SERVICES[0]?.object ?? ""}
                   price="R120"
                   priceNote="from"
-                  demo
                   labels={
                     <>
                       <StatusLabel>Prices listed</StatusLabel>
@@ -571,7 +563,6 @@ export default function DevComponents() {
                   thumb={SERVICES[0]?.object ?? ""}
                   price="R150"
                   priceNote="from"
-                  demo
                 />
               </div>
               <StepList
@@ -607,14 +598,14 @@ export default function DevComponents() {
                 <KpiCard
                   label="Bookings"
                   value="48"
-                  foot="Demo numbers"
+                  foot="Last 7 days"
                   fill={0.62}
                 />
                 <KpiCard
                   label="Paid out"
                   prefix="R"
                   value="3 960"
-                  foot="Demo numbers"
+                  foot="Last 7 days"
                   fill={0.4}
                 />
                 <KpiCard label="Reply time" value="38m" foot="Median" />

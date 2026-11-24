@@ -1,11 +1,13 @@
 /**
  * Signed, expiring keyset cursors for P2-2 search (Claude 19 §4).
  *
- * A cursor holds only public IDs, a 0.1 km bucket and a hash of the normalised
+ * A cursor holds only public IDs, a 0.1 km bucket (or, with no location, the
+ * whole day of the newest verification) and a hash of the normalised
  * query. It is bound to its group and query, expires after 15 minutes and is
  * verified in constant time (WebCrypto HMAC verify). Anything else is invalid.
  */
-export type SearchGroup = "fixed" | "mobile";
+export type SearchGroup = "fixed" | "mobile" | "all";
+/** Fixed: a 0.1 km bucket. All (no location): the verified day rank. */
 export type FixedAfter = { bucket: number; id: string };
 export type MobileAfter = { id: string };
 
@@ -130,9 +132,10 @@ export async function readCursor(
     return null;
   if (group === "mobile")
     return p.a.bucket === undefined ? { id: p.a.id } : null;
+  const max = group === "all" ? 1_000_000 : 500;
   return Number.isInteger(p.a.bucket) &&
     (p.a.bucket as number) >= 0 &&
-    (p.a.bucket as number) <= 500
+    (p.a.bucket as number) <= max
     ? { bucket: p.a.bucket as number, id: p.a.id }
     : null;
 }

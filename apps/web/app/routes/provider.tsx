@@ -134,7 +134,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     db
       .from("memberships")
       .select("id, organisation_id, user_id, role, status, created_at")
-      .in("organisation_id", owned)
+      .in("organisation_id", controlled)
       .order("created_at")
       .overrideTypes<Membership[], { merge: false }>(),
     // Every claim someone else made that can still be disputed, newest
@@ -172,6 +172,24 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     own.error !== null
   )
     throwStatus(503, signedIn.headers);
+  const liveListings = listings.data.filter(
+    (listing) => listing.status === "live",
+  );
+  const hours =
+    liveListings.length === 0
+      ? null
+      : await db
+          .from("listing_hours")
+          .select("listing_public_id")
+          .in(
+            "listing_public_id",
+            liveListings.map((listing) => listing.public_id),
+          )
+          .overrideTypes<{ listing_public_id: string }[], { merge: false }>();
+  const configuredHours =
+    hours === null || hours.error !== null
+      ? null
+      : new Set(hours.data.map((row) => row.listing_public_id));
   const decisions = await db
     .from("listing_decisions")
     .select("listing_public_id, decision, reason, decided_at")
@@ -221,7 +239,25 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         listings: listings.data
           .filter((l) => l.organisation_id === o.id)
           .map((l) => ({ ...l, decision: latest.get(l.public_id) ?? null })),
-        members: members.data.filter((m) => m.organisation_id === o.id),
+        members: owned.includes(o.id)
+          ? members.data.filter((m) => m.organisation_id === o.id)
+          : [],
+        hasTeam: members.data.some(
+          (m) =>
+            m.organisation_id === o.id &&
+            m.status === "active" &&
+            m.role !== "owner",
+        ),
+        hoursListing: liveListings.find(
+          (listing) => listing.organisation_id === o.id,
+        )?.public_id,
+        configuredHours:
+          configuredHours === null
+            ? null
+            : configuredHours.has(
+                liveListings.find((listing) => listing.organisation_id === o.id)
+                  ?.public_id ?? "",
+              ),
       })),
       // Claims on businesses I control, by other people.
       against: page.filter((c) => controlled.includes(c.organisation_id)),
@@ -371,17 +407,46 @@ export default function Provider({
         </ButtonLink>
       </div>
 
+      {orgs.length > 1 ? (
+        <nav aria-label="Your businesses" className="mt-6 flex flex-wrap gap-3">
+          {orgs.map((org) => (
+            <ButtonLink
+              key={org.id}
+              href={`#business-${org.id}`}
+              variant="outline"
+              size="sm"
+            >
+              {org.name}
+            </ButtonLink>
+          ))}
+        </nav>
+      ) : null}
+
       {orgs.map((org) => (
-        <section key={org.id} className="mt-10" data-org={org.id}>
+        <section
+          key={org.id}
+          id={`business-${org.id}`}
+          className="mt-10 scroll-mt-24"
+          data-org={org.id}
+        >
           <h2 className="type-title">{org.name}</h2>
+          <ButtonLink
+            href={
+              org.role === "staff" ? "/provider/jobs" : "/provider/bookings"
+            }
+            variant="outline"
+            size="sm"
+          >
+            {org.role === "staff" ? "View assigned jobs" : "Manage bookings"}
+          </ButtonLink>
           <SetupHub
             org={org.id}
+            name={org.name}
             role={org.role}
             live={org.listings.some((listing) => listing.status === "live")}
-            hoursListing={
-              org.listings.find((listing) => listing.status === "live")
-                ?.public_id
-            }
+            hoursListing={org.hoursListing}
+            configuredHours={org.configuredHours}
+            hasTeam={org.hasTeam}
           />
           {org.listings.map((l) => (
             <article

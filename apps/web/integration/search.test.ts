@@ -194,6 +194,31 @@ describe("scoped catalogue_server login", () => {
     expect(seen.size).toBe(23);
   });
 
+  it("browses without a location and matches name words (D-097, 10 arguments)", async () => {
+    const client = new Client({ connectionString: connection });
+    await client.connect();
+    try {
+      const all = await client.query<Row & { browse_rank: number }>(
+        "select * from api.search_listings(null, null, 'srch-int', null, null, 'all', null, null, 21, $1)",
+        ["int MOBILE"],
+      );
+      expect(all.rows).toHaveLength(3);
+      for (const r of all.rows) {
+        expect(r.mode).toBe("mobile");
+        expect(r.distance_bucket).toBeNull();
+        expect(r.public_address).toBeNull();
+        expect(r.browse_rank).toBe(0);
+      }
+      const near = await client.query<Row>(
+        "select * from api.search_listings(-33.9, 18.4, 'srch-int', null, 25, 'fixed', null, null, 21, $1)",
+        ["Int fixed"],
+      );
+      expect(near.rows).toHaveLength(21);
+    } finally {
+      await client.end();
+    }
+  });
+
   it("can read nothing directly and cannot call the private helper", async () => {
     const client = new Client({ connectionString: connection });
     await client.connect();

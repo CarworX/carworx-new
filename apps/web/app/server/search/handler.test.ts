@@ -229,8 +229,8 @@ describe("GET /api/search handler", () => {
 
   it("validates input strictly before touching the database", async () => {
     const calls: SearchArgs[] = [];
+    // An empty query is browsing (D-097), tested below.
     for (const bad of [
-      "",
       "?lat=-33.9",
       "?lat=51.5&lng=-0.1",
       "?lat=NaN&lng=18.4",
@@ -287,5 +287,86 @@ describe("GET /api/search handler", () => {
     expect(r.status).toBe(400);
     expect(sessions).toEqual([session]);
     expect(r.headers.get("Set-Cookie")).toBeNull();
+  });
+
+  it("browses without a location: one all group, no distance (D-097)", async () => {
+    const calls: SearchArgs[] = [];
+    const r = await get("?q=Synthetic", { search: fakeSearch(calls) });
+    expect(r.status).toBe(200);
+    const body = r.body as unknown as {
+      fixed: null;
+      mobile: null;
+      radius_km: null;
+      q: string;
+      all: { items: Record<string, unknown>[]; next: string | null };
+    };
+    expect(body.fixed).toBeNull();
+    expect(body.mobile).toBeNull();
+    expect(body.radius_km).toBeNull();
+    expect(body.q).toBe("Synthetic");
+    expect(body.all.items).toHaveLength(20);
+    for (const item of body.all.items) {
+      expect(item).not.toHaveProperty("distance_km");
+      expect(item).not.toHaveProperty("public_latitude");
+      expect(item["public_address"]).toBeNull();
+    }
+    expect(calls).toEqual([
+      expect.objectContaining({
+        group: "all",
+        lat: null,
+        lng: null,
+        radius: null,
+        q: "Synthetic",
+      }),
+    ]);
+    // The next page continues from the cursor, with the same words.
+    const next = await get(
+      `?q=Synthetic&all_cursor=${encodeURIComponent(body.all.next ?? "")}`,
+      { search: fakeSearch(calls) },
+    );
+    expect(next.status).toBe(200);
+    expect(calls[1]?.afterId).toBe(body.all.items.at(-1)?.["public_id"]);
+    // A cursor is bound to its words.
+    const other = await get(
+      `?q=Other&all_cursor=${encodeURIComponent(body.all.next ?? "")}`,
+    );
+    expect(other.status).toBe(400);
+    expect(other.body).toEqual({ error: "invalid_cursor" });
+  });
+
+  it("passes name words to a located search and binds its cursors to them", async () => {
+    const calls: SearchArgs[] = [];
+    const r = await get("?lat=-33.9&lng=18.4&q=shine", {
+      search: fakeSearch(calls),
+    });
+    expect(r.status).toBe(200);
+    expect(calls.map((c) => [c.group, c.q])).toEqual([
+      ["fixed", "shine"],
+      ["mobile", "shine"],
+    ]);
+    const next = (r.body as unknown as { fixed: { next: string } }).fixed.next;
+    const without = await get(
+      `?lat=-33.9&lng=18.4&fixed_cursor=${encodeURIComponent(next)}`,
+    );
+    expect(without.status).toBe(400);
+  });
+
+  it("rejects bad words and mixed browse/located input", async () => {
+    for (const path of [
+      "?q=a",
+      "?q=%20shine",
+      "?q=%3Cb%3E",
+      `?q=${"a".repeat(61)}`,
+      "?radius=25",
+      "?fixed_cursor=x",
+      "?lat=-33.9",
+      "?lat=-33.9&lng=18.4&all_cursor=x",
+      "?q=shine&q=tyres",
+    ]) {
+      const calls: SearchArgs[] = [];
+      const r = await get(path, { search: fakeSearch(calls) });
+      expect([path, r.status]).toEqual([path, 400]);
+      expect(calls).toEqual([]);
+    }
   });
 });

@@ -147,7 +147,16 @@ export default function SignIn({
         <Link to="/auth/forgot-password">Forgot your password?</Link>
       </p>
       <p>
-        New to CarworX? <Link to="/auth/sign-up">Create an account</Link>
+        New to CarworX?{" "}
+        <Link
+          to={
+            loaderData.returnTo
+              ? `/auth/sign-up?returnTo=${encodeURIComponent(loaderData.returnTo)}`
+              : "/auth/sign-up"
+          }
+        >
+          Create an account
+        </Link>
       </p>
     </AuthPage>
   );

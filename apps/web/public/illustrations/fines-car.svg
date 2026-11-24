@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 30 390 270" aria-hidden="true"><style>.stroke{fill:none;stroke:#0d0f12;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}.thin{stroke-width:1.6}</style>
+        <g>
+          <path class="stroke thin breeze" d="M318 110c14-4 24-2 36 4M326 128c10-2 18 0 28 5" stroke="#8a97a6"/>
+          <path d="M120 196 L146 136 Q210 124 274 136 L300 196 Q210 188 120 196Z" fill="#e3eaff"/>
+          <path class="stroke" d="M70 262 Q62 218 86 206 L114 198 L144 132 Q210 118 276 132 L306 198 L334 206 Q358 218 350 262"/>
+          <path class="stroke" d="M120 196 L146 136 Q210 124 274 136 L300 196 Q210 188 120 196Z"/>
+          <path class="stroke thin" d="M164 140 l-10 24M180 137 l-6 14" stroke="#fff" stroke-width="3"/>
+          <path class="stroke" d="M114 198 L100 190 Q94 184 102 180 L118 184"/>
+          <path class="stroke" d="M306 198 L320 190 Q326 184 318 180 L302 184"/>
+          <ellipse class="stroke" cx="110" cy="226" rx="20" ry="10" fill="#fff4d6"/>
+          <ellipse class="stroke" cx="310" cy="226" rx="20" ry="10" fill="#fff4d6"/>
+          <rect class="stroke" x="168" y="220" width="84" height="18" rx="7"/>
+          <path class="stroke thin" d="M178 229h64"/>
+          <path class="stroke" d="M74 248 Q210 262 346 248"/>
+          <rect class="stroke" x="186" y="246" width="48" height="13" rx="3" fill="#fff"/>
+          <path class="stroke" d="M82 262 v16 q0 6 6 6 h22 q6 0 6 -6 v-14"/>
+          <path class="stroke" d="M304 264 v14 q0 6 6 6 h22 q6 0 6 -6 v-16"/>
+          <path class="stroke thin" d="M30 285 Q120 282 210 285 T392 284"/>
+          <g class="ticket"><path d="M270 146 L300 150 L296 182 L266 178Z" fill="#ffe3d4"/><path class="stroke thin" d="M270 146 L300 150 L296 182 L266 178Z"/><path class="stroke thin" d="M273 158h18M272 166h14" stroke-width="1.4"/></g>
+          <g class="wiper w1"><path class="stroke" d="M150 196 L214 190"/><circle cx="150" cy="196" r="3.5" fill="#0d0f12"/></g>
+          <g class="wiper w2"><path class="stroke" d="M246 196 L298 192"/><circle cx="246" cy="196" r="3.5" fill="#0d0f12"/></g>
+          <g class="qmark"><path class="stroke" d="M350 58 q0-16 18-16 q18 0 18 14 q0 10-12 14 q-6 2-6 10" /><circle cx="368" cy="92" r="2.6" fill="#0d0f12"/></g>
+          <path class="stroke thin" d="M44 70l8 4M50 56l3 8M60 50l-1 8" stroke="#ff7a4d"/>
+        </g>
+      </svg>

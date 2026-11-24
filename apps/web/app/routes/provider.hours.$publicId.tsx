@@ -26,6 +26,7 @@ import {
 } from "../onboarding/hours";
 import { UUID } from "../server/providers/forms";
 import { privateHeaders } from "../team/server";
+import "../team/setup.css";
 import { Button, ButtonLink } from "../ui/Button";
 import { StatusNote } from "../ui/Note";
 import { OpeningHoursEditor, OpeningHoursTable } from "../ui/OpeningHours";
@@ -193,84 +194,86 @@ export default function ListingHours({
   const live = d.listing.status === "live";
   return (
     <PublicShell signedIn>
-      <div className="mx-auto grid max-w-[760px] gap-5">
+      <div className="cx-setup-flow">
         <a className="cx-tlink" href="/provider">
           Your business
         </a>
         <p className="type-label text-quiet">{d.listing.display_name}</p>
         <h1 className="type-display-lg">Opening hours</h1>
-        {d.saved && !actionData ? (
-          <StatusNote tone="ok" title="Hours saved.">
-            {live
-              ? "Customers see the new hours on your listing now."
-              : "Customers will see them once your listing is live."}
-          </StatusNote>
-        ) : null}
-        {actionData?.problem ? (
-          <StatusNote tone="err" title="That didn't work.">
-            {actionData.problem}
-          </StatusNote>
-        ) : null}
-        {d.role === "staff" ? (
-          <>
-            <StatusNote title="View only.">
-              Only owners and managers can change opening hours.
-            </StatusNote>
-            <OpeningHoursTable
-              hours={d.hours}
-              today={d.today}
-              status={d.status}
-            />
-          </>
-        ) : (
-          <Form method="post" className="grid gap-5">
-            <CsrfField token={d.csrf} />
-            <input type="hidden" name="intent" value="save" />
-            <p className="type-body">
-              Set each day on its own. Switch a day off if you're closed.{" "}
+        <div className="cx-setup-card">
+          {d.saved && !actionData ? (
+            <StatusNote tone="ok" title="Hours saved.">
               {live
-                ? "Changes show on your public listing straight away."
-                : "Customers see these once your listing is live."}
-            </p>
-            {d.hours.length === 0 && !actionData?.rows ? (
-              <StatusNote title="No hours on your listing yet.">
-                Customers see "Hours not provided". We've filled in common hours
-                to start from: change any day, then save.
+                ? "Customers see the new hours on your listing now."
+                : "Customers will see them once your listing is live."}
+            </StatusNote>
+          ) : null}
+          {actionData?.problem ? (
+            <StatusNote tone="err" title="That didn't work.">
+              {actionData.problem}
+            </StatusNote>
+          ) : null}
+          {d.role === "staff" ? (
+            <>
+              <StatusNote title="View only.">
+                Only owners and managers can change opening hours.
               </StatusNote>
-            ) : null}
-            <OpeningHoursEditor
-              key={actionData?.version ?? "saved"}
-              rows={actionData?.rows ?? rowsFromHours(d.hours)}
-              problems={actionData?.problems}
-            />
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-5">
-              {live ? (
-                <a
-                  className="cx-tlink"
-                  href={`/p/${d.listing.public_id}#hours`}
+              <OpeningHoursTable
+                hours={d.hours}
+                today={d.today}
+                status={d.status}
+              />
+            </>
+          ) : (
+            <Form method="post" className="grid gap-5">
+              <CsrfField token={d.csrf} />
+              <input type="hidden" name="intent" value="save" />
+              <p className="type-body">
+                Set each day on its own. Switch a day off if you're closed.{" "}
+                {live
+                  ? "Changes show on your public listing straight away."
+                  : "Customers see these once your listing is live."}
+              </p>
+              {d.hours.length === 0 && !actionData?.rows ? (
+                <StatusNote title="No hours on your listing yet.">
+                  Customers see "Hours not provided". We've filled in common
+                  hours to start from: change any day, then save.
+                </StatusNote>
+              ) : null}
+              <OpeningHoursEditor
+                key={actionData?.version ?? "saved"}
+                rows={actionData?.rows ?? rowsFromHours(d.hours)}
+                problems={actionData?.problems}
+              />
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-5">
+                {live ? (
+                  <a
+                    className="cx-tlink"
+                    href={`/p/${d.listing.public_id}#hours`}
+                  >
+                    See your public listing
+                  </a>
+                ) : (
+                  <span />
+                )}
+                <Button
+                  type="submit"
+                  variant="primary"
+                  busy={navigation.state !== "idle"}
                 >
-                  See your public listing
-                </a>
-              ) : (
-                <span />
-              )}
-              <Button
-                type="submit"
-                variant="primary"
-                busy={navigation.state !== "idle"}
-              >
-                Save hours
-              </Button>
+                  Save hours
+                </Button>
+              </div>
+            </Form>
+          )}
+          {d.role === "staff" ? (
+            <div>
+              <ButtonLink href="/provider" variant="outline">
+                Back to your business
+              </ButtonLink>
             </div>
-          </Form>
-        )}
-        {d.role === "staff" ? (
-          <div>
-            <ButtonLink href="/provider" variant="outline">
-              Back to your business
-            </ButtonLink>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     </PublicShell>
   );

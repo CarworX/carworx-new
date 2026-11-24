@@ -3,7 +3,14 @@ import { randomUUID } from "node:crypto";
 import { Client } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { Browser, sql, stack, workerEnv } from "./harness";
+import {
+  Browser,
+  createConfirmedUser,
+  signIn,
+  sql,
+  stack,
+  workerEnv,
+} from "./harness";
 
 /**
  * P2-3 public pages through the built Worker, server-rendered with no client
@@ -80,11 +87,55 @@ describe("catalogue matches the design taxonomy", () => {
 });
 
 describe("public pages without JavaScript", () => {
-  it("home has a GET search form and the five service keys", async () => {
+  it("links a listing to booking, preserves the return path and explains unavailable booking", async () => {
+    const b = browser();
+    const book = `/book/${SEED_FIXED}`;
+    const listing = await b.send(`/p/${SEED_FIXED}`);
+    expect(listing.status).toBe(200);
+    expect(listing.body).toContain(`href="${book}"`);
+    expect((await b.send(book)).location).toBe(
+      `/auth/sign-in?returnTo=${encodeURIComponent(book)}`,
+    );
+    const customer = await createConfirmedUser("booking-entry");
+    const signedIn = await signIn(customer.email, undefined, book);
+    const empty = await signedIn.send(book);
+    expect(empty.status).toBe(200);
+    expect(empty.body).toMatch(/Online booking isn.{0,8}t available/);
+    expect(empty.body).toContain(`href="/p/${SEED_FIXED}#enquiry"`);
+    expect((await signedIn.send(`/book/${SEED_PENDING}`)).status).toBe(404);
+    const account = await signedIn.send("/account");
+    expect(account.body).toContain('href="/bookings"');
+  });
+
+  it("accepts a written quote request using the full advertised note length", async () => {
+    const offer = randomUUID();
+    sql(`
+      insert into public.service_offers
+        (id, organisation_id, listing_public_id, name, pricing, duration_minutes, resource_kind)
+      select '${offer}', organisation_id, public_id, 'Synthetic inspection', 'quote', 60, 'bay'
+      from public.listings where public_id = '${SEED_FIXED}';
+    `);
+    const customer = await createConfirmedUser("quote-notes");
+    const book = `/book/${SEED_FIXED}`;
+    const signedIn = await signIn(customer.email, undefined, book);
+    expect((await signedIn.send(book)).body).toContain("Ask for a quote");
+    const response = await signedIn.send(book, {
+      form: {
+        intent: "quote",
+        offer,
+        note: "Please inspect the synthetic vehicle. ".repeat(20),
+      },
+    });
+    expect(response.status).toBe(302);
+    expect(response.location).toMatch(/^\/quotes\/[0-9a-f-]{36}$/);
+    expect((await signedIn.send(response.location ?? "")).status).toBe(200);
+  });
+
+  it("home links to search and has the five service keys", async () => {
     const reply = await browser().send("/");
     expect(reply.status).toBe(200);
-    expect(reply.body).toMatch(/<form[^>]*action="\/search"/);
-    expect(reply.body).toMatch(/<form[^>]*method="get"/);
+    // The owner-approved preview home sends visitors to /search (its form).
+    expect(reply.body).toContain('href="/search"');
     for (const href of [
       "/c/wash-and-detailing",
       "/c/repairs-and-maintenance",
@@ -132,6 +183,65 @@ describe("public pages without JavaScript", () => {
       "Comes to you · Gauteng · serves your area (approximate)",
     );
     expect(reply.body).not.toMatch(/26\.112233|28\.112233/);
+  });
+
+  it("search without an area browses every live business (D-097)", async () => {
+    const reply = await browser().send("/search");
+    expect(reply.status).toBe(200);
+    expect(reply.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(reply.body).toContain("Businesses you can explore");
+    expect(reply.body).toContain(`/p/${SEED_FIXED}`);
+    expect(reply.body).toContain(`/p/${SEED_MOBILE}`);
+    expect(reply.body).not.toContain(SEED_PENDING);
+    // Not location-filtered: no distance, no coverage claim.
+    expect(reply.body).not.toContain("straight-line");
+    expect(reply.body).not.toContain("serves your area (approximate)");
+    expect(reply.body).not.toMatch(/26\.112233|28\.112233/);
+  });
+
+  it("name words find a business with no area, and narrow an area search", async () => {
+    const byName = await browser().send("/search?q=synthetic+MOBILE&area=");
+    expect(byName.status).toBe(200);
+    expect(byName.body).toContain("Businesses matching “synthetic MOBILE”");
+    expect(byName.body).toContain(`/p/${SEED_MOBILE}`);
+    expect(byName.body).not.toContain(`/p/${SEED_FIXED}`);
+    const located = await browser().send(
+      "/search?q=fixed+provider&lat=-26.2&lng=28.04&near=Johannesburg",
+    );
+    expect(located.status).toBe(200);
+    expect(located.body).toContain(`/p/${SEED_FIXED}`);
+    expect(located.body).not.toContain(`/p/${SEED_MOBILE}`);
+    const bad = await browser().send("/search?q=%3Cb%3E");
+    expect(bad.status).toBe(400);
+    expect(bad.body).toContain("Check what you typed.");
+  });
+
+  it("finds a live listing in the business claim picker and opens its claim form", async () => {
+    const picker = "/provider/get-listed/claim";
+    const b = browser();
+    const matches = await b.send(`${picker}?q=synthetic+MOBILE&area=ignored`);
+    const claim = `/provider/claim/${SEED_MOBILE}`;
+    expect(matches.status).toBe(200);
+    expect(matches.body).toContain("Find your business");
+    expect(matches.body).toContain(`href="${claim}"`);
+    expect(matches.body).not.toContain(SEED_FIXED);
+    expect(matches.body).not.toContain(SEED_PENDING);
+    expect(matches.body).toContain('href="/provider/get-listed/business"');
+    expect((await b.send(claim)).location).toBe(
+      `/auth/sign-in?returnTo=${encodeURIComponent(claim)}`,
+    );
+    const claimant = await createConfirmedUser("claim-picker");
+    const signedIn = await signIn(claimant.email, undefined, claim);
+    const form = await signedIn.send(claim);
+    expect(form.status).toBe(200);
+    expect(form.body).toContain("Synthetic mobile provider");
+    expect(form.body).toContain("Nothing transfers when you send this claim.");
+
+    const empty = await b.send(`${picker}?q=synthetic+pending`);
+    expect(empty.status).toBe(200);
+    expect(empty.body).toContain("No listings found");
+    expect(empty.body).not.toContain(SEED_PENDING);
+    expect((await b.send(`${picker}?q=%3Cb%3E`)).status).toBe(400);
   });
 
   it("the results form refines the same point without JavaScript", async () => {

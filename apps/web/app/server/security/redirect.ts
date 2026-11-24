@@ -7,6 +7,7 @@
  */
 export const DEFAULT_AFTER_SIGN_IN = "/account";
 
+const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const ALLOWED = [
   /^\/$/,
   /^\/account(?:[/?#]|$)/,
@@ -14,7 +15,16 @@ const ALLOWED = [
   /^\/org\/[^/?#]+(?:[?#]|$)/,
   /^\/provider(?:\/apply)?(?:[?#]|$)/,
   /^\/provider\/claim\/[0-9a-f-]{36}(?:[?#]|$)/i,
+  // D-097: back to a business page after signing in to send an enquiry.
+  /^\/p\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:#enquiry)?$/,
   /^\/provider\/get-listed\/(?:business|service|location|about|check|submitted)$/,
+  new RegExp(
+    `^/book/${UUID}(?:\\?offer=${UUID}&day=\\d{4}-\\d{2}-\\d{2})?$`,
+    "i",
+  ),
+  new RegExp(`^/bookings(?:/${UUID}(?:/review)?)?$`, "i"),
+  new RegExp(`^/(?:quotes|checkout|provider/quotes)/${UUID}$`, "i"),
+  /^\/provider\/(?:bookings|jobs|resources)$/,
   // Setup links carry the organisation as exactly one UUID query (setupHref).
   /^\/provider\/setup\/[a-z-]+\/[a-z-]+(?:\?org=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$/,
   // Invite secrets stay in a short-lived HttpOnly cookie, never in returnTo.

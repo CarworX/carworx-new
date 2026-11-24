@@ -9,6 +9,8 @@ import { TextField } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
 import { PublicShell } from "../ui/public/PublicShell";
 import { TabBar } from "../ui/ScrollBar";
+import { Icon } from "../ui/Icon";
+import "../account/settings.css";
 import type { Route } from "./+types/account.$tab";
 
 const TABS = [
@@ -24,6 +26,13 @@ const TABS = [
 ] as const;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ROLE_LABEL = { owner: "Owner", manager: "Manager", staff: "Staff" };
+
+interface WorkMembership {
+  organisation_id: string;
+  role: keyof typeof ROLE_LABEL;
+  organisations: { name: string };
+}
 
 /** A date for display only, in South African time. */
 function addedOn(iso: string): string {
@@ -64,6 +73,18 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       addedOn: addedOn(f.created_at),
     }));
   }
+  let work: WorkMembership[] = [];
+  if (tab === "work") {
+    const memberships = await signedIn.supabase
+      .from("memberships")
+      .select("organisation_id, role, organisations!inner(name)")
+      .eq("user_id", signedIn.user.id)
+      .eq("status", "active")
+      .order("created_at")
+      .overrideTypes<WorkMembership[], { merge: false }>();
+    if (memberships.error !== null) throwStatus(503, signedIn.headers);
+    work = memberships.data;
+  }
   return data(
     {
       tab,
@@ -73,6 +94,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       aal: signedIn.aal,
       enrolled: signedIn.nextAal === "aal2",
       factors,
+      work,
     },
     { headers: signedIn.headers },
   );
@@ -195,141 +217,173 @@ export default function Settings({
   const { tab, csrf } = loaderData;
   return (
     <PublicShell signedIn>
-      <p className="cx-eyebrow">Your account</p>
-      <h1 className="type-display-lg mt-1">Profile and settings</h1>
-      <div className="mt-6">
+      <div className="cx-account-settings">
+        <header className="cx-account-who">
+          <span className="cx-account-avatar">
+            <Icon name="user" size="lg" />
+          </span>
+          <div>
+            <p className="cx-eyebrow">Your account</p>
+            <h1>Profile and settings</h1>
+          </div>
+        </header>
         <TabBar label="Account settings" tabs={TABS} current={tab} />
-      </div>
-      {actionData ? (
-        <div className="mt-6" role="status">
-          <StatusNote
-            tone={actionData.ok ? "ok" : "err"}
-            title={actionData.message}
-          />
-        </div>
-      ) : null}
-      <section className="mt-8 grid max-w-[65ch] gap-5">
-        {tab === "profile" ? (
-          <>
-            <h2 className="type-heading">Your profile</h2>
-            <p>Signed in as {loaderData.email}.</p>
-            <form method="post" className="grid gap-4">
-              <CsrfField token={csrf} />
-              <input type="hidden" name="intent" value="profile" />
-              <TextField
-                label="Display name"
-                name="displayName"
-                required
-                minLength={1}
-                maxLength={80}
-                defaultValue={loaderData.name}
-                autoComplete="nickname"
-              />
-              <Button type="submit">Save profile</Button>
-            </form>
-          </>
-        ) : tab === "security" ? (
-          <>
-            <h2 className="type-heading">Keep your account secure</h2>
-            <h3 className="type-title">Two-step sign-in</h3>
-            {loaderData.factors.length === 0 ? (
-              <p>
-                Add an authenticator app, such as Google Authenticator or
-                Microsoft Authenticator. You'll enter a 6-digit code from it
-                when you sign in.
-              </p>
-            ) : (
-              <ul className="grid gap-3" aria-label="Your authenticator apps">
-                {loaderData.factors.map((factor) => (
-                  <li
-                    key={factor.id}
-                    className="cx-surface flex flex-wrap items-center justify-between gap-3 rounded-xl p-4"
-                  >
-                    <span>
-                      <strong>{factor.name}</strong>
-                      {factor.addedOn !== "" ? (
-                        <span className="type-body-sm block">
-                          Added {factor.addedOn}
-                        </span>
+        {actionData ? (
+          <div className="mt-6" role="status">
+            <StatusNote
+              tone={actionData.ok ? "ok" : "err"}
+              title={actionData.message}
+            />
+          </div>
+        ) : null}
+        <section className="cx-account-box">
+          {tab === "profile" ? (
+            <>
+              <h2 className="type-heading">Your profile</h2>
+              <p>Signed in as {loaderData.email}.</p>
+              <form method="post" className="grid gap-4">
+                <CsrfField token={csrf} />
+                <input type="hidden" name="intent" value="profile" />
+                <TextField
+                  label="Display name"
+                  name="displayName"
+                  required
+                  minLength={1}
+                  maxLength={80}
+                  defaultValue={loaderData.name}
+                  autoComplete="nickname"
+                />
+                <div>
+                  <Button variant="primary" type="submit">
+                    Save profile
+                  </Button>
+                </div>
+              </form>
+            </>
+          ) : tab === "security" ? (
+            <>
+              <h2 className="type-heading">Keep your account secure</h2>
+              <h3 className="type-title">Two-step sign-in</h3>
+              {loaderData.factors.length === 0 ? (
+                <p>
+                  Add an authenticator app, such as Google Authenticator or
+                  Microsoft Authenticator. You'll enter a 6-digit code from it
+                  when you sign in.
+                </p>
+              ) : (
+                <ul className="grid gap-3" aria-label="Your authenticator apps">
+                  {loaderData.factors.map((factor) => (
+                    <li
+                      key={factor.id}
+                      className="cx-surface flex flex-wrap items-center justify-between gap-3 rounded-xl p-4"
+                    >
+                      <span>
+                        <strong>{factor.name}</strong>
+                        {factor.addedOn !== "" ? (
+                          <span className="type-body-sm block">
+                            Added {factor.addedOn}
+                          </span>
+                        ) : null}
+                      </span>
+                      {loaderData.aal === "aal2" ? (
+                        <form method="post">
+                          <CsrfField token={csrf} />
+                          <input
+                            type="hidden"
+                            name="intent"
+                            value="remove-factor"
+                          />
+                          <input
+                            type="hidden"
+                            name="factorId"
+                            value={factor.id}
+                          />
+                          <Button type="submit">Remove</Button>
+                        </form>
                       ) : null}
-                    </span>
-                    {loaderData.aal === "aal2" ? (
-                      <form method="post">
-                        <CsrfField token={csrf} />
-                        <input
-                          type="hidden"
-                          name="intent"
-                          value="remove-factor"
-                        />
-                        <input
-                          type="hidden"
-                          name="factorId"
-                          value={factor.id}
-                        />
-                        <Button type="submit">Remove</Button>
-                      </form>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p data-aal={loaderData.aal}>
-              {loaderData.aal === "aal2"
-                ? "This session has passed the authenticator check."
-                : loaderData.enrolled
-                  ? "This session hasn't passed the authenticator check yet. Verify to make changes."
-                  : "Two-step sign-in is off."}
-            </p>
-            {loaderData.aal !== "aal2" ? (
-              <ButtonLink href="/auth/mfa?returnTo=%2Faccount%2Fsecurity">
-                {loaderData.enrolled
-                  ? "Verify with your authenticator"
-                  : "Set up two-step sign-in"}
-              </ButtonLink>
-            ) : null}
-            <h3 className="type-title">Password and devices</h3>
-            <a className="cx-tlink" href="/auth/forgot-password">
-              Reset your password
-            </a>
-            <form method="post">
-              <CsrfField token={csrf} />
-              <input type="hidden" name="intent" value="sign-out-others" />
-              <Button type="submit">Sign out other devices</Button>
-            </form>
-          </>
-        ) : tab === "notifications" ? (
-          <>
-            <h2 className="type-heading">Account and service messages</h2>
-            <p>
-              Security and service messages use your account email:{" "}
-              {loaderData.email}.
-            </p>
-            <p>
-              CarworX does not send marketing emails. Essential account security
-              messages cannot be turned off here.
-            </p>
-          </>
-        ) : tab === "privacy" ? (
-          <>
-            <h2 className="type-heading">Privacy and your data</h2>
-            <p>
-              For access, correction or deletion of your data, contact support.
-              Requests are reviewed before any account data is removed.
-            </p>
-            <ButtonLink href="/support">Contact support</ButtonLink>
-          </>
-        ) : (
-          <>
-            <h2 className="type-heading">Your work and businesses</h2>
-            <p>Manage your active memberships, business setup and enquiries.</p>
-            <ButtonLink href="/provider">Open your workspace</ButtonLink>
-          </>
-        )}
-      </section>
-      <form method="post" action="/auth/sign-out" className="mt-10">
-        <CsrfField token={csrf} />
-        <Button type="submit">Sign out</Button>
-      </form>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p data-aal={loaderData.aal}>
+                {loaderData.aal === "aal2"
+                  ? "This session has passed the authenticator check."
+                  : loaderData.enrolled
+                    ? "This session hasn't passed the authenticator check yet. Verify to make changes."
+                    : "Two-step sign-in is off."}
+              </p>
+              {loaderData.aal !== "aal2" ? (
+                <ButtonLink href="/auth/mfa?returnTo=%2Faccount%2Fsecurity">
+                  {loaderData.enrolled
+                    ? "Verify with your authenticator"
+                    : "Set up two-step sign-in"}
+                </ButtonLink>
+              ) : null}
+              <h3 className="type-title">Password and devices</h3>
+              <a className="cx-tlink" href="/auth/forgot-password">
+                Reset your password
+              </a>
+              <form method="post">
+                <CsrfField token={csrf} />
+                <input type="hidden" name="intent" value="sign-out-others" />
+                <Button type="submit">Sign out other devices</Button>
+              </form>
+            </>
+          ) : tab === "notifications" ? (
+            <>
+              <h2 className="type-heading">Account and service messages</h2>
+              <p>
+                Security and service messages use your account email:{" "}
+                {loaderData.email}.
+              </p>
+              <p>
+                CarworX does not send marketing emails. Essential account
+                security messages cannot be turned off here.
+              </p>
+            </>
+          ) : tab === "privacy" ? (
+            <>
+              <h2 className="type-heading">Privacy and your data</h2>
+              <p>
+                For access, correction or deletion of your data, contact
+                support. Requests are reviewed before any account data is
+                removed.
+              </p>
+              <ButtonLink href="/support">Contact support</ButtonLink>
+            </>
+          ) : (
+            <>
+              <h2 className="type-heading">Your work and businesses</h2>
+              {loaderData.work.length === 0 ? (
+                <p>You aren't a member of any business yet.</p>
+              ) : (
+                <ul className="cx-account-work">
+                  {loaderData.work.map((membership) => (
+                    <li key={membership.organisation_id}>
+                      <div>
+                        <strong>{membership.organisations.name}</strong>
+                        <p>{ROLE_LABEL[membership.role]}</p>
+                      </div>
+                      <ButtonLink
+                        variant="outline"
+                        size="sm"
+                        href={`/provider#business-${membership.organisation_id}`}
+                        aria-label={`Open ${membership.organisations.name} workspace`}
+                      >
+                        Open workspace
+                      </ButtonLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+        </section>
+        <form method="post" action="/auth/sign-out">
+          <CsrfField token={csrf} />
+          <Button type="submit">Sign out</Button>
+        </form>
+      </div>
     </PublicShell>
   );
 }

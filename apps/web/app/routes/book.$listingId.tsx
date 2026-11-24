@@ -5,6 +5,7 @@ import { throwRedirect, throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
 import { geocodeArea, normaliseArea } from "../server/geo/geocode";
+import { CatalogueUnavailable, listingById } from "../server/catalogue/public";
 import {
   BOOKING_PROBLEM_TEXT,
   bookingProblem,
@@ -59,13 +60,24 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     p_listing: params.listingId,
   });
   if (offers.error !== null) throwStatus(503, signedIn.headers);
-  const first = offers.data?.[0];
-  if (offers.data === null || first === undefined)
-    throwStatus(404, signedIn.headers);
+  const allOffers = offers.data ?? [];
+  const first = allOffers[0];
+  let listingName = first?.listing_name;
+  if (first === undefined) {
+    try {
+      const listing = await listingById(signedIn.config, params.listingId);
+      if (!listing) throwStatus(404, signedIn.headers);
+      listingName = listing.display_name;
+    } catch (error) {
+      if (error instanceof CatalogueUnavailable)
+        throwStatus(503, signedIn.headers);
+      throw error;
+    }
+  }
   const offerId = url.searchParams.get("offer");
   const offer =
-    offers.data.find((o) => o.offer_id === offerId) ??
-    (offers.data.length === 1 ? offers.data[0] : undefined);
+    allOffers.find((o) => o.offer_id === offerId) ??
+    (allOffers.length === 1 ? first : undefined);
   const day = parseDay(url.searchParams.get("day")) ?? todayLocal();
   let slots: Slot[] = [];
   if (offer?.pricing === "fixed") {
@@ -86,9 +98,9 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     {
       csrf: context.security.csrfToken,
       listingId: params.listingId,
-      offers: offers.data,
-      listingName: first.listing_name,
-      mobile: first.listing_mode !== "fixed",
+      offers: allOffers,
+      listingName,
+      mobile: first !== undefined && first.listing_mode !== "fixed",
       offer: offer ?? null,
       day,
       days: nextDays(14),
@@ -112,8 +124,6 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     );
   const offer = field(form, "offer");
   if (!UUID.test(offer)) return fail("invalid_input");
-  const note = parseOptionalText(form, "note", 500);
-  if (note === false) return fail("invalid_input");
 
   if (form.get("intent") === "quote") {
     const quoteNote = parseText(form, "note", 10, 1000);
@@ -126,6 +136,8 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     return throwRedirect(`/quotes/${String(id)}`, signedIn.headers);
   }
 
+  const note = parseOptionalText(form, "note", 500);
+  if (note === false) return fail("invalid_input");
   const startsAt = parseInstant(form, "starts_at");
   if (startsAt === null) return fail("invalid_input");
 
@@ -179,6 +191,18 @@ export default function Book({ loaderData, actionData }: Route.ComponentProps) {
     loaderData;
   const name = loaderData.listingName;
   const base = `/book/${listingId}`;
+  if (offers.length === 0)
+    return (
+      <PublicShell signedIn>
+        <h1 className="type-title">Book with {name}</h1>
+        <StatusNote title="Online booking isn't available for this business">
+          Send an enquiry to ask about services or availability.
+        </StatusNote>
+        <ButtonLink href={`/p/${listingId}#enquiry`}>
+          Send an enquiry
+        </ButtonLink>
+      </PublicShell>
+    );
   return (
     <PublicShell signedIn>
       <div className="grid max-w-[70ch] gap-5">

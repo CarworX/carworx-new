@@ -162,7 +162,9 @@ export default function Claim({
                 View the listing
               </QuietLink>
               <div className="flex flex-wrap justify-between gap-3">
-                <QuietLink href="/provider">Back</QuietLink>
+                <QuietLink href="/provider/get-listed/claim">
+                  Find a different business
+                </QuietLink>
                 <QuietLink href={`${href}?step=proof`}>
                   Continue to proof
                 </QuietLink>
