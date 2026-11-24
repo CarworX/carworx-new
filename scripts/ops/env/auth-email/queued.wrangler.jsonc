@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../../apps/web/node_modules/wrangler/config-schema.json",
+  "name": "carworx-auth-email-outbox-staging",
+  "main": "./queued.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "hyperdrive": [
+    {
+      "binding": "MAIL_PRODUCER_DB",
+      "id": "OWNER_SETS_STAGING_MAIL_PRODUCER_HYPERDRIVE_ID",
+    },
+  ],
+}
