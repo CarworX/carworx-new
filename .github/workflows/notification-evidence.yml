@@ -26,17 +26,21 @@ jobs:
           pnpm --filter @carworx/web run build
           pnpm --filter @carworx/web exec playwright install chromium
           pnpm exec supabase start > "$RUNNER_TEMP/notification-supabase.log" 2>&1
+      - name: Run the repository database tests with visible assertions
+        continue-on-error: true
+        run: pnpm run test:rls
       - name: Capture the real signed-in account page
         run: |
           export NOTIFICATION_IMAGES="$RUNNER_TEMP/notification-images"
           mkdir -p "$NOTIFICATION_IMAGES"
-          source_commit=a1d7bceaa9e182050bebb11aa132d9474a7f3668
+          source_commit=8dd4940ceb8c3a1b6ef5b9c76868bbdccb44262f
           git diff --exit-code "$source_commit" HEAD -- . ':(exclude).github/workflows/notification-evidence.yml'
           printf '%s\n' "$source_commit" > "$NOTIFICATION_IMAGES/source-commit.txt"
           cp planning/design/onboarding/account/shots/driver-notifications.png "$NOTIFICATION_IMAGES/design-reference.png"
           cat > apps/web/integration/notification-evidence.test.ts <<'TS'
           import { existsSync, statSync } from "node:fs";
           import { resolve, sep } from "node:path";
+          import { pathToFileURL } from "node:url";
           import { chromium } from "playwright";
           import { expect, it } from "vitest";
           import { APP, createConfirmedUser, signIn } from "./harness";
@@ -76,6 +80,14 @@ jobs:
                 expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
                 await page.screenshot({ path: resolve(output, "notifications-" + width + ".png"), fullPage: true });
                 await page.close();
+                const design = await browser.newPage({ viewport: { width, height: width === 390 ? 844 : 900 } });
+                const designUrl = pathToFileURL(resolve("../../planning/design/onboarding/account/index.html"));
+                designUrl.search = "?as=driver&tab=notifications";
+                await design.goto(designUrl.href);
+                await design.getByRole("heading", { name: "Email me about" }).waitFor();
+                await design.evaluate(() => document.fonts.ready.then(() => undefined));
+                await design.screenshot({ path: resolve(output, "design-" + width + ".png"), fullPage: true });
+                await design.close();
               }
             } finally {
               await browser.close();
@@ -83,7 +95,11 @@ jobs:
           });
           TS
           pnpm --filter @carworx/web exec vitest run --config vitest.integration.config.ts integration/notification-evidence.test.ts
+      - name: Run account integration tests with visible assertions
+        continue-on-error: true
+        run: pnpm --filter @carworx/web exec vitest run --config vitest.integration.config.ts integration/account-settings.test.ts
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
         with:
           name: account-notifications-design-comparison
           path: ${{ runner.temp }}/notification-images

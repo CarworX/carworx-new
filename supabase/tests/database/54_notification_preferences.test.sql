@@ -26,10 +26,12 @@ select throws_ok(
 );
 set local request.jwt.claim.sub = 'd9700000-0000-4000-8000-000000000002';
 select is_empty($q$select * from public.notification_preferences$q$, 'cross-account reads yield no rows');
-select is_empty($q$update public.notification_preferences set optional_email = false returning user_id$q$,
-  'cross-account updates affect no rows');
-
+update public.notification_preferences set optional_email = false;
 reset role;
+select is(
+  (select optional_email from public.notification_preferences where user_id = 'd9700000-0000-4000-8000-000000000001'),
+  true, 'cross-account updates affect no rows'
+);
 select ok(private.enqueue_optional_mail(
     'd9700000-0000-4000-8000-000000000001', 'invite/optional-on', 'invite',
     repeat('d',64), 'v1.AAAAAAAAAAAAAAAA.'||repeat('B',60), now()+interval '1 day'
