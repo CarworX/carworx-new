@@ -12,12 +12,21 @@ Updated 2026-11-13 (SAST) by Claude. **Launch order (D-093): the directory goes 
 
 ## Sites port: not wired yet
 
-The Sites preview (#83 @ `b88a8ca`) is being ported screen by screen, exactly, onto the real backend. Where the preview shows something the backend can't do yet, the look is kept and the screen says it is unavailable; nothing pretends to work. Updated 2026-11-17 (SAST).
+The Sites preview (#83 @ `b88a8ca`) is being ported screen by screen, exactly, onto the real backend. Where the preview shows something the backend can't do yet, the look is kept and the screen says it is unavailable; nothing pretends to work. Updated 2026-11-23 (SAST).
 
 - **Home (#122):** the booking timeline, quote card, phone carousel and business dashboard are illustrations, not live data. Their real screens belong to `phase-3`.
 - **Search, listing, category (#123, #125):** per-service prices have no backend in the directory launch, so they read "Free to enquire" / "Ask for a price". "Request a booking" is on `phase-3`; the listing's side card is the real enquiry form.
 - **Business application (get-listed):** the preview's in-flow claim path (choose your listing, upload proof) is not wired; its tile links to search, and claims go through each listing's existing claim form. Different hours per day are set after approval on the hours page.
-- **Still to port on main:** business setup and dashboard, staff, account (with security) and admin. **On `phase-3`:** booking, quote, checkout and the booking dashboard.
+- **Ported since (#135–#138):** business setup, staff, account and admin. What those screens still can't do (preview #83 @ `b88a8ca` vs main `09a08bb`, 2026-11-23, SAST), and the [finish-build plan](claude/finish-build-plan.md) PR that makes it real (D-098):
+  - Team list shows "Team member {id}" and only Remove works (`provider.tsx:324`); team sign-in security is missing → Claude PR 1.
+  - Notification switches are inert (`account.$tab.tsx:332`) → PR 2.
+  - Cover photo upload is inert; the Hub shows "Later" (`provider.setup.$task.$step.tsx:505`) → PR 3.
+  - Download my data and close account say "contact support" (`account.$tab.tsx:344`) → PR 4a, 4b.
+  - The account Business tab (transfer ownership, close listing) is missing → PR 5.
+  - The profile has only the display name (no email change, mobile or photo) → PR 6.
+  - The get-listed claim tile links to search (`provider.get-listed.$step.tsx` ~704) → PR 7.
+  - Email invites are inert until mail #93 → #94 merge → PR 8.
+- **On `phase-3` (Codex builds, Claude reviews):** booking, quote, checkout, the booking dashboard numbers, earnings, booking history and the prices and travel setup tasks.
 
 ## External blockers and gates
 

@@ -333,6 +333,14 @@ Owner approved the finish plan and delegated implementation, Codex review and sa
 
 - 2026-11-13 16:56 UTC — Codex: #97 ready-for-review CI reached RLS and failed; aligned 50_email_outbox capability assertion with migration cap 5 (was 3). Disposable native stack: all 30 O5 pgTAP assertions passed. No merge. Agent: codex
 
+## 2026-11-22 — Directory workspace implementation (Codex)
+
+Business setup #135 and staff #136 passed GitHub checks and merged to main under D-091. #137 adds Sites account settings and scoped active membership links. Admin follow-up adds Sites-inspired queue, audit and dashboard presentation with existing native AAL2 and database actions. These ports retain the existing schema. Combined local TypeScript, focused lint, staging build and Wrangler dry-run passed. See planning/runbooks/directory-staging-walkthrough.md for the owner test paths. Browser parity and hosted acceptance require their own evidence, and independent review is required before the staging deployment in the approved plan.
+
+## 2026-11-23 — Business application and claims for staging (Codex)
+
+Owner paused ChatGPT Sites work and requested functional staging journeys. Get listed now offers a live-directory claim picker and a direct link to the existing signed-in claim review form. The new-business draft stays available. The application confirmation directs owners to the dashboard for review status. Setup explains which settings are ready with defaults, and the admin overview no longer marks Today as the current page. The staging walkthrough replaces the Sites comparison with role-based desktop and phone checks. Existing schema and claim proof references are reused. Local TypeScript, scoped lint, 591 web unit tests, staging build and a built-Worker smoke test against disposable Supabase passed. Hosted staging still requires exact-head review and signed-in acceptance.
+
 ## 2026-11-22 — Remaining directory screen plan (Codex)
 
 Owner requested page-by-page plans for business setup, staff, accounts and admin. Added planning/codex/directory-remaining-screens-plan.md and linked it from the booking staging plan in #134. Audited the registered main routes, existing loaders/actions, task/tab permissions and current Sites source (v4). Plan includes four implementation groups, existing versus missing capabilities, role/MFA isolation, visual parity and hosted acceptance. Cover uploads, invite email, unsupported privacy/preferences and optional step-up remain explicit dependencies rather than claimed functionality. Documentation only; git diff --check passed; no application tests, migrations or deployments performed for this planning addition.

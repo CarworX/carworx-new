@@ -98,11 +98,12 @@ describe("/provider/get-listed: the preview application", () => {
   it("business: name and role as real fields", () => {
     const h = render("business");
     expect(h).toContain("Tell us who you are");
+    expect(h).toContain('href="/provider/get-listed/claim"');
     expect(h).toContain('name="businessName"');
     expect(h).toContain('value="Shine Bay Car Wash"');
     expect(h).toMatch(/name="role" value="owner"[^>]*checked/);
     expect(h).toContain('name="csrf"');
-    expect(h).toContain('href="/search"');
+    expect(h).not.toContain('href="/search"');
   });
   it("service: services, how you work and team size", () => {
     const h = render("service");

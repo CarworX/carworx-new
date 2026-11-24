@@ -4,7 +4,7 @@ import { throwStatus } from "../auth/http.server";
 import { TOPICS } from "../server/forms/parse";
 import { requireAdmin } from "../server/providers/admin.server";
 import { PAGE_SIZE, parsePage, sast } from "../server/providers/forms";
-import { AdminShell, Pager } from "../ui/admin/AdminShell";
+import { AdminShell, Pager, QueueRowLink } from "../ui/admin/AdminShell";
 import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/admin.support";
 
@@ -68,15 +68,15 @@ export default function AdminSupport({ loaderData }: Route.ComponentProps) {
       ) : (
         <ul className="grid gap-3" data-admin-list="support">
           {rows.map((r) => (
-            <li
-              key={r.id}
-              className="rounded-2xl bg-[var(--surface)] p-4"
-              data-row={r.id}
-            >
-              <a className="cx-tlink" href={`/admin/support/${r.id}`}>
-                {TOPICS.find((t) => t.value === r.topic)?.label ?? r.topic}
-              </a>
-              <p className="type-caption">{sast(r.created_at)}</p>
+            <li key={r.id} data-row={r.id}>
+              <QueueRowLink
+                href={`/admin/support/${r.id}`}
+                title={
+                  TOPICS.find((t) => t.value === r.topic)?.label ?? r.topic
+                }
+                description={sast(r.created_at)}
+                icon="doc"
+              />
             </li>
           ))}
         </ul>

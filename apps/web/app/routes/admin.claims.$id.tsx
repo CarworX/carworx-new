@@ -205,7 +205,7 @@ export default function AdminClaim({
           </StatusNote>
         </div>
       ) : null}
-      <dl className="mt-4 grid max-w-[65ch] gap-1 type-body">
+      <dl className="cx-admin-panel mt-4 max-w-[65ch] type-body">
         <dt className="type-label">Claimant</dt>
         <dd>{c.claimant}</dd>
         <dt className="type-label">Evidence</dt>
