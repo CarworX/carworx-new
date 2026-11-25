@@ -1,0 +1,176 @@
+[
+  {
+    "file": "A1-shell/a1-1-signed-out.html",
+    "title": "Header signed out",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A1-shell/a1-2-signed-in-menu.html",
+    "title": "Header signed in, avatar menu open",
+    "sheetOpen": false,
+    "menu": true
+  },
+  {
+    "file": "A1-shell/a1-3-mobile-sheet-signed-out.html",
+    "title": "Mobile sheet, signed out",
+    "sheetOpen": true,
+    "menu": false
+  },
+  {
+    "file": "A1-shell/a1-4-mobile-sheet-signed-in.html",
+    "title": "Mobile sheet, signed in",
+    "sheetOpen": true,
+    "menu": false
+  },
+  {
+    "file": "A1-shell/a1-5-scrolled.html",
+    "title": "Scrolled, pinned pill",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A2-landing/a2-1-landing-signed-out.html",
+    "title": "Landing, signed out",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A2-landing/a2-2-fines-section-signed-in.html",
+    "title": "Landing fines section, signed in",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A2-landing/a2-3-for-businesses.html",
+    "title": "For businesses with the redrawn dashboard",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A3-category/a3-1-category.html",
+    "title": "Category: Wash & Detailing",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A3-category/a3-2-category-empty.html",
+    "title": "Category: empty for this area",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A4-customer-home/a4-1-home.html",
+    "title": "Customer home, signed in",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A4-customer-home/a4-2-home-no-location.html",
+    "title": "Customer home, no location set",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A5-auth/a5-1-sign-up-unticked.html",
+    "title": "Sign up, consent not ticked",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A5-auth/a5-2-sign-up-ticked.html",
+    "title": "Sign up, consent ticked",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A5-auth/a5-3-sign-in.html",
+    "title": "Sign in",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A5-auth/a5-4-google-first-time-consent.html",
+    "title": "Google first-time consent step",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-1-verify-id.html",
+    "title": "Fines: verify your ID",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-2-pending-review.html",
+    "title": "Fines: ID pending review",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-3-rejected.html",
+    "title": "Fines: ID rejected with reason",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-4-my-fines.html",
+    "title": "My fines: several",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-5-my-fines-none.html",
+    "title": "My fines: none",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-6-my-fines-not-payable.html",
+    "title": "My fines: only not-payable fines",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-7-fine-detail.html",
+    "title": "Fine detail",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-8-pay-handoff.html",
+    "title": "Pay: handoff to partner checkout",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-9-awaiting-issuer.html",
+    "title": "Pay: awaiting issuer confirmation",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-10-receipt.html",
+    "title": "Receipt",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A7-admin-id-review/a7-1-queue.html",
+    "title": "Admin ID review queue",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A7-admin-id-review/a7-2-detail.html",
+    "title": "Admin ID review detail",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A7-admin-id-review/a7-3-empty.html",
+    "title": "Admin ID review queue, empty",
+    "sheetOpen": false,
+    "menu": false
+  }
+]
