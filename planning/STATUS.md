@@ -4,6 +4,8 @@ Updated 2026-11-13 (SAST) by Claude. **Launch order (D-093): the directory goes 
 
 ## Current work
 
+- **2026-11-25 23:10 (SAST), Claude:** main `fe6a955` is on staging (Worker v21); search works again (#161, #162). The owner's fix list for visual direction, navigation, sign-in, copy and in-app fines is confirmed and ordered in the [backlog](claude/BACKLOG.md). In-app fines with an ID check changes D-013 and D-052 and needs a new decision (D-099) before building.
+
 - Directory notification settings implementation is in review. The account form stores an optional-email preference, and optional producers can use the recipient-scoped mail gate. Team-invite delivery and hosted acceptance follow separately.
 
 - **main** (`7550b1a`) has Phases 1–2, onboarding (#84), the launch gaps (P-1 to P-3, R-1, R-2, BK-1, the no-JS forms) and the first O7 slice (#100, #101, #103: listing and removing authenticators).
