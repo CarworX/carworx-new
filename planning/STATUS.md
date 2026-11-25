@@ -27,7 +27,7 @@ The Sites preview (#83 @ `b88a8ca`) is being ported screen by screen, exactly, o
   - The account Business tab (transfer ownership, close listing) is missing → PR 5.
   - The profile has only the display name (no email change, mobile or photo) → PR 6.
   - The get-listed claim tile links to search (`provider.get-listed.$step.tsx` ~704) → PR 7.
-  - Email invites are inert until mail #93 → #94 merge → PR 8.
+  - Email invites: the team invite now also emails the link to the address typed, through the mail outbox and its approved-recipient rule (PR 8, 25 Nov); the link is still shown on the page.
 - **On `phase-3` (Codex builds, Claude reviews):** booking, quote, checkout, the booking dashboard numbers, earnings, booking history and the prices and travel setup tasks.
 
 ## External blockers and gates

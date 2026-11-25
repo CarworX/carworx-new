@@ -44,6 +44,11 @@ import { TextField } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/provider.setup.$task.$step";
 import { PublicShell } from "../ui/public/PublicShell";
+import {
+  inviteMailConfigured,
+  inviteMailSender,
+  type InviteMailResult,
+} from "../team/invite-mail.server";
 import "../team/setup.css";
 
 const STEPS: Record<string, readonly string[]> = {
@@ -191,6 +196,8 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
         new URL(request.url).searchParams.get("role") ?? "staff",
         membership.role,
       ),
+      // Whether an address typed on the share step is also emailed.
+      inviteMail: inviteMailConfigured(context.cloudflare.env),
     },
     { headers: signedIn.headers },
   );
@@ -204,7 +211,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
   );
   const fail = (problem: TeamProblem) =>
     data(
-      { problem, inviteUrl: null },
+      { problem, inviteUrl: null, mailed: null },
       {
         headers: signedIn.headers,
         status:
@@ -336,7 +343,18 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       `/join/${result.data}`,
       signedIn.config.appOrigin,
     ).toString();
-    return data({ problem: null, inviteUrl }, { headers: signedIn.headers });
+    // The link is always shown. When an address was typed and mail is on,
+    // the same link is also emailed; the outbox keeps its approved-recipient
+    // rule, so an address outside it is simply not sent to.
+    let mailed: InviteMailResult | "off" | null = null;
+    if (email !== null) {
+      const send = await inviteMailSender(context.cloudflare.env);
+      mailed = send === null ? "off" : await send(result.data, email);
+    }
+    return data(
+      { problem: null, inviteUrl, mailed },
+      { headers: signedIn.headers },
+    );
   }
   if (params.task === "assign" || params.task === "contact") {
     const settings =
@@ -532,6 +550,24 @@ export default function TeamSetup({
           {d.task === "team" && d.step === "share" ? (
             actionData?.inviteUrl ? (
               <>
+                {actionData.mailed === "queued" ? (
+                  <StatusNote tone="ok" title="Invite emailed">
+                    We've queued an email with this link for the address you
+                    gave. It can take a few minutes to arrive. The link works
+                    once and expires in seven days.
+                  </StatusNote>
+                ) : actionData.mailed === "not_sent" ? (
+                  <StatusNote title="No email sent">
+                    That address can't receive email from CarworX here, so
+                    nothing was sent. Share the link below privately instead.
+                  </StatusNote>
+                ) : actionData.mailed === "unavailable" ? (
+                  <StatusNote title="No email sent">
+                    We couldn't queue the email just now. The link below still
+                    works; share it privately, or make a new invite to try
+                    again.
+                  </StatusNote>
+                ) : null}
                 <StatusNote tone="ok" title="Link ready">
                   Share it privately with the person you are inviting. It works
                   once, expires in seven days, and is not shown again after
@@ -558,8 +594,9 @@ export default function TeamSetup({
                 <input type="hidden" name="role" value={d.inviteRole ?? ""} />
                 <StatusNote title="Share a one-time link">
                   Invite a {d.inviteRole ?? "team member"} using a private link.
-                  Email delivery is not available here yet; no email will be
-                  sent.
+                  {d.inviteMail
+                    ? " If you add an email address below, we'll email the link to it as well."
+                    : " Email delivery is not available here yet; no email will be sent."}
                 </StatusNote>
                 <TextField
                   label="Restrict to an email address (optional)"
