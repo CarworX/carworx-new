@@ -109,6 +109,14 @@ describe("/ home: browse first (D-097)", () => {
     expect(text).not.toContain("straight-line");
   });
 
+  it("has one intro: the brand intro, not the mockup one (B-01, B-09)", () => {
+    expect(html).toContain('id="cx-intro"');
+    expect(html).toContain("/intro/intro.js");
+    expect(html).not.toContain('id="intro"');
+    expect(html).not.toContain('class="intro-sub"');
+    expect(html).not.toContain('class="intro-skip"');
+  });
+
   it("keeps the page when the catalogue can't be read", () => {
     const h = render({ catalogue: null });
     expect(h).toContain("Businesses can't load right now.");
@@ -116,9 +124,8 @@ describe("/ home: browse first (D-097)", () => {
     expect(h).toContain("See businesses");
   });
 
-  it("keeps the hero objects, intro, app glimpse and bands; drops the timeline and quote", () => {
+  it("keeps the hero objects, app glimpse and bands; drops the timeline and quote", () => {
     for (const keep of [
-      'id="intro"',
       'class="floats"',
       'class="obj o-note"',
       'class="obj o-timer"',
