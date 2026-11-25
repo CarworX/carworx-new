@@ -100,3 +100,17 @@
   padding-top: 16px;
   border-top: 1px solid var(--hair);
 }
+
+/* Delete my account (finish-build PR 4b, D-098). */
+.cx-account-facts {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--muted);
+  list-style: disc;
+}
+.cx-account-box .cx-btn.danger {
+  border-color: var(--err);
+  color: var(--err);
+}

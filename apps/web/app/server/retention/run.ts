@@ -147,3 +147,90 @@ export async function purgeMedia(
     await client.end().catch(() => undefined);
   }
 }
+
+// ---------------------------------------------------------------------------
+// Closed accounts (finish-build PR 4b, D-098; owner 2026-11-24). 14 days after
+// a person closes their account, the daily run deletes it: it claims due
+// accounts (with the address, the one time it leaves the database), queues
+// the final "your account has been deleted" email in the encrypted outbox,
+// then deletes or de-identifies the data. The log line has counts only.
+//
+// If the email cannot be queued (an outage), the deletion waits for the next
+// daily run, but never more than 7 days past the due date: then the account
+// is deleted without the email, so a broken or suppressed address can never
+// keep personal data alive. With no mail set up at all, nothing is queued.
+// ---------------------------------------------------------------------------
+export const ACCOUNT_BATCH = 50;
+const ACCOUNT_GRACE_FOR_MAIL_MS = 7 * 86_400_000;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+export type FinalEmail = (
+  userId: string,
+  email: string,
+) => Promise<"queued" | "invalid" | "unavailable">;
+
+export interface AccountCounts {
+  deleted: number;
+  emailed: number;
+  postponed: number;
+}
+
+export async function purgeAccounts(
+  binding: { connectionString?: unknown } | undefined,
+  makeClient: (connectionString: string) => Promise<RetentionClient>,
+  finalEmail: FinalEmail | null,
+  now = Date.now,
+): Promise<AccountCounts> {
+  const connectionString = binding?.connectionString;
+  if (typeof connectionString !== "string" || connectionString === "")
+    throw new RetentionError("binding_missing");
+  const counts: AccountCounts = { deleted: 0, emailed: 0, postponed: 0 };
+  const client = await makeClient(connectionString);
+  try {
+    await client.connect();
+    const due = await client.query(
+      "select user_id, email, delete_after from public.claim_account_deletions($1)",
+      [ACCOUNT_BATCH],
+    );
+    for (const row of due.rows) {
+      const { user_id, email, delete_after } = (row ?? {}) as {
+        user_id?: unknown;
+        email?: unknown;
+        delete_after?: unknown;
+      };
+      if (typeof user_id !== "string" || !UUID_RE.test(user_id))
+        throw new RetentionError("bad_result");
+      const dueAt =
+        delete_after instanceof Date
+          ? delete_after.getTime()
+          : typeof delete_after === "string"
+            ? Date.parse(delete_after)
+            : NaN;
+      if (finalEmail !== null && typeof email === "string" && email !== "") {
+        const sent = await finalEmail(user_id, email);
+        if (sent === "queued") counts.emailed++;
+        else if (
+          sent === "unavailable" &&
+          Number.isFinite(dueAt) &&
+          now() - dueAt < ACCOUNT_GRACE_FOR_MAIL_MS
+        ) {
+          counts.postponed++;
+          continue;
+        }
+      }
+      const done = await client.query(
+        "select public.finalize_account_deletion($1) as done",
+        [user_id],
+      );
+      if ((done.rows[0] as { done?: unknown } | undefined)?.done === true)
+        counts.deleted++;
+    }
+    return counts;
+  } catch (error) {
+    if (error instanceof RetentionError) throw error;
+    throw new RetentionError("query_failed");
+  } finally {
+    await client.end().catch(() => undefined);
+  }
+}

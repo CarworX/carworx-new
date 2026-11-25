@@ -8,6 +8,7 @@ import {
   type MailConfig,
   type MailDatabase,
   type MailMessage,
+  prepareMailEnvelope,
 } from "./outbox.server";
 import { receiveMailWebhook } from "./webhook.server";
 
@@ -282,5 +283,46 @@ describe("Resend webhook verification", () => {
         time,
       ),
     ).toBe("invalid");
+  });
+});
+
+describe("final account-deleted email (D-098)", () => {
+  const at = (ms: number) => new Date(NOW + ms).toISOString();
+  it("seals it for an approved address, up to 7 days", async () => {
+    const ready = await prepareMailEnvelope(
+      config,
+      "account-deleted/d5700000-0000-4000-8000-000000000001",
+      {
+        kind: "account_deleted",
+        to: "synthetic@example.test",
+        expiresAt: at(6 * 86_400_000),
+      },
+      () => NOW,
+    );
+    expect(ready?.template).toBe("account_deleted");
+    expect(ready?.envelope).not.toContain("synthetic@example.test");
+  });
+
+  it("refuses it beyond 7 days or for an address that is not approved", async () => {
+    for (const input of [
+      {
+        kind: "account_deleted" as const,
+        to: "synthetic@example.test",
+        expiresAt: at(8 * 86_400_000),
+      },
+      {
+        kind: "account_deleted" as const,
+        to: "someone@example.test",
+        expiresAt: at(86_400_000),
+      },
+    ])
+      expect(
+        await prepareMailEnvelope(
+          config,
+          "account-deleted/x",
+          input,
+          () => NOW,
+        ),
+      ).toBeNull();
   });
 });
