@@ -12,6 +12,9 @@ export const authRoutes: RouteConfigEntry[] = [
   route("auth/sign-out", "auth/routes/sign-out.tsx"),
   route("auth/mfa", "auth/routes/mfa.tsx"),
   route("account", "auth/routes/account.tsx"),
+  // D-098 close my account: the reinstate page and the closed notice.
+  route("account/closing", "routes/account.closing.tsx"),
+  route("account/closed", "routes/account.closed.tsx"),
   // D-098 "Download my data": the one-time link and its POST download.
   route("account/data/:token", "routes/account.data.$token.ts"),
   route("account/privacy/download", "routes/account.privacy.download.ts"),

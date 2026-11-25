@@ -59,3 +59,8 @@ insert into private.media_deletions(object_key, reason)
 insert into private.data_exports(user_id, object_key, token_hash)
   values ('5eed0000-0000-4000-8000-000000000001', 'exports/' || repeat('d', 32) || '.json',
     extensions.digest('bk1-synthetic-export-token', 'sha256'));
+
+-- Account closures (finish-build PR 4b, D-098): one closing account, so the
+-- table is really restored. The synthetic seed customer, synthetic dates.
+insert into private.account_closures(user_id)
+  values ('5eed0000-0000-4000-8000-000000000001');

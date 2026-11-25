@@ -24,6 +24,11 @@ export interface SignedIn extends AuthRequest {
   aal: "aal1" | "aal2";
   /** "aal2" if the user has a verified factor, so a step-up is possible. */
   nextAal: "aal1" | "aal2";
+  /**
+   * When this closing account will be deleted (D-098), else null. Only
+   * getSignedInClosing and requireSignedIn ever return a closing account.
+   */
+  closingUntil: string | null;
 }
 
 export function authRequest(
@@ -43,19 +48,45 @@ export async function getSignedIn(
   request: Request,
   security: SecurityContext,
 ): Promise<SignedIn | null> {
+  const signedIn = await getSignedInClosing(request, security);
+  // A closing account (D-098) is signed out everywhere but its own closing
+  // page: it cannot send enquiries, join teams or see private covers.
+  return signedIn?.closingUntil ? null : signedIn;
+}
+
+/** As getSignedIn, but also returns an account that is closing. */
+export async function getSignedInClosing(
+  request: Request,
+  security: SecurityContext,
+): Promise<SignedIn | null> {
   const auth = authRequest(request, security);
   const { data, error } = await auth.supabase.auth.getUser();
   if (error !== null) return null;
   // Read only after getUser validated this same session's access token.
   const level = await auth.supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if (level.error !== null) return null;
+  // Fails closed: if the closure status can't be read, treat the account as
+  // closing, so a closed account is never let back in by an outage.
+  const closing: { data: unknown; error: unknown } = await auth.supabase.rpc(
+    "account_closure_status",
+  );
+  const closingUntil =
+    closing.error !== null
+      ? "unknown"
+      : typeof closing.data === "string"
+        ? closing.data
+        : null;
   return {
     ...auth,
     user: data.user,
     aal: level.data.currentLevel === "aal2" ? "aal2" : "aal1",
     nextAal: level.data.nextLevel === "aal2" ? "aal2" : "aal1",
+    closingUntil,
   };
 }
+
+/** Pages a closing account may still open: its closing page and sign-out. */
+const CLOSING_PATHS = /^\/(?:account\/closing|auth\/sign-out)$/;
 
 /** Whether the request carries a session cookie at all (no network call). */
 export function hasSessionCookie(request: Request): boolean {
@@ -73,8 +104,12 @@ export async function requireSignedIn(
   request: Request,
   security: SecurityContext,
 ): Promise<SignedIn> {
-  const signedIn = await getSignedIn(request, security);
-  if (signedIn !== null) return signedIn;
+  const signedIn = await getSignedInClosing(request, security);
+  if (signedIn !== null && signedIn.closingUntil === null) return signedIn;
+  if (signedIn !== null) {
+    if (CLOSING_PATHS.test(new URL(request.url).pathname)) return signedIn;
+    return throwRedirect("/account/closing", signedIn.headers);
+  }
   const auth = authRequest(request, security);
   // Clear a dead session's cookies (and end it at the Auth server if it
   // somehow still exists there). Only when there is one: an in-flight Google
