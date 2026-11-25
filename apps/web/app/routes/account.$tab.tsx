@@ -1,6 +1,7 @@
 import { data } from "react-router";
 
 import {
+  ACCOUNT_NAV,
   accountTab,
   displayName,
   localMobile,
@@ -34,17 +35,7 @@ import "../account/settings.css";
 import "../account/profile.css";
 import type { Route } from "./+types/account.$tab";
 
-const TABS = [
-  { id: "profile", label: "Profile", href: "/account/profile" },
-  { id: "security", label: "Security", href: "/account/security" },
-  {
-    id: "notifications",
-    label: "Notifications",
-    href: "/account/notifications",
-  },
-  { id: "privacy", label: "Privacy and data", href: "/account/privacy" },
-  { id: "work", label: "Your work", href: "/account/work" },
-] as const;
+const TABS = ACCOUNT_NAV;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ROLE_LABEL = { owner: "Owner", manager: "Manager", staff: "Staff" };

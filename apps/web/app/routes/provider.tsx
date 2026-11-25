@@ -223,6 +223,17 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   for (const d of decisions.data)
     if (!latest.has(d.listing_public_id)) latest.set(d.listing_public_id, d);
 
+  // Listings their owner closed (finish-build PR 5): shown as "Closed", not
+  // "Needs changes". Sending one for review again is the usual draft path.
+  const closedIds = new Set<string>();
+  for (const result of await Promise.all(
+    controlled.map((org) => db.rpc("closed_listings", { p_org: org })),
+  )) {
+    if (result.error !== null) throwStatus(503, signedIn.headers);
+    for (const row of (result.data ?? []) as { listing_public_id: string }[])
+      closedIds.add(row.listing_public_id);
+  }
+
   // Cover photo task status (D-098): which of my businesses have one.
   const coverRows = await db
     .from("listing_covers")
@@ -255,7 +266,11 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         role: mine.data.find((m) => m.organisation_id === o.id)?.role,
         listings: listings.data
           .filter((l) => l.organisation_id === o.id)
-          .map((l) => ({ ...l, decision: latest.get(l.public_id) ?? null })),
+          .map((l) => ({
+            ...l,
+            decision: latest.get(l.public_id) ?? null,
+            closed: closedIds.has(l.public_id),
+          })),
         members: owned.includes(o.id)
           ? members.data
               .filter((m) => m.organisation_id === o.id)
@@ -478,9 +493,15 @@ export default function Provider({
                         : "warn"
                   }
                 >
-                  {STATUS_COPY[l.status]}
+                  {l.closed ? "Closed" : STATUS_COPY[l.status]}
                 </StatusLabel>
               </div>
+              {l.closed ? (
+                <p className="type-body" data-closed>
+                  You closed this listing, so it isn't in search. Send it for
+                  review below to bring it back.
+                </p>
+              ) : null}
               <p className="type-body">
                 {l.mode === "fixed"
                   ? "Customers visit your workshop."
@@ -488,7 +509,7 @@ export default function Provider({
                     ? "Customers visit your workshop, and you also go to them. Your service distance stays private."
                     : "You go to customers. Your base and distance stay private."}
               </p>
-              {l.decision?.reason ? (
+              {l.decision?.reason && !l.closed ? (
                 <p className="type-body" data-decision={l.decision.decision}>
                   <b>Admin note:</b> {l.decision.reason}
                 </p>

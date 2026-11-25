@@ -19,6 +19,7 @@ export const authRoutes: RouteConfigEntry[] = [
   route("account/data/:token", "routes/account.data.$token.ts"),
   route("account/privacy/download", "routes/account.privacy.download.ts"),
   route("account/photo", "routes/account.photo.ts"),
+  route("account/business", "routes/account.business.tsx"),
   route("account/:tab", "routes/account.$tab.tsx"),
   route("org/:orgId", "auth/routes/org.tsx"),
   route("admin", "auth/routes/admin.tsx"),
