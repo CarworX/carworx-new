@@ -41,7 +41,7 @@ const ME = { name: "Thandi Nkosi", first: "Thandi", ini: "TN", email: "thandi.n@
 // ---------- shell ----------
 function header({ signed = false, active = "", scrolled = false, admin = false } = {}) {
   const links = admin
-    ? `<a href="#" class="on">ID checks</a><a href="#">Listings</a><a href="#">Claims</a>`
+    ? `<a href="#"${active === "reviews" ? "" : ' class="on"'}>ID checks</a><a href="#">Listings</a><a href="#"${active === "reviews" ? ' class="on"' : ""}>Reviews</a>`
     : `<a href="/#services"${active === "services" ? ' class="on"' : ""}>Find a service</a><a href="/#fines"${active === "fines" ? ' class="on"' : ""}>Fines</a><a href="/#business"${active === "business" ? ' class="on"' : ""}>For businesses</a>`;
   const acct = signed
     ? `<div class="acct"><button class="rd-avatar-btn" type="button" aria-haspopup="menu"><span class="rd-av">${admin ? "AM" : ME.ini}</span>${admin ? "Admin" : ME.first}${CHEV}</button></div><span class="rd-av rd-phone-av rd-dot">${admin ? "AM" : ME.ini}</span>`
@@ -211,7 +211,7 @@ const SERVICES_SEC = `<section class="lp-sec" id="services" aria-labelledby="h-c
   </div>
 </section>`;
 const fineSteps = `<ol class="rd-fsteps">
-  <li><span class="ic"><img src="${ic("shield")}" alt=""></span><div><b>1 · Confirm it's you, once</b><small>Add your ID number and a photo of your ID. Our team checks it, usually within one business day.</small></div></li>
+  <li><span class="ic"><img src="${ic("shield")}" alt=""></span><div><b>1 · Confirm it's you, once</b><small>Photograph your ID and take a quick selfie on our verification partner's secure screen. Usually done in under a minute.</small></div></li>
   <li><span class="ic"><img src="${ic("doc")}" alt=""></span><div><b>2 · See every fine on your ID</b><small>Amount, issuer, due date and any discount, in plain words. No more hunting across municipal sites.</small></div></li>
   <li><span class="ic"><img src="${ic("lock")}" alt=""></span><div><b>3 · Pay securely, get a receipt</b><small>You pay on our payment partner's secure checkout. We show "Paid" only once the issuer confirms it.</small></div></li>
 </ol>`;
@@ -409,44 +409,81 @@ page(
 const fineHead = (crumb, h, grey, sub = "") => `<div class="rd-crumb"><a href="/">Home</a><span>/</span><a href="#">Fines</a>${crumb ? `<span>/</span><span>${crumb}</span>` : ""}</div>
 <h1 class="rd-h1">${h}${grey ? `<br><span class="grey">${grey}</span>` : ""}</h1>${sub ? `<p class="rd-sub">${sub}</p>` : ""}`;
 const ID_SVG = (w = 88) => `<svg viewBox="0 0 340 214" width="${w}" style="display:block;width:100%;height:auto"><rect width="340" height="214" rx="16" fill="#e8efe6"/><rect x="0" y="0" width="340" height="44" rx="16" fill="#2f6b4f"/><rect y="28" width="340" height="16" fill="#2f6b4f"/><text x="18" y="29" font-family="Geist, sans-serif" font-size="14" font-weight="600" fill="#fff">REPUBLIC OF SOUTH AFRICA · IDENTITY CARD</text><rect x="18" y="60" width="96" height="124" rx="8" fill="#c9d6cc"/><circle cx="66" cy="104" r="22" fill="#9fb3a6"/><path d="M30 176c6-26 22-38 36-38s30 12 36 38z" fill="#9fb3a6"/><g font-family="Geist Mono, monospace" font-size="11" fill="#33453a"><text x="132" y="74">SURNAME</text><text x="132" y="118">NAMES</text><text x="132" y="162">IDENTITY NUMBER</text></g><g font-family="Geist, sans-serif" font-size="16" font-weight="600" fill="#0d0f12"><text x="132" y="94">NKOSI</text><text x="132" y="138">THANDI ZANELE</text><text x="132" y="182" font-family="Geist Mono, monospace" letter-spacing="1">••••••••• 0823</text></g></svg>`;
+const statusPage = (file, title, img, h, grey, body, crumb = "Verify your ID") =>
+  page(file, title, `<section class="rd-narrow">${fineHead(crumb, "", "")}<div class="rd-card" style="margin-top:20px"><div class="rd-status"><img src="${ill(img)}" alt=""><div><h2 class="rd-h2" style="font-size:28px">${h}</h2><p class="rd-sub" style="margin-top:6px">${grey}</p></div></div>${body}</div></section>`, { signed: true, active: "fines" });
+const DOCS = `<div class="rd-docs"><span><img src="${ic("doc")}" alt="">Smart ID card</span><span><img src="${ic("doc")}" alt="">Green ID book</span><span><img src="${ic("car")}" alt="">Driver's licence</span></div>`;
 page(
-  "A6-fines/a6-1-verify-id.html",
-  "Fines: verify your ID",
+  "A6-fines/a6-1-verify-intro.html",
+  "Fines: verify your ID, intro",
   `<section class="rd-narrow">${fineHead("Verify your ID", "Confirm it's you.", "Once, then your fines show here.")}
   <div class="rd-card rd-stack" style="margin-top:28px">
-    <div class="rd-field"><label>South African ID number</label><div class="rd-input mono focus">9104 2512 3082 3</div><small>13 digits, as on your ID book, smart ID card or driver's licence.</small></div>
-    <div class="rd-field"><span class="lb">Photo of your ID</span>
-      <div class="rd-drop done"><div class="rd-thumb">${ID_SVG()}</div><div><b>smart-id-front.jpg</b><small>2.1 MB · uploaded · the number and your face are clear</small></div><span class="rd-sp"></span><a class="rd-link" href="#">Replace</a></div>
-      <small>Front of a smart ID card, the photo page of a green ID book, or your driver's licence card. JPG, PNG or PDF, up to 10 MB.</small>
-    </div>
-    <div class="rd-note"><img src="${ic("lock")}" alt=""><div><b>How we look after your ID</b>Traffic fines are linked to your ID number, so we need it to find yours.
-      <ul><li>Stored encrypted. We only ever show the last 4 digits.</li><li>Only our small verification team can see the photo, and every view is logged.</li><li>Used only to find and pay your fines. Never sold, never shown to businesses.</li><li>You can delete it any time in Account.</li></ul></div></div>
-    <div class="rd-check on"><span class="box"></span><span>I confirm this is my own ID and agree that CarworX may use it to look up my traffic fines. <a href="/privacy">Privacy notice</a></span></div>
-    <button class="rd-btn full">Send for checking <span class="arr">${ARR}</span></button>
+    <p style="margin:0;font-size:16px">Traffic fines are linked to your ID number, so we need to know it's really you before we show them. It takes about two minutes on your phone.</p>
+    <ol class="rd-steps" style="margin-top:8px">
+      <li><span class="n">1</span><div><b>Photograph your ID</b><small>Front of your smart ID card, the photo page of your green ID book, or your driver's licence card.</small></div></li>
+      <li><span class="n">2</span><div><b>Take a quick selfie</b><small>A short video check that you're a real person, matched to the photo on your ID.</small></div></li>
+      <li><span class="n">3</span><div><b>Come back here</b><small>Most checks finish in under a minute. Your fines appear straight after.</small></div></li>
+    </ol>
+    ${DOCS}
+    <div class="rd-note"><img src="${ic("lock")}" alt=""><div><b>Your photos stay with our verification partner</b>Both steps happen on the secure screen of Didit, our verification partner. Didit checks the document, that you're really there, and that your face matches.
+      <ul><li>CarworX never receives or stores your ID photo or selfie.</li><li>We keep only the result (verified or not) and the last 4 digits of your ID number.</li><li>Used only to find and pay your fines. Never shown to businesses.</li></ul></div></div>
+    <div class="rd-check on"><span class="box"></span><span>I agree that Didit may check my ID and selfie for CarworX, and that CarworX may use the result to look up my traffic fines. <a href="/privacy">Privacy notice</a></span></div>
+    <a class="rd-btn full" href="#">Start verification <span class="arr">${ARR}</span></a>
+    <p class="rd-hint" style="margin:0">Opens Didit's secure screen. On a computer, you can scan a code to continue on your phone.</p>
   </div>
 </section>`,
   { signed: true, active: "fines" },
 );
-const statusPage = (file, title, img, h, grey, body, crumb = "Verify your ID") =>
-  page(file, title, `<section class="rd-narrow">${fineHead(crumb, "", "")}<div class="rd-card" style="margin-top:20px"><div class="rd-status"><img src="${ill(img)}" alt=""><div><h2 class="rd-h2" style="font-size:28px">${h}</h2><p class="rd-sub" style="margin-top:6px">${grey}</p></div></div>${body}</div></section>`, { signed: true, active: "fines" });
-statusPage(
-  "A6-fines/a6-2-pending-review.html",
-  "Fines: ID pending review",
-  "review",
-  "We're checking your ID.",
-  "Usually within one business day. We'll email you as soon as it's done.",
-  `<ol class="rd-steps" style="margin-top:24px"><li class="done"><span class="n">1</span><div><b>ID sent</b><small>Today, 14:32 SAST · ID ending 0823</small></div></li><li class="now"><span class="n">2</span><div><b>Our team checks it</b><small>A person compares the number with your photo</small></div></li><li><span class="n">3</span><div><b>Your fines appear</b><small>We look them up as soon as you're approved</small></div></li></ol>
-  <div class="rd-row" style="margin-top:8px"><a class="rd-btn light" href="/">Back to home</a><span class="rd-sp"></span><small style="color:var(--muted)">Made a mistake? <a class="rd-link" href="#">Withdraw and start again</a></small></div>`,
+page(
+  "A6-fines/a6-2-checking.html",
+  "Fines: back from Didit, checking",
+  `<section class="rd-narrow">${fineHead("Verify your ID", "", "")}
+  <div class="rd-card" style="margin-top:20px;text-align:center;padding:48px 28px">
+    <div class="rd-spin"><svg viewBox="0 0 200 200" width="64" fill="currentColor"><g transform="translate(100,100) rotate(21.9494)"><use href="#cx-rotor"/></g></svg></div>
+    <h2 class="rd-h2" style="font-size:28px;margin-top:22px">Checking…</h2>
+    <p class="rd-sub" style="margin:8px auto 0">Thanks, Thandi. This usually takes under a minute. You can leave this page; we'll email you when it's done.</p>
+    <ol class="rd-steps rd-steps-left" style="margin:28px auto 0;max-width:360px;text-align:left"><li class="done"><span class="n">✓</span><div><b>ID photographed</b><small>Today, 14:31 SAST</small></div></li><li class="done"><span class="n">✓</span><div><b>Selfie taken</b><small>Today, 14:32 SAST</small></div></li><li class="now"><span class="n">3</span><div><b>Didit is checking</b><small>Document, liveness and face match</small></div></li></ol>
+  </div>
+</section>`,
+  { signed: true, active: "fines" },
 );
 statusPage(
-  "A6-fines/a6-3-rejected.html",
-  "Fines: ID rejected with reason",
+  "A6-fines/a6-3-approved.html",
+  "Fines: verified",
+  "sent",
+  "You're verified.",
+  "Your ID ending 0823 is confirmed. We're looking up your fines now.",
+  `<div class="rd-note ok" style="margin-top:24px"><img src="${ic("check")}" alt=""><div><b>Done once, for good</b>You won't need to do this again unless you change your ID number.</div></div>
+  <div class="rd-row" style="margin-top:20px"><a class="rd-btn" href="#">See my fines <span class="arr">${ARR}</span></a></div>`,
+);
+statusPage(
+  "A6-fines/a6-4-declined-retry.html",
+  "Fines: declined with reason, retry",
   "error",
   "We couldn't confirm your ID.",
-  "Nothing is wrong with your account. We just need a clearer photo.",
-  `<div class="rd-note err" style="margin-top:24px"><img src="${ic("alert")}" alt=""><div><b>Reason from our team</b>The photo is blurry, so we couldn't read the ID number. Take it in good light, flat on a table, with all four corners showing.</div></div>
-  <p style="font-size:13px;color:var(--muted);margin:14px 0 0">Checked 26 Nov 2026, 09:10 SAST. We deleted the photo you sent.</p>
+  "Nothing is wrong with your account. It usually works on the next try.",
+  `<div class="rd-note err" style="margin-top:24px"><img src="${ic("alert")}" alt=""><div><b>Why</b>The photo of your ID was too blurry to read. Lay it flat in good light, with all four corners showing, and hold the phone still.</div></div>
+  <div class="rd-tries" style="margin-top:18px"><i class="used"></i><i></i><i></i><span>Try 1 of 3 used · 2 left</span></div>
   <div class="rd-row" style="margin-top:20px"><a class="rd-btn" href="#">Try again <span class="arr">${ARR}</span></a><a class="rd-btn light" href="/support">Contact support</a></div>`,
+);
+statusPage(
+  "A6-fines/a6-5-declined-final.html",
+  "Fines: declined, no tries left",
+  "paused",
+  "We couldn't confirm it after 3 tries.",
+  "Our team will help you finish it another way.",
+  `<div class="rd-note err" style="margin-top:24px"><img src="${ic("alert")}" alt=""><div><b>Last reason</b>The face in the selfie didn't match the photo on the ID.</div></div>
+  <div class="rd-tries" style="margin-top:18px"><i class="used"></i><i class="used"></i><i class="used"></i><span>3 of 3 tries used</span></div>
+  <p style="font-size:14px;color:var(--muted);margin:14px 0 0">Contact support and we'll check it with you. Reference <span class="mono">VR-2611-0447</span>.</p>
+  <div class="rd-row" style="margin-top:20px"><a class="rd-btn" href="/support">Contact support</a><a class="rd-btn light" href="/">Back to home</a></div>`,
+);
+statusPage(
+  "A6-fines/a6-6-in-review.html",
+  "Fines: in review by our team",
+  "review",
+  "A person is checking it.",
+  "Didit passed most checks but asked for a second look. Usually within one business day.",
+  `<ol class="rd-steps" style="margin-top:24px"><li class="done"><span class="n">✓</span><div><b>Photos taken on Didit</b><small>Today, 14:32 SAST</small></div></li><li class="done"><span class="n">✓</span><div><b>Automatic checks</b><small>One needs a second look</small></div></li><li class="now"><span class="n">3</span><div><b>Our team decides</b><small>We'll email you either way</small></div></li></ol>
+  <div class="rd-row" style="margin-top:8px"><a class="rd-btn light" href="/">Back to home</a></div>`,
 );
 const FINES = [
   { t: "Speeding, 72 km/h in a 60 zone", iss: "JMPD", where: "Jan Smuts Ave, Craighall", date: "3 Nov 2026", amt: "R 500", was: "R 1 000", st: '<span class="rd-lbl blue">50% off to 2 Dec</span>', ref: "AARTO 03 · 02-4417-2290-118" },
@@ -456,7 +493,7 @@ const FINES = [
 const fineRow = (f, i) => `<a class="rd-fine" href="#"><span class="ic"><img src="${i === 2 ? ic("camera") : i === 1 ? ic("pin") : ic("clock")}" alt=""></span><div><h3>${f.t}</h3><div class="rd-meta"><span>${f.iss}</span><span>·</span><span>${f.where}</span><span>·</span><span>${f.date}</span></div><div class="rd-meta" style="margin-top:8px">${f.st}</div></div><div class="amt rd-money"><b>${f.amt}</b>${f.was ? `<s>${f.was}</s>` : ""}</div></a>`;
 const myFinesHead = `${fineHead("", "My fines", "")}<div class="rd-row" style="margin-top:14px"><span class="rd-lbl ok">ID verified · ending 0823</span><small style="color:var(--muted)">Last checked today, 08:15 SAST · <a class="rd-link" href="#">Check again</a></small></div>`;
 page(
-  "A6-fines/a6-4-my-fines.html",
+  "A6-fines/a6-7-my-fines.html",
   "My fines: several",
   `<section class="rd-mid">${myFinesHead}
   <div class="rd-fsum"><div class="rd-stat"><small>To settle</small><span class="num"><sub>R</sub>2 250</span></div><div class="rd-stat"><small>Open fines</small><span class="num">3</span></div><div class="rd-stat"><small>Saving if paid by 2 Dec</small><span class="num"><sub>R</sub>500</span></div></div>
@@ -468,7 +505,7 @@ page(
   { signed: true, active: "fines" },
 );
 page(
-  "A6-fines/a6-5-my-fines-none.html",
+  "A6-fines/a6-8-my-fines-none.html",
   "My fines: none",
   `<section class="rd-mid">${myFinesHead}
   <div class="rd-empty" style="margin-top:28px"><img src="${ill("sent")}" alt=""><h2>No fines on your ID.</h2><p>Nothing to pay right now. We check again each time you open this page, and we'll email you if a new fine appears.</p><div class="rd-row"><a class="rd-btn light" href="/">Back to home</a></div></div>
@@ -476,7 +513,7 @@ page(
   { signed: true, active: "fines" },
 );
 page(
-  "A6-fines/a6-6-my-fines-not-payable.html",
+  "A6-fines/a6-9-my-fines-not-payable.html",
   "My fines: only not-payable fines",
   `<section class="rd-mid">${myFinesHead}
   <div class="rd-note warn" style="margin-top:28px"><img src="${ic("info")}" alt=""><div><b>1 fine, but it can't be paid online.</b>A summons has been issued, so it now goes through the court. Pay at the court or contact the issuer before the court date.</div></div>
@@ -489,7 +526,7 @@ const fineSide = (btn) => `<div class="rd-card"><span class="rd-crumb">To pay</s
   <dl class="rd-kv" style="margin-top:16px"><dt>Fine</dt><dd class="rd-money">R 500.00</dd><dt>Partner fee</dt><dd class="rd-money">R 0.00</dd><dt class="tot">Total</dt><dd class="tot rd-money">R 500.00</dd></dl>
   ${btn}</div>`;
 page(
-  "A6-fines/a6-7-fine-detail.html",
+  "A6-fines/a6-10-fine-detail.html",
   "Fine detail",
   `<section class="rd-mid">${fineHead("Speeding", "Speeding, 72 km/h in a 60 zone", "")}
   <div class="rd-row" style="margin-top:12px"><span class="rd-lbl warn">Payable</span><span class="rd-lbl blue">Discount until 2 Dec</span></div>
@@ -503,7 +540,7 @@ page(
   { signed: true, active: "fines" },
 );
 page(
-  "A6-fines/a6-8-pay-handoff.html",
+  "A6-fines/a6-11-pay-handoff.html",
   "Pay: handoff to partner checkout",
   `<section class="rd-narrow">${fineHead("Pay", "Pay R 500", "On a secure checkout.")}
   <div class="rd-card rd-stack" style="margin-top:24px">
@@ -518,7 +555,7 @@ page(
   { signed: true, active: "fines" },
 );
 statusPage(
-  "A6-fines/a6-9-awaiting-issuer.html",
+  "A6-fines/a6-12-awaiting-issuer.html",
   "Pay: awaiting issuer confirmation",
   "sent",
   "Payment received. Waiting for JMPD.",
@@ -529,7 +566,7 @@ statusPage(
   "Payment",
 );
 page(
-  "A6-fines/a6-10-receipt.html",
+  "A6-fines/a6-13-receipt.html",
   "Receipt",
   `<section class="rd-narrow">${fineHead("Receipt", "Paid.", "Here's your receipt.")}
   <div class="rd-receipt" style="margin-top:24px"><span class="stamp">PAID</span>
@@ -544,45 +581,55 @@ page(
 
 // ================= A7 =================
 const Q = [
-  ["NM", "Nomvula M.", "n.m@example.co.za", "0823", "Smart ID", "Today 08:02", "6 h", true],
-  ["JV", "Johan V.", "j.v@example.co.za", "5084", "Driver's licence", "Today 09:41", "4 h", false],
-  ["AP", "Ayesha P.", "a.p@example.co.za", "1186", "Green ID book", "Today 11:15", "3 h", false],
-  ["SD", "Sizwe D.", "s.d@example.co.za", "7089", "Smart ID", "Today 12:30", "1 h", false],
-  ["LB", "Lindiwe B.", "l.b@example.co.za", "3381", "Smart ID", "Today 13:02", "1 h", false],
-  ["MK", "Mpho K.", "m.k@example.co.za", "9087", "Driver's licence", "Today 13:47", "12 min", false],
+  ["NM", "Nomvula M.", "n.m@example.co.za", "0823", "Smart ID", "Face match below threshold", "Today 08:02", "6 h", true],
+  ["JV", "Johan V.", "j.v@example.co.za", "5084", "Driver's licence", "Document may be expired", "Today 09:41", "4 h", false],
+  ["AP", "Ayesha P.", "a.p@example.co.za", "1186", "Green ID book", "Possible duplicate account", "Today 11:15", "3 h", false],
+  ["SD", "Sizwe D.", "s.d@example.co.za", "7089", "Smart ID", "Name differs from account", "Today 12:30", "1 h", false],
 ];
-const admHead = (tabs) => `<div class="rd-crumb">Admin</div><h1 class="rd-h1">ID checks</h1><p class="rd-sub">Approve an ID only when the number, the name and the photo all match. Oldest first.</p><div class="rd-row" style="margin:22px 0 18px">${tabs}<span class="rd-sp"></span><small style="color:var(--muted)">Target: within 1 business day</small></div>`;
-const TABS = (w) => `<div class="rd-adm-tabs"><span class="on">Waiting <i>${w}</i></span><span>Approved <i>142</i></span><span>Rejected <i>11</i></span></div>`;
+const admHead = (tabs) => `<div class="rd-crumb">Admin</div><h1 class="rd-h1">ID checks</h1><p class="rd-sub">Didit approves or declines most people automatically. These are the ones it sent to us for a second look. Oldest first.</p><div class="rd-row" style="margin:22px 0 18px">${tabs}<span class="rd-sp"></span><small style="color:var(--muted)">Target: within 1 business day</small></div>`;
+const TABS = (w) => `<div class="rd-adm-tabs"><span class="on">In review <i>${w}</i></span><span>Approved <i>142</i></span><span>Declined <i>11</i></span></div>`;
+const av = (k) => (k % 3 === 1 ? " coral" : k % 3 === 2 ? " amber" : "");
 page(
   "A7-admin-id-review/a7-1-queue.html",
-  "Admin ID review queue",
-  `<section class="wrap">${admHead(TABS(6))}
-  <table class="rd-table"><thead><tr><th>Person</th><th>ID number</th><th>Document</th><th>Sent</th><th>Waiting</th><th></th></tr></thead><tbody>
-  ${Q.map(([i, n, e, l, d, t, a, late], k) => `<tr${k === 0 ? ' class="hl"' : ""}><td><div class="who"><span class="rd-av sm${k % 3 === 1 ? " coral" : k % 3 === 2 ? " amber" : ""}">${i}</span><div><b>${n}</b><small>${e}</small></div></div></td><td class="mono">•••••••••${l}</td><td>${d}</td><td>${t}</td><td><span class="rd-age${late ? " late" : ""}">${a}</span></td><td><a class="rd-btn sm${k === 0 ? "" : " light"}" href="#">Review</a></td></tr>`).join("")}
+  "Admin ID review queue (Didit In review)",
+  `<section class="wrap">${admHead(TABS(4))}
+  <table class="rd-table"><thead><tr><th>Person</th><th>Didit result</th><th>Why it needs a look</th><th>Document</th><th>Waiting</th><th></th></tr></thead><tbody>
+  ${Q.map(([i, n, e, l, d, why, , a, late], k) => `<tr${k === 0 ? ' class="hl"' : ""}><td><div class="who"><span class="rd-av sm${av(k)}">${i}</span><div><b>${n}</b><small>${e} · ID ••••${l}</small></div></div></td><td><span class="rd-lbl warn">In review</span></td><td>${why}</td><td>${d}</td><td><span class="rd-age${late ? " late" : ""}">${a}</span></td><td><a class="rd-btn sm${k === 0 ? "" : " light"}" href="#">Review</a></td></tr>`).join("")}
   </tbody></table>
-  <div class="rd-mlist">${Q.map(([i, n, , l, d, t, a, late], k) => `<a class="rd-fine" href="#"><span class="rd-av${k % 3 === 1 ? " coral" : k % 3 === 2 ? " amber" : ""}">${i}</span><div><h3>${n}</h3><div class="rd-meta"><span class="mono">•••• ${l}</span><span>·</span><span>${d}</span></div><div class="rd-meta"><span>${t}</span><span class="rd-age${late ? " late" : ""}">· waiting ${a}</span></div></div></a>`).join("")}</div>
+  <div class="rd-mlist">${Q.map(([i, n, , l, d, why, , a, late], k) => `<a class="rd-fine" href="#"><span class="rd-av${av(k)}">${i}</span><div><h3>${n}</h3><div class="rd-meta"><span class="rd-lbl warn">In review</span><span>${why}</span></div><div class="rd-meta"><span>${d} · ID ••••${l}</span><span class="rd-age${late ? " late" : ""}">· waiting ${a}</span></div></div></a>`).join("")}</div>
+  <p style="font-size:13px;color:var(--muted);margin-top:18px">CarworX never holds the ID photo or selfie. To see them, open the session in Didit's console (logged there).</p>
 </section>`,
   { signed: true, admin: true },
 );
+const score = (label, val, pct, tone) => `<div class="rd-score"><span>${label}</span><div class="bar"><i class="${tone}" style="width:${pct}%"></i></div><b class="${tone}">${val}</b></div>`;
 page(
   "A7-admin-id-review/a7-2-detail.html",
-  "Admin ID review detail",
+  "Admin ID review detail (Didit result)",
   `<section class="wrap"><div class="rd-crumb"><a href="#">Admin</a><span>/</span><a href="#">ID checks</a><span>/</span><span>Nomvula M.</span></div>
-  <div class="rd-row" style="margin-top:12px"><h1 class="rd-h1" style="margin:0">Nomvula M.</h1><span class="rd-lbl warn">Waiting 6 h</span><span class="rd-sp"></span><small style="color:var(--muted)">1 of 6 · <a class="rd-link" href="#">Next →</a></small></div>
+  <div class="rd-row" style="margin-top:12px"><h1 class="rd-h1" style="margin:0">Nomvula M.</h1><span class="rd-lbl warn">In review · 6 h</span><span class="rd-sp"></span><small style="color:var(--muted)">1 of 4 · <a class="rd-link" href="#">Next →</a></small></div>
   <div class="rd-review" style="margin-top:24px">
-    <div class="rd-stack"><div class="rd-idphoto">${ID_SVG(600).replace("THANDI ZANELE", "NOMVULA THEMBI").replace(">NKOSI<", ">MAHLANGU<")}<div class="tools"><span>Zoom</span><span>Rotate</span></div></div>
-      <div class="rd-note plain"><img src="${ic("lock")}" alt=""><div>Photo opened by you at 14:20 SAST. Every view is logged. The photo is deleted once you decide.</div></div></div>
     <div class="rd-stack">
-      <div class="rd-card rd-stack"><div class="rd-field"><span class="lb">ID number they typed</span><div class="rd-masked">••••••••• 0823<a class="rd-btn sm light" href="#"><img src="${ic("lock")}" alt="" width="16">Reveal</a></div><small>Revealing shows the full number for 30 seconds and is logged with your name.</small></div>
-        <dl class="rd-kv"><dt>Account</dt><dd>Nomvula M. · n.m@example.co.za</dd><dt>Document</dt><dd>Smart ID card, front</dd><dt>Sent</dt><dd>Today, 08:02 SAST</dd></dl>
-        <ul class="rd-checks"><li><span class="y">✓</span>Number passes the ID checksum</li><li><span class="y">✓</span>Date of birth in the number matches the card</li><li><span class="q">?</span>Name on the card matches the account name: check by eye</li><li><span class="q">?</span>Number on the card matches what they typed: check by eye</li></ul>
+      <div class="rd-card rd-stack"><div class="rd-row"><h3 class="rd-h2" style="font-size:17px">Didit result</h3><span class="rd-sp"></span><span class="rd-lbl warn">In review</span></div>
+        ${score("Document authentic", "Passed", 100, "ok")}
+        ${score("Liveness (real person)", "Passed", 100, "ok")}
+        ${score("Face match to ID photo", "71%", 71, "warn")}
+        ${score("Document readable", "Passed", 100, "ok")}
+        <div class="rd-note warn"><img src="${ic("alert")}" alt=""><div><b>Warnings from Didit</b><ul><li>Face match 71%, below the 80% auto-approve line.</li><li>ID photo is about 9 years old (issued 2017).</li></ul></div></div>
+        <div class="rd-row"><span class="mono" style="font-size:13px;color:var(--muted)">Session ds_7Hq2…K41 · attempt 1 of 3 · 08:02 SAST</span><span class="rd-sp"></span><a class="rd-btn sm light" href="#">Open session in Didit ↗</a></div>
+      </div>
+      <div class="rd-note plain"><img src="${ic("lock")}" alt=""><div>Photos and the selfie are only in Didit. Opening the session is logged there with your name.</div></div>
+    </div>
+    <div class="rd-stack">
+      <div class="rd-card rd-stack"><h3 class="rd-h2" style="font-size:17px">What Didit read</h3>
+        <dl class="rd-kv"><dt>Name on document</dt><dd>Nomvula Thembi Mahlangu</dd><dt>Account name</dt><dd>Nomvula M. · n.m@example.co.za</dd><dt>Document</dt><dd>Smart ID card</dd><dt>ID number</dt><dd class="mono">••••••••• 0823</dd><dt>Date of birth</dt><dd>Matches the ID number</dd></dl>
       </div>
       <div class="rd-card rd-stack"><h3 class="rd-h2" style="font-size:17px">Decision</h3>
-        <a class="rd-btn ok full" href="#">Approve ID</a>
-        <div class="rd-or">or reject with a reason</div>
-        <div class="rd-reasons"><div class="rd-radio on"><i></i>Photo is blurry or cut off</div><div class="rd-radio"><i></i>Number doesn't match the document</div><div class="rd-radio"><i></i>Name doesn't match the account</div><div class="rd-radio"><i></i>Not an accepted document</div><div class="rd-radio"><i></i>Other (write a note)</div></div>
+        <a class="rd-btn ok full" href="#">Approve</a>
+        <div class="rd-or">or decline with a reason</div>
+        <div class="rd-reasons"><div class="rd-radio on"><i></i>Face doesn't match the ID photo</div><div class="rd-radio"><i></i>Document looks altered or not genuine</div><div class="rd-radio"><i></i>Name doesn't match the account</div><div class="rd-radio"><i></i>Other (write a note)</div></div>
         <div class="rd-field"><label>Note to the person (optional)</label><div class="rd-input"><span class="ph">They see this with the reason</span></div></div>
-        <a class="rd-btn danger full" href="#">Reject and tell them why</a>
+        <a class="rd-btn danger full" href="#">Decline and tell them why</a>
+        <p class="rd-hint" style="margin:0">Declining uses one of their 3 tries.</p>
       </div>
     </div>
   </div>
@@ -592,8 +639,124 @@ page(
 page(
   "A7-admin-id-review/a7-3-empty.html",
   "Admin ID review queue, empty",
-  `<section class="wrap">${admHead(TABS(0))}<div class="rd-empty"><img src="${ill("sent")}" alt=""><h2>The queue is clear.</h2><p>No IDs are waiting. New ones appear here as people send them; we email the team if one waits more than 4 hours.</p><div class="rd-row"><a class="rd-btn light" href="#">See approved IDs</a></div></div></section>`,
+  `<section class="wrap">${admHead(TABS(0))}<div class="rd-empty"><img src="${ill("sent")}" alt=""><h2>Nothing waiting for review.</h2><p>Didit is handling everyone automatically right now. Cases it sends for a second look appear here; we email the team if one waits more than 4 hours.</p><div class="rd-row"><a class="rd-btn light" href="#">See approved IDs</a></div></div></section>`,
   { signed: true, admin: true },
+);
+
+// ================= A8 =================
+const stars = (n, cls = "") => `<span class="rd-stars ${cls}" aria-label="${n} out of 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= Math.floor(n) ? "f" : i - n < 1 ? "h" : ""}"></i>`).join("")}</span>`;
+const REV = [
+  { i: "LM", n: "Lerato M.", s: 5, d: "18 Nov 2026", svc: "Interior detail", t: "Booked an interior detail for our 7-seater after the kids' holiday. The seats look new and they sent photos before I fetched the car. Ready 30 minutes early.", reply: "Thank you Lerato! Glad the seats came up well. See you before the next holiday.", help: 12 },
+  { i: "SK", n: "Sipho K.", s: 4, d: "9 Nov 2026", svc: "Headlight restoration", t: "Both lenses are clear again and the price matched what they said in the message. Took a bit longer than expected on a Saturday.", reply: "", help: 5 },
+  { i: "AV", n: "Anika V.", s: 2, d: "27 Oct 2026", svc: "Full valet", t: "Outside was great but there was still sand under the seats. They offered to redo it when I called, so two stars for the fix.", reply: "Sorry about that, Anika. We've changed our checklist so seat rails get vacuumed on every valet. Your redo is on us.", help: 8 },
+];
+const revCard = (r, k, extra = "") => `<article class="rd-rev"><div class="top"><span class="rd-av${av(k)}">${r.i}</span><div><b>${r.n}</b><small>${r.d}${r.svc ? ` · ${r.svc}` : ""}</small></div><span class="rd-sp"></span>${stars(r.s)}</div><p>${r.t}</p>${r.reply ? `<div class="rd-reply"><b><span class="rd-av sm">SS</span>Reply from Shine Studio</b><p>${r.reply}</p></div>` : ""}<div class="foot"><span>Helpful (${r.help})</span><span>·</span><a href="#">Report</a>${extra}</div></article>`;
+const SUMMARY = `<div class="rd-rsum"><div class="big"><b>4.8</b>${stars(4.8, "lg")}<small>126 reviews</small></div><div class="bars">${[[5, 98], [4, 19], [3, 5], [2, 3], [1, 1]].map(([s, c]) => `<div class="rd-score"><span>${s} ★</span><div class="bar"><i style="width:${Math.round((c / 126) * 100)}%"></i></div><b>${c}</b></div>`).join("")}</div></div>`;
+const bizHead = (rating) => `<section class="wrap">
+  <div class="rd-crumb"><a href="/">Home</a><span>/</span><a href="#">Wash &amp; Detailing</a><span>/</span><span>Shine Studio</span></div>
+  <div class="rd-bizhead"><div class="rd-cover cv-a"><img class="o" src="${OBJ.wash}" alt=""></div>
+    <div class="info"><h1 class="rd-h1" style="margin:0">Shine Studio</h1>
+      <div class="rd-meta" style="font-size:15px;margin-top:10px">${rating}<span>·</span><span>Rosebank, Johannesburg</span><span>·</span><span class="open">●</span><span>Open until 18:00</span></div>
+      <div class="rd-row" style="margin-top:14px"><span class="rd-lbl ok">Verified</span><span class="rd-lbl plain">Hand wash</span><span class="rd-lbl plain">Valet</span><span class="rd-lbl plain">Interior detail</span></div></div>
+    <div class="acts"><a class="rd-btn" href="#">Send a message</a><a class="rd-btn light" href="#">Directions</a></div>
+  </div>
+</section>`;
+const RATING = `${stars(4.8)}<span class="st">4.8</span><a class="rd-link" href="#reviews">126 reviews</a>`;
+page(
+  "A8-reviews/a8-1-cards.html",
+  "Ratings on listing cards",
+  `<section class="wrap"><div class="lp-head"><div><span class="lp-eyebrow">Wash &amp; Detailing near Rosebank</span><h2>Ratings on every card</h2></div></div>
+  <div class="rd-grid">${[BIZ[0], BIZ[4], { ...BIZ[7], r: "", rc: 0 }].map((b) => b.rc ? bcard(b).replace(`<span class="st">★ ${b.r}</span><span>(${b.rc})</span>`, `${stars(+b.r)}<span class="st">${b.r}</span><span>(${b.rc})</span>`) : bcard(b).replace(`<span class="st">★ </span><span>(0)</span>`, `<span class="rd-lbl blue plain">New</span><span>No reviews yet</span>`)).join("")}</div></section>`,
+);
+page(
+  "A8-reviews/a8-2-business-page-reviews.html",
+  "Business page with reviews",
+  `${bizHead(RATING)}
+<section class="wrap" id="reviews" style="margin-top:40px">
+  <div class="rd-revgrid">
+    <div class="rd-stack"><h2 class="rd-h2">Reviews</h2>${SUMMARY}
+      <div class="rd-note plain"><img src="${ic("shield")}" alt=""><div>Only customers who contacted this business through CarworX can review it.</div></div>
+      <a class="rd-btn full" href="#">Write a review</a></div>
+    <div><div class="rd-row" style="margin-bottom:14px"><span class="lp-chip on">Most recent</span><span class="lp-chip">Highest</span><span class="lp-chip">Lowest</span><span class="lp-chip">With a reply</span><span class="rd-sp"></span><small style="color:var(--muted)">126 reviews</small></div>
+      ${REV.map((r, k) => revCard(r, k)).join("")}
+      <p style="text-align:center;margin-top:18px"><a class="rd-btn light" href="#">Show more reviews</a></p></div>
+  </div>
+</section>`,
+  { signed: true },
+);
+page(
+  "A8-reviews/a8-3-write-review.html",
+  "Write a review",
+  `<section class="rd-narrow"><div class="rd-crumb"><a href="#">Shine Studio</a><span>/</span><span>Review</span></div><h1 class="rd-h1">How was Shine Studio?</h1><p class="rd-sub">You messaged them on 14 Nov. Your review shows your first name and initial.</p>
+  <div class="rd-card rd-stack" style="margin-top:24px">
+    <div class="rd-field"><span class="lb">Your rating</span><div class="rd-starpick">${stars(4, "xl")}<span>Good</span></div></div>
+    <div class="rd-field"><label>Which service? (optional)</label><div class="rd-input">Headlight restoration <span class="rd-sp"></span>▾</div></div>
+    <div class="rd-field"><label>Your review</label><div class="rd-input rd-area">Both lenses are clear again and the price matched what they said in the message. Took a bit longer than expected on a Saturday.</div><small>Say what happened, not who. 20 to 1 000 characters · 142 used.</small></div>
+    <div class="rd-note plain"><img src="${ic("info")}" alt=""><div>One review per business. You can edit it later; we show "Edited" and the date.</div></div>
+    <a class="rd-btn full" href="#">Post review</a>
+  </div>
+</section>`,
+  { signed: true },
+);
+page(
+  "A8-reviews/a8-4-cannot-review.html",
+  "Write a review, not eligible",
+  `<section class="rd-narrow"><div class="rd-crumb"><a href="#">Shine Studio</a><span>/</span><span>Review</span></div>
+  <div class="rd-empty" style="margin-top:20px"><img src="${ill("noreply")}" alt=""><h2>Message them first.</h2><p>Only customers who contacted Shine Studio through CarworX can review it. That keeps reviews from real customers.</p><div class="rd-row"><a class="rd-btn" href="#">Send a message</a><a class="rd-btn light" href="#">Back to Shine Studio</a></div></div>
+</section>`,
+  { signed: true },
+);
+page(
+  "A8-reviews/a8-5-owner-reply.html",
+  "Business owner replies (in /provider)",
+  `<section class="wrap"><div class="rd-crumb"><a href="#">Your business</a><span>/</span><span>Reviews</span></div><h1 class="rd-h1">Reviews</h1><p class="rd-sub">One public reply per review. Keep it short and polite; customers read replies as much as reviews.</p>
+  <div class="rd-row" style="margin:22px 0 16px"><div class="rd-adm-tabs"><span class="on">Needs a reply <i>1</i></span><span>All <i>126</i></span></div><span class="rd-sp"></span><span class="rd-meta">${stars(4.8)}<span class="st">4.8</span><span>average</span></span></div>
+  <div class="rd-revgrid one">
+    <article class="rd-rev"><div class="top"><span class="rd-av coral">SK</span><div><b>Sipho K.</b><small>9 Nov 2026 · Headlight restoration</small></div><span class="rd-sp"></span>${stars(4)}</div><p>${REV[1].t}</p>
+      <div class="rd-replybox"><div class="rd-field"><label>Your public reply</label><div class="rd-input rd-area focus">Thanks Sipho! Saturdays are our busiest day; we'll give you a time window next time so you can plan around it.</div><small>Shows as "Reply from Shine Studio". You can edit it, not add a second one.</small></div><div class="rd-row"><a class="rd-btn" href="#">Post reply</a><a class="rd-btn light" href="#">Cancel</a></div></div></article>
+    ${revCard(REV[0], 0, '<span class="rd-sp"></span><a href="#">Edit reply</a>')}
+  </div>
+</section>`,
+  { signed: true },
+);
+page(
+  "A8-reviews/a8-6-report-review.html",
+  "Report a review",
+  `${bizHead(RATING)}<section class="wrap" style="margin-top:32px">${REV.map((r, k) => revCard(r, k)).join("")}</section>
+  <div class="rd-dialog-scrim"></div>
+  <div class="rd-dialog" role="dialog" aria-label="Report this review"><h2 class="rd-h2">Report this review</h2><p style="color:var(--muted);margin:6px 0 16px;font-size:14px">Our team checks every report. The reviewer isn't told who reported it.</p>
+    <div class="rd-reasons"><div class="rd-radio on"><i></i>Not about a real visit or enquiry</div><div class="rd-radio"><i></i>Rude, hateful or threatening</div><div class="rd-radio"><i></i>Shares personal details</div><div class="rd-radio"><i></i>Spam or advertising</div><div class="rd-radio"><i></i>Something else</div></div>
+    <div class="rd-field" style="margin-top:12px"><label>Anything else? (optional)</label><div class="rd-input"><span class="ph">Tell us what's wrong</span></div></div>
+    <div class="rd-row" style="margin-top:16px"><a class="rd-btn" href="#">Send report</a><a class="rd-btn light" href="#">Cancel</a></div></div>`,
+  { signed: true },
+);
+page(
+  "A8-reviews/a8-7-admin-moderation.html",
+  "Admin review moderation queue",
+  `<section class="wrap"><div class="rd-crumb">Admin</div><h1 class="rd-h1">Reported reviews</h1><p class="rd-sub">Hide a review only when it breaks the rules. A low rating alone is never a reason.</p>
+  <div class="rd-row" style="margin:22px 0 18px"><div class="rd-adm-tabs"><span class="on">Reported <i>3</i></span><span>Hidden <i>7</i></span><span>Kept <i>21</i></span></div></div>
+  <div class="rd-review">
+    <div class="rd-stack">
+      ${[["AV", "Anika V.", "Shine Studio", 2, "Not about a real visit", "Business owner", "2 h"], ["TB", "Tumi B.", "TreadRight Tyres", 1, "Rude, hateful or threatening", "Customer", "5 h"], ["RP", "Riaan P.", "Kgosi Auto Repairs", 5, "Spam or advertising", "Customer", "1 d"]].map(([i, n, biz, s, why, by, age], k) => `<a class="rd-modrow${k === 0 ? " on" : ""}" href="#"><span class="rd-av${av(k)}">${i}</span><div><b>${n} → ${biz}</b><small>${why} · reported by ${by}</small></div><span class="rd-sp"></span>${stars(s)}<span class="rd-age">${age}</span></a>`).join("")}
+    </div>
+    <div class="rd-card rd-stack">
+      <div class="rd-row"><h3 class="rd-h2" style="font-size:17px">Anika V. on Shine Studio</h3><span class="rd-sp"></span>${stars(2)}</div>
+      <p style="margin:0">${REV[2].t}</p>
+      <dl class="rd-kv"><dt>Enquiry on record</dt><dd>Yes · 24 Oct 2026</dd><dt>Reported by</dt><dd>Business owner · 2 h ago</dd><dt>Reason given</dt><dd>Not about a real visit</dd><dt>Other reviews by Anika</dt><dd>3, none reported</dd></dl>
+      <div class="rd-note plain"><img src="${ic("info")}" alt=""><div>The enquiry on record shows a real contact, so this is likely a fair review.</div></div>
+      <div class="rd-field"><label>Reason for your decision</label><div class="rd-input">Real enquiry on record; criticism is about the service</div></div>
+      <div class="rd-row"><a class="rd-btn" href="#">Keep review</a><a class="rd-btn danger" href="#">Hide review</a></div>
+      <p class="rd-hint" style="margin:0;text-align:left">Both sides get an email with your reason. Hidden reviews don't count in the rating.</p>
+    </div>
+  </div>
+</section>`,
+  { signed: true, admin: true, active: "reviews" },
+);
+page(
+  "A8-reviews/a8-8-no-reviews.html",
+  "Business page, no reviews yet",
+  `${bizHead(`<span class="rd-lbl blue plain">New</span><span>No reviews yet</span>`)}
+<section class="wrap" id="reviews" style="margin-top:40px"><div class="rd-empty"><img src="${ill("few")}" alt=""><h2>No reviews yet.</h2><p>Shine Studio is new on CarworX. Customers who send them a message can leave the first review.</p><div class="rd-row"><a class="rd-btn" href="#">Send a message</a></div></div></section>`,
 );
 
 writeFileSync(join(ROOT, "_src/manifest.json"), JSON.stringify(MANIFEST, null, 2));
