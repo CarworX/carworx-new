@@ -51,8 +51,14 @@ test("source config keeps local, staging and production separate without public 
   assert.equal(config.triggers, undefined);
   assert.deepEqual(Object.keys(config.env).sort(), ["production", "staging"]);
   assert.equal(config.env.staging.name, "carworx-web-staging");
-  assert.equal(config.env.staging.vars.CARWORX_DEV_PAGES, "1");
-  assert.equal(config.env.staging.vars.CARWORX_ENV, "staging");
+  assert.deepEqual(config.env.staging.vars, {
+    CARWORX_ENV: "staging",
+    CARWORX_DEV_PAGES: "1",
+    MAIL_ENABLED: "1",
+    MAIL_DOMAIN_VERIFIED: "1",
+    MAIL_FROM: "no-reply@mail.staging.carworx.app",
+    MAIL_SENDING_DOMAIN: "mail.staging.carworx.app",
+  });
 });
 test("production config is isolated, has no dev pages and no staging controls (P-1)", () => {
   const prod = sourceConfig().env.production;
@@ -76,11 +82,16 @@ test("production config is isolated, has no dev pages and no staging controls (P
 test("staging and production bind every Hyperdrive config with distinct owner IDs (P-2, R-2)", () => {
   const { staging, production } = sourceConfig().env;
   const ids = [];
+  const shared = ["CATALOGUE_DB", "FORMS_DB", "RETENTION_DB"];
+  assert.deepEqual(
+    staging.hyperdrive.map((binding) => binding.binding),
+    [...shared, "MAIL_DB"],
+  );
+  assert.deepEqual(
+    production.hyperdrive.map((binding) => binding.binding),
+    shared,
+  );
   for (const env of [staging, production]) {
-    assert.deepEqual(
-      env.hyperdrive.map((b) => b.binding),
-      ["CATALOGUE_DB", "FORMS_DB", "RETENTION_DB"],
-    );
     for (const b of env.hyperdrive) {
       assert.deepEqual(Object.keys(b).sort(), ["binding", "id"]);
       assert.match(b.id, HYPERDRIVE_ID);
