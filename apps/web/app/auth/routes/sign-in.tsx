@@ -5,6 +5,7 @@ import {
   FAILURE_MESSAGES,
   type AuthFailure,
 } from "../errors";
+import { signedInDestination } from "../after-sign-in.server";
 import { field, parseEmail } from "../forms";
 import { throwRedirect } from "../http.server";
 import { authRequest, getSignedIn } from "../session.server";
@@ -69,19 +70,25 @@ export const headers: Route.HeadersFunction = ({ loaderHeaders }) =>
 export async function action({ request, context }: Route.ActionArgs) {
   const form = await request.formData();
   const auth = authRequest(request, context.security);
-  const returnTo = safeReturnTo(field(form, "returnTo"), auth.config.appOrigin);
+  // "" when nothing safe was asked for: the destination is then decided by
+  // who the person is, after sign-in (signedInDestination).
+  const requested = safeReturnTo(
+    field(form, "returnTo"),
+    auth.config.appOrigin,
+    "",
+  );
 
   const intent = field(form, "intent");
   if (intent === "google" || intent === "google-id") {
     const response =
       intent === "google"
-        ? await startGoogle(auth, returnTo)
+        ? await startGoogle(auth, requested)
         : await exchangeGoogle(
             request,
             context.cloudflare.env,
             auth,
             form.get("googleCredential"),
-            returnTo,
+            requested,
           );
     return (
       response ?? fail("oauth_failed", { status: 502, headers: auth.headers })
@@ -106,7 +113,8 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
   // Admin pages ask for the TOTP step-up themselves (aal2), wherever the
   // user lands first.
-  return redirect(returnTo, { headers: auth.headers });
+  const destination = requested || (await signedInDestination(auth.supabase));
+  return redirect(destination, { headers: auth.headers });
 }
 
 export default function SignIn({

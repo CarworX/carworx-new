@@ -1,3 +1,4 @@
+import { signedInDestination } from "./after-sign-in.server";
 import { redirect } from "react-router";
 import type { AuthRequest } from "./session.server";
 import {
@@ -115,5 +116,7 @@ export async function exchangeGoogle(
     token: credential,
     nonce: match[1],
   });
-  return error === null ? redirect(returnTo, { headers: auth.headers }) : null;
+  if (error !== null) return null;
+  const destination = returnTo || (await signedInDestination(auth.supabase));
+  return redirect(destination, { headers: auth.headers });
 }
