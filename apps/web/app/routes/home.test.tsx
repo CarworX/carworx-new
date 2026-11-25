@@ -161,6 +161,14 @@ describe("/ home: browse first (D-097)", () => {
     expect(sheet).toContain('href="/auth/sign-up"');
   });
 
+  it("keeps business information public and sends the application button to get listed", () => {
+    expect(html).toContain('<a href="#business">For businesses</a>');
+    expect(html).toContain('id="business"');
+    expect(html).toMatch(
+      /href="\/provider\/get-listed\/business"[\s\S]{0,100}List your business free/,
+    );
+  });
+
   it("loads its stylesheets and script on this route only", () => {
     expect(links()).toHaveLength(2);
     expect(html).toContain('<script src="/home/home.js" defer="">');

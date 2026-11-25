@@ -2,9 +2,6 @@ import type { ReactNode } from "react";
 
 import { CSRF_FIELD } from "../server/security/csrf";
 
-// Plain, unstyled markup. Studio components and styles arrive with T4; these
-// pages switch to them once T4 merges.
-
 export function AuthPage({
   title,
   children,
@@ -13,9 +10,19 @@ export function AuthPage({
   children: ReactNode;
 }) {
   return (
-    <main>
-      <h1>{title}</h1>
-      {children}
+    <main className="cx-canvas auth-page">
+      <div className="auth-panel">
+        <a className="auth-brand" href="/" aria-label="CarworX home">
+          <img
+            src="/assets/core/carworx-lockup-horizontal-ink.svg"
+            alt="CarworX"
+          />
+        </a>
+        <div className="auth-card">
+          <h1>{title}</h1>
+          {children}
+        </div>
+      </div>
     </main>
   );
 }
@@ -40,9 +47,10 @@ export function Notice({
 
 export function EmailField({ defaultValue }: { defaultValue?: string }) {
   return (
-    <p>
+    <p className="cx-field">
       <label htmlFor="email">Email</label>
       <input
+        className="cx-input"
         id="email"
         name="email"
         type="email"
@@ -65,9 +73,10 @@ export function PasswordField({
   autoComplete: "current-password" | "new-password";
 }) {
   return (
-    <p>
+    <p className="cx-field">
       <label htmlFor={name}>{label}</label>
       <input
+        className="cx-input"
         id={name}
         name={name}
         type="password"

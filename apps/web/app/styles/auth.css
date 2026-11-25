@@ -1,0 +1,58 @@
+@layer components {
+  .auth-page {
+    display: grid;
+    min-height: 100svh;
+    justify-items: center;
+    align-content: start;
+    padding: clamp(32px, 8vh, 88px) 16px 32px;
+  }
+
+  .auth-panel {
+    width: min(100%, 440px);
+    min-width: 0;
+  }
+
+  .auth-brand {
+    display: block;
+    width: 132px;
+    margin: 0 auto 24px;
+  }
+
+  .auth-card {
+    display: grid;
+    gap: 16px;
+    padding: clamp(18px, 5vw, 32px);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--sh-2);
+  }
+
+  .auth-card h1 {
+    font-size: var(--text-heading);
+    line-height: var(--text-heading--line-height);
+    font-weight: var(--text-heading--font-weight);
+    letter-spacing: -0.03em;
+  }
+
+  .auth-card form {
+    display: grid;
+    gap: 12px;
+  }
+
+  .auth-card .cx-input {
+    width: 100%;
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .auth-card a {
+    color: var(--blue-ink);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .auth-card [data-state="error"] {
+    color: var(--err);
+  }
+}

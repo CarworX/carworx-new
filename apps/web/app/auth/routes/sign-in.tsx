@@ -133,7 +133,9 @@ export default function SignIn({
         <CsrfField token={loaderData.csrf} />
         <input type="hidden" name="returnTo" value={loaderData.returnTo} />
         <input type="hidden" name="intent" value="google" />
-        <button type="submit">Continue with Google</button>
+        <button className="cx-btn outlined wide" type="submit">
+          Continue with Google
+        </button>
       </Form>
       <Form method="post">
         <CsrfField token={loaderData.csrf} />
@@ -141,7 +143,9 @@ export default function SignIn({
         <input type="hidden" name="intent" value="password" />
         <EmailField />
         <PasswordField autoComplete="current-password" />
-        <button type="submit">Sign in</button>
+        <button className="cx-btn primary wide" type="submit">
+          Sign in
+        </button>
       </Form>
       <p>
         <Link to="/auth/forgot-password">Forgot your password?</Link>
