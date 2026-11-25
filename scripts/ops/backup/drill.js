@@ -128,6 +128,7 @@ function safePort(value, protocol) {
 }
 
 function stack(name) {
+  stageName = name + "-scratch-config";
   const cwd = join(root, name);
   mkdirSync(cwd);
   cpSync(join(repo, "supabase"), join(cwd, "supabase"), { recursive: true });
@@ -136,7 +137,7 @@ function stack(name) {
   let port = name === "source" ? 25000 : 26000;
   const local = text
     .replace(
-      /^\[auth\.email\.template\.(?:confirmation|recovery)\]\n[\s\S]*?(?=^\[|$(?![\s\S]))/gm,
+      /^\[auth\.email\.template\.(?:confirmation|recovery|email_change)\]\n[\s\S]*?(?=^\[|$(?![\s\S]))/gm,
       "",
     )
     .replace(/^(port|shadow_port|inspector_port) = .*\n/gm, (_, key) =>
