@@ -35,7 +35,16 @@ insert into public.enquiries (listing_public_id, organisation_id, sender_name, s
   ('d5720000-0000-4000-8000-000000000001', 'd5710000-0000-4000-8000-000000000001', 'Sam', 'sam.staff@example.test',
    'Synthetic enquiry from Sam', 'd5730000-0000-4000-8000-000000000001', 'd5700000-0000-4000-8000-000000000001');
 
-select plan(27);
+-- Claims for a user whose token carries a password check from now (or from
+-- p_age seconds ago, or none), as close_account requires.
+create function pg_temp.as_user(p_uid text, p_aal text, p_age integer default 0) returns void
+language sql as $f$
+  select set_config('request.jwt.claims', json_build_object('sub', p_uid, 'role', 'authenticated', 'aal', p_aal,
+    'amr', case when p_age is null then '[]'::json
+      else json_build_array(json_build_object('method', 'password', 'timestamp', extract(epoch from now())::bigint - p_age)) end)::text, true)
+$f$;
+
+select plan(30);
 
 -- ===== Grants ===============================================================
 select ok(not has_function_privilege('anon', 'public.close_account()', 'execute'), 'anon cannot close an account');
@@ -47,22 +56,34 @@ select ok(not has_table_privilege('retention_server', 'private.account_closures'
   'the retention login reads no closure table directly');
 
 -- ===== Who may close ========================================================
-set local request.jwt.claims = '{"sub":"d5700000-0000-4000-8000-000000000005","role":"authenticated","aal":"aal2"}';
+do $$ begin perform pg_temp.as_user('d5700000-0000-4000-8000-000000000005', 'aal2'); end $$;
 set local role authenticated;
 select throws_ok($$select public.close_account()$$, 'P0001', 'admin_account', 'an admin is removed by another admin');
 reset role;
-set local request.jwt.claims = '{"sub":"d5700000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal1"}';
+do $$ begin perform pg_temp.as_user('d5700000-0000-4000-8000-000000000002', 'aal1'); end $$;
 set local role authenticated;
 select throws_ok($$select public.close_account()$$, 'P0001', 'owner_must_transfer',
   'a sole owner must hand over the business first');
 reset role;
-set local request.jwt.claims = '{"sub":"d5700000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal1"}';
+do $$ begin perform pg_temp.as_user('d5700000-0000-4000-8000-000000000003', 'aal1'); end $$;
 set local role authenticated;
 select ok(public.close_account() is not null, 'a co-owner may close while another owner remains');
 reset role;
 
+-- ===== Re-confirmed at the database boundary ================================
+do $$ begin perform pg_temp.as_user('d5700000-0000-4000-8000-000000000001', 'aal1', null); end $$;
+set local role authenticated;
+select throws_ok($$select public.close_account()$$, 'P0001', 'reconfirm_required',
+  'a token without a password or authenticator check cannot close the account');
+reset role;
+do $$ begin perform pg_temp.as_user('d5700000-0000-4000-8000-000000000001', 'aal1', 3600); end $$;
+set local role authenticated;
+select throws_ok($$select public.close_account()$$, 'P0001', 'reconfirm_required',
+  'nor one whose last check is an hour old (a stolen session)');
+reset role;
+
 -- ===== Close: disabled at once, 14 days ======================================
-set local request.jwt.claims = '{"sub":"d5700000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+do $$ begin perform pg_temp.as_user('d5700000-0000-4000-8000-000000000001', 'aal1'); end $$;
 set local role authenticated;
 -- Called once and kept: BETWEEN would evaluate a volatile call twice.
 do $$ begin perform set_config('tests.delete_after', public.close_account()::text, true); end $$;
@@ -80,7 +101,7 @@ select ok(exists (select from public.audit_log where target_table = 'memberships
   'and the team history records it');
 
 -- ===== Reinstate within 14 days =============================================
-set local request.jwt.claims = '{"sub":"d5700000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+do $$ begin perform pg_temp.as_user('d5700000-0000-4000-8000-000000000001', 'aal1'); end $$;
 set local role authenticated;
 select ok(public.reinstate_account(), 'signing back in and confirming reinstates the account');
 select is(public.account_closure_status(), null, 'it is no longer closing');
@@ -92,9 +113,11 @@ reset role;
 select is((select count(*)::integer from public.claim_account_deletions(10)), 0, 'nothing is due before 14 days');
 update private.account_closures set requested_at = now() - interval '15 days', delete_after = now() - interval '1 day'
   where user_id = 'd5700000-0000-4000-8000-000000000001';
-set local request.jwt.claims = '{"sub":"d5700000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+do $$ begin perform pg_temp.as_user('d5700000-0000-4000-8000-000000000001', 'aal1'); end $$;
 set local role authenticated;
 select ok(not public.reinstate_account(), 'after the 14 days it can no longer be reinstated');
+select ok(public.account_closure_status() is not null,
+  'but it still counts as closing (signed out) until the daily run deletes it');
 reset role;
 create temporary table due as select * from public.claim_account_deletions(10);
 select is((select email from due where user_id = 'd5700000-0000-4000-8000-000000000001'), 'sam.staff@example.test',

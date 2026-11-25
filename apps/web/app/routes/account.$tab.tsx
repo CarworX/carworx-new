@@ -198,12 +198,26 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       });
       if (check.error !== null || check.data.user.id !== signedIn.user.id)
         return reply(false, "That password isn't right.", 400);
-    } else if (signedIn.aal !== "aal2") {
-      return reply(
-        false,
-        "Verify with your authenticator first (Security tab), then try again.",
-        403,
-      );
+    } else {
+      // No password: a fresh code from their authenticator. Verifying it
+      // refreshes this session, which close_account checks (10 minutes).
+      const code = form.get("code");
+      if (typeof code !== "string" || !/^\d{6}$/.test(code))
+        return reply(false, "Enter the 6-digit code from your app.", 400);
+      const listed = await signedIn.supabase.auth.mfa.listFactors();
+      const factor = listed.data?.totp[0];
+      if (listed.error !== null || factor === undefined)
+        return reply(
+          false,
+          "Add an authenticator app on the Security tab first, then try again.",
+          403,
+        );
+      const verified = await signedIn.supabase.auth.mfa.challengeAndVerify({
+        factorId: factor.id,
+        code,
+      });
+      if (verified.error !== null)
+        return reply(false, "That code isn't right.", 400);
     }
     const closed = await signedIn.supabase.rpc("close_account");
     if (closed.error !== null) {
@@ -218,11 +232,13 @@ export async function action({ request, params, context }: Route.ActionArgs) {
           ? reply(false, "Admin accounts are removed by another admin.", 403)
           : why === "already_closing"
             ? reply(false, "Your account is already closing.", 409)
-            : reply(
-                false,
-                "We couldn't close your account. Please try again.",
-                503,
-              );
+            : why === "reconfirm_required"
+              ? reply(false, "Please confirm it's you again.", 403)
+              : reply(
+                  false,
+                  "We couldn't close your account. Please try again.",
+                  503,
+                );
     }
     const until = typeof closed.data === "string" ? closed.data : "";
     // Disabled at once: every session on every device ends now.
@@ -667,10 +683,15 @@ export default function Settings({
                     required
                   />
                 ) : (
-                  <p className="type-caption">
-                    Your account has no password, so confirm with your
-                    authenticator: verify it on the Security tab first.
-                  </p>
+                  <TextField
+                    label="Code from your authenticator app"
+                    name="code"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    pattern="[0-9]{6}"
+                    maxLength={6}
+                    required
+                  />
                 )}
                 <label className="flex items-start gap-2">
                   <input type="checkbox" name="understand" required />

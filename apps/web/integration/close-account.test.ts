@@ -176,6 +176,14 @@ describe("close my account", () => {
     });
     sql(`update private.account_closures set requested_at = now() - interval '15 days',
       delete_after = now() - interval '1 day' where user_id='${user.id}'`);
+    // Overdue but not yet deleted: still signed out, and no reinstating.
+    const late = await signIn(user.email);
+    expect((await late.send("/account/profile")).location).toBe(
+      "/account/closing",
+    );
+    const lateNotice = await late.send("/account/closing");
+    expect(lateNotice.body).toContain("can no longer be reinstated");
+    expect(lateNotice.body).not.toContain("Reinstate my account");
     const module = (await import(
       pathToFileURL(
         join(import.meta.dirname, "..", "build", "server", "index.js"),

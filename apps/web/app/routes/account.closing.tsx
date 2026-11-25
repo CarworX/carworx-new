@@ -45,6 +45,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
           ? null
           : sastDate(signedIn.closingUntil),
       unknown: signedIn.closingUntil === "unknown",
+      // Past the 14 days: still signed out, but no longer reinstatable.
+      overdue:
+        signedIn.closingUntil !== "unknown" &&
+        Date.parse(signedIn.closingUntil) <= Date.now(),
     },
     { headers: signedIn.headers },
   );
@@ -75,6 +79,11 @@ export default function Closing({
             <StatusNote tone="err" title="We couldn't check your account.">
               Please try again in a moment.
             </StatusNote>
+          ) : loaderData.overdue ? (
+            <p data-overdue>
+              The 14 days have passed, so your CarworX account is being deleted.
+              It can no longer be reinstated. We'll email you when it's done.
+            </p>
           ) : (
             <p>
               {`You asked us to delete your CarworX account. It will be deleted on ${loaderData.on ?? "the date we emailed you"}. Until then your data is kept, and you can keep your account.`}
@@ -86,17 +95,21 @@ export default function Closing({
               invalid.
             </StatusNote>
           ) : null}
-          <p className="type-caption">
-            If you keep it, you will need new invites to rejoin any team you
-            were part of.
-          </p>
-          <form method="post">
-            <CsrfField token={loaderData.csrf} />
-            <input type="hidden" name="intent" value="reinstate" />
-            <Button type="submit" variant="primary">
-              Reinstate my account
-            </Button>
-          </form>
+          {loaderData.overdue ? null : (
+            <>
+              <p className="type-caption">
+                If you keep it, you will need new invites to rejoin any team you
+                were part of.
+              </p>
+              <form method="post">
+                <CsrfField token={loaderData.csrf} />
+                <input type="hidden" name="intent" value="reinstate" />
+                <Button type="submit" variant="primary">
+                  Reinstate my account
+                </Button>
+              </form>
+            </>
+          )}
           <form method="post" action="/auth/sign-out">
             <CsrfField token={loaderData.csrf} />
             <Button type="submit" variant="outline">

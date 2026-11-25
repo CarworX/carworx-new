@@ -71,6 +71,17 @@ language plpgsql volatile security definer set search_path = '' as $$
 declare v_uid uuid := auth.uid(); v_after timestamptz;
 begin
   if v_uid is null then raise exception 'not_allowed' using errcode = '42501'; end if;
+  -- Re-confirmed at this boundary, not only in the Worker: the caller's
+  -- token must carry a password or authenticator check from the last 10
+  -- minutes (the Worker signs in again, or verifies a code, just before).
+  -- A stolen older session cannot close the account through the API.
+  if not exists (select from jsonb_array_elements(
+                   case when jsonb_typeof(auth.jwt()->'amr') = 'array' then auth.jwt()->'amr' else '[]'::jsonb end) a
+                 where a->>'method' in ('password','totp')
+                   and (a->>'timestamp') ~ '^[0-9]{1,12}$'
+                   and (a->>'timestamp')::bigint >= extract(epoch from now())::bigint - 600) then
+    raise exception 'reconfirm_required' using errcode = 'P0001';
+  end if;
   if exists (select from private.platform_admins a where a.user_id = v_uid) then
     raise exception 'admin_account' using errcode = 'P0001';
   end if;
@@ -95,11 +106,13 @@ begin
   return v_after;
 end $$;
 
--- When this account will be deleted, or null when it is not closing.
+-- When this account will be deleted, or null when it is not closing. An
+-- overdue closure still counts until the daily run deletes the account:
+-- only reinstating is limited to the 14 days.
 create function private.account_closure_status() returns timestamptz
 language sql stable security definer set search_path = '' as $$
   select c.delete_after from private.account_closures c
-  where c.user_id = auth.uid() and c.delete_after > now()
+  where c.user_id = auth.uid()
 $$;
 
 -- Signing back in within the 14 days, and confirming, keeps the account.
