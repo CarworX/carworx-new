@@ -53,12 +53,15 @@ export function GoogleButton({
   formId,
   options,
   signup = false,
+  requireConsent = signup,
   disabled = false,
 }: {
   formId: string;
   options: { clientId: string; nonce: string } | null;
   signup?: boolean;
-  /** Sign-up: off until the terms box is ticked (B-10). */
+  /** The terms box must be ticked before Google sign-in (B-10). Sign-up always. */
+  requireConsent?: boolean;
+  /** Off until the terms box is ticked (B-10). */
   disabled?: boolean;
 }) {
   const widget = useRef<HTMLDivElement>(null);
@@ -91,11 +94,13 @@ export function GoogleButton({
             if (!(form instanceof HTMLFormElement)) return;
             const consent = form.elements.namedItem("consent");
             if (
-              signup &&
+              requireConsent &&
               (!(consent instanceof HTMLInputElement) || !consent.checked)
             ) {
               setMessage(
-                "Agree to the terms and privacy notice before signing up with Google. Then try again.",
+                signup
+                  ? "Agree to the terms and privacy notice before signing up with Google. Then try again."
+                  : "Agree to the terms and privacy notice before signing in with Google. Then try again.",
               );
               if (consent instanceof HTMLInputElement) consent.focus();
               return;
@@ -131,7 +136,7 @@ export function GoogleButton({
       observer.disconnect();
       container.replaceChildren();
     };
-  }, [clientId, nonce, formId, signup]);
+  }, [clientId, nonce, formId, signup, requireConsent]);
 
   return (
     <div className="grid gap-2">

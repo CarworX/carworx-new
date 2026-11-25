@@ -14,7 +14,7 @@ describe("FIXTURE Google sign-in: the redirect the app starts", () => {
     const browser = new Browser();
     await browser.send("/auth/sign-in");
     const reply = await browser.send("/auth/sign-in", {
-      form: { intent: "google", returnTo: "/account" },
+      form: { intent: "google", consent: "on", returnTo: "/account" },
     });
     expect(reply.status).toBe(302);
     const location = new URL(reply.location ?? "");
@@ -105,7 +105,7 @@ describe("FIXTURE Google sign-in: callback outcomes", () => {
     const starter = new Browser();
     await starter.send("/auth/sign-in");
     await starter.send("/auth/sign-in", {
-      form: { intent: "google", returnTo: "" },
+      form: { intent: "google", consent: "on", returnTo: "" },
     });
     const victim = new Browser(); // has no verifier cookie
     const reply = await victim.send(
@@ -113,6 +113,16 @@ describe("FIXTURE Google sign-in: callback outcomes", () => {
     );
     expect(reply.location).toBe("/auth/sign-in?error=oauth_failed");
     expect(victim.sessionCookieNames()).toEqual([]);
+  });
+
+  it("refuses Google sign-in until the terms box is ticked (B-10)", async () => {
+    const browser = new Browser();
+    await browser.send("/auth/sign-in");
+    const refused = await browser.send("/auth/sign-in", {
+      form: { intent: "google", returnTo: "/account" },
+    });
+    expect(refused.status).toBe(400);
+    expect(refused.body).toContain('data-problem="consent_required"');
   });
 
   it("only offers a CSRF-protected POST to start Google sign-in", async () => {
