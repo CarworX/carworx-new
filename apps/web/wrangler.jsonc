@@ -5,7 +5,7 @@
   "compatibility_date": "2026-11-01",
   "workers_dev": false,
   "preview_urls": false,
-  "vars": { "CARWORX_ENV": "local" },
+  "vars": { "CARWORX_ENV": "local", "EMAIL_CHANGE_ENABLED": "1" },
   "durable_objects": {
     "bindings": [{ "name": "SEARCH_LIMITER", "class_name": "SearchLimiter" }],
   },

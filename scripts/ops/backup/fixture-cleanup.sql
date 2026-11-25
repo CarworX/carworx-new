@@ -34,5 +34,6 @@ delete from private.data_exports where object_key = 'exports/' || repeat('d', 32
 
 delete from private.account_closures where user_id = '5eed0000-0000-4000-8000-000000000001';
 
+delete from public.profile_photos where object_key = 'avatars/' || repeat('e', 32) || '.jpg';
 delete from private.ownership_offers where organisation_id = '5eed0000-0000-4000-8000-0000000000a1';
 delete from private.listing_closures where listing_public_id = 'ca7c1000-0000-4000-8000-000000000003';

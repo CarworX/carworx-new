@@ -263,6 +263,12 @@ content_path = "./supabase/templates/confirmation.html"
 subject = "Reset your CarworX password"
 content_path = "./supabase/templates/recovery.html"
 
+# Finish-build PR 6: changing the email sends this to the current and the new
+# address (double_confirm_changes); /auth/confirm verifies each link.
+[auth.email.template.email_change]
+subject = "Confirm the change to your CarworX email"
+content_path = "./supabase/templates/email_change.html"
+
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true

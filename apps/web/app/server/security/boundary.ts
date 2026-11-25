@@ -30,14 +30,14 @@ import { CSRF_FIELD, csrfTokenMatches, issueCsrfToken } from "./csrf";
 export const PRIVATE_NO_STORE = "private, no-store";
 export const MAX_FORM_BYTES = 64 * 1024;
 /**
- * The one exception to MAX_FORM_BYTES: the cover-photo upload (finish-build
- * PR 3, D-098), multipart only, on this exact path. 5 MB of file plus the
+ * The one exception to MAX_FORM_BYTES: photo uploads (the cover photo, PR 3,
+ * and the profile photo, PR 6; D-098), multipart only, on these exact paths. 5 MB of file plus the
  * normal form allowance (server/media/limits.ts). It must state its
  * Content-Length, which is checked before any of the body is read. Origin
  * and CSRF checks are unchanged.
  */
 export const MAX_UPLOAD_BYTES = MAX_UPLOAD_REQUEST;
-const UPLOAD_PATHS = /^\/provider\/setup\/cover\/start$/;
+const UPLOAD_PATHS = /^\/(?:provider\/setup\/cover\/start|account\/profile)$/;
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const PERSONAL_PATHS = /^\/(?:auth|account|admin|org|provider|join)(?:[/.]|$)/;

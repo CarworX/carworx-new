@@ -11,7 +11,7 @@ import { validateEmailReport } from "../env/reports.js";
 import {
   loopbackHttp,
   nativeMailConfig,
-  nativeMessage,
+  nativeMessages,
 } from "./mail-config.js";
 
 const exec = promisify(execFile);
@@ -60,20 +60,22 @@ function capture(templates) {
         Buffer.concat(chunks).toString("utf8"),
         request.headers,
       );
-      const message = nativeMessage(
+      const messages = nativeMessages(
         payload,
         "http://localhost:5173",
         templates,
       );
-      const result = await fetch(new URL("/api/v1/send", mail), {
-        method: "POST",
-        redirect: "error",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(message),
-        signal: AbortSignal.timeout(5_000),
-      });
-      await result.body?.cancel();
-      if (!result.ok) throw Error("Local capture failed");
+      for (const message of messages) {
+        const result = await fetch(new URL("/api/v1/send", mail), {
+          method: "POST",
+          redirect: "error",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(message),
+          signal: AbortSignal.timeout(5_000),
+        });
+        await result.body?.cancel();
+        if (!result.ok) throw Error("Local capture failed");
+      }
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end("{}");
     } catch {
@@ -106,7 +108,7 @@ try {
   original = readFileSync(configPath, "utf8");
   server = capture(
     Object.fromEntries(
-      ["confirmation", "recovery"].map((name) => [
+      ["confirmation", "recovery", "email_change"].map((name) => [
         name,
         readFileSync(`supabase/templates/${name}.html`, "utf8"),
       ]),
