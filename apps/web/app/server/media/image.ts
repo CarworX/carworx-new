@@ -16,10 +16,10 @@
  * Animated images (APNG, animated WebP) are refused.
  */
 
-export const MAX_BYTES = 5 * 1024 * 1024;
-/** Decompression-bomb guard: no side over 6000 px, at most 40 megapixels. */
-export const MAX_SIDE = 6_000;
-export const MAX_PIXELS = 40_000_000;
+import { MAX_BYTES, MAX_PIXELS, MAX_SIDE } from "./limits";
+
+// The limits live in ./limits (shared by every photo upload).
+export { MAX_BYTES, MAX_PIXELS, MAX_SIDE };
 
 export type ImageType = "image/jpeg" | "image/png" | "image/webp";
 export interface CleanImage {

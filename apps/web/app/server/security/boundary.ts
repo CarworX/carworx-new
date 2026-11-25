@@ -1,3 +1,8 @@
+import {
+  MAX_UPLOAD_REQUEST,
+  PHOTO_TOO_LARGE,
+  uploadTooLarge,
+} from "../media/limits";
 import { COOKIE_PREFIX, isCompliantSetCookie, readCookies } from "./cookies";
 import { ConfigError, readServerConfig, type ServerConfig } from "./config";
 import { CSRF_FIELD, csrfTokenMatches, issueCsrfToken } from "./csrf";
@@ -27,9 +32,11 @@ export const MAX_FORM_BYTES = 64 * 1024;
 /**
  * The one exception to MAX_FORM_BYTES: the cover-photo upload (finish-build
  * PR 3, D-098), multipart only, on this exact path. 5 MB of file plus the
- * normal form allowance. Origin and CSRF checks are unchanged.
+ * normal form allowance (server/media/limits.ts). It must state its
+ * Content-Length, which is checked before any of the body is read. Origin
+ * and CSRF checks are unchanged.
  */
-export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024 + MAX_FORM_BYTES;
+export const MAX_UPLOAD_BYTES = MAX_UPLOAD_REQUEST;
 const UPLOAD_PATHS = /^\/provider\/setup\/cover\/start$/;
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
@@ -114,11 +121,14 @@ export async function checkMutation(
   ) {
     return { ok: false, reason: "content-type" };
   }
-  const limit =
+  const upload =
     mediaType === "multipart/form-data" &&
-    UPLOAD_PATHS.test(new URL(request.url).pathname)
-      ? MAX_UPLOAD_BYTES
-      : MAX_FORM_BYTES;
+    UPLOAD_PATHS.test(new URL(request.url).pathname);
+  // An upload must say how big it is, and fit, before we read any of it.
+  if (upload && uploadTooLarge(request)) {
+    return { ok: false, reason: "too-large" };
+  }
+  const limit = upload ? MAX_UPLOAD_BYTES : MAX_FORM_BYTES;
   const length = Number(request.headers.get("Content-Length") ?? "0");
   if (!Number.isFinite(length) || length > limit) {
     return { ok: false, reason: "too-large" };
@@ -263,7 +273,15 @@ export async function withSecurityBoundary(
   }
   if (config !== undefined) {
     const check = await checkMutation(request, config);
-    if (!check.ok) return plain(403, "Forbidden");
+    if (!check.ok)
+      return check.reason === "too-large"
+        ? plain(
+            413,
+            UPLOAD_PATHS.test(new URL(request.url).pathname)
+              ? PHOTO_TOO_LARGE
+              : "That form is too large.",
+          )
+        : plain(403, "Forbidden");
   }
   const csrf = issueCsrfToken(request);
   const response = await handle(request, { config, csrfToken: csrf.token });

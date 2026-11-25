@@ -1,3 +1,4 @@
+import { PHOTO_TOO_LARGE } from "../server/media/limits";
 import { field, isTicked } from "../auth/forms";
 
 export type TeamRole = "owner" | "manager" | "staff";
@@ -97,7 +98,7 @@ export const TEAM_PROBLEMS: Record<TeamProblem, string> = {
     "You already belong to this business. Open your business home.",
   photo_invalid:
     "Use a JPEG, PNG or WebP photo (not animated), at most 6000 pixels on each side.",
-  photo_too_large: "Use a photo of 5 MB or less.",
+  photo_too_large: PHOTO_TOO_LARGE,
   last_owner:
     "A business needs at least one owner. Transfer ownership to someone first.",
   unavailable: "This is temporarily unavailable. Please try again.",

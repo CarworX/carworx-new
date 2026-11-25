@@ -141,15 +141,38 @@ describe("cover photos through the Worker", () => {
       file("not-an-image.jpg"),
       file("animated.png", "a.png", "image/png"),
       file("too-wide.png", "w.png", "image/png"),
-      new File([new Uint8Array(5 * 1024 * 1024 + 1)], "big.jpg", {
-        type: "image/jpeg",
-      }),
     ]) {
       const refused = await owner.send(f.path, {
         multipart: upload(f.listing, photo),
       });
       expect(refused.status).toBe(400);
     }
+    // Over 5 MB by one byte: the route says so (413, the limit in words).
+    const oneOver = await owner.send(f.path, {
+      multipart: upload(
+        f.listing,
+        new File([new Uint8Array(5 * 1024 * 1024 + 1)], "big.jpg", {
+          type: "image/jpeg",
+        }),
+      ),
+    });
+    expect(oneOver.status).toBe(413);
+    expect(oneOver.body).toContain("up to 5 MB");
+    // A request over the limit is refused before it is read (boundary).
+    const huge = await owner.send(f.path, {
+      multipart: upload(
+        f.listing,
+        new File([new Uint8Array(6 * 1024 * 1024)], "huge.jpg", {
+          type: "image/jpeg",
+        }),
+      ),
+    });
+    expect(huge.status).toBe(413);
+    expect(huge.body).toContain("up to 5 MB");
+    // The form states the limit.
+    expect((await owner.send(f.path)).body).toContain(
+      "JPEG, PNG or WebP, up to 5 MB",
+    );
     // Another business's listing: refused before anything is stored.
     const other = await fixture("other");
     const crossed = await owner.send(f.path, {

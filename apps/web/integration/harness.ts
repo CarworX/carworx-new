@@ -118,11 +118,16 @@ export class Browser {
     const headers = new Headers(init.headers);
     if (init.jar !== false && this.jar.size > 0)
       headers.set("Cookie", this.cookieHeader());
-    let body: string | FormData | undefined;
+    let body: string | Uint8Array<ArrayBuffer> | undefined;
     if (init.multipart !== undefined) {
-      body = init.multipart;
-      if (init.csrf !== false && !body.has("csrf"))
-        body.set("csrf", this.csrf());
+      const form = init.multipart;
+      if (init.csrf !== false && !form.has("csrf"))
+        form.set("csrf", this.csrf());
+      // Encoded as a browser sends it: framing and a stated Content-Length.
+      const encoded = new Response(form);
+      body = new Uint8Array(await encoded.arrayBuffer());
+      headers.set("Content-Type", encoded.headers.get("Content-Type") ?? "");
+      headers.set("Content-Length", String(body.byteLength));
     } else if (init.form !== undefined) {
       const form = new URLSearchParams();
       for (const [key, value] of Object.entries(init.form))
