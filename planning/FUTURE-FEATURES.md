@@ -17,6 +17,7 @@ Ideas the owner wants **later**, not in the current release. Each entry says why
 | F-11 | Brand sponsors on guides and in the newsletter | Later revenue test | D-056, PLAN §17 |
 | F-12 | Insurer claims and roadside dispatch | Out of v1 scope | PLAN §2 |
 | F-13 | Customer wallets or escrow | Out of v1: Paystack direct split instead | D-012, PLAN §2 |
+| F-14 | Home Affairs ID check (Didit "Option B": 13-digit ID number and a selfie matched to the Home Affairs photo, about $2.68 per person) | The launch uses Didit "Option A" (ID document and selfie, about $0.33 per person). Upgrade when revenue allows (owner, 25 Nov 2026; D-099, BACKLOG B-21) | 2026-11-25 (SAST) |
 
 ## Not pursued (owner said no)
 
