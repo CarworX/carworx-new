@@ -11,7 +11,7 @@ create index consents_user_idx on public.consents(user_id) where user_id is not 
 create unique index consents_account_terms_user_version_idx
   on public.consents(user_id, notice_version) where purpose = 'account_terms';
 
-create function public.accept_account_terms(p_version text) returns void
+create function private.accept_account_terms(p_version text) returns void
 language plpgsql security definer set search_path = '' as $$
 declare v_user uuid := auth.uid();
 begin
@@ -27,7 +27,7 @@ begin
     on conflict (user_id, notice_version) where purpose = 'account_terms' do nothing;
 end $$;
 
-create function public.my_terms_status()
+create function private.my_terms_status()
 returns table(accepted boolean, version text, accepted_at timestamptz)
 language sql stable security definer set search_path = '' as $$
   select c.granted_at is not null, c.notice_version, c.granted_at
@@ -53,7 +53,7 @@ begin
   if not found then raise exception 'not_allowed' using errcode = '42501'; end if;
   if p_reason = 'declined_terms' then
     if not exists (select from auth.users where id = v_uid and created_at > now() - interval '24 hours')
-      or (select accepted from public.my_terms_status())
+      or (select accepted from private.my_terms_status())
     then raise exception 'terms_decline_not_allowed' using errcode = '42501'; end if;
   end if;
   -- Re-confirmed at this boundary, not only in the Worker: the caller's
@@ -103,7 +103,7 @@ language sql volatile security definer set search_path = '' as $$
   select private.close_account_with_reason(null)
 $$;
 
-create function public.decline_terms_and_close() returns timestamptz
+create function private.decline_terms_and_close() returns timestamptz
 language sql volatile security definer set search_path = '' as $$
   select private.close_account_with_reason('declined_terms')
 $$;
@@ -119,8 +119,28 @@ end $$;
 create trigger end_account_terms_consent before delete on auth.users
   for each row execute function private.end_account_terms_consent();
 
+-- Keep API functions invoker-only, matching the repository's RPC boundary.
+create function public.accept_account_terms(p_version text) returns void
+language sql volatile security invoker set search_path = '' as $$
+  select private.accept_account_terms(p_version)
+$$;
+
+create function public.my_terms_status()
+returns table(accepted boolean, version text, accepted_at timestamptz)
+language sql stable security invoker set search_path = '' as $$
+  select * from private.my_terms_status()
+$$;
+
+create function public.decline_terms_and_close() returns timestamptz
+language sql volatile security invoker set search_path = '' as $$
+  select private.decline_terms_and_close()
+$$;
+
 revoke all on function public.accept_account_terms(text), public.my_terms_status(),
-  public.decline_terms_and_close(), private.close_account_with_reason(text),
-  private.end_account_terms_consent() from public, anon, authenticated, service_role;
+  public.decline_terms_and_close(), private.accept_account_terms(text),
+  private.my_terms_status(), private.decline_terms_and_close(),
+  private.close_account_with_reason(text), private.end_account_terms_consent()
+  from public, anon, authenticated, service_role;
 grant execute on function public.accept_account_terms(text), public.my_terms_status(),
-  public.decline_terms_and_close() to authenticated;
+  public.decline_terms_and_close(), private.accept_account_terms(text),
+  private.my_terms_status(), private.decline_terms_and_close() to authenticated;
