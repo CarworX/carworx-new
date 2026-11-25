@@ -122,7 +122,9 @@ describe("FIXTURE Google sign-in: callback outcomes", () => {
       /<form\b[^>]*\bmethod="post"[^>]*>[\s\S]*?<\/form>/.exec(
         page.body,
       )?.[0] ?? "";
-    expect(googleForm).toContain('name="intent" value="google"');
+    expect(googleForm).toMatch(
+      /<button\b(?=[^>]*\bname="intent")(?=[^>]*\bvalue="google")[^>]*>/,
+    );
     expect(googleForm).toContain('name="csrf"');
     const forged = new Browser();
     await forged.send("/auth/sign-in");
