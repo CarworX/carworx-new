@@ -71,8 +71,8 @@ describe("/ home: browse first (D-097)", () => {
     expect(tag).toContain('method="get"');
     expect(tag).toContain('action="/search"');
     expect(form).toContain('name="q"');
-    expect(form).toContain('name="area"');
-    expect(form).not.toMatch(/name="area"[^>]*required/);
+    expect(form).toContain('id="home-location"');
+    expect(form).not.toContain('name="area"');
     expect(html).toContain("What do you need?");
     expect(html).toContain("Free to browse");
     expect(html).toContain("Sign in only to book or send an enquiry");
@@ -146,7 +146,7 @@ describe("/ home: browse first (D-097)", () => {
     const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1] ?? "");
     for (const href of hrefs)
       expect(href).toMatch(
-        /^(#[a-z0-9-]+|\/(search(\?category=[a-z-]+)?|fines|support|privacy|terms|auth\/sign-in|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36}))$/,
+        /^(#[a-z0-9-]+|\/(search(\/location|\?category=[a-z-]+)?|fines|support|privacy|terms|auth\/sign-in|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36}))$/,
       );
   });
 

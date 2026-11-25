@@ -15,6 +15,10 @@ export interface AreaCandidate {
   lng: number;
 }
 
+export interface LocationCandidate extends AreaCandidate {
+  locality: string;
+}
+
 export type GeocodeResult =
   | { kind: "ok"; candidates: AreaCandidate[] }
   | { kind: "invalid" }
@@ -97,5 +101,68 @@ export async function geocodeArea(
     return candidates ? { kind: "ok", candidates } : { kind: "unavailable" };
   } catch {
     return { kind: "unavailable" };
+  }
+}
+
+export async function suggestLocations(
+  text: string,
+  token: string | undefined,
+  autocomplete: boolean,
+  send: typeof fetch = fetch,
+): Promise<LocationCandidate[] | null> {
+  const query = normaliseArea(text);
+  if (!query || !token || token.length < 20) return null;
+  const url = new URL(GEOCODE_URL);
+  url.search = new URLSearchParams({
+    q: query,
+    country: "za",
+    types: "address,place,locality,neighborhood,postcode",
+    limit: "5",
+    language: "en",
+    autocomplete: String(autocomplete),
+    access_token: token,
+  }).toString();
+  try {
+    const response = await send(url, {
+      redirect: "manual",
+      signal: AbortSignal.timeout(GEOCODE_TIMEOUT_MS),
+    });
+    if (!response.ok) {
+      await response.body?.cancel();
+      return null;
+    }
+    const body: unknown = await response.json();
+    if (!body || typeof body !== "object") return null;
+    const features = (body as { features?: unknown }).features;
+    if (!Array.isArray(features)) return null;
+    return features.slice(0, 5).flatMap((feature: unknown) => {
+      const candidate = parseGeocode({ features: [feature] })?.[0];
+      if (!candidate) return [];
+      const context = (
+        feature as {
+          properties?: {
+            context?: {
+              place?: { name?: unknown };
+              region?: { name?: unknown };
+            };
+          };
+        }
+      ).properties?.context;
+      const locality = [context?.place?.name, context?.region?.name]
+        .filter((name): name is string => typeof name === "string")
+        .join(", ")
+        .replace(/[^\p{L}\p{N} .,'’()-]/gu, "")
+        .slice(0, 80);
+      return [
+        {
+          ...candidate,
+          locality,
+          lat: +candidate.lat.toFixed(3),
+          lng: +candidate.lng.toFixed(3),
+        },
+      ];
+    });
+  } catch {
+    return null;
   }
 }

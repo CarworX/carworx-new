@@ -7,8 +7,10 @@ export default [
   route("healthz", "routes/healthz.ts"),
   // P2-2 server search (Claude 19). JSON only; no page yet (P2-3).
   route("api/search", "routes/api.search.ts"),
+  route("api/location", "routes/api.location.ts"),
   // P2-3 public pages (Claude 20). Server-rendered; work without JavaScript.
   route("search", "routes/search.tsx"),
+  route("search/location", "routes/search.location.tsx"),
   route("search/map", "routes/search.map.ts"),
   route("c/:category", "routes/c.$category.tsx"),
   route("p/:publicId", "routes/p.$publicId.tsx"),

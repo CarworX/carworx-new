@@ -7,6 +7,7 @@ import { ListingCard } from "../sites/ListingCard";
 import { coverKeys } from "../server/catalogue/public";
 import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
 import { UseMyLocation } from "../sites/UseMyLocation";
+import { LocationPicker } from "../sites/LocationPicker";
 import type { Route } from "./+types/search";
 
 const STATUS: Partial<Record<PageModel["kind"], number>> = {
@@ -114,7 +115,6 @@ export default function SearchPage({ loaderData: m }: Route.ComponentProps) {
 }
 
 function SearchCard({ m }: { m: PageModel }) {
-  const area = "area" in m && m.kind !== "choose" ? m.area : "";
   const words = "q" in m ? (m.q ?? "") : "";
   return (
     <form className="card" id="search-form" method="get" action="/search">
@@ -140,16 +140,10 @@ function SearchCard({ m }: { m: PageModel }) {
       <p className="muted small">
         {m.kind === "results"
           ? `Leave empty to keep searching near ${m.near || "your location"}. Not stored.`
-          : "Suburb, town or postcode. Optional, used only for this search, not stored."}
+          : "Street address, suburb, town or postcode. Optional, used for this search."}
       </p>
       <div className="searchbox">
-        <input
-          name="area"
-          id="location"
-          defaultValue={area}
-          maxLength={80}
-          autoComplete="address-level2"
-        />
+        <LocationPicker id="location" />
         <button className="btn" type="submit">
           Search →
         </button>
@@ -170,9 +164,11 @@ function SearchCard({ m }: { m: PageModel }) {
         name="lng"
         defaultValue={m.kind === "results" ? m.lng : ""}
       />
-      {m.kind === "results" ? (
-        <input type="hidden" name="near" value={m.near} />
-      ) : null}
+      <input
+        type="hidden"
+        name="near"
+        defaultValue={m.kind === "results" ? m.near : ""}
+      />
       <UseMyLocation formId="search-form" />
     </form>
   );

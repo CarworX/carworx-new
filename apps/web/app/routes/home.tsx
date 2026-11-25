@@ -9,6 +9,7 @@ import markup from "../home/preview.html?raw";
 import { homeCatalogue, type HomeCatalogue } from "../server/catalogue/home";
 import type { PublicListing } from "../server/catalogue/public";
 import { UseMyLocation } from "../sites/UseMyLocation";
+import { LocationPicker } from "../sites/LocationPicker";
 import { SERVICES } from "../ui/services";
 import type { Route } from "./+types/home";
 
@@ -208,17 +209,15 @@ function HeroSearch() {
             placeholder="Service or business name, e.g. “tyre fitment”"
           />
         </label>
-        <label className="lp-fld lp-where">
-          <b>Where?</b>
-          <input
-            name="area"
-            maxLength={80}
-            autoComplete="address-level2"
-            placeholder="Suburb, town or postcode"
-          />
-        </label>
+        <div className="lp-fld lp-where">
+          <label htmlFor="home-location">
+            <b>Where?</b>
+          </label>
+          <LocationPicker id="home-location" />
+        </div>
         <input type="hidden" name="lat" defaultValue="" />
         <input type="hidden" name="lng" defaultValue="" />
+        <input type="hidden" name="near" defaultValue="" />
         <div className="lp-loc">
           <UseMyLocation formId="home-search" />
         </div>
