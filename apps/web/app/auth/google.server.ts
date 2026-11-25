@@ -1,3 +1,8 @@
+import {
+  ACCOUNT_TERMS_VERSION,
+  GOOGLE_TERMS_COOKIE,
+  recordAccountTerms,
+} from "./account-terms.server";
 import { signedInDestination } from "./after-sign-in.server";
 import { redirect } from "react-router";
 import type { AuthRequest } from "./session.server";
@@ -80,6 +85,12 @@ export async function startGoogle(
     "Set-Cookie",
     serializeAppCookie(RETURN_COOKIE, returnTo, { maxAge: 600 }),
   );
+  auth.headers.append(
+    "Set-Cookie",
+    serializeAppCookie(GOOGLE_TERMS_COOKIE, ACCOUNT_TERMS_VERSION, {
+      maxAge: 600,
+    }),
+  );
   if (signup)
     auth.headers.append(
       "Set-Cookie",
@@ -117,6 +128,8 @@ export async function exchangeGoogle(
     nonce: match[1],
   });
   if (error !== null) return null;
+  if (!(await recordAccountTerms(auth, ACCOUNT_TERMS_VERSION)))
+    return new Response(null, { status: 503, headers: auth.headers });
   const destination = returnTo || (await signedInDestination(auth.supabase));
   return redirect(destination, { headers: auth.headers });
 }

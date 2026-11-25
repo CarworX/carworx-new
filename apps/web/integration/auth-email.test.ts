@@ -7,6 +7,7 @@ import {
   mailTo,
   PASSWORD,
   signIn,
+  sqlRows,
   syntheticEmail,
 } from "./harness";
 
@@ -45,6 +46,11 @@ describe("sign-up and confirmation", () => {
     expect(created.location).toBe("/auth/check-email?sent=signup");
     expect(browser.sessionCookieNames()).toEqual([]);
 
+    const proofs = () =>
+      sqlRows(`select count(*) from public.consents c join auth.users u
+        on c.user_id = u.id where u.email = '${email}' and c.purpose = 'account_terms'`);
+    expect(proofs()).toEqual(["0"]);
+
     // Not confirmed yet: a recoverable state with a way to get a new link.
     const early = new Browser();
     await early.send("/auth/sign-in");
@@ -74,6 +80,7 @@ describe("sign-up and confirmation", () => {
     });
     expect(confirmed.status).toBe(302);
     expect(confirmed.location).toBe("/account?confirmed=1");
+    expect(proofs()).toEqual(["1"]);
     const account = await other.send("/account?confirmed=1");
     expect(account.status).toBe(200);
     expect(account.body).toContain(email);

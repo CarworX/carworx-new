@@ -21,6 +21,7 @@ import {
 import { useState, useSyncExternalStore } from "react";
 import { AuthPage, CsrfField, EmailField, Notice, PasswordField } from "../ui";
 import { GoogleButton } from "../GoogleButton";
+import { ACCOUNT_TERMS_VERSION } from "../account-terms.server";
 import { exchangeGoogle, googleButton, startGoogle } from "../google.server";
 import type { Route } from "./+types/sign-up";
 
@@ -133,6 +134,10 @@ export async function action({ request, context }: Route.ActionArgs) {
     email,
     password,
     options: {
+      data: {
+        terms_version: ACCOUNT_TERMS_VERSION,
+        terms_ticked_at: new Date().toISOString(),
+      },
       emailRedirectTo: appUrl(auth.config.appOrigin, "/auth/confirm"),
     },
   });
