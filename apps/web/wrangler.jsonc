@@ -20,7 +20,14 @@
       "workers_dev": false,
       "preview_urls": false,
       "version_metadata": { "binding": "STAGING_WORKER_VERSION" },
-      "vars": { "CARWORX_ENV": "staging", "CARWORX_DEV_PAGES": "1" },
+      "vars": {
+        "CARWORX_ENV": "staging",
+        "CARWORX_DEV_PAGES": "1",
+        "MAIL_ENABLED": "1",
+        "MAIL_DOMAIN_VERIFIED": "1",
+        "MAIL_FROM": "no-reply@mail.staging.carworx.app",
+        "MAIL_SENDING_DOMAIN": "mail.staging.carworx.app",
+      },
       "durable_objects": {
         "bindings": [
           { "name": "SEARCH_LIMITER", "class_name": "SearchLimiter" },
@@ -41,6 +48,10 @@
         {
           "binding": "RETENTION_DB",
           "id": "1f71d98c48984e25ba23c8d72365494d",
+        },
+        {
+          "binding": "MAIL_DB",
+          "id": "013f9baf14b948b4aea61d744aec2e20",
         },
       ],
       "triggers": { "crons": ["17 1 * * *", "* * * * *"] },
