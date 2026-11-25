@@ -1,3 +1,5 @@
+import { setTimeout as delay } from "node:timers/promises";
+
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -128,6 +130,21 @@ describe("search limits", () => {
     expect(
       (await checkSearchLimits(ns, SALT, "192.0.2.250", "one-session")).kind,
     ).toBe("limited");
+  });
+
+  it("accepts a valid limiter response after the old 300 ms deadline", async () => {
+    const slow: LimiterNamespace = {
+      idFromName: (name) => name,
+      get: () => ({
+        fetch: (_url, init) =>
+          delay(450, Response.json({ allowed: true }), {
+            signal: init.signal ?? undefined,
+          }),
+      }),
+    };
+    expect(await checkSearchLimits(slow, SALT, "ip", "session")).toEqual({
+      kind: "allowed",
+    });
   });
 
   it("fails closed when the binding, salt or object is unavailable", async () => {
