@@ -1,8 +1,28 @@
+import { SiteFooter } from "../ui/site/SiteFooter";
+import { SiteHeader } from "../ui/site/SiteHeader";
 import type { ReactNode } from "react";
 
 import { CSRF_FIELD } from "../server/security/csrf";
 
 export function AuthPage({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <>
+      <div className="cx-shell-top">
+        <SiteHeader />
+      </div>
+      <AuthPanel title={title}>{children}</AuthPanel>
+      <SiteFooter />
+    </>
+  );
+}
+
+function AuthPanel({
   title,
   children,
 }: {
