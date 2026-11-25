@@ -195,6 +195,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 }
 
 function HeroSearch() {
+  // The location message gets its own row under the bar (B-05); it never
+  // sits inside .lp-loc, so a long sentence can't squeeze the search bar.
+  const [locError, setLocError] = useState<string | null>(null);
   return (
     <div data-hero>
       <form
@@ -225,7 +228,7 @@ function HeroSearch() {
         <input type="hidden" name="lng" defaultValue="" />
         <input type="hidden" name="near" defaultValue="" />
         <div className="lp-loc">
-          <UseMyLocation formId="home-search" />
+          <UseMyLocation formId="home-search" onError={setLocError} />
         </div>
         <button className="lp-go" type="submit">
           Search{" "}
@@ -234,6 +237,11 @@ function HeroSearch() {
           </span>
         </button>
       </form>
+      {locError ? (
+        <p className="lp-loc-msg" role="alert">
+          {locError}
+        </p>
+      ) : null}
       <p className="lp-free">
         <span>
           <em>✓ Free to browse</em> · no account needed

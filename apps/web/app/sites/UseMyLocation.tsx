@@ -8,14 +8,30 @@ const subscribe = () => () => undefined;
  * lat/lng in place of the typed area. Nothing is stored. Same rules as
  * ui/public/SearchForm.tsx.
  */
-export function UseMyLocation({ formId }: { formId: string }) {
+export function UseMyLocation({
+  formId,
+  onError,
+}: {
+  formId: string;
+  /**
+   * When the parent shows the message itself (B-05: home puts it in its own
+   * row under the search bar), the message is passed here and not drawn
+   * beside the button.
+   */
+  onError?: (message: string | null) => void;
+}) {
   const hydrated = useSyncExternalStore(
     subscribe,
     () => true,
     () => false,
   );
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [ownError, setOwnError] = useState<string | null>(null);
+  const setError = (message: string | null) => {
+    if (onError) onError(message);
+    else setOwnError(message);
+  };
+  const error = onError ? null : ownError;
   if (!hydrated || !("geolocation" in navigator)) return null;
   return (
     <div className="bar" style={{ marginTop: 12 }}>
