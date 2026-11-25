@@ -21,6 +21,9 @@ export function nativeMailConfig(config, hookUri) {
   const templates = new Set([
     "[auth.email.template.confirmation]",
     "[auth.email.template.recovery]",
+    // Finish-build PR 6: the email-change template. Native parity sends
+    // through the loopback hook instead, and covers sign-up and recovery.
+    "[auth.email.template.email_change]",
   ]);
   const output = [];
   let changed = false;
