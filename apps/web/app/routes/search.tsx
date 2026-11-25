@@ -456,10 +456,6 @@ function Summary({ m }: { m: PageModel }) {
           {m.kind === "results" ? `Within ${String(m.radius)} km` : "—"}
         </strong>
       </div>
-      <div>
-        <span>Cost to search</span>
-        <strong>R0</strong>
-      </div>
       <hr className="rule" />
       <p className="muted small">
         Every label on a listing says exactly what CarworX checked. Your

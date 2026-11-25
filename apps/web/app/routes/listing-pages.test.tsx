@@ -179,7 +179,7 @@ describe("/c/:category in the preview's search markup", () => {
     const h = render({ items: [listing], next: null, unavailable: false });
     expect(h).toMatch(/class="chip active" href="\/c\/wash-and-detailing"/);
     expect(h).toContain(`href="/p/${ID}"`);
-    expect(h).toContain("1 listed");
+    expect(h).toContain("1 business listed");
     expect(h).toMatch(/<form[^>]*action="\/search"/);
     expect(h).not.toContain("serves your area");
   });
