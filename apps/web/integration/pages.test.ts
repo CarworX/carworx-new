@@ -190,7 +190,7 @@ describe("public pages without JavaScript", () => {
     const signedIn = await signIn(claimant.email, undefined, claim);
     const form = await signedIn.send(claim);
     expect(form.status).toBe(200);
-    expect(form.body).toContain("Synthetic mobile provider");
+    expect(form.body).toContain("Veldline Mobile Mechanics");
     expect(form.body).toContain("Nothing transfers when you send this claim.");
 
     const empty = await b.send(`${picker}?q=synthetic+pending`);
