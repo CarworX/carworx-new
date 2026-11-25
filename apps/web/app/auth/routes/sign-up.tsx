@@ -123,7 +123,9 @@ export default function SignUp({
             I agree to the CarworX terms of use and privacy notice.
           </label>
         </p>
-        <button type="submit">Create account</button>
+        <button className="cx-btn primary wide" type="submit">
+          Create account
+        </button>
       </Form>
       <p>
         Already have an account?{" "}

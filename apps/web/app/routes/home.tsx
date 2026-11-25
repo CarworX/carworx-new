@@ -48,7 +48,7 @@ const HEAD = (() => {
   return head
     .replace(
       links,
-      '<nav class="links" aria-label="Main navigation"><a href="/search">Find a service</a><a href="/fines">Fines &amp; admin</a><a href="/provider/get-listed/business">For businesses</a></nav>',
+      '<nav class="links" aria-label="Main navigation"><a href="/search">Find a service</a><a href="/fines">Fines &amp; admin</a><a href="#business">For businesses</a></nav>',
     )
     .replace(how, 'href="/search"$1>Find a service');
 })();
