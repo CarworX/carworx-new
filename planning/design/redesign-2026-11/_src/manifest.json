@@ -96,80 +96,146 @@
     "menu": false
   },
   {
-    "file": "A6-fines/a6-1-verify-id.html",
-    "title": "Fines: verify your ID",
+    "file": "A6-fines/a6-1-verify-intro.html",
+    "title": "Fines: verify your ID, intro",
     "sheetOpen": false,
     "menu": false
   },
   {
-    "file": "A6-fines/a6-2-pending-review.html",
-    "title": "Fines: ID pending review",
+    "file": "A6-fines/a6-2-checking.html",
+    "title": "Fines: back from Didit, checking",
     "sheetOpen": false,
     "menu": false
   },
   {
-    "file": "A6-fines/a6-3-rejected.html",
-    "title": "Fines: ID rejected with reason",
+    "file": "A6-fines/a6-3-approved.html",
+    "title": "Fines: verified",
     "sheetOpen": false,
     "menu": false
   },
   {
-    "file": "A6-fines/a6-4-my-fines.html",
+    "file": "A6-fines/a6-4-declined-retry.html",
+    "title": "Fines: declined with reason, retry",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-5-declined-final.html",
+    "title": "Fines: declined, no tries left",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-6-in-review.html",
+    "title": "Fines: in review by our team",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-7-my-fines.html",
     "title": "My fines: several",
     "sheetOpen": false,
     "menu": false
   },
   {
-    "file": "A6-fines/a6-5-my-fines-none.html",
+    "file": "A6-fines/a6-8-my-fines-none.html",
     "title": "My fines: none",
     "sheetOpen": false,
     "menu": false
   },
   {
-    "file": "A6-fines/a6-6-my-fines-not-payable.html",
+    "file": "A6-fines/a6-9-my-fines-not-payable.html",
     "title": "My fines: only not-payable fines",
     "sheetOpen": false,
     "menu": false
   },
   {
-    "file": "A6-fines/a6-7-fine-detail.html",
+    "file": "A6-fines/a6-10-fine-detail.html",
     "title": "Fine detail",
     "sheetOpen": false,
     "menu": false
   },
   {
-    "file": "A6-fines/a6-8-pay-handoff.html",
+    "file": "A6-fines/a6-11-pay-handoff.html",
     "title": "Pay: handoff to partner checkout",
     "sheetOpen": false,
     "menu": false
   },
   {
-    "file": "A6-fines/a6-9-awaiting-issuer.html",
+    "file": "A6-fines/a6-12-awaiting-issuer.html",
     "title": "Pay: awaiting issuer confirmation",
     "sheetOpen": false,
     "menu": false
   },
   {
-    "file": "A6-fines/a6-10-receipt.html",
+    "file": "A6-fines/a6-13-receipt.html",
     "title": "Receipt",
     "sheetOpen": false,
     "menu": false
   },
   {
     "file": "A7-admin-id-review/a7-1-queue.html",
-    "title": "Admin ID review queue",
+    "title": "Admin ID review queue (Didit In review)",
     "sheetOpen": false,
     "menu": false
   },
   {
     "file": "A7-admin-id-review/a7-2-detail.html",
-    "title": "Admin ID review detail",
+    "title": "Admin ID review detail (Didit result)",
     "sheetOpen": false,
     "menu": false
   },
   {
     "file": "A7-admin-id-review/a7-3-empty.html",
     "title": "Admin ID review queue, empty",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-1-cards.html",
+    "title": "Ratings on listing cards",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-2-business-page-reviews.html",
+    "title": "Business page with reviews",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-3-write-review.html",
+    "title": "Write a review",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-4-cannot-review.html",
+    "title": "Write a review, not eligible",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-5-owner-reply.html",
+    "title": "Business owner replies (in /provider)",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-6-report-review.html",
+    "title": "Report a review",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-7-admin-moderation.html",
+    "title": "Admin review moderation queue",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-8-no-reviews.html",
+    "title": "Business page, no reviews yet",
     "sheetOpen": false,
     "menu": false
   }

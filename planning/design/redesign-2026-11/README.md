@@ -1,6 +1,6 @@
 # Redesign 2026-11 · mockups for owner approval
 
-Static HTML mockups and screenshots for the backlog in `planning/claude/BACKLOG.md` (PR #163), made by the Claude design session on 25 Nov 2026 (SAST). **Mockup images only; no app code changes.** Every name, ID number, email and fine is synthetic (`example.co.za`, ID numbers that fail the checksum).
+Static HTML mockups and screenshots for the backlog in `planning/claude/BACKLOG.md` (PR #163), made by the Claude design session on 25 Nov 2026 (SAST). The owner approved A1–A7 (PR #169); A6/A7 were then revised for Didit "Option A" and A8 reviews added. **Mockup images only; no app code changes.** Every name, ID number, email and fine is synthetic (`example.co.za`, ID numbers that fail the checksum).
 
 | Folder | What | Backlog |
 |---|---|---|
@@ -9,8 +9,9 @@ Static HTML mockups and screenshots for the backlog in `planning/claude/BACKLOG.
 | [A3-category](A3-category/) | Category page with pinned header, hero, location chip, full-width grid, empty state | B-06 |
 | [A4-customer-home](A4-customer-home/) | Signed-in customer home (location, search, icon row, rows, fines card, no-location state) | B-07 B-14 |
 | [A5-auth](A5-auth/) | Sign up (consent unticked / ticked), sign in, Google first-time consent | B-10 B-11 |
-| [A6-fines](A6-fines/) | Verify ID, pending, rejected, my fines (several / none / not payable), detail, pay handoff, awaiting issuer, receipt | B-20 B-21 B-22 · D-099 |
-| [A7-admin-id-review](A7-admin-id-review/) | Admin ID queue, review detail (masked ID + reveal), empty | B-21 |
+| [A6-fines](A6-fines/) | Verify ID with Didit (intro, checking, approved, declined + retry, no tries left, in review), my fines (several / none / not payable), detail, pay handoff, awaiting issuer, receipt | B-20 B-21 B-22 · D-099 |
+| [A7-admin-id-review](A7-admin-id-review/) | Admin queue of Didit *In review* cases, detail with Didit's result, empty | B-21 |
+| [A8-reviews](A8-reviews/) | Ratings on cards and the business page, reviews section, write, not eligible, owner reply, report, admin moderation, no reviews | new (owner, 25 Nov) |
 
 ## How it is built
 
@@ -20,11 +21,11 @@ Static HTML mockups and screenshots for the backlog in `planning/claude/BACKLOG.
   ```
   node planning/design/redesign-2026-11/_src/build.mjs     # writes the HTML
   node planning/design/redesign-2026-11/_src/shoot.cjs     # Playwright, 1280 and 390 wide, 2x, full page
-  python3 planning/design/redesign-2026-11/_src/shrink.py  # 256-colour dithered PNGs
+  python3 planning/design/redesign-2026-11/_src/shrink.py A6  # 256-colour dithered PNGs, only the folder you re-shot
   ```
 
 ## Open points for the owner
 
 - **O-2** payment partner (Pay@ or Electrum): the pay screens say "payment partner" until it is signed.
-- **O-3 / B-21** ID photo is shown as required here; retention period and the Information Officer line in the privacy note need the legal answer.
+- **O-3 / B-21** decided: Didit Option A (hosted ID photo + selfie). Still open: Didit's own retention period, the operator agreement and the Section 72 check if Didit processes data outside South Africa, and the Information Officer line.
 - The app-glimpse phone carousel (booking, quotes, payment) is left off the landing until Phase 3.

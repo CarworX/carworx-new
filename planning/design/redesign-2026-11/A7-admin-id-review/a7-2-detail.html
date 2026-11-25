@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin ID review detail · CarworX redesign 2026-11</title>
+<title>Admin ID review detail (Didit result) · CarworX redesign 2026-11</title>
 <link rel="stylesheet" href="../_shared/home.css">
 <link rel="stylesheet" href="../_shared/landing.css">
 <link rel="stylesheet" href="../_shared/redesign.css">
@@ -90,7 +90,7 @@
 <div class="cx-home cx-landing rd-signed ">
 <header class="nav">
   <a href="/" class="logo" aria-label="CarworX home"><svg viewBox="0 0 852.35 184" fill="currentColor" role="img" aria-label="CarworX"><use href="#cx-lockup"/></svg></a>
-  <nav class="links" aria-label="Main navigation"><a href="#" class="on">ID checks</a><a href="#">Listings</a><a href="#">Claims</a></nav>
+  <nav class="links" aria-label="Main navigation"><a href="#" class="on">ID checks</a><a href="#">Listings</a><a href="#">Reviews</a></nav>
   <div class="acct"><button class="rd-avatar-btn" type="button" aria-haspopup="menu"><span class="rd-av">AM</span>Admin<svg class="rd-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4.5l3 3 3-3"/></svg></button></div><span class="rd-av rd-phone-av rd-dot">AM</span>
   <button class="menu-btn" type="button" aria-expanded="false" aria-label="Open menu"><i></i><i></i></button>
 </header>
@@ -102,21 +102,30 @@
 
 <main id="top" class="rd-page">
 <section class="wrap"><div class="rd-crumb"><a href="#">Admin</a><span>/</span><a href="#">ID checks</a><span>/</span><span>Nomvula M.</span></div>
-  <div class="rd-row" style="margin-top:12px"><h1 class="rd-h1" style="margin:0">Nomvula M.</h1><span class="rd-lbl warn">Waiting 6 h</span><span class="rd-sp"></span><small style="color:var(--muted)">1 of 6 · <a class="rd-link" href="#">Next →</a></small></div>
+  <div class="rd-row" style="margin-top:12px"><h1 class="rd-h1" style="margin:0">Nomvula M.</h1><span class="rd-lbl warn">In review · 6 h</span><span class="rd-sp"></span><small style="color:var(--muted)">1 of 4 · <a class="rd-link" href="#">Next →</a></small></div>
   <div class="rd-review" style="margin-top:24px">
-    <div class="rd-stack"><div class="rd-idphoto"><svg viewBox="0 0 340 214" width="600" style="display:block;width:100%;height:auto"><rect width="340" height="214" rx="16" fill="#e8efe6"/><rect x="0" y="0" width="340" height="44" rx="16" fill="#2f6b4f"/><rect y="28" width="340" height="16" fill="#2f6b4f"/><text x="18" y="29" font-family="Geist, sans-serif" font-size="14" font-weight="600" fill="#fff">REPUBLIC OF SOUTH AFRICA · IDENTITY CARD</text><rect x="18" y="60" width="96" height="124" rx="8" fill="#c9d6cc"/><circle cx="66" cy="104" r="22" fill="#9fb3a6"/><path d="M30 176c6-26 22-38 36-38s30 12 36 38z" fill="#9fb3a6"/><g font-family="Geist Mono, monospace" font-size="11" fill="#33453a"><text x="132" y="74">SURNAME</text><text x="132" y="118">NAMES</text><text x="132" y="162">IDENTITY NUMBER</text></g><g font-family="Geist, sans-serif" font-size="16" font-weight="600" fill="#0d0f12"><text x="132" y="94">MAHLANGU</text><text x="132" y="138">NOMVULA THEMBI</text><text x="132" y="182" font-family="Geist Mono, monospace" letter-spacing="1">••••••••• 0823</text></g></svg><div class="tools"><span>Zoom</span><span>Rotate</span></div></div>
-      <div class="rd-note plain"><img src="../_shared/icons/carworx-icon-lock.svg" alt=""><div>Photo opened by you at 14:20 SAST. Every view is logged. The photo is deleted once you decide.</div></div></div>
     <div class="rd-stack">
-      <div class="rd-card rd-stack"><div class="rd-field"><span class="lb">ID number they typed</span><div class="rd-masked">••••••••• 0823<a class="rd-btn sm light" href="#"><img src="../_shared/icons/carworx-icon-lock.svg" alt="" width="16">Reveal</a></div><small>Revealing shows the full number for 30 seconds and is logged with your name.</small></div>
-        <dl class="rd-kv"><dt>Account</dt><dd>Nomvula M. · n.m@example.co.za</dd><dt>Document</dt><dd>Smart ID card, front</dd><dt>Sent</dt><dd>Today, 08:02 SAST</dd></dl>
-        <ul class="rd-checks"><li><span class="y">✓</span>Number passes the ID checksum</li><li><span class="y">✓</span>Date of birth in the number matches the card</li><li><span class="q">?</span>Name on the card matches the account name: check by eye</li><li><span class="q">?</span>Number on the card matches what they typed: check by eye</li></ul>
+      <div class="rd-card rd-stack"><div class="rd-row"><h3 class="rd-h2" style="font-size:17px">Didit result</h3><span class="rd-sp"></span><span class="rd-lbl warn">In review</span></div>
+        <div class="rd-score"><span>Document authentic</span><div class="bar"><i class="ok" style="width:100%"></i></div><b class="ok">Passed</b></div>
+        <div class="rd-score"><span>Liveness (real person)</span><div class="bar"><i class="ok" style="width:100%"></i></div><b class="ok">Passed</b></div>
+        <div class="rd-score"><span>Face match to ID photo</span><div class="bar"><i class="warn" style="width:71%"></i></div><b class="warn">71%</b></div>
+        <div class="rd-score"><span>Document readable</span><div class="bar"><i class="ok" style="width:100%"></i></div><b class="ok">Passed</b></div>
+        <div class="rd-note warn"><img src="../_shared/icons/carworx-icon-alert.svg" alt=""><div><b>Warnings from Didit</b><ul><li>Face match 71%, below the 80% auto-approve line.</li><li>ID photo is about 9 years old (issued 2017).</li></ul></div></div>
+        <div class="rd-row"><span class="mono" style="font-size:13px;color:var(--muted)">Session ds_7Hq2…K41 · attempt 1 of 3 · 08:02 SAST</span><span class="rd-sp"></span><a class="rd-btn sm light" href="#">Open session in Didit ↗</a></div>
+      </div>
+      <div class="rd-note plain"><img src="../_shared/icons/carworx-icon-lock.svg" alt=""><div>Photos and the selfie are only in Didit. Opening the session is logged there with your name.</div></div>
+    </div>
+    <div class="rd-stack">
+      <div class="rd-card rd-stack"><h3 class="rd-h2" style="font-size:17px">What Didit read</h3>
+        <dl class="rd-kv"><dt>Name on document</dt><dd>Nomvula Thembi Mahlangu</dd><dt>Account name</dt><dd>Nomvula M. · n.m@example.co.za</dd><dt>Document</dt><dd>Smart ID card</dd><dt>ID number</dt><dd class="mono">••••••••• 0823</dd><dt>Date of birth</dt><dd>Matches the ID number</dd></dl>
       </div>
       <div class="rd-card rd-stack"><h3 class="rd-h2" style="font-size:17px">Decision</h3>
-        <a class="rd-btn ok full" href="#">Approve ID</a>
-        <div class="rd-or">or reject with a reason</div>
-        <div class="rd-reasons"><div class="rd-radio on"><i></i>Photo is blurry or cut off</div><div class="rd-radio"><i></i>Number doesn't match the document</div><div class="rd-radio"><i></i>Name doesn't match the account</div><div class="rd-radio"><i></i>Not an accepted document</div><div class="rd-radio"><i></i>Other (write a note)</div></div>
+        <a class="rd-btn ok full" href="#">Approve</a>
+        <div class="rd-or">or decline with a reason</div>
+        <div class="rd-reasons"><div class="rd-radio on"><i></i>Face doesn't match the ID photo</div><div class="rd-radio"><i></i>Document looks altered or not genuine</div><div class="rd-radio"><i></i>Name doesn't match the account</div><div class="rd-radio"><i></i>Other (write a note)</div></div>
         <div class="rd-field"><label>Note to the person (optional)</label><div class="rd-input"><span class="ph">They see this with the reason</span></div></div>
-        <a class="rd-btn danger full" href="#">Reject and tell them why</a>
+        <a class="rd-btn danger full" href="#">Decline and tell them why</a>
+        <p class="rd-hint" style="margin:0">Declining uses one of their 3 tries.</p>
       </div>
     </div>
   </div>
