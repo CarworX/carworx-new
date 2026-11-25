@@ -3,9 +3,17 @@ import { describe, expect, it } from "vitest";
 
 import Fines, { headers, OFFICIAL_LINKS } from "./fines";
 
-const html = renderToStaticMarkup(<Fines />).replace(/&#x27;/g, "'");
+const html = renderToStaticMarkup(
+  <Fines loaderData={{ sandbox: false }} />,
+).replace(/&#x27;/g, "'");
 
 describe("/fines (P2-6, A14)", () => {
+  it("advertises the fictional flow only when staging enables it", () => {
+    expect(html).not.toContain("/fines/mine");
+    expect(
+      renderToStaticMarkup(<Fines loaderData={{ sandbox: true }} />),
+    ).toContain("/fines/mine");
+  });
   it("has no form and no field of any kind", () => {
     expect(html).not.toMatch(/<(?:form|input|select|textarea)\b/i);
   });
