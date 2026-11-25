@@ -153,23 +153,34 @@ describe("/ home: browse first (D-097)", () => {
     const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1] ?? "");
     for (const href of hrefs)
       expect(href).toMatch(
-        /^(#[a-z0-9-]+|\/(search(\/location|\?category=[a-z-]+)?|fines|support|privacy|terms|auth\/sign-in|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36}))$/,
+        /^(\/|#[a-z0-9-]+|\/(search(\/location|\?category=[a-z-]+)?|fines|fines\/mine|account|provider|support|privacy|terms|auth\/sign-in|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36})|\/#(services|fines|business))$/,
       );
   });
 
-  it("puts Sign in and Sign up in the header and in the menu sheet", () => {
+  it("puts Sign in and Sign up in the shared header and in its menu sheet", () => {
     const header = html.slice(
-      html.indexOf('<header class="nav"'),
+      html.indexOf("<header"),
       html.indexOf("</header>"),
     );
     expect(header).toContain('href="/auth/sign-in"');
     expect(header).toContain('href="/auth/sign-up"');
-    const sheet = html.slice(html.indexOf('id="menu"'));
+    const sheet = html.slice(html.indexOf('class="cx-sheet"'));
     expect(sheet).toContain('href="/auth/sign-up"');
   });
 
+  it("uses the shared header's section links, with no mockup nav or All services", () => {
+    const header = html.slice(
+      html.indexOf("<header"),
+      html.indexOf("</header>"),
+    );
+    expect(header).toContain('href="/#services"');
+    expect(header).toContain('href="/#fines"');
+    expect(header).toContain('href="/#business"');
+    expect(html).not.toContain("All services");
+  });
+
   it("keeps business information public and sends the application button to get listed", () => {
-    expect(html).toContain('<a href="#business">For businesses</a>');
+    expect(html).toContain('href="/#business"');
     expect(html).toContain('id="business"');
     expect(html).toMatch(
       /href="\/provider\/get-listed\/business"[\s\S]{0,100}List your business free/,

@@ -8,6 +8,8 @@ import landingCss from "../home/landing.css?url";
 import markup from "../home/preview.html?raw";
 import { homeCatalogue, type HomeCatalogue } from "../server/catalogue/home";
 import type { PublicListing } from "../server/catalogue/public";
+import { SiteFooter } from "../ui/site/SiteFooter";
+import { SiteHeader } from "../ui/site/SiteHeader";
 import { UseMyLocation } from "../sites/UseMyLocation";
 import { LocationPicker } from "../sites/LocationPicker";
 import { SERVICES } from "../ui/services";
@@ -41,23 +43,10 @@ function section(id: string): string {
  * are the mockup's (the timeline they pointed to is gone).
  */
 const HEAD = (() => {
-  const head = markup.slice(0, markup.indexOf('<main id="top">'));
-  const links = /<nav class="links" aria-label="Sections">[\s\S]*?<\/nav>/;
-  const how = /href="#how"(\s*)>How it works/;
-  if (!links.test(head) || !how.test(head))
-    throw new Error("home markup: header links not found");
-  // The mockup intro (#intro) is removed: the brand intro (INTRO_GATE) is the
-  // only one. Sign-out and first visit no longer leave a splash on screen.
-  const mockupIntro = /<div id="intro"[\s\S]*?(?=<header class="nav")/;
-  if (!mockupIntro.test(head))
-    throw new Error("home markup: mockup intro not found");
-  return head
-    .replace(mockupIntro, "")
-    .replace(
-      links,
-      '<nav class="links" aria-label="Main navigation"><a href="/search">Find a service</a><a href="/fines">Fines &amp; admin</a><a href="#business">For businesses</a></nav>',
-    )
-    .replace(how, 'href="/search"$1>Find a service');
+  // Icon sprite only: the mockup intro (B-01/B-09) and the mockup header are
+  // gone; the shared SiteHeader replaces the header (redesign A1).
+  const head = markup.slice(0, markup.indexOf('<header class="nav">'));
+  return head.replace(/<div id="intro"[\s\S]*$/, "");
 })();
 /** The hero's floating objects, as drawn in the preview. */
 const FLOATS = cut('<div class="floats"', '<div class="hero-copy">');
@@ -78,7 +67,6 @@ const KEPT = ["glimpse", "fines", "business"]
     /<button aria-selected="(true|false)" data-(p|r)=/g,
     '<button role="tab" aria-selected="$1" data-$2=',
   );
-const FOOTER = markup.slice(markup.indexOf("</main>") + "</main>".length);
 
 export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: homeCss },
@@ -139,6 +127,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
       <script src="/intro/intro.js" async />
       <div className="cx-home cx-landing" suppressHydrationWarning>
+        <div className="cx-shell-top">
+          <SiteHeader />
+        </div>
         {/* Static, generated markup from the repository; no user input. */}
         <div
           className="lp-contents"
@@ -183,11 +174,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             dangerouslySetInnerHTML={{ __html: KEPT }}
           />
         </main>
-        <div
-          className="lp-contents"
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: FOOTER }}
-        />
+        <SiteFooter />
       </div>
       <script src="/home/home.js" defer />
     </>
@@ -265,7 +252,6 @@ function Categories({ catalogue }: { catalogue: HomeCatalogue | null }) {
             <span className="lp-eyebrow">Browse by category</span>
             <h2 id="h-cats">What does your car need?</h2>
           </div>
-          <a href="/search">All services →</a>
         </div>
         <ul className="lp-cats">
           {CATEGORIES.map((c, i) => (

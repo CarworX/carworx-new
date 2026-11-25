@@ -9,6 +9,8 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { SiteDataContext } from "./ui/site/useSiteViewer";
+import { readViewer } from "./ui/site/viewer.server";
 import geist from "./styles/fonts/Geist-latin.woff2?url";
 import stylesheet from "./styles/app.css?url";
 import { NavigationLoader } from "./ui/states/NavigationLoader";
@@ -26,6 +28,18 @@ export const links: Route.LinksFunction = () => [
   },
   { rel: "stylesheet", href: stylesheet },
 ];
+
+/**
+ * Every page's root data: the signed-in viewer for the site header (read only,
+ * never refreshes or writes a cookie; see ui/site/viewer.server.ts) and the
+ * CSRF token for the header's sign-out form. A failed read is "signed out".
+ */
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const viewer = await readViewer(request, context.security.config).catch(
+    () => null,
+  );
+  return { viewer, csrf: context.security.csrfToken };
+}
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -46,12 +60,12 @@ export function Layout({ children }: { children: ReactNode }) {
   );
 }
 
-export default function App() {
+export default function App({ loaderData }: Route.ComponentProps) {
   return (
-    <>
+    <SiteDataContext value={loaderData}>
       <Outlet />
       <NavigationLoader />
-    </>
+    </SiteDataContext>
   );
 }
 

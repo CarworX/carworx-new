@@ -1,4 +1,4 @@
-/* GENERATED from planning/design/brand/tokens.json (v4, sha256 ffaa5e7d633392553b87ed8117224a5b3fa35b42b144c8962f4edf063df5b7ef).
+/* GENERATED from planning/design/brand/tokens.json (v4, sha256 cdabcd007da6589378d8775df58254c477da7ac3b4b891d00ab23eb8e69a0ca0).
  * Do not edit. Run `pnpm --filter @carworx/web tokens` to regenerate;
  * the unit tests and `tokens:check` fail when this file is stale. */
 
@@ -58,6 +58,7 @@
   --color-sky: #e3eaff;
   --color-signal: #ff3b0a;
   --color-signal-soft: #ff6a33;
+  --color-rating: #f5a524;
   --color-apricot: #ffb08a;
   --color-peach: #ffe3d4;
   --color-peach-ink: #8a2a0a;
@@ -189,6 +190,7 @@
   --sky: var(--color-sky);
   --signal: var(--color-signal);
   --signal-soft: var(--color-signal-soft);
+  --rating: var(--color-rating);
   --apricot: var(--color-apricot);
   --peach: var(--color-peach);
   --peach-ink: var(--color-peach-ink);
