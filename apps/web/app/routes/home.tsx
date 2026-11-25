@@ -46,7 +46,13 @@ const HEAD = (() => {
   const how = /href="#how"(\s*)>How it works/;
   if (!links.test(head) || !how.test(head))
     throw new Error("home markup: header links not found");
+  // The mockup intro (#intro) is removed: the brand intro (INTRO_GATE) is the
+  // only one. Sign-out and first visit no longer leave a splash on screen.
+  const mockupIntro = /<div id="intro"[\s\S]*?(?=<header class="nav")/;
+  if (!mockupIntro.test(head))
+    throw new Error("home markup: mockup intro not found");
   return head
+    .replace(mockupIntro, "")
     .replace(
       links,
       '<nav class="links" aria-label="Main navigation"><a href="/search">Find a service</a><a href="/fines">Fines &amp; admin</a><a href="#business">For businesses</a></nav>',
