@@ -156,13 +156,13 @@ describe("public pages without JavaScript", () => {
   });
 
   it("name words find a business with no area, and narrow an area search", async () => {
-    const byName = await browser().send("/search?q=synthetic+MOBILE&area=");
+    const byName = await browser().send("/search?q=veldline+MOBILE&area=");
     expect(byName.status).toBe(200);
-    expect(byName.body).toContain("Businesses matching “synthetic MOBILE”");
+    expect(byName.body).toContain("Businesses matching “veldline MOBILE”");
     expect(byName.body).toContain(`/p/${SEED_MOBILE}`);
     expect(byName.body).not.toContain(`/p/${SEED_FIXED}`);
     const located = await browser().send(
-      "/search?q=fixed+provider&lat=-26.2&lng=28.04&near=Johannesburg",
+      "/search?q=highveld+spur&lat=-26.2&lng=28.04&near=Johannesburg",
     );
     expect(located.status).toBe(200);
     expect(located.body).toContain(`/p/${SEED_FIXED}`);
@@ -175,7 +175,7 @@ describe("public pages without JavaScript", () => {
   it("finds a live listing in the business claim picker and opens its claim form", async () => {
     const picker = "/provider/get-listed/claim";
     const b = browser();
-    const matches = await b.send(`${picker}?q=synthetic+MOBILE&area=ignored`);
+    const matches = await b.send(`${picker}?q=veldline+MOBILE&area=ignored`);
     const claim = `/provider/claim/${SEED_MOBILE}`;
     expect(matches.status).toBe(200);
     expect(matches.body).toContain("Find your business");
@@ -190,10 +190,10 @@ describe("public pages without JavaScript", () => {
     const signedIn = await signIn(claimant.email, undefined, claim);
     const form = await signedIn.send(claim);
     expect(form.status).toBe(200);
-    expect(form.body).toContain("Synthetic mobile provider");
+    expect(form.body).toContain("Veldline Mobile Mechanics");
     expect(form.body).toContain("Nothing transfers when you send this claim.");
 
-    const empty = await b.send(`${picker}?q=synthetic+pending`);
+    const empty = await b.send(`${picker}?q=egoli+roadside`);
     expect(empty.status).toBe(200);
     expect(empty.body).toContain("No listings found");
     expect(empty.body).not.toContain(SEED_PENDING);
