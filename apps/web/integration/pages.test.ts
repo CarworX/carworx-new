@@ -158,11 +158,11 @@ describe("public pages without JavaScript", () => {
   it("name words find a business with no area, and narrow an area search", async () => {
     const byName = await browser().send("/search?q=veldline+MOBILE&area=");
     expect(byName.status).toBe(200);
-    expect(byName.body).toContain("Businesses matching “synthetic MOBILE”");
+    expect(byName.body).toContain("Businesses matching “veldline MOBILE”");
     expect(byName.body).toContain(`/p/${SEED_MOBILE}`);
     expect(byName.body).not.toContain(`/p/${SEED_FIXED}`);
     const located = await browser().send(
-      "/search?q=fixed+provider&lat=-26.2&lng=28.04&near=Johannesburg",
+      "/search?q=highveld+spur&lat=-26.2&lng=28.04&near=Johannesburg",
     );
     expect(located.status).toBe(200);
     expect(located.body).toContain(`/p/${SEED_FIXED}`);
@@ -175,7 +175,7 @@ describe("public pages without JavaScript", () => {
   it("finds a live listing in the business claim picker and opens its claim form", async () => {
     const picker = "/provider/get-listed/claim";
     const b = browser();
-    const matches = await b.send(`${picker}?q=synthetic+MOBILE&area=ignored`);
+    const matches = await b.send(`${picker}?q=veldline+MOBILE&area=ignored`);
     const claim = `/provider/claim/${SEED_MOBILE}`;
     expect(matches.status).toBe(200);
     expect(matches.body).toContain("Find your business");
