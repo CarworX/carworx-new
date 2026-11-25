@@ -230,7 +230,15 @@ export function finalizeResponse(
         ? "same-origin"
         : "strict-origin-when-cross-origin",
   );
-  headers.set("Cross-Origin-Opener-Policy", "same-origin");
+  const googlePage =
+    /^\/auth\/sign-(?:in|up)$/.test(path) &&
+    headers
+      .get("Content-Security-Policy")
+      ?.includes("https://accounts.google.com/gsi/client");
+  headers.set(
+    "Cross-Origin-Opener-Policy",
+    googlePage ? "same-origin-allow-popups" : "same-origin",
+  );
   if (!headers.has("Content-Security-Policy")) {
     headers.set(
       "Content-Security-Policy",

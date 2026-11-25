@@ -34,7 +34,31 @@ export const MAP_DAILY: Window = { limit: 1_500, windowMs: 86_400_000 };
  * A person sends one or two; a script is stopped at once.
  */
 export const FORM_WINDOW: Window = { limit: 5, windowMs: 600_000 };
+const GOOGLE_NONCE_WINDOW: Window = { limit: 1, windowMs: 300_000 };
 export const LIMITER_TIMEOUT_MS = 300;
+
+/** Check-and-consume a short-lived Google button nonce across concurrent posts. */
+export async function consumeGoogleNonce(
+  namespace: LimiterNamespace | undefined,
+  nonce: string,
+): Promise<boolean> {
+  if (!namespace) return false;
+  try {
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(nonce),
+    );
+    const key = Array.from(new Uint8Array(digest), (byte) =>
+      byte.toString(16).padStart(2, "0"),
+    ).join("");
+    return (
+      (await ask(namespace, `google-nonce:${key}`, GOOGLE_NONCE_WINDOW))
+        .kind === "allowed"
+    );
+  } catch {
+    return false;
+  }
+}
 
 export interface Counter {
   start: number;
@@ -105,6 +129,7 @@ export class SearchLimiter {
         GEOCODE_DAILY,
         MAP_DAILY,
         FORM_WINDOW,
+        GOOGLE_NONCE_WINDOW,
       ].find((w) => w.limit === body.limit && w.windowMs === body.windowMs);
       if (!window) return Response.json({}, { status: 400 });
       const now = Date.now();

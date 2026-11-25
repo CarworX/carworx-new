@@ -43,6 +43,28 @@ describe("FIXTURE Google sign-in: the redirect the app starts", () => {
 });
 
 describe("FIXTURE Google sign-in: callback outcomes", () => {
+  it("requires signup consent and keeps the application destination on cancellation", async () => {
+    const browser = new Browser();
+    await browser.send("/auth/sign-up");
+    const rejected = await browser.send("/auth/sign-up", {
+      form: { intent: "google", returnTo: "/provider/get-listed/business" },
+    });
+    expect(rejected.status).toBe(400);
+    expect(rejected.body).toContain('data-problem="consent_required"');
+    const started = await browser.send("/auth/sign-up", {
+      form: {
+        intent: "google",
+        consent: "on",
+        returnTo: "/provider/get-listed/business",
+      },
+    });
+    expect(started.status).toBe(302);
+    const cancelled = await browser.send("/auth/callback?error=access_denied");
+    expect(cancelled.location).toBe(
+      "/auth/sign-up?error=oauth_denied&returnTo=%2Fprovider%2Fget-listed%2Fbusiness",
+    );
+  });
+
   it("turns denied consent into a recoverable sign-in state", async () => {
     const browser = new Browser();
     const reply = await browser.send(
@@ -100,7 +122,9 @@ describe("FIXTURE Google sign-in: callback outcomes", () => {
       /<form\b[^>]*\bmethod="post"[^>]*>[\s\S]*?<\/form>/.exec(
         page.body,
       )?.[0] ?? "";
-    expect(googleForm).toContain('name="intent" value="google"');
+    expect(googleForm).toMatch(
+      /<button\b(?=[^>]*\bname="intent")(?=[^>]*\bvalue="google")[^>]*>/,
+    );
     expect(googleForm).toContain('name="csrf"');
     const forged = new Browser();
     await forged.send("/auth/sign-in");
