@@ -66,12 +66,17 @@ describe("team setup through the Worker", () => {
     expect(home.body).toContain('aria-label="Setup tasks ready"');
     expect(home.body).toContain("settings are ready with defaults");
     expect(home.body).toContain("Set hours");
-    await f.ownerBrowser.send(f.path("team", "share"));
+    const shareForm = await f.ownerBrowser.send(f.path("team", "share"));
+    // Local stacks have no mail binding, so the page says so and the link is
+    // the only way to share (nothing claims an email was sent).
+    expect(shareForm.body).toContain("Email delivery is not available");
     const created = await f.ownerBrowser.send(f.path("team", "share"), {
       form: { intent: "create-link", role: "staff", email: staff.email },
     });
     expect(created.status).toBe(200);
     expect(created.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(created.body).toContain("Link ready");
+    expect(created.body).not.toContain("Invite emailed");
     const link =
       /value="(http:\/\/localhost:5173\/join\/[A-Za-z0-9_-]{43})"/.exec(
         created.body,
