@@ -8,18 +8,13 @@ import {
 import { field, parseEmail } from "../forms";
 import { throwRedirect } from "../http.server";
 import { authRequest, getSignedIn } from "../session.server";
-import {
-  RETURN_COOKIE,
-  serializeAppCookie,
-} from "../../server/security/cookies";
-import { appUrl, safeReturnTo } from "../../server/security/redirect";
+import { safeReturnTo } from "../../server/security/redirect";
+import { GoogleButton } from "../GoogleButton";
+import { exchangeGoogle, googleButton, startGoogle } from "../google.server";
 import { AuthPage, CsrfField, EmailField, Notice, PasswordField } from "../ui";
 import type { Route } from "./+types/sign-in";
 
 export const meta: Route.MetaFunction = () => [{ title: "Sign in · CarworX" }];
-
-/** Google: basic scopes only (D-042, PLAN §9.1). */
-export const GOOGLE_SCOPES = "openid email profile";
 
 type Problem = AuthFailure | "oauth_denied" | "oauth_failed";
 
@@ -55,38 +50,42 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       signedIn.headers,
     );
   }
-  return {
-    csrf: context.security.csrfToken,
-    returnTo: url.searchParams.get("returnTo") ?? "",
-    problem: queryProblem(url),
-  };
+  const headers = new Headers();
+  const google = await googleButton(context.cloudflare.env, headers);
+  return data(
+    {
+      csrf: context.security.csrfToken,
+      returnTo: url.searchParams.get("returnTo") ?? "",
+      problem: queryProblem(url),
+      google,
+    },
+    { headers },
+  );
 }
+
+export const headers: Route.HeadersFunction = ({ loaderHeaders }) =>
+  loaderHeaders;
 
 export async function action({ request, context }: Route.ActionArgs) {
   const form = await request.formData();
   const auth = authRequest(request, context.security);
   const returnTo = safeReturnTo(field(form, "returnTo"), auth.config.appOrigin);
 
-  if (field(form, "intent") === "google") {
-    const { data: oauth, error } = await auth.supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        // Exact allowlisted URL; the return path rides in a cookie instead of
-        // a query string so Supabase's redirect allowlist can stay exact.
-        redirectTo: appUrl(auth.config.appOrigin, "/auth/callback"),
-        scopes: GOOGLE_SCOPES,
-        skipBrowserRedirect: true,
-      },
-    });
-    if (error !== null) {
-      return fail("oauth_failed", { status: 502, headers: auth.headers });
-    }
-    auth.headers.append(
-      "Set-Cookie",
-      serializeAppCookie(RETURN_COOKIE, returnTo, { maxAge: 600 }),
+  const intent = field(form, "intent");
+  if (intent === "google" || intent === "google-id") {
+    const response =
+      intent === "google"
+        ? await startGoogle(auth, returnTo)
+        : await exchangeGoogle(
+            request,
+            context.cloudflare.env,
+            auth,
+            form.get("googleCredential"),
+            returnTo,
+          );
+    return (
+      response ?? fail("oauth_failed", { status: 502, headers: auth.headers })
     );
-    // The boundary only lets this through to Supabase's /auth/v1/authorize.
-    return redirect(oauth.url, { headers: auth.headers });
   }
 
   const email = parseEmail(form);
@@ -129,13 +128,10 @@ export default function SignIn({
           </Link>
         </p>
       )}
-      <Form method="post">
+      <Form id="google-sign-in" method="post" reloadDocument>
         <CsrfField token={loaderData.csrf} />
         <input type="hidden" name="returnTo" value={loaderData.returnTo} />
-        <input type="hidden" name="intent" value="google" />
-        <button className="cx-btn outlined wide" type="submit">
-          Continue with Google
-        </button>
+        <GoogleButton formId="google-sign-in" options={loaderData.google} />
       </Form>
       <Form method="post">
         <CsrfField token={loaderData.csrf} />

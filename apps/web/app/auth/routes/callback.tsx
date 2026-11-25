@@ -28,26 +28,31 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     "Set-Cookie",
     serializeAppCookie(RETURN_COOKIE, "", { maxAge: 0 }),
   );
+  const signup = readCookie(request, "__Host-cx-google-signup") === "1";
+  if (signup)
+    auth.headers.append(
+      "Set-Cookie",
+      serializeAppCookie("__Host-cx-google-signup", "", { maxAge: 0 }),
+    );
+  const failure = (error: string) =>
+    redirect(
+      `/auth/sign-${signup ? "up" : "in"}?${new URLSearchParams({ error, returnTo })}`,
+      { headers: auth.headers },
+    );
 
   const providerError = url.searchParams.get("error");
   if (providerError !== null) {
     const problem =
       providerError === "access_denied" ? "oauth_denied" : "oauth_failed";
-    return redirect(`/auth/sign-in?error=${problem}`, {
-      headers: auth.headers,
-    });
+    return failure(problem);
   }
   const code = url.searchParams.get("code");
   if (code === null || code.length === 0 || code.length > 512) {
-    return redirect("/auth/sign-in?error=oauth_failed", {
-      headers: auth.headers,
-    });
+    return failure("oauth_failed");
   }
   const { error } = await auth.supabase.auth.exchangeCodeForSession(code);
   if (error !== null) {
-    return redirect("/auth/sign-in?error=oauth_failed", {
-      headers: auth.headers,
-    });
+    return failure("oauth_failed");
   }
   return redirect(returnTo, { headers: auth.headers });
 }

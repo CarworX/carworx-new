@@ -19,6 +19,8 @@ import {
   safeReturnTo,
 } from "../../server/security/redirect";
 import { AuthPage, CsrfField, EmailField, Notice, PasswordField } from "../ui";
+import { GoogleButton } from "../GoogleButton";
+import { exchangeGoogle, googleButton, startGoogle } from "../google.server";
 import type { Route } from "./+types/sign-up";
 
 export const meta: Route.MetaFunction = () => [
@@ -26,25 +28,47 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 type Problem =
-  AuthFailure | "invalid_email" | "invalid_password" | "consent_required";
+  | AuthFailure
+  | "invalid_email"
+  | "invalid_password"
+  | "consent_required"
+  | "oauth_failed"
+  | "oauth_denied";
 
 const MESSAGES: Record<Problem, string> = {
   ...FAILURE_MESSAGES,
   invalid_email: "Enter a valid email address.",
   invalid_password: "Use a password of 12 to 128 characters.",
   consent_required: "Tick the box to agree to the terms and privacy notice.",
+  oauth_failed:
+    "We couldn't finish signing up with Google. Try again, or use email and password.",
+  oauth_denied: "Google sign-up was cancelled.",
 };
 
 function fail(problem: Problem, init: { status: number; headers?: Headers }) {
   return data({ problem }, init);
 }
 
-export function loader({ request, context }: Route.LoaderArgs) {
-  return {
-    csrf: context.security.csrfToken,
-    returnTo: new URL(request.url).searchParams.get("returnTo") ?? "",
-  };
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const headers = new Headers();
+  const google = await googleButton(context.cloudflare.env, headers);
+  const url = new URL(request.url);
+  const error = url.searchParams.get("error");
+  const problem: Problem | undefined =
+    error === "oauth_failed" || error === "oauth_denied" ? error : undefined;
+  return data(
+    {
+      csrf: context.security.csrfToken,
+      returnTo: url.searchParams.get("returnTo") ?? "",
+      problem,
+      google,
+    },
+    { headers },
+  );
 }
+
+export const headers: Route.HeadersFunction = ({ loaderHeaders }) =>
+  loaderHeaders;
 
 /**
  * Where to go after the confirmation link (D-097: back to the business page
@@ -61,6 +85,29 @@ function rememberReturn(headers: Headers, returnTo: string) {
 
 export async function action({ request, context }: Route.ActionArgs) {
   const form = await request.formData();
+  const intent = field(form, "intent");
+  if (intent === "google" || intent === "google-id") {
+    if (!isTicked(form, "consent"))
+      return fail("consent_required", { status: 400 });
+    const auth = authRequest(request, context.security);
+    const returnTo = safeReturnTo(
+      field(form, "returnTo"),
+      auth.config.appOrigin,
+    );
+    const response =
+      intent === "google"
+        ? await startGoogle(auth, returnTo, true)
+        : await exchangeGoogle(
+            request,
+            context.cloudflare.env,
+            auth,
+            form.get("googleCredential"),
+            returnTo,
+          );
+    return (
+      response ?? fail("oauth_failed", { status: 502, headers: auth.headers })
+    );
+  }
   const email = parseEmail(form);
   const password = parsePassword(form);
   let problem: Problem | null = null;
@@ -104,7 +151,7 @@ export default function SignUp({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const problem = actionData?.problem;
+  const problem = actionData?.problem ?? loaderData.problem;
   return (
     <AuthPage title="Create an account">
       {problem !== undefined && (
@@ -112,7 +159,7 @@ export default function SignUp({
           <span data-problem={problem}>{MESSAGES[problem]}</span>
         </Notice>
       )}
-      <Form method="post">
+      <Form id="google-sign-up" method="post" reloadDocument>
         <CsrfField token={loaderData.csrf} />
         <input type="hidden" name="returnTo" value={loaderData.returnTo} />
         <EmailField />
@@ -126,6 +173,11 @@ export default function SignUp({
         <button className="cx-btn primary wide" type="submit">
           Create account
         </button>
+        <GoogleButton
+          formId="google-sign-up"
+          options={loaderData.google}
+          signup
+        />
       </Form>
       <p>
         Already have an account?{" "}
