@@ -156,7 +156,7 @@ describe("public pages without JavaScript", () => {
   });
 
   it("name words find a business with no area, and narrow an area search", async () => {
-    const byName = await browser().send("/search?q=synthetic+MOBILE&area=");
+    const byName = await browser().send("/search?q=veldline+MOBILE&area=");
     expect(byName.status).toBe(200);
     expect(byName.body).toContain("Businesses matching “synthetic MOBILE”");
     expect(byName.body).toContain(`/p/${SEED_MOBILE}`);
@@ -193,7 +193,7 @@ describe("public pages without JavaScript", () => {
     expect(form.body).toContain("Veldline Mobile Mechanics");
     expect(form.body).toContain("Nothing transfers when you send this claim.");
 
-    const empty = await b.send(`${picker}?q=synthetic+pending`);
+    const empty = await b.send(`${picker}?q=egoli+roadside`);
     expect(empty.status).toBe(200);
     expect(empty.body).toContain("No listings found");
     expect(empty.body).not.toContain(SEED_PENDING);
