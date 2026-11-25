@@ -14,6 +14,8 @@ export interface MailConfig extends MailEnvelopeConfig {
 }
 export type MailMessage =
   | { kind: "security_alert"; to: string; expiresAt: string }
+  /** D-098: the last email to a deleted account (copied at deletion time). */
+  | { kind: "account_deleted"; to: string; expiresAt: string }
   | { kind: "invite"; to: string; token: string; expiresAt: string }
   | { kind: "security_code"; to: string; code: string; expiresAt: string }
   | {
@@ -164,7 +166,8 @@ function message(
       kind !== "security_code" &&
       kind !== "auth_signup" &&
       kind !== "auth_recovery" &&
-      kind !== "security_alert")
+      kind !== "security_alert" &&
+      kind !== "account_deleted")
   )
     return null;
   const expiresAt = m["expiresAt"];
@@ -174,14 +177,14 @@ function message(
     expiry <= now ||
     expiry >
       now +
-        (kind === "invite"
+        (kind === "invite" || kind === "account_deleted"
           ? 7 * 86400_000
           : kind === "security_alert"
             ? 86400_000
             : 600_000)
   )
     return null;
-  if (kind === "security_alert")
+  if (kind === "security_alert" || kind === "account_deleted")
     return { kind, to, expiresAt: expiresAt as string };
   if (
     kind === "invite" &&
@@ -253,6 +256,14 @@ async function open(
     : null;
 }
 function rendered(config: MailConfig, m: MailMessage) {
+  if (m.kind === "account_deleted") {
+    return {
+      from: config.from,
+      to: [m.to],
+      subject: "Your CarworX account has been deleted",
+      text: "Your CarworX account has now been deleted, as you asked 14 days ago. Your profile, sign-in details and settings are gone. Messages you sent to businesses stay with them without your name or email, and records the law requires us to keep are kept without your name.\n\nThis is the last email we will send to this address. To use CarworX again, create a new account.",
+    };
+  }
   if (m.kind === "security_alert") {
     return {
       from: config.from,

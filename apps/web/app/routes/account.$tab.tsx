@@ -9,7 +9,7 @@ import {
   tokenHash,
 } from "../account/export.server";
 import { mediaBucket } from "../server/media/cover.server";
-import { throwStatus } from "../auth/http.server";
+import { throwRedirect, throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
 import { Button, ButtonLink } from "../ui/Button";
@@ -143,6 +143,11 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       optionalEmail,
       exportStatus,
       exportReady,
+      // D-098: password accounts re-confirm with their password; others
+      // with their authenticator (a session that passed the two-step check).
+      hasPassword: (signedIn.user.identities ?? []).some(
+        (i) => i.provider === "email",
+      ),
       exportInvalid:
         new URL(request.url).searchParams.get("export") === "invalid",
       exportRetry: new URL(request.url).searchParams.get("export") === "retry",
@@ -170,6 +175,69 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     status = 200,
     link: string | null = null,
   ) => data({ ok, message, link }, { status, headers: signedIn.headers });
+  if (tab === "privacy" && intent === "close-account") {
+    // D-098 (owner 2026-11-24): self-service, re-confirmed, 14-day grace.
+    if (form.get("understand") !== "on")
+      return reply(false, "Tick the box to confirm you understand.", 400);
+    const hasPassword = (signedIn.user.identities ?? []).some(
+      (i) => i.provider === "email",
+    );
+    if (hasPassword) {
+      const password = form.get("password");
+      const email = signedIn.user.email;
+      if (
+        typeof password !== "string" ||
+        password.length === 0 ||
+        password.length > 4096 ||
+        typeof email !== "string"
+      )
+        return reply(false, "Enter your password to confirm.", 400);
+      const check = await signedIn.supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (check.error !== null || check.data.user.id !== signedIn.user.id)
+        return reply(false, "That password isn't right.", 400);
+    } else if (signedIn.aal !== "aal2") {
+      return reply(
+        false,
+        "Verify with your authenticator first (Security tab), then try again.",
+        403,
+      );
+    }
+    const closed = await signedIn.supabase.rpc("close_account");
+    if (closed.error !== null) {
+      const why = closed.error.message;
+      return why === "owner_must_transfer"
+        ? reply(
+            false,
+            "You're the only owner of a business. Hand it to someone on your team, or close the business, first.",
+            409,
+          )
+        : why === "admin_account"
+          ? reply(false, "Admin accounts are removed by another admin.", 403)
+          : why === "already_closing"
+            ? reply(false, "Your account is already closing.", 409)
+            : reply(
+                false,
+                "We couldn't close your account. Please try again.",
+                503,
+              );
+    }
+    const until = typeof closed.data === "string" ? closed.data : "";
+    // Disabled at once: every session on every device ends now.
+    await signedIn.supabase.auth.signOut({ scope: "global" });
+    const on = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone: "Africa/Johannesburg",
+    }).format(new Date(until));
+    return throwRedirect(
+      `/account/closed?on=${encodeURIComponent(on)}`,
+      signedIn.headers,
+    );
+  }
   if (tab === "privacy" && intent === "request-export") {
     // D-098 "Download my data": 1 per 24 h, kept 7 days, one-time link.
     const media = mediaBucket(context.cloudflare.env);
@@ -565,16 +633,62 @@ export default function Settings({
                   <Button type="submit">Download my data file</Button>
                 </form>
               ) : null}
-              <h3 className="type-title cx-account-sub">Delete my account</h3>
-              <p>
-                To delete your account, contact support for now. Requests are
-                reviewed before any account data is removed.
-              </p>
-              <div>
-                <ButtonLink href="/support" variant="outline" size="sm">
-                  Contact support
-                </ButtonLink>
-              </div>
+              <h3 className="type-title cx-account-sub" id="delete-account">
+                Delete my account
+              </h3>
+              <ul className="cx-account-facts">
+                <li>
+                  Your account is closed at once and you're signed out on every
+                  device. You leave any team you're part of.
+                </li>
+                <li>
+                  We keep your data for 14 days, then delete it and email you
+                  that it's done.
+                </li>
+                <li>
+                  Changed your mind? Sign in within the 14 days and confirm that
+                  you want to keep your account.
+                </li>
+                <li>
+                  Messages you sent to businesses stay with them without your
+                  name or email. Records the law requires are kept without your
+                  name.
+                </li>
+              </ul>
+              <form method="post" className="grid gap-3" data-close-account>
+                <CsrfField token={csrf} />
+                <input type="hidden" name="intent" value="close-account" />
+                {loaderData.hasPassword ? (
+                  <TextField
+                    label="Your password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                  />
+                ) : (
+                  <p className="type-caption">
+                    Your account has no password, so confirm with your
+                    authenticator: verify it on the Security tab first.
+                  </p>
+                )}
+                <label className="flex items-start gap-2">
+                  <input type="checkbox" name="understand" required />
+                  <span>
+                    I understand my account will be deleted after 14 days.
+                  </span>
+                </label>
+                <div>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    size="sm"
+                    className="danger"
+                  >
+                    Delete my account
+                  </Button>
+                </div>
+              </form>
             </>
           ) : (
             <>

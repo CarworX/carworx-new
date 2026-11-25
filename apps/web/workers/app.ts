@@ -1,8 +1,10 @@
 import { createRequestHandler } from "react-router";
 
 import { mediaBucket } from "../app/server/media/cover.server";
+import { finalEmailSender } from "../app/server/retention/final-email.server";
 import {
   pgClient,
+  purgeAccounts,
   purgeMedia,
   runRetention,
 } from "../app/server/retention/run";
@@ -64,5 +66,12 @@ export default {
     // Cover photo files (D-098): counts only in the log.
     const media = await purgeMedia(binding, pgClient, mediaBucket(env));
     console.log(JSON.stringify({ event: "retention_media", ...media }));
+    // Closed accounts past their 14 days (D-098): counts only in the log.
+    const accounts = await purgeAccounts(
+      binding,
+      pgClient,
+      await finalEmailSender(env),
+    );
+    console.log(JSON.stringify({ event: "retention_accounts", ...accounts }));
   },
 } satisfies ExportedHandler<Env>;
