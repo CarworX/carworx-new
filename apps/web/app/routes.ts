@@ -15,6 +15,7 @@ export default [
   // Finish-build PR 3 (D-098): cover photos from the R2 bucket MEDIA.
   route("media/covers/:file", "routes/media.covers.$file.ts"),
   route("fines", "routes/fines.tsx"),
+  route("fines/mine", "routes/fines.mine.tsx"),
   // P2-5 visitor forms (Claude 22). The enquiry form lives on /p/:publicId.
   route("demand", "routes/demand.tsx"),
   route("support", "routes/support.tsx"),

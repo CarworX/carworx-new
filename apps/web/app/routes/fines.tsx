@@ -17,6 +17,10 @@ export const headers: Route.HeadersFunction = () => ({
   "Cache-Control": "public, max-age=300",
 });
 
+export function loader({ context }: Route.LoaderArgs) {
+  return { sandbox: context.security.config?.environment === "staging" };
+}
+
 /**
  * Official referral links (P2-6, A14). Only sites read and confirmed on the
  * date shown; a link that can't be confirmed is left out, not guessed. Each
@@ -46,13 +50,20 @@ export const OFFICIAL_LINKS = [
  * no lookup (G-FINES is out of scope) and no field of any kind: CarworX never
  * asks for an ID, licence or registration number here.
  */
-export default function Fines() {
+export default function Fines({
+  loaderData,
+}: Pick<Route.ComponentProps, "loaderData">) {
   return (
     <PublicShell current="/fines">
       <h1 className="type-display-lg max-sm:text-[34px] max-sm:leading-[36px]">
         Fines & vehicle admin
       </h1>
       <div className="mt-6 grid max-w-[65ch] gap-8">
+        {loaderData.sandbox && (
+          <TextLink href="/fines/mine">
+            Try My Fines in the staging sandbox
+          </TextLink>
+        )}
         <StatusNote title="CarworX doesn't check or collect fines.">
           We point you to the official places instead. We never ask for your ID
           number, and you can't pay a fine through CarworX.
