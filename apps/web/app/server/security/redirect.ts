@@ -5,7 +5,11 @@
  * (absolute URLs, protocol-relative `//host`, backslashes, encoded slashes,
  * control characters, other schemes, auth pages) falls back to a fixed page.
  */
-export const DEFAULT_AFTER_SIGN_IN = "/account";
+/**
+ * Where sign-in lands when no safe returnTo was asked for: the home page for
+ * customers, /provider for business members (signedInDestination). B-14.
+ */
+export const DEFAULT_AFTER_SIGN_IN = "/";
 
 const ALLOWED = [
   /^\/$/,

@@ -120,7 +120,8 @@ describe("redirect allowlist on returnTo", () => {
       },
     });
     expect(reply.status).toBe(302);
-    expect(reply.location).toBe("/account");
+    // A customer with no business membership lands on the home page (B-14).
+    expect(reply.location).toBe("/");
   });
 
   it("follows an allowed returnTo", async () => {

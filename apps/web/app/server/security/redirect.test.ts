@@ -52,12 +52,12 @@ describe("safeReturnTo", () => {
     "",
     "account",
   ])("rejects %j", (hostile) => {
-    expect(safeReturnTo(hostile, APP)).toBe("/account");
+    expect(safeReturnTo(hostile, APP)).toBe("/");
   });
 
   it("rejects non-strings and very long values", () => {
-    expect(safeReturnTo(null, APP)).toBe("/account");
-    expect(safeReturnTo(["/admin"], APP)).toBe("/account");
-    expect(safeReturnTo(`/account?${"a".repeat(600)}`, APP)).toBe("/account");
+    expect(safeReturnTo(null, APP)).toBe("/");
+    expect(safeReturnTo(["/admin"], APP)).toBe("/");
+    expect(safeReturnTo(`/account?${"a".repeat(600)}`, APP)).toBe("/");
   });
 });

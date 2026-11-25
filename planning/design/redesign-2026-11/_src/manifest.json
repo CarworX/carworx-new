@@ -1,0 +1,242 @@
+[
+  {
+    "file": "A1-shell/a1-1-signed-out.html",
+    "title": "Header signed out",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A1-shell/a1-2-signed-in-menu.html",
+    "title": "Header signed in, avatar menu open",
+    "sheetOpen": false,
+    "menu": true
+  },
+  {
+    "file": "A1-shell/a1-3-mobile-sheet-signed-out.html",
+    "title": "Mobile sheet, signed out",
+    "sheetOpen": true,
+    "menu": false
+  },
+  {
+    "file": "A1-shell/a1-4-mobile-sheet-signed-in.html",
+    "title": "Mobile sheet, signed in",
+    "sheetOpen": true,
+    "menu": false
+  },
+  {
+    "file": "A1-shell/a1-5-scrolled.html",
+    "title": "Scrolled, pinned pill",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A2-landing/a2-1-landing-signed-out.html",
+    "title": "Landing, signed out",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A2-landing/a2-2-fines-section-signed-in.html",
+    "title": "Landing fines section, signed in",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A2-landing/a2-3-for-businesses.html",
+    "title": "For businesses with the redrawn dashboard",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A3-category/a3-1-category.html",
+    "title": "Category: Wash & Detailing",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A3-category/a3-2-category-empty.html",
+    "title": "Category: empty for this area",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A4-customer-home/a4-1-home.html",
+    "title": "Customer home, signed in",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A4-customer-home/a4-2-home-no-location.html",
+    "title": "Customer home, no location set",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A5-auth/a5-1-sign-up-unticked.html",
+    "title": "Sign up, consent not ticked",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A5-auth/a5-2-sign-up-ticked.html",
+    "title": "Sign up, consent ticked",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A5-auth/a5-3-sign-in.html",
+    "title": "Sign in",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A5-auth/a5-4-google-first-time-consent.html",
+    "title": "Google first-time consent step",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-1-verify-intro.html",
+    "title": "Fines: verify your ID, intro",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-2-checking.html",
+    "title": "Fines: back from Didit, checking",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-3-approved.html",
+    "title": "Fines: verified",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-4-declined-retry.html",
+    "title": "Fines: declined with reason, retry",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-5-declined-final.html",
+    "title": "Fines: declined, no tries left",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-6-in-review.html",
+    "title": "Fines: in review by our team",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-7-my-fines.html",
+    "title": "My fines: several",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-8-my-fines-none.html",
+    "title": "My fines: none",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-9-my-fines-not-payable.html",
+    "title": "My fines: only not-payable fines",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-10-fine-detail.html",
+    "title": "Fine detail",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-11-pay-handoff.html",
+    "title": "Pay: handoff to partner checkout",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-12-awaiting-issuer.html",
+    "title": "Pay: awaiting issuer confirmation",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A6-fines/a6-13-receipt.html",
+    "title": "Receipt",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A7-admin-id-review/a7-1-queue.html",
+    "title": "Admin ID review queue (Didit In review)",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A7-admin-id-review/a7-2-detail.html",
+    "title": "Admin ID review detail (Didit result)",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A7-admin-id-review/a7-3-empty.html",
+    "title": "Admin ID review queue, empty",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-1-cards.html",
+    "title": "Ratings on listing cards",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-2-business-page-reviews.html",
+    "title": "Business page with reviews",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-3-write-review.html",
+    "title": "Write a review",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-4-cannot-review.html",
+    "title": "Write a review, not eligible",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-5-owner-reply.html",
+    "title": "Business owner replies (in /provider)",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-6-report-review.html",
+    "title": "Report a review",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-7-admin-moderation.html",
+    "title": "Admin review moderation queue",
+    "sheetOpen": false,
+    "menu": false
+  },
+  {
+    "file": "A8-reviews/a8-8-no-reviews.html",
+    "title": "Business page, no reviews yet",
+    "sheetOpen": false,
+    "menu": false
+  }
+]

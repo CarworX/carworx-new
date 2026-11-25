@@ -46,7 +46,13 @@ const HEAD = (() => {
   const how = /href="#how"(\s*)>How it works/;
   if (!links.test(head) || !how.test(head))
     throw new Error("home markup: header links not found");
+  // The mockup intro (#intro) is removed: the brand intro (INTRO_GATE) is the
+  // only one. Sign-out and first visit no longer leave a splash on screen.
+  const mockupIntro = /<div id="intro"[\s\S]*?(?=<header class="nav")/;
+  if (!mockupIntro.test(head))
+    throw new Error("home markup: mockup intro not found");
   return head
+    .replace(mockupIntro, "")
     .replace(
       links,
       '<nav class="links" aria-label="Main navigation"><a href="/search">Find a service</a><a href="/fines">Fines &amp; admin</a><a href="#business">For businesses</a></nav>',
@@ -189,6 +195,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 }
 
 function HeroSearch() {
+  // The location message gets its own row under the bar (B-05); it never
+  // sits inside .lp-loc, so a long sentence can't squeeze the search bar.
+  const [locError, setLocError] = useState<string | null>(null);
   return (
     <div data-hero>
       <form
@@ -219,7 +228,7 @@ function HeroSearch() {
         <input type="hidden" name="lng" defaultValue="" />
         <input type="hidden" name="near" defaultValue="" />
         <div className="lp-loc">
-          <UseMyLocation formId="home-search" />
+          <UseMyLocation formId="home-search" onError={setLocError} />
         </div>
         <button className="lp-go" type="submit">
           Search{" "}
@@ -228,6 +237,11 @@ function HeroSearch() {
           </span>
         </button>
       </form>
+      {locError ? (
+        <p className="lp-loc-msg" role="alert">
+          {locError}
+        </p>
+      ) : null}
       <p className="lp-free">
         <span>
           <em>✓ Free to browse</em> · no account needed

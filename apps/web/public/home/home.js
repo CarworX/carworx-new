@@ -38,79 +38,6 @@
   };
   tickHero(); if (!RM) setInterval(tickHero, 1000);
 
-  /* ---------- intro: full-scale glyph resolve + Turbine spool inside a concentric housing ---------- */
-  // Rotor physics follow brand/motion/timeline.mjs: lag-surge-brake spool, 1.8° overshoot, damped spring to rest.
-  const REST = 21.9494, TURNS = 3, OVER = 1.8;
-  const TABLE = (() => { const n = 1024, c = new Float64Array(n + 1);
-    for (let i = 1; i <= n; i++) { const u = (i - .5) / n; c[i] = c[i - 1] + Math.pow(u, 2.2) * Math.pow(1 - u, 1.3); }
-    for (let i = 0; i <= n; i++) c[i] /= c[n]; return c; })();
-  const spool = (u) => { const x = clamp(u) * 1024, i = Math.floor(x), f = x - i; return i >= 1024 ? 1 : TABLE[i] + (TABLE[i + 1] - TABLE[i]) * f; };
-  const SP = [0.3, 2.0];
-  const rotorAngle = (t) => t < SP[1]
-    ? REST - (TURNS * 360 + OVER) * (1 - spool((t - SP[0]) / (SP[1] - SP[0]))) + OVER
-    : REST + OVER * Math.exp(-6.5 * (t - SP[1])) * Math.cos(2 * Math.PI * 1.7 * (t - SP[1]));
-  const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
-  const lerp = (a, b, k) => a + (b - a) * k;
-
-  const intro = $('#intro'), stage = $('#intro .stage');
-  const asm = $('#i-asm'), rotS = $('#i-rotor-s'), rotRot = $('#i-rotor-rot'), word = $('#i-word');
-  const ghosts = $$('#i-rotor-rot .ghost');
-  const slots = $$('.glyph-slot'), igs = $$('#intro .ig');
-  const housing = $('#intro .housing'), pressure = $('#intro .pressure');
-  const tickWrap = $('#i-ticks'), tickEls = [];
-  for (let i = 0; i < 72; i++) {
-    const a = i * 5 * Math.PI / 180, r1 = i % 6 ? 106 : 104, r2 = i % 6 ? 110 : 114;
-    tickEls.push(tickWrap.appendChild(svgEl('line', { x1: (r1 * Math.sin(a)).toFixed(2), y1: (-r1 * Math.cos(a)).toFixed(2), x2: (r2 * Math.sin(a)).toFixed(2), y2: (-r2 * Math.cos(a)).toFixed(2), opacity: 0 })));
-  }
-  const HC = 2 * Math.PI * 100;
-  housing.setAttribute('stroke-dasharray', HC.toFixed(1));
-  const RES = [0.8, 0.9, 0.99, 1.09, 1.19, 1.28, 1.4];
-  const CH = '0123456789R#%&*+=<>/{}[]?$@ABCDEHKMNPRSTVWXZ'.split('');
-  // Layout: L = 1 is the horizontal lockup (export transforms); L = 0 is the stacked export, mapped into the same frame.
-  const STACK = innerWidth < 600, K = 1.15;
-  let L = STACK ? 0 : 1;
-  if (STACK) stage.classList.add('stacked');
-  const T_END = 2.95;
-
-  function drawIntro(t) {
-    // where the two halves sit (stacked export: mark at 303.18,160 ×1.6, wordmark at 0,480; centred on the horizontal frame)
-    const ax = lerp(426.18, 92, L), ay = lerp(92 - 80 * K, 92, L), as = lerp(1.6 * K / 0.92, 1, L);
-    const wx = lerp(426.18 - 303.18 * K, 246, L), wy = lerp(92 + 240 * K, 142, L), ws = lerp(K, 1, L);
-    asm.setAttribute('transform', `translate(${ax.toFixed(2)},${ay.toFixed(2)}) scale(${as.toFixed(4)})`);
-    word.setAttribute('transform', `translate(${wx.toFixed(2)},${wy.toFixed(2)}) scale(${ws.toFixed(4)})`);
-    // glyph slots: fade in, scramble, resolve to the outlined glyph
-    slots.forEach((s, i) => {
-      const on = clamp((t - 0.05 - i * 0.04) / 0.2), r = clamp((t - RES[i]) / 0.14);
-      s.setAttribute('opacity', (on * (1 - r)).toFixed(3));
-      if (t < RES[i]) s.textContent = CH[(Math.floor(t * 22) * 7 + i * 13 + Math.floor(t * 9) * i) % CH.length];
-      const g = clamp((t - RES[i] + 0.04) / 0.42), e = easeOutCubic(g);
-      igs[i].setAttribute('opacity', e.toFixed(3));
-      igs[i].setAttribute('transform', `translate(0 ${((1 - e) * 26).toFixed(2)})`);
-    });
-    // housing ring and ticks draw around the seat; they stay concentric with the rotor and fade once it seats
-    const ringOut = 1 - clamp((t - 2.0) / 0.45);
-    housing.setAttribute('stroke-dashoffset', (HC * (1 - easeOutCubic(clamp(t / 0.6)))).toFixed(1));
-    housing.setAttribute('opacity', ringOut.toFixed(3));
-    tickEls.forEach((el, i) => el.setAttribute('opacity', (clamp((t - 0.08 - i * 0.008) / 0.12) * ringOut * (i % 6 ? .55 : 1)).toFixed(3)));
-    // rotor grows into its housing while it spools up, then seats with a damped spring
-    const grow = easeOutCubic(clamp((t - 0.3) / 1.2));
-    rotS.setAttribute('transform', `scale(${(0.92 * (0.5 + 0.5 * grow)).toFixed(4)})`);
-    rotS.setAttribute('opacity', clamp((t - 0.3) / 0.3).toFixed(3));
-    const a = rotorAngle(t);
-    rotRot.setAttribute('transform', `rotate(${a.toFixed(3)})`);
-    // motion blur: trailing copies spread by angular speed
-    const v = Math.abs(a - rotorAngle(t - 1 / 60));
-    const spread = Math.min(16, v * 0.9);
-    ghosts.forEach((gh, k) => {
-      gh.setAttribute('transform', `rotate(${(-(k + 1) * spread / 4).toFixed(2)})`);
-      gh.setAttribute('opacity', (spread > .4 ? 0.28 - k * 0.05 : 0).toFixed(3));
-    });
-    // pressure ring leaves the rotor as it seats
-    const p = clamp((t - 2.0) / 0.8);
-    pressure.setAttribute('transform', `scale(${(1 + 2 * easeOutCubic(p)).toFixed(4)})`);
-    pressure.setAttribute('opacity', (p > 0 && p < 1 ? 0.5 * (1 - p) : 0).toFixed(3));
-  }
-
   function heroIn() {
     root.classList.remove('hero-wait');
     if (!motion) return;
@@ -130,46 +57,9 @@
     if (G) ScrollTrigger.refresh();
   }
 
-  function runIntro() {
-    const hashT = /intro=([\d.]+)/.exec(location.hash);
-    if (!G || /skip/.test(location.hash)) { L = 1; drawIntro(9); finishIntro(); return; }
-    if (RM) {
-      // Reduced motion: the intro becomes a still of the settled lockup, then fades away.
-      drawIntro(9); root.classList.add('intro-on');
-      const done = () => { G.to(intro, { opacity: 0, duration: .4, onComplete: finishIntro }); };
-      const id = setTimeout(done, 1400); intro.addEventListener('click', () => { clearTimeout(id); done(); }, { once: true });
-      return;
-    }
-    root.classList.add('intro-on', 'logo-wait');
-    const st = { t: 0 };
-    const tl = G.timeline({ onComplete: handoff });
-    tl.to(st, { t: T_END, duration: T_END, ease: 'none', onUpdate: () => drawIntro(st.t) }, 0)
-      .fromTo('.intro-tag .w>span', { yPercent: 110 }, { yPercent: 0, duration: .8, stagger: .07, ease: 'expo.out' }, 1.5)
-      .fromTo('.intro-roll', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .6, ease: 'expo.out' }, 1.8)
-      .to('.roll-track', { y: '-1.3em', duration: .26, ease: 'power3.inOut' }, 2.0)
-      .to('.roll-track', { y: '-2.6em', duration: .26, ease: 'power3.inOut' }, 2.24)
-      .to('.roll-track', { y: '-3.9em', duration: .26, ease: 'power3.inOut' }, 2.48)
-      .fromTo('.intro-skip', { opacity: 0 }, { opacity: 1, duration: .5 }, .4);
-    drawIntro(0);
-    if (hashT) { tl.pause(+hashT[1]); drawIntro(+hashT[1]); return; } // used for stills
-    const skip = () => { if (tl.progress() < 1) tl.timeScale(5); };
-    ['wheel', 'touchstart', 'keydown', 'click'].forEach((e) => addEventListener(e, skip, { once: true, passive: true }));
-
-    function handoff() {
-      // FLIP: the full-scale lockup shrinks into the nav while the hero objects spring in from the edges.
-      const lk = $('#intro .lk'), nav = $('.nav .logo svg');
-      const a = lk.getBoundingClientRect(), b = nav.getBoundingClientRect();
-      const s = b.width / a.width, lay = { l: L };
-      const ht = G.timeline({ onComplete: finishIntro });
-      ht.to('.intro-sub,.intro-skip', { opacity: 0, y: -12, duration: .3, ease: 'power2.in' }, 0)
-        .to(lay, { l: 1, duration: .55, ease: 'expo.inOut', onUpdate: () => { L = lay.l; drawIntro(T_END + 1); } }, 0)
-        .to(lk, { x: b.left - a.left, y: b.top - a.top, scale: s, duration: .9, ease: 'expo.inOut' }, .05)
-        .fromTo('.nav', { opacity: 0 }, { opacity: 1, duration: .5, ease: 'power1.out' }, .2)
-        .to('#intro .ibg', { opacity: 0, duration: .45, ease: 'power1.out' }, .4)
-        .add(() => { root.classList.remove('intro-on'); heroIn(); }, .3);
-    }
-  }
-  runIntro();
+  // The brand intro (app/home/introGate.ts, public/intro/intro.js) is the only
+  // intro. The hero animates straight away.
+  finishIntro();
 
   /* ---------- hero objects: depth parallax (pointer + scroll) ---------- */
   const hero = $('.hero');

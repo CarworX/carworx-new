@@ -53,10 +53,16 @@ export function GoogleButton({
   formId,
   options,
   signup = false,
+  requireConsent = signup,
+  disabled = false,
 }: {
   formId: string;
   options: { clientId: string; nonce: string } | null;
   signup?: boolean;
+  /** The terms box must be ticked before Google sign-in (B-10). Sign-up always. */
+  requireConsent?: boolean;
+  /** Off until the terms box is ticked (B-10). */
+  disabled?: boolean;
 }) {
   const widget = useRef<HTMLDivElement>(null);
   const [enhanced, setEnhanced] = useState(false);
@@ -88,11 +94,13 @@ export function GoogleButton({
             if (!(form instanceof HTMLFormElement)) return;
             const consent = form.elements.namedItem("consent");
             if (
-              signup &&
+              requireConsent &&
               (!(consent instanceof HTMLInputElement) || !consent.checked)
             ) {
               setMessage(
-                "Agree to the terms and privacy notice before signing up with Google. Then try again.",
+                signup
+                  ? "Agree to the terms and privacy notice before signing up with Google. Then try again."
+                  : "Agree to the terms and privacy notice before signing in with Google. Then try again.",
               );
               if (consent instanceof HTMLInputElement) consent.focus();
               return;
@@ -128,11 +136,11 @@ export function GoogleButton({
       observer.disconnect();
       container.replaceChildren();
     };
-  }, [clientId, nonce, formId, signup]);
+  }, [clientId, nonce, formId, signup, requireConsent]);
 
   return (
     <div className="grid gap-2">
-      <div ref={widget} />
+      <div ref={widget} inert={disabled || undefined} />
       <input type="hidden" name="googleCredential" />
       <button
         type="submit"
@@ -141,21 +149,21 @@ export function GoogleButton({
         formNoValidate
         hidden
       />
+      {/* The redirect button is the no-JS path and the fallback when the Google
+          widget can't load. Once the widget is on the page it is hidden: no
+          second Google button, and no "redirect instead" link (B-11). */}
       <button
-        className={enhanced ? "min-h-11 underline" : "cx-btn outlined wide"}
+        className="cx-btn outlined wide"
         type="submit"
         name="intent"
         value="google"
         formNoValidate
+        hidden={enhanced}
+        disabled={disabled}
+        style={enhanced ? { display: "none" } : undefined}
       >
-        {!enhanced && (
-          <img width="18" height="18" src="/assets/core/google-g.svg" alt="" />
-        )}
-        {enhanced
-          ? "Use Google redirect instead"
-          : signup
-            ? "Sign up with Google"
-            : "Continue with Google"}
+        <img width="18" height="18" src="/assets/core/google-g.svg" alt="" />
+        {signup ? "Sign up with Google" : "Continue with Google"}
       </button>
       {message && <p role="alert">{message}</p>}
     </div>

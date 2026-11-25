@@ -5,7 +5,9 @@ import {
   FAILURE_MESSAGES,
   type AuthFailure,
 } from "../errors";
-import { field, parseEmail } from "../forms";
+import { useState, useSyncExternalStore } from "react";
+import { signedInDestination } from "../after-sign-in.server";
+import { field, isTicked, parseEmail } from "../forms";
 import { throwRedirect } from "../http.server";
 import { authRequest, getSignedIn } from "../session.server";
 import { safeReturnTo } from "../../server/security/redirect";
@@ -16,7 +18,10 @@ import type { Route } from "./+types/sign-in";
 
 export const meta: Route.MetaFunction = () => [{ title: "Sign in · CarworX" }];
 
-type Problem = AuthFailure | "oauth_denied" | "oauth_failed";
+type Problem =
+  AuthFailure | "oauth_denied" | "oauth_failed" | "consent_required";
+
+const subscribe = () => () => undefined;
 
 const MESSAGES: Record<Problem, string> = {
   ...FAILURE_MESSAGES,
@@ -24,6 +29,8 @@ const MESSAGES: Record<Problem, string> = {
     "Google sign-in was cancelled. You can try again, or use your email and password.",
   oauth_failed:
     "We couldn't finish signing you in with Google. Try again, or use your email and password.",
+  consent_required:
+    "Tick the box to agree to the terms and privacy notice before signing in with Google.",
 };
 
 const QUERY_PROBLEMS = new Set<Problem>([
@@ -69,19 +76,28 @@ export const headers: Route.HeadersFunction = ({ loaderHeaders }) =>
 export async function action({ request, context }: Route.ActionArgs) {
   const form = await request.formData();
   const auth = authRequest(request, context.security);
-  const returnTo = safeReturnTo(field(form, "returnTo"), auth.config.appOrigin);
+  // "" when nothing safe was asked for: the destination is then decided by
+  // who the person is, after sign-in (signedInDestination).
+  const requested = safeReturnTo(
+    field(form, "returnTo"),
+    auth.config.appOrigin,
+    "",
+  );
 
   const intent = field(form, "intent");
   if (intent === "google" || intent === "google-id") {
+    // Same rule as sign-up, server side for no-JS: the terms box must be ticked.
+    if (!isTicked(form, "consent"))
+      return fail("consent_required", { status: 400 });
     const response =
       intent === "google"
-        ? await startGoogle(auth, returnTo)
+        ? await startGoogle(auth, requested)
         : await exchangeGoogle(
             request,
             context.cloudflare.env,
             auth,
             form.get("googleCredential"),
-            returnTo,
+            requested,
           );
     return (
       response ?? fail("oauth_failed", { status: 502, headers: auth.headers })
@@ -106,7 +122,8 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
   // Admin pages ask for the TOTP step-up themselves (aal2), wherever the
   // user lands first.
-  return redirect(returnTo, { headers: auth.headers });
+  const destination = requested || (await signedInDestination(auth.supabase));
+  return redirect(destination, { headers: auth.headers });
 }
 
 export default function SignIn({
@@ -114,6 +131,15 @@ export default function SignIn({
   actionData,
 }: Route.ComponentProps) {
   const problem = actionData?.problem ?? loaderData.problem;
+  const hydrated = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
+  const [agreed, setAgreed] = useState(false);
+  // Off until the page loads in the browser, so no-JS users still reach the
+  // server check (B-10).
+  const gated = hydrated && !agreed;
   return (
     <AuthPage title="Sign in">
       {problem !== undefined && (
@@ -131,7 +157,26 @@ export default function SignIn({
       <Form id="google-sign-in" method="post" reloadDocument>
         <CsrfField token={loaderData.csrf} />
         <input type="hidden" name="returnTo" value={loaderData.returnTo} />
-        <GoogleButton formId="google-sign-in" options={loaderData.google} />
+        <p>
+          <input
+            id="sign-in-consent"
+            name="consent"
+            type="checkbox"
+            checked={agreed}
+            onChange={(event) => {
+              setAgreed(event.currentTarget.checked);
+            }}
+          />
+          <label htmlFor="sign-in-consent">
+            I agree to the CarworX terms of use and privacy notice.
+          </label>
+        </p>
+        <GoogleButton
+          formId="google-sign-in"
+          options={loaderData.google}
+          requireConsent
+          disabled={gated}
+        />
       </Form>
       <Form method="post">
         <CsrfField token={loaderData.csrf} />

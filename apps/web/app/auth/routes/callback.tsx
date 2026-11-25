@@ -1,5 +1,6 @@
 import { redirect } from "react-router";
 
+import { signedInDestination } from "../after-sign-in.server";
 import { authRequest } from "../session.server";
 import {
   RETURN_COOKIE,
@@ -23,9 +24,11 @@ import type { Route } from "./+types/callback";
 export async function loader({ request, context }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const auth = authRequest(request, context.security);
-  const returnTo = safeReturnTo(
+  // "" when no safe returnTo was asked for: decided after sign-in (B-14).
+  const requested = safeReturnTo(
     readCookie(request, RETURN_COOKIE),
     auth.config.appOrigin,
+    "",
   );
   auth.headers.append(
     "Set-Cookie",
@@ -39,7 +42,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     );
   const failure = (error: string) => {
     const query = new URLSearchParams({ error });
-    if (returnTo !== DEFAULT_AFTER_SIGN_IN) query.set("returnTo", returnTo);
+    if (requested !== "" && requested !== DEFAULT_AFTER_SIGN_IN)
+      query.set("returnTo", requested);
     return redirect(`/auth/sign-${signup ? "up" : "in"}?${query}`, {
       headers: auth.headers,
     });
@@ -59,5 +63,6 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   if (error !== null) {
     return failure("oauth_failed");
   }
-  return redirect(returnTo, { headers: auth.headers });
+  const destination = requested || (await signedInDestination(auth.supabase));
+  return redirect(destination, { headers: auth.headers });
 }
