@@ -73,7 +73,17 @@ const sha = (data) => createHash("sha256").update(data).digest("hex");
 const gib = 1024 ** 3;
 
 function freeBytes() {
-  const disk = statfsSync(ci ? workspace : "/mnt/c");
+  if (ci) {
+    const result = spawnSync("df", ["-Pk", workspace], {
+      encoding: "utf8",
+      timeout: 5_000,
+    });
+    const row = result.stdout?.trim().split("\n").at(-1);
+    const availableKiB = Number(row?.trim().split(/\s+/)[3]);
+    assert.ok(result.status === 0 && Number.isSafeInteger(availableKiB));
+    return availableKiB * 1024;
+  }
+  const disk = statfsSync("/mnt/c");
   return disk.bavail * disk.bsize;
 }
 
