@@ -1,5 +1,4 @@
 import { ButtonLink, QuietLink } from "../Button";
-import { CsrfField } from "../../auth/ui";
 import { NavBar, type AccountInfo } from "../NavBar";
 import { useSiteViewer } from "./useSiteViewer";
 
@@ -46,28 +45,6 @@ function SignedOutSheet() {
   );
 }
 
-function SignedInSheet({ csrf }: { csrf: string }) {
-  return (
-    <>
-      <ButtonLink href="/fines/mine" variant="secondary" block>
-        My fines
-      </ButtonLink>
-      <ButtonLink href="/account" variant="secondary" block>
-        Account
-      </ButtonLink>
-      <ButtonLink href="/provider" variant="secondary" block>
-        My business
-      </ButtonLink>
-      <form method="post" action="/auth/sign-out">
-        <CsrfField token={csrf} />
-        <button type="submit" className="cx-link">
-          Sign out
-        </button>
-      </form>
-    </>
-  );
-}
-
 export function SiteHeader() {
   const { viewer, csrf } = useSiteViewer();
   if (viewer === null) {
@@ -92,11 +69,7 @@ export function SiteHeader() {
       { href: "/provider", label: "My business" },
     ],
   };
-  return (
-    <NavBar
-      items={SITE_NAV}
-      account={account}
-      sheetActions={<SignedInSheet csrf={csrf} />}
-    />
-  );
+  // The account section (links and sign-out) comes from NavBar itself, in the
+  // menu and in the sheet, so nothing is listed twice.
+  return <NavBar items={SITE_NAV} account={account} />;
 }

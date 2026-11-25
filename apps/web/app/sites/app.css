@@ -419,21 +419,6 @@ textarea:focus-visible {
 .hidden {
   display: none;
 }
-footer {
-  background: #0d0f12;
-  color: white;
-  padding: 48px 5%;
-  font-size: 13px;
-}
-footer img {
-  width: 145px;
-}
-footer p {
-  color: #aab2bc;
-}
-footer a {
-  margin-right: 20px;
-}
 @media (max-width: 800px) {
   .nav nav {
     display: none;

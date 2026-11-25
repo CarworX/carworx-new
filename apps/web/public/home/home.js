@@ -243,28 +243,6 @@
     $$('#days i').forEach((d) => d.style.setProperty('--f', 1));
   }
 
-  /* ---------- compact menu (900 px and below): frosted sheet, focus trap, Esc to close ---------- */
-  const menuBtn = $('.menu-btn'), sheet = $('#menu'), scrim = $('.scrim');
-  const setMenu = (open, focusBack) => {
-    sheet.classList.toggle('open', open); scrim.classList.toggle('open', open);
-    menuBtn.setAttribute('aria-expanded', String(open));
-    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    root.classList.toggle('menu-open', open);
-    if (open) $('a', sheet).focus(); else if (focusBack) menuBtn.focus();
-  };
-  menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true', true));
-  scrim.addEventListener('click', () => setMenu(false, true));
-  $$('a', sheet).forEach((a) => a.addEventListener('click', () => setMenu(false)));
-  addEventListener('keydown', (e) => {
-    if (!sheet.classList.contains('open')) return;
-    if (e.key === 'Escape') { e.preventDefault(); setMenu(false, true); return; }
-    if (e.key !== 'Tab') return;
-    const items = [menuBtn, ...$$('a', sheet)], first = items[0], last = items[items.length - 1];
-    if (!items.includes(document.activeElement)) { e.preventDefault(); first.focus(); }
-    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-  });
-  matchMedia('(min-width: 901px)').addEventListener('change', (m) => { if (m.matches) setMenu(false); });
 
   /* ---------- one rAF loop for the springy bits; it sleeps when nothing it drives is moving or on screen ---------- */
   let running = false;
