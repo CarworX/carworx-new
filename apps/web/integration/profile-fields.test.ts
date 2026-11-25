@@ -13,6 +13,7 @@ import {
   signIn,
   sql,
   sqlRows,
+  authSendsTemplates,
   syntheticEmail,
   workerEnv,
 } from "./harness";
@@ -224,64 +225,70 @@ describe("Account › Profile", () => {
     ).toEqual(["none"]);
   });
 
-  it("changes the email only after both addresses confirm", async () => {
-    const user = await person("email");
-    const next = syntheticEmail("email-next");
-    const browser = await signIn(user.email);
-    await browser.send(PATH);
-    const taken = await createConfirmedUser("email-taken");
-    const inUse = await browser.send(PATH, {
-      form: { intent: "change-email", email: taken.email },
-    });
-    expect([409, 200]).toContain(inUse.status);
+  // Needs Auth's own email-change mail. Where Auth sends through a hook
+  // (native-auth parity, like hosted) the flag is off and the test above
+  // covers that the change is refused instead.
+  it.runIf(authSendsTemplates)(
+    "changes the email only after both addresses confirm",
+    async () => {
+      const user = await person("email");
+      const next = syntheticEmail("email-next");
+      const browser = await signIn(user.email);
+      await browser.send(PATH);
+      const taken = await createConfirmedUser("email-taken");
+      const inUse = await browser.send(PATH, {
+        form: { intent: "change-email", email: taken.email },
+      });
+      expect([409, 200]).toContain(inUse.status);
 
-    const started = await browser.send(PATH, {
-      form: { intent: "change-email", email: next },
-    });
-    expect(started.status).toBe(200);
-    expect(started.body).toContain("Check both inboxes");
-    expect((await browser.send(PATH)).body).toContain(
-      `Waiting for you to confirm ${next}`,
-    );
-    // Not changed yet.
-    expect(
-      sqlRows(`select email from auth.users where id='${user.id}'`),
-    ).toEqual([user.email]);
+      const started = await browser.send(PATH, {
+        form: { intent: "change-email", email: next },
+      });
+      expect(started.status).toBe(200);
+      expect(started.body).toContain("Check both inboxes");
+      expect((await browser.send(PATH)).body).toContain(
+        `Waiting for you to confirm ${next}`,
+      );
+      // Not changed yet.
+      expect(
+        sqlRows(`select email from auth.users where id='${user.id}'`),
+      ).toEqual([user.email]);
 
-    const [toOld] = await mailTo(user.email);
-    const [toNew] = await mailTo(next);
-    const first = confirmLink(toOld ?? "");
-    const second = confirmLink(toNew ?? "");
-    expect(first).toContain("type=email_change");
-    const visitor = new Browser();
-    const page = await visitor.send(first);
-    expect(page.body).toContain("Confirm the change");
-    const one = await visitor.send("/auth/confirm", {
-      form: {
-        token_hash:
-          new URL(first, "http://x").searchParams.get("token_hash") ?? "",
-        type: "email_change",
-      },
-    });
-    expect(one.status).toBe(302);
-    expect(one.location).toBe("/account/profile?email=half");
-    expect(
-      sqlRows(`select email from auth.users where id='${user.id}'`),
-    ).toEqual([user.email]);
-    const two = await visitor.send("/auth/confirm", {
-      form: {
-        token_hash:
-          new URL(second, "http://x").searchParams.get("token_hash") ?? "",
-        type: "email_change",
-      },
-    });
-    expect(two.status).toBe(302);
-    expect(two.location).toBe("/account/profile?email=confirmed");
-    expect(
-      sqlRows(`select email from auth.users where id='${user.id}'`),
-    ).toEqual([next]);
-    // The new address now signs in with the same password.
-    const again = await signIn(next, PASSWORD);
-    expect((await again.send(PATH)).status).toBe(200);
-  });
+      const [toOld] = await mailTo(user.email);
+      const [toNew] = await mailTo(next);
+      const first = confirmLink(toOld ?? "");
+      const second = confirmLink(toNew ?? "");
+      expect(first).toContain("type=email_change");
+      const visitor = new Browser();
+      const page = await visitor.send(first);
+      expect(page.body).toContain("Confirm the change");
+      const one = await visitor.send("/auth/confirm", {
+        form: {
+          token_hash:
+            new URL(first, "http://x").searchParams.get("token_hash") ?? "",
+          type: "email_change",
+        },
+      });
+      expect(one.status).toBe(302);
+      expect(one.location).toBe("/account/profile?email=half");
+      expect(
+        sqlRows(`select email from auth.users where id='${user.id}'`),
+      ).toEqual([user.email]);
+      const two = await visitor.send("/auth/confirm", {
+        form: {
+          token_hash:
+            new URL(second, "http://x").searchParams.get("token_hash") ?? "",
+          type: "email_change",
+        },
+      });
+      expect(two.status).toBe(302);
+      expect(two.location).toBe("/account/profile?email=confirmed");
+      expect(
+        sqlRows(`select email from auth.users where id='${user.id}'`),
+      ).toEqual([next]);
+      // The new address now signs in with the same password.
+      const again = await signIn(next, PASSWORD);
+      expect((await again.send(PATH)).status).toBe(200);
+    },
+  );
 });
