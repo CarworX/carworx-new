@@ -35,16 +35,6 @@ jobs:
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           run_install: false
-      - name: Make room for the recovery drill
-        if: runner.environment == 'github-hosted'
-        run: |
-          available_kib=$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR == 2 {print $4}')
-          sdk=/usr/local/lib/android/sdk
-          if (( available_kib < 10 * 1024 * 1024 )) && [[ "${ANDROID_HOME:-}" == "$sdk" && "$(realpath -e -- "$sdk")" == "$sdk" ]]; then
-            # This hosted runner is disposable and K4 does not use Android.
-            sudo rm -rf -- "$sdk"
-          fi
-          df -h "$GITHUB_WORKSPACE"
       - name: Install pinned tools
         run: |
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
@@ -60,7 +50,15 @@ jobs:
         run: node --test scripts/ops/backup/coverage.test.js
       - name: Export and restore synthetic data
         run: |
-          node scripts/ops/backup/drill.js "$PWD" "$TESTED_SHA" /usr/lib/postgresql/17/bin --ci > "$RUNNER_TEMP/k4-summary.json"
+          # Use the workspace volume if the runner's default temp volume is small.
+          temp_kib=$(df -Pk "$RUNNER_TEMP" | awk 'NR == 2 {print $4}')
+          work_kib=$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR == 2 {print $4}')
+          scratch_root="$RUNNER_TEMP"
+          if (( temp_kib < 7 * 1024 * 1024 && work_kib > temp_kib )); then
+            scratch_root=$(mktemp -d "$GITHUB_WORKSPACE/.k4-runner-XXXXXX")
+          fi
+          df -h "$scratch_root"
+          RUNNER_TEMP="$scratch_root" node scripts/ops/backup/drill.js "$PWD" "$TESTED_SHA" /usr/lib/postgresql/17/bin --ci > "$RUNNER_TEMP/k4-summary.json"
           test -s "$RUNNER_TEMP/k4-summary.json"
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:

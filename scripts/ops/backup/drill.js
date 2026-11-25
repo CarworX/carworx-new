@@ -80,7 +80,10 @@ function freeBytes() {
 function capacity(minimum) {
   // Its own stage, so a full runner disk isn't reported as the last command.
   stageName = "disk-capacity";
-  assert.ok(freeBytes() >= minimum, "Recovery disk safety margin reached");
+  const available = freeBytes();
+  if (available < minimum)
+    console.error(`Recovery disk available bytes: ${available}, required: ${minimum}`);
+  assert.ok(available >= minimum, "Recovery disk safety margin reached");
 }
 
 let stageName = "preflight";
