@@ -73,29 +73,14 @@ const sha = (data) => createHash("sha256").update(data).digest("hex");
 const gib = 1024 ** 3;
 
 function freeBytes() {
-  if (ci) {
-    const result = spawnSync("df", ["-Pk", workspace], {
-      encoding: "utf8",
-      timeout: 5_000,
-    });
-    const row = result.stdout?.trim().split("\n").at(-1);
-    const availableKiB = Number(row?.trim().split(/\s+/)[3]);
-    assert.ok(result.status === 0 && Number.isSafeInteger(availableKiB));
-    return availableKiB * 1024;
-  }
-  const disk = statfsSync("/mnt/c");
+  const disk = statfsSync(ci ? workspace : "/mnt/c");
   return disk.bavail * disk.bsize;
 }
 
 function capacity(minimum) {
   // Its own stage, so a full runner disk isn't reported as the last command.
   stageName = "disk-capacity";
-  const available = freeBytes();
-  if (available < minimum)
-    console.error(
-      `Recovery disk available bytes: ${available}, required: ${minimum}`,
-    );
-  assert.ok(available >= minimum, "Recovery disk safety margin reached");
+  assert.ok(freeBytes() >= minimum, "Recovery disk safety margin reached");
 }
 
 let stageName = "preflight";
