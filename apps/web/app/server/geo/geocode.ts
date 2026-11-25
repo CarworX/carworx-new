@@ -128,6 +128,7 @@ export async function suggestLocations(
       signal: AbortSignal.timeout(GEOCODE_TIMEOUT_MS),
     });
     if (!response.ok) {
+      console.warn("location-provider-response:", response.status);
       await response.body?.cancel();
       return null;
     }
