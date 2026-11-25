@@ -6,7 +6,10 @@ import {
   readCookie,
   serializeAppCookie,
 } from "../../server/security/cookies";
-import { safeReturnTo } from "../../server/security/redirect";
+import {
+  DEFAULT_AFTER_SIGN_IN,
+  safeReturnTo,
+} from "../../server/security/redirect";
 import type { Route } from "./+types/callback";
 
 /**
@@ -34,11 +37,13 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       "Set-Cookie",
       serializeAppCookie("__Host-cx-google-signup", "", { maxAge: 0 }),
     );
-  const failure = (error: string) =>
-    redirect(
-      `/auth/sign-${signup ? "up" : "in"}?${new URLSearchParams({ error, returnTo })}`,
-      { headers: auth.headers },
-    );
+  const failure = (error: string) => {
+    const query = new URLSearchParams({ error });
+    if (returnTo !== DEFAULT_AFTER_SIGN_IN) query.set("returnTo", returnTo);
+    return redirect(`/auth/sign-${signup ? "up" : "in"}?${query}`, {
+      headers: auth.headers,
+    });
+  };
 
   const providerError = url.searchParams.get("error");
   if (providerError !== null) {
