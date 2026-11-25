@@ -6,6 +6,7 @@ import {
   newCoverKey,
 } from "../server/media/cover.server";
 import { cleanImage, MAX_BYTES } from "../server/media/image";
+import { PHOTO_LIMIT_TEXT, uploadTooLarge } from "../server/media/limits";
 import { data } from "react-router";
 
 import { field, parseEmail } from "../auth/forms";
@@ -201,16 +202,25 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     params,
     context,
   );
-  const form = await request.formData();
-  const intent = field(form, "intent");
   const fail = (problem: TeamProblem) =>
     data(
       { problem, inviteUrl: null },
       {
         headers: signedIn.headers,
-        status: problem === "unavailable" ? 503 : 400,
+        status:
+          problem === "unavailable"
+            ? 503
+            : problem === "photo_too_large"
+              ? 413
+              : 400,
       },
     );
+  // Uploads: refuse an over-limit request before reading its body (the
+  // security boundary checks this too).
+  if (params.task === "cover" && uploadTooLarge(request))
+    return fail("photo_too_large");
+  const form = await request.formData();
+  const intent = field(form, "intent");
   if (params.task === "cover") {
     // Owners and managers only (staff get 404 in setup()); the database
     // checks the role and the listing's business again.
@@ -754,6 +764,9 @@ export default function TeamSetup({
                         accept="image/jpeg,image/png,image/webp"
                         required
                       />
+                      <span className="type-caption text-quiet" data-limit>
+                        {PHOTO_LIMIT_TEXT}
+                      </span>
                     </label>
                     <div>
                       <Button type="submit">Save cover photo</Button>

@@ -87,46 +87,76 @@ describe("mutation checks", () => {
     expect(result.headers.get("Cache-Control")).toBe("private, no-store");
   });
 
-  it("refuses oversized forms", async () => {
+  it("refuses oversized forms with 413", async () => {
     const big = `csrf=${TOKEN}&x=${"y".repeat(MAX_FORM_BYTES)}`;
     const { result, called } = await run(
       post({ cookie: goodCookie, body: big }),
     );
-    expect(result.status).toBe(403);
+    expect(result.status).toBe(413);
     expect(called).toBe(false);
   });
 
+  // A browser states the body's length; build uploads the same way.
+  const upload = async (
+    path: string,
+    bytes: number,
+    type = "multipart",
+    length: (actual: number) => string | null = String,
+  ) => {
+    const form = new FormData();
+    form.set("csrf", TOKEN);
+    form.set("photo", new Blob([new Uint8Array(bytes)]), "cover.jpg");
+    const encoded =
+      type === "multipart"
+        ? new Response(form)
+        : new Response(`csrf=${TOKEN}&x=${"y".repeat(bytes)}`, {
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          });
+    const body = new Uint8Array(await encoded.arrayBuffer());
+    const headers = new Headers({
+      Origin: APP,
+      Cookie: goodCookie,
+      "Content-Type": encoded.headers.get("Content-Type") ?? "",
+    });
+    const stated = length(body.byteLength);
+    if (stated !== null) headers.set("Content-Length", stated);
+    return new Request(`${APP}${path}`, { method: "POST", headers, body });
+  };
+  const cover = "/provider/setup/cover/start";
+
   it("allows a larger multipart body on the cover upload path only (D-098)", async () => {
-    const upload = (path: string, bytes: number, type = "multipart") => {
-      const form = new FormData();
-      form.set("csrf", TOKEN);
-      form.set("photo", new Blob([new Uint8Array(bytes)]), "cover.jpg");
-      const request = new Request(`${APP}${path}`, {
-        method: "POST",
-        body:
-          type === "multipart" ? form : `csrf=${TOKEN}&x=${"y".repeat(bytes)}`,
-        headers:
-          type === "multipart"
-            ? {}
-            : { "Content-Type": "application/x-www-form-urlencoded" },
-      });
-      const headers = new Headers(request.headers);
-      headers.set("Origin", APP);
-      headers.set("Cookie", goodCookie);
-      return new Request(request, { headers });
-    };
-    const cover = "/provider/setup/cover/start";
-    const ok = await run(upload(cover, 4 * 1024 * 1024));
+    const ok = await run(await upload(cover, 4 * 1024 * 1024));
     expect(ok.called).toBe(true);
     for (const request of [
-      upload("/provider/setup/team/start", 4 * 1024 * 1024),
-      upload(cover, MAX_UPLOAD_BYTES),
-      upload(cover, 2 * MAX_FORM_BYTES, "urlencoded"),
+      await upload("/provider/setup/team/start", 4 * 1024 * 1024),
+      await upload(cover, MAX_UPLOAD_BYTES),
+      await upload(cover, 2 * MAX_FORM_BYTES, "urlencoded"),
     ]) {
       const refused = await run(request);
-      expect(refused.result.status).toBe(403);
+      expect(refused.result.status).toBe(413);
       expect(refused.called).toBe(false);
     }
+  });
+
+  it("refuses an upload before reading it: too big, or no stated length (owner 2026-11-25)", async () => {
+    const stated = await run(
+      await upload(cover, 1024, "multipart", () =>
+        String(MAX_UPLOAD_BYTES + 1),
+      ),
+    );
+    expect(stated.result.status).toBe(413);
+    expect(await stated.result.text()).toContain("up to 5 MB");
+    expect(stated.called).toBe(false);
+    const missing = await run(
+      await upload(cover, 1024, "multipart", () => null),
+    );
+    expect(missing.result.status).toBe(413);
+    expect(missing.called).toBe(false);
+    const garbled = await run(
+      await upload(cover, 1024, "multipart", () => "12abc"),
+    );
+    expect(garbled.result.status).toBe(413);
+    expect(garbled.called).toBe(false);
   });
 
   it("refuses every mutation when Auth settings are missing, but still serves pages", async () => {
@@ -352,6 +382,38 @@ describe("mutation body handling (regressions)", () => {
       body,
     });
     expect(await checkMutation(request, config)).toEqual({ ok: true });
+  });
+
+  it("stops reading an upload that is longer than it says, at the limit", async () => {
+    const total = 8 * 1024 * 1024;
+    let pulled = 0;
+    const stream = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        if (pulled >= total) {
+          controller.close();
+          return;
+        }
+        const chunk = new Uint8Array(64 * 1024);
+        pulled += chunk.byteLength;
+        controller.enqueue(chunk);
+      },
+    });
+    const request = new Request(`${APP}/provider/setup/cover/start`, {
+      method: "POST",
+      headers: {
+        Origin: APP,
+        Cookie: goodCookie,
+        "Content-Type": "multipart/form-data; boundary=x",
+        "Content-Length": "2048",
+      },
+      body: stream,
+      duplex: "half",
+    } as RequestInit & { duplex: "half" });
+    expect(await checkMutation(request, config)).toEqual({
+      ok: false,
+      reason: "too-large",
+    });
+    expect(pulled).toBeLessThan(MAX_UPLOAD_BYTES + 256 * 1024);
   });
 
   it("stops reading an oversize body without Content-Length at the limit", async () => {
