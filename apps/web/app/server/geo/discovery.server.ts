@@ -27,27 +27,28 @@ export async function discoverLocations(
   };
   const session = ensureSearchSession(request);
   if (session.cookie) headers.append("Set-Cookie", session.cookie);
-  if (!settings.MAPBOX_SERVER_TOKEN)
+  const unavailable = (reason: "token" | "limiter" | "quota" | "provider") => {
+    console.warn(`location-unavailable: ${reason}`);
     return { status: 503, headers, candidates: [] };
+  };
+  if (!settings.MAPBOX_SERVER_TOKEN || settings.MAPBOX_SERVER_TOKEN.length < 20)
+    return unavailable("token");
   const limit = await checkSearchLimits(
     settings.SEARCH_LIMITER,
     settings.SEARCH_LIMITER_SALT,
     request.headers.get("CF-Connecting-IP") ?? "unknown",
     session.session,
   );
-  if (limit.kind === "unavailable")
-    return { status: 503, headers, candidates: [] };
+  if (limit.kind === "unavailable") return unavailable("limiter");
   if (limit.kind === "limited") return { status: 429, headers, candidates: [] };
   const quota = await checkQuota(settings.SEARCH_LIMITER, "geocode");
-  if (quota.kind !== "allowed") return { status: 503, headers, candidates: [] };
+  if (quota.kind !== "allowed") return unavailable("quota");
   const candidates = await suggestLocations(
     text,
     settings.MAPBOX_SERVER_TOKEN,
     autocomplete,
   );
-  return {
-    status: candidates === null ? 503 : 200,
-    headers,
-    candidates: candidates ?? [],
-  };
+  return candidates === null
+    ? unavailable("provider")
+    : { status: 200, headers, candidates };
 }

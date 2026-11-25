@@ -218,7 +218,10 @@ async function ask(
       body: JSON.stringify(window),
       signal: AbortSignal.timeout(LIMITER_TIMEOUT_MS),
     });
-  if (!response.ok) return { kind: "unavailable" };
+  if (!response.ok) {
+    console.warn("search-limiter-response:", response.status);
+    return { kind: "unavailable" };
+  }
   const body = await response.json<{
     allowed?: unknown;
     retry_after?: unknown;
@@ -236,8 +239,10 @@ export async function checkSearchLimits(
   ip: string,
   session: string,
 ): Promise<LimitResult> {
-  if (!namespace || typeof salt !== "string" || salt.length < 32)
+  if (!namespace || typeof salt !== "string" || salt.length < 32) {
+    console.warn("search-limiter-configuration-unavailable");
     return { kind: "unavailable" };
+  }
   try {
     const [ipKey, sessionKey] = await Promise.all([
       keyHash(salt, "ip", ip),
@@ -259,7 +264,12 @@ export async function checkSearchLimits(
         retryAfterSeconds: Math.max(...limited.map((r) => r.retryAfterSeconds)),
       };
     return { kind: "allowed" };
-  } catch {
+  } catch (error) {
+    console.warn(
+      error instanceof DOMException && error.name === "TimeoutError"
+        ? "search-limiter-timeout"
+        : "search-limiter-request-failed",
+    );
     return { kind: "unavailable" };
   }
 }
