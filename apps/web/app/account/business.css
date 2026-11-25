@@ -1,0 +1,103 @@
+/* Account › Business (finish-build PR 5, D-098), from the Sites account
+   preview: underlined text links, a muted "Later" label, and outlined
+   error-coloured buttons for closing. */
+.cx-account-link {
+  font: 500 14px var(--font-sans);
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  min-height: 24px;
+}
+.cx-account-later {
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font: 500 12px/1.4 var(--font-sans);
+  background: var(--canvas);
+  color: var(--muted);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.cx-account-box h2 + .cx-account-line {
+  border-top: 0;
+}
+.cx-account-note {
+  color: var(--muted);
+}
+.cx-account-note a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cx-account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cx-account-transfer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+}
+.cx-account-field {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 240px;
+  font: 500 13px var(--font-sans);
+}
+.cx-account-field select {
+  min-height: 44px;
+  padding-inline: 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font: 400 15px var(--font-sans);
+  color: var(--ink);
+}
+.cx-account-close {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  padding-block: 12px;
+  border-top: 1px solid var(--hair);
+}
+.cx-account-close p {
+  color: var(--muted);
+}
+.cx-account-check {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+}
+.cx-account-check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--ink);
+}
+.cx-account-close .cx-btn.danger,
+[data-business] ~ .cx-account-box .cx-btn.danger {
+  border-color: var(--err);
+  color: var(--err);
+}
+/* Rows as in the preview's .line: 14px titles, 13px muted hints, the link
+   kept on the row's right even at 390px. */
+:is([data-business], [data-ownership]) .cx-account-line {
+  flex-wrap: nowrap;
+  padding-block: 10px;
+}
+:is([data-business], [data-ownership]) .cx-account-line > div {
+  min-width: 0;
+  gap: 2px;
+}
+:is([data-business], [data-ownership]) .cx-account-line strong {
+  font-weight: 400;
+  font-size: 14px;
+}
+:is([data-business], [data-ownership]) .cx-account-line p {
+  font-size: 13px;
+}
+.cx-account-sub > .cx-account-line:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
