@@ -11,7 +11,7 @@ WAVE 1  Fix what's broken      B-01 sign-out splash · B-05 location squeeze · 
 WAVE 2  One shell everywhere   B-02 header (signed-in aware, fixed) · B-03 footer · B-04 nav (no Find-a-service page)
 WAVE 3  Look and feel          B-06 category page · B-07 customer home (Uber-Eats style) · B-08 dashboard glimpse · B-09 intro
 WAVE 4  Launch-ready words     B-12 copy sweep (needs O-1 fee wording) · B-13 legal pages final
-WAVE 5  Fines for real         B-20 fines section on landing · B-21 ID check (admin queue) · B-22 My Fines + pay (needs partner)
+WAVE 5  Fines for real         B-20 fines section on landing · B-21 ID check (Didit, admin queue for "In review") · B-22 My Fines + pay (needs partner)
 LATER   Phase 3 (Codex)        bookings, quotes, checkout, earnings on `phase-3` (#102)
 ```
 
@@ -58,8 +58,14 @@ Why this order: Wave 1 is small and visible. Wave 2 changes the shared layout th
 | ID | What | Needs | Lane |
 |---|---|---|---|
 | B-20 🟡 | "Fines & admin" becomes a section on the landing page (how it works, then "See my fines" once signed in); no separate `/fines` page | B-02 | C |
-| B-21 🟡 | ID verification: the user submits their ID number (and a selfie or document photo, if the partner requires it); an admin queue approves or rejects it; nothing shows until approved | D-099; POPIA rules for ID numbers (unique identifiers): store encrypted, show masked, admin-only, a retention row, Information Officer registered; Section 72 check if the partner is offshore | C (DB and admin queue), O (legal) |
+| B-21 🟡 | ID check with **Didit "Option A"** (owner, 25 Nov): in Didit's hosted screen the user photographs their ID document and takes a selfie; Didit checks the document, liveness and face match. CarworX stores only the result, the Didit session id and the last 4 digits, never the photos. Didit's `Approved` / `Declined` arrives by a signed webhook; `In Review` goes to our admin queue. The Home Affairs check (Option B) is future feature F-14. | D-099; POPIA: shorten Didit's biometric retention (1 year by default), add a retention row, register the Information Officer, run a Section 72 check (Didit is offshore); a Cloudflare Access bypass for the webhook path | X (Didit adapter, webhook, table), C (screens), O (keys, legal) |
 | B-22 🟡 | My Fines: list, detail, pay through the partner's hosted checkout, receipt; settled only on the partner's callback, never on the browser return | A partner contract and sandbox keys (Pay@ first, Electrum as fallback; `/fines/mine` today is a synthetic sandbox, #160) | X or C after the partner is signed |
+
+## Wave 6 · Business reviews (owner, 25 Nov)
+
+| ID | What | Needs | Lane |
+|---|---|---|---|
+| B-23 🟡 | Reviews: star rating and count on cards and the business page; a reviews section on `/p/*`; write a review (only signed-in customers who sent that business an enquiry; one per customer per business, editable); one public reply per review by the business; report a review; an admin moderation queue; empty states. The mockup cards already show stars (A4): they stay hidden until reviews exist. | Mockups A8, then a Codex backend (reviews table, RLS, eligibility from enquiries, moderation RPCs, retention row; the D-056 "never pay-to-verify" rule applies) and the Claude frontend | C (design, screens), X (backend) |
 
 ## Other confirmed items
 
@@ -74,11 +80,23 @@ Why this order: Wave 1 is small and visible. Wave 2 changes the shared layout th
 | ✅ | Address suggestions | "Sandton" gives 2 suggestions on staging (25 Nov, 23:00 SAST) | done |
 | ✅ | Dead links | The 35 internal links on 10 public pages all answer 200 (or 302 to sign-in) | done |
 
+## Didit keys: where they go (owner steps, never in chat)
+
+Names are fixed so Codex's code can read them: `DIDIT_API_KEY` (secret), `DIDIT_WEBHOOK_SECRET` (secret), `DIDIT_WORKFLOW_ID` (plain variable). Webhook URL: `https://staging.carworx.app/api/identity/didit`.
+
+1. **API key:** business.didit.me → switch to the **CarworX (Sandbox)** application → **API & Webhooks** → copy the API key.
+2. Cloudflare dashboard → **Workers & Pages** → `carworx-web-staging` → **Settings** → **Variables and Secrets** → **Add** → Type **Secret**, name `DIDIT_API_KEY`, paste the key → **Deploy**.
+3. **Webhook:** back in Didit **API & Webhooks** → add a webhook destination with the URL above, version **v3**, event **status.updated** → copy its **secret shared key**.
+4. Cloudflare, same page → **Add** → Secret `DIDIT_WEBHOOK_SECRET` → paste → **Deploy**.
+5. Cloudflare Zero Trust → **Access** → the staging application → add a **Bypass** policy for the path `/api/identity/didit` only (Didit can't log in to Access; the route checks Didit's signature). Do the same for `/api/mail/events` (B-30).
+6. `DIDIT_WORKFLOW_ID` is not secret: Codex puts the sandbox "Basic KYC" workflow id `0ccc342d-6da5-4a68-9c34-28101b2b727b` in `wrangler.jsonc` (staging).
+7. Production uses the **live** application's key and workflow only after G-PROD.
+
 ## Owner questions
 
 - **O-1 Fee wording:** with "pilot" and "R0" gone, what do businesses read? (a) Nothing about fees, (b) "Free to list", or (c) the Phase 3 commission (10%, capped at R500, D-054) shown only when bookings launch.
 - **O-2 Fines:** confirm D-099 (above), and which partner to approach first (Pay@ or Electrum).
-- **O-3 ID check:** is the ID number alone enough, or also a selfie or document photo? (Affects POPIA risk and cost.)
+- **O-3 ID check:** answered 25 Nov: Didit Option A (document and selfie). Option B (Home Affairs) is F-14.
 
 ## Still to build after this list (unchanged)
 
