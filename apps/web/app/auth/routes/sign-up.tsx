@@ -18,6 +18,7 @@ import {
   DEFAULT_AFTER_SIGN_IN,
   safeReturnTo,
 } from "../../server/security/redirect";
+import { useState, useSyncExternalStore } from "react";
 import { AuthPage, CsrfField, EmailField, Notice, PasswordField } from "../ui";
 import { GoogleButton } from "../GoogleButton";
 import { exchangeGoogle, googleButton, startGoogle } from "../google.server";
@@ -147,11 +148,22 @@ export async function action({ request, context }: Route.ActionArgs) {
   return redirect("/auth/check-email?sent=signup", { headers: auth.headers });
 }
 
+// Off until the page has loaded in the browser, so no-JS users still reach the
+// server check, which refuses an unticked box (B-10).
+const subscribe = () => () => undefined;
+
 export default function SignUp({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
   const problem = actionData?.problem ?? loaderData.problem;
+  const hydrated = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
+  const [agreed, setAgreed] = useState(false);
+  const gated = hydrated && !agreed;
   return (
     <AuthPage title="Create an account">
       {problem !== undefined && (
@@ -165,18 +177,28 @@ export default function SignUp({
         <EmailField />
         <PasswordField autoComplete="new-password" />
         <p>
-          <input id="consent" name="consent" type="checkbox" required />
+          <input
+            id="consent"
+            name="consent"
+            type="checkbox"
+            required
+            checked={agreed}
+            onChange={(event) => {
+              setAgreed(event.currentTarget.checked);
+            }}
+          />
           <label htmlFor="consent">
             I agree to the CarworX terms of use and privacy notice.
           </label>
         </p>
-        <button className="cx-btn primary wide" type="submit">
+        <button className="cx-btn primary wide" type="submit" disabled={gated}>
           Create account
         </button>
         <GoogleButton
           formId="google-sign-up"
           options={loaderData.google}
           signup
+          disabled={gated}
         />
       </Form>
       <p>

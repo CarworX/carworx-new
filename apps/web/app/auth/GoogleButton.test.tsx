@@ -32,4 +32,17 @@ describe("Google button (B-11)", () => {
     expect(html).not.toContain("Use Google redirect instead");
     expect(html).not.toContain("underline");
   });
+
+  it("is disabled, and its widget inert, until the terms box is ticked (B-10)", () => {
+    const off = renderToStaticMarkup(
+      <GoogleButton formId="sign-up" options={OPTIONS} signup disabled />,
+    );
+    expect(off).toContain("disabled");
+    expect(off).toContain("inert");
+    const on = renderToStaticMarkup(
+      <GoogleButton formId="sign-up" options={OPTIONS} signup />,
+    );
+    expect(on).not.toContain("disabled");
+    expect(on).not.toContain("inert");
+  });
 });
