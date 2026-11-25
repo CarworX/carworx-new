@@ -24,7 +24,10 @@ insert into public.organisations (id, name) values
   ('d6010000-0000-4000-8000-000000000001', 'Open fixture (synthetic)'),
   ('d6010000-0000-4000-8000-000000000002', 'Held fixture (synthetic)'),
   ('d6010000-0000-4000-8000-000000000003', 'Empty fixture (synthetic)');
+insert into auth.users (id, email, email_confirmed_at) values
+  ('d6000000-0000-4000-8000-000000000004', 'max.manager@example.test', now());
 insert into public.memberships (organisation_id, user_id, role) values
+  ('d6010000-0000-4000-8000-000000000001', 'd6000000-0000-4000-8000-000000000004', 'manager'),
   ('d6010000-0000-4000-8000-000000000001', 'd6000000-0000-4000-8000-000000000001', 'owner'),
   ('d6010000-0000-4000-8000-000000000002', 'd6000000-0000-4000-8000-000000000002', 'owner'),
   ('d6010000-0000-4000-8000-000000000003', 'd6000000-0000-4000-8000-000000000003', 'owner');
@@ -32,7 +35,7 @@ insert into public.listings(public_id, organisation_id, service_slug, display_na
   ('d6020000-0000-4000-8000-000000000001', 'd6010000-0000-4000-8000-000000000001', 'x8-wash', 'Open wash (synthetic)', 'Synthetic live listing', 'Gauteng', 'mobile', 'live', 'admin_import', 'synthetic'),
   ('d6020000-0000-4000-8000-000000000002', 'd6010000-0000-4000-8000-000000000002', 'x8-wash', 'Held wash (synthetic)', 'Synthetic suspended listing', 'Gauteng', 'mobile', 'suspended', 'admin_import', 'synthetic');
 
-select plan(6);
+select plan(8);
 
 do $$ begin perform pg_temp.as_user('d6000000-0000-4000-8000-000000000001'); end $$;
 set local role authenticated;
@@ -44,6 +47,15 @@ select ok(public.close_account() is not null, 'then they can close their account
 reset role;
 select is((select status from public.memberships where user_id = 'd6000000-0000-4000-8000-000000000001'), 'revoked',
   'their ownership ends; the closed business keeps its history');
+
+-- Max, a manager of the now ownerless Open business, cannot reopen it.
+do $$ begin perform pg_temp.as_user('d6000000-0000-4000-8000-000000000004'); end $$;
+set local role authenticated;
+select throws_ok($$select public.provider_resubmit('d6020000-0000-4000-8000-000000000001', 'Open wash (synthetic)', 'Synthetic description text')$$,
+  'P0001', 'owner_required', 'a manager cannot resubmit a closed draft once the business has no owner');
+reset role;
+select is((select status from public.listings where public_id = 'd6020000-0000-4000-8000-000000000001'), 'draft',
+  'the listing stays closed');
 
 do $$ begin perform pg_temp.as_user('d6000000-0000-4000-8000-000000000002'); end $$;
 set local role authenticated;
