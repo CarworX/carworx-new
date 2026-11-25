@@ -63,22 +63,14 @@ const mediaBucket = {
   },
 };
 
-/**
- * True where Supabase Auth sends mail with supabase/templates (the normal
- * local stack). The native-auth parity stack sends through a loopback hook
- * that, like the hosted hook, only knows sign-up and recovery.
- */
-export const authSendsTemplates =
-  process.env["CARWORX_NATIVE_TEST_STACK"] !== "native-auth";
-
 export const workerEnv = {
   APP_ORIGIN: APP,
   SUPABASE_URL: stack.apiUrl,
   SUPABASE_PUBLISHABLE_KEY: stack.anonKey,
   MEDIA: mediaBucket,
-  // PR 6: only where Auth sends its own template mail (the normal local
-  // stack). The native-auth stack sends through a hook, like hosted.
-  EMAIL_CHANGE_ENABLED: authSendsTemplates ? "1" : "0",
+  // PR 6: local Auth sends email-change links (its own templates on the
+  // normal stack; the loopback hook on the native-auth parity stack).
+  EMAIL_CHANGE_ENABLED: "1",
 };
 
 const ctx = { waitUntil() {}, passThroughOnException() {}, props: {} };
