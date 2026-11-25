@@ -6,8 +6,10 @@ import {
   listingsInCategories,
   type PublicListing,
 } from "../server/catalogue/public";
+import { topCategoryOf } from "../catalogue/taxonomy";
 import { ListingCard } from "../sites/ListingCard";
 import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
+import { SERVICES } from "../ui/services";
 import type { Route } from "./+types/c.$category";
 
 export async function loader({ params, request, context }: Route.LoaderArgs) {
@@ -60,19 +62,30 @@ const SUB: Record<string, string> = {
 
 export const links: Route.LinksFunction = () => [...SITES_LINKS];
 
-/** A category in the preview's search markup (app.js `search()` + `tabs()`). */
+/** A category page (redesign A3, B-06): the category hero, one full-width grid of cards. */
 export default function CategoryPage({ loaderData }: Route.ComponentProps) {
   const { category, items, next, unavailable } = loaderData;
+  const icon =
+    SERVICES.find((s) => s.key === topCategoryOf(category.slug)?.key)?.object ??
+    "";
   return (
     <SitesShell>
-      <div className="eyebrow">Browse a service</div>
-      <h1 className="title">{category.label}</h1>
-      <p className="lead">
-        {SUB[category.slug] ?? ""}
-        {category.children.length > 0
-          ? ` Includes ${category.children.map((c) => c.label).join(", ")}.`
-          : ""}
-      </p>
+      <nav className="cx-crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a> / <a href="/#services">Find a service</a> /{" "}
+        <span aria-current="page">{category.label}</span>
+      </nav>
+      <section className="cx-cathero">
+        <span className="keyobj" aria-hidden="true">
+          <img src={icon} alt="" />
+        </span>
+        <div>
+          <h1>{category.label}</h1>
+          <p>{SUB[category.slug] ?? ""}</p>
+        </div>
+        <a className="cx-loc unset" href="#location">
+          Set a location
+        </a>
+      </section>
       <div className="service-tabs" aria-label="Service categories">
         {CATEGORIES.map((c) => (
           <a
@@ -88,91 +101,69 @@ export default function CategoryPage({ loaderData }: Route.ComponentProps) {
           Fines &amp; Vehicle Admin
         </a>
       </div>
-      <div className="layout">
-        <div className="stack">
-          <form className="card" method="get" action="/search">
-            <label htmlFor="location">
-              <strong>Where do you need a service?</strong>
-            </label>
-            <p className="muted small">
-              Enter a suburb, town or postcode to see the nearest first. Used
-              only for this search, not stored.
-            </p>
-            <div className="searchbox">
-              <input
-                name="area"
-                id="location"
-                maxLength={80}
-                autoComplete="address-level2"
-                required
-              />
-              <button className="btn" type="submit">
-                Search nearby →
-              </button>
-            </div>
-            <input type="hidden" name="category" value={category.slug} />
-          </form>
-          <div className="between">
-            <div>
-              <h2>Listed providers</h2>
-              <p className="muted small">
-                Not sorted by where you are. Search above for the nearest.
-              </p>
-            </div>
-            {!unavailable && items.length > 0 ? (
-              <span className="tag gray">
-                {items.length === 1
-                  ? "1 listed"
-                  : `${String(items.length)} listed`}
-              </span>
-            ) : null}
-          </div>
-          {unavailable ? (
-            <div className="notice" role="status">
-              <strong>Listings can't load right now.</strong> Please try again
-              in a moment.
-            </div>
-          ) : items.length === 0 ? (
-            <article className="card">
-              <h2>No providers listed here yet.</h2>
-              <p>
-                We are adding providers area by area. Search near you to see who
-                serves your area.
-              </p>
-            </article>
-          ) : (
-            items.map((listing) => (
-              <ListingCard key={listing.public_id} listing={listing} />
-            ))
-          )}
-          {next ? (
-            <a
-              className="btn secondary"
-              href={`/c/${category.slug}?after=${encodeURIComponent(next)}`}
-            >
-              More providers →
-            </a>
-          ) : null}
+      <form className="card" method="get" action="/search" id="location-form">
+        <label htmlFor="location">
+          <strong>Where do you need a service?</strong>
+        </label>
+        <p className="muted small">
+          Enter a suburb, town or postcode to see the nearest first. Used only
+          for this search, not stored.
+        </p>
+        <div className="searchbox">
+          <input
+            name="area"
+            id="location"
+            maxLength={80}
+            autoComplete="address-level2"
+            required
+          />
+          <button className="btn" type="submit">
+            Search nearby →
+          </button>
         </div>
-        <aside className="card summary">
-          <span className="eyebrow">Browsing</span>
-          <h3>{category.label}</h3>
-          <div>
-            <span>Order</span>
-            <strong>Not by distance</strong>
-          </div>
-          <div>
-            <span>Cost to search</span>
-            <strong>R0</strong>
-          </div>
-          <hr className="rule" />
-          <p className="muted small">
-            This list isn't filtered by your location, so it doesn't show who
-            covers you. Search with your suburb to see the nearest workshops and
-            the mobile providers who cover you.
-          </p>
-        </aside>
+        <input type="hidden" name="category" value={category.slug} />
+      </form>
+      <div className="cx-filterbar" role="status">
+        {unavailable ? null : (
+          <span>
+            {items.length === 1
+              ? "1 business listed"
+              : `${String(items.length)} businesses listed`}
+          </span>
+        )}
+        <span className="count">Not sorted by where you are</span>
       </div>
+      {unavailable ? (
+        <div className="notice" role="status">
+          <strong>Listings can't load right now.</strong> Please try again in a
+          moment.
+        </div>
+      ) : items.length === 0 ? (
+        <div className="cx-empty">
+          <h2>No businesses listed here yet.</h2>
+          <p>
+            We're adding businesses every week. Search near you to see who
+            serves your area.
+          </p>
+          <a className="cx-btn secondary" href="#location">
+            Change location
+          </a>
+        </div>
+      ) : (
+        <div className="cx-lgrid">
+          {items.map((listing) => (
+            <ListingCard key={listing.public_id} listing={listing} />
+          ))}
+        </div>
+      )}
+      {next ? (
+        <a
+          className="cx-btn secondary"
+          href={`/c/${category.slug}?after=${encodeURIComponent(next)}`}
+        >
+          Show more businesses
+        </a>
+      ) : null}
     </SitesShell>
   );
 }

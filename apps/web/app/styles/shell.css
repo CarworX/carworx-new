@@ -1047,4 +1047,16 @@
     text-decoration: underline;
     text-underline-offset: 3px;
   }
+  /* ---------- Category breadcrumb (A3) ---------- */
+  .cx-crumbs {
+    margin: 0 0 var(--space-4);
+    font: 500 13px var(--font-sans);
+    color: var(--muted);
+  }
+  .cx-crumbs a {
+    color: inherit;
+  }
+  .cx-crumbs a:hover {
+    color: var(--ink);
+  }
 }
