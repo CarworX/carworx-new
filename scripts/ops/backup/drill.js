@@ -78,6 +78,8 @@ function freeBytes() {
 }
 
 function capacity(minimum) {
+  // Its own stage, so a full runner disk isn't reported as the last command.
+  stageName = "disk-capacity";
   assert.ok(freeBytes() >= minimum, "Recovery disk safety margin reached");
 }
 

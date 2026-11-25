@@ -37,6 +37,17 @@ import type { Route } from "./+types/account.$tab";
 
 const TABS = ACCOUNT_NAV;
 
+/**
+ * PR 6: email change needs Auth to send its two confirmation links. Local
+ * Auth does (supabase/templates/email_change.html); the hosted Auth email
+ * hook doesn't yet, so it is off unless EMAIL_CHANGE_ENABLED is "1".
+ */
+function emailChangeEnabled(env: unknown): boolean {
+  return (
+    (env as Record<string, unknown> | null)?.["EMAIL_CHANGE_ENABLED"] === "1"
+  );
+}
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ROLE_LABEL = { owner: "Owner", manager: "Manager", staff: "Staff" };
 
@@ -176,6 +187,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       hasPhoto,
       // An email change waiting for its confirmation links (both addresses).
       newEmail: signedIn.user.new_email ?? null,
+      emailChange: emailChangeEnabled(context.cloudflare.env),
       emailState: new URL(request.url).searchParams.get("email"),
       aal: signedIn.aal,
       enrolled: signedIn.nextAal === "aal2",
@@ -388,6 +400,8 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     return reply(true, "Your photo is removed.");
   }
   if (tab === "profile" && intent === "change-email") {
+    if (!emailChangeEnabled(context.cloudflare.env))
+      return reply(false, "Changing your email isn't available yet.", 404);
     const raw = form.get("email");
     const email = typeof raw === "string" ? raw.trim().toLowerCase() : "";
     if (
@@ -629,27 +643,29 @@ export default function Settings({
                   {`Waiting for you to confirm ${loaderData.newEmail}. Open the links we sent to both addresses.`}
                 </p>
               ) : null}
-              <details className="cx-account-change">
-                <summary>Change email</summary>
-                <form method="post" className="grid gap-3">
-                  <CsrfField token={csrf} />
-                  <input type="hidden" name="intent" value="change-email" />
-                  <TextField
-                    label="New email address"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    maxLength={254}
-                    hint="We'll send a link to your current and your new address. Your email changes once you open both."
-                  />
-                  <div>
-                    <Button type="submit" variant="outline" size="sm">
-                      Send the links
-                    </Button>
-                  </div>
-                </form>
-              </details>
+              {loaderData.emailChange ? (
+                <details className="cx-account-change">
+                  <summary>Change email</summary>
+                  <form method="post" className="grid gap-3">
+                    <CsrfField token={csrf} />
+                    <input type="hidden" name="intent" value="change-email" />
+                    <TextField
+                      label="New email address"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      maxLength={254}
+                      hint="We'll send a link to your current and your new address. Your email changes once you open both."
+                    />
+                    <div>
+                      <Button type="submit" variant="outline" size="sm">
+                        Send the links
+                      </Button>
+                    </div>
+                  </form>
+                </details>
+              ) : null}
               <TextField
                 label="Mobile number (optional)"
                 name="mobile"

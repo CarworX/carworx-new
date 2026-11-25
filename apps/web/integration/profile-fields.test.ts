@@ -14,6 +14,7 @@ import {
   sql,
   sqlRows,
   syntheticEmail,
+  workerEnv,
 } from "./harness";
 
 // Finish-build PR 6 (D-098): profile fields through the built Worker, real
@@ -202,6 +203,25 @@ describe("Account › Profile", () => {
     expect(forged.status).toBe(403);
     expect(media.size).toBe(before);
     expect(photoKey(user.id)).toBeUndefined();
+  });
+
+  it("hides email change where Auth can't send its links (flag off)", async () => {
+    const user = await person("email-off");
+    const signedIn = await signIn(user.email);
+    const off = new Browser({ ...workerEnv, EMAIL_CHANGE_ENABLED: "0" });
+    for (const [k, v] of signedIn.jar) off.jar.set(k, v);
+    const page = await off.send(PATH);
+    expect(page.status).toBe(200);
+    expect(page.body).not.toContain("Change email");
+    const refused = await off.send(PATH, {
+      form: { intent: "change-email", email: syntheticEmail("email-off-next") },
+    });
+    expect(refused.status).toBe(404);
+    expect(
+      sqlRows(
+        `select coalesce(nullif(email_change, ''), 'none') from auth.users where id='${user.id}'`,
+      ),
+    ).toEqual(["none"]);
   });
 
   it("changes the email only after both addresses confirm", async () => {

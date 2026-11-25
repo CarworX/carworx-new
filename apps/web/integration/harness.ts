@@ -68,6 +68,8 @@ export const workerEnv = {
   SUPABASE_URL: stack.apiUrl,
   SUPABASE_PUBLISHABLE_KEY: stack.anonKey,
   MEDIA: mediaBucket,
+  // PR 6: local Auth sends email-change links with its own templates.
+  EMAIL_CHANGE_ENABLED: "1",
 };
 
 const ctx = { waitUntil() {}, passThroughOnException() {}, props: {} };

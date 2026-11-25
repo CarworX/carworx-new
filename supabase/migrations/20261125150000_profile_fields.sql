@@ -12,7 +12,8 @@
 --   replaced or removed photo, and the photo of a deleted account, go to the
 --   R2 deletion queue the daily retention run empties.
 -- * The "Download my data" document now holds the mobile number and whether
---   a photo is on file.
+--   a photo is on file, and keeps the consents of enquiries sent under an
+--   earlier email address (the email can now change).
 
 -- ---------------------------------------------------------------------------
 -- 1. Mobile number
@@ -137,7 +138,10 @@ language sql stable security definer set search_path = '' as $$
         'purpose', c.purpose, 'notice_version', c.notice_version, 'method', c.method,
         'granted_at', c.granted_at, 'withdrawn_at', c.withdrawn_at) order by c.granted_at)
       from public.consents c
-      where c.subject_email = (select pg_catalog.lower(u.email) from auth.users u where u.id = p_uid)), '[]'::jsonb),
+      -- Under the current email, and (PR 6: the email can now change) the
+      -- consents given with enquiries this account sent under an older one.
+      where c.subject_email = (select pg_catalog.lower(u.email) from auth.users u where u.id = p_uid)
+         or c.id in (select e.consent_id from public.enquiries e where e.sender_user_id = p_uid)), '[]'::jsonb),
     'provider_applications', coalesce((select jsonb_agg(jsonb_build_object(
         'business_name', a.business_name, 'services', a.service_slugs, 'mode', a.mode,
         'metro', a.metro, 'description', a.description, 'public_address', a.public_address,
