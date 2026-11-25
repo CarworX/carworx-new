@@ -91,6 +91,14 @@
 .lp-loc p {
   font-size: 12px;
 }
+/* The location message: its own row under the search bar (B-05). */
+.lp-loc-msg {
+  margin: 10px auto 0;
+  max-width: 900px;
+  font-size: 13px;
+  color: var(--err);
+  text-align: center;
+}
 .lp-go {
   display: inline-flex;
   align-items: center;
