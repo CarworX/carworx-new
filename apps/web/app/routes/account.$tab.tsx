@@ -145,6 +145,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       exportReady,
       exportInvalid:
         new URL(request.url).searchParams.get("export") === "invalid",
+      exportRetry: new URL(request.url).searchParams.get("export") === "retry",
       csrf: context.security.csrfToken,
       email: signedIn.user.email ?? "",
       name: profile.data?.display_name ?? "",
@@ -528,6 +529,14 @@ export default function Settings({
                   </button>
                 </form>
               </div>
+              {loaderData.exportRetry ? (
+                <StatusNote
+                  tone="err"
+                  title="We couldn't fetch your file just now."
+                >
+                  Your link still works. Try the download again.
+                </StatusNote>
+              ) : null}
               {loaderData.exportInvalid ? (
                 <StatusNote
                   tone="err"

@@ -33,7 +33,7 @@ insert into public.enquiries (listing_public_id, organisation_id, sender_name, s
   ('d5620000-0000-4000-8000-000000000001', 'd5610000-0000-4000-8000-000000000001', 'Eli', 'eli.else@example.test',
    'ELI-MESSAGE synthetic enquiry text', 'd5630000-0000-4000-8000-000000000002', 'd5600000-0000-4000-8000-000000000002');
 
-select plan(26);
+select plan(28);
 
 -- ===== Grants ===============================================================
 select ok(not has_function_privilege('anon', 'public.request_data_export(text, bytea)', 'execute'), 'anon cannot request an export');
@@ -80,6 +80,10 @@ select throws_ok($$select public.consume_data_export(extensions.digest('token-th
 reset role;
 set local request.jwt.claims = '{"sub":"d5600000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
+select is(public.peek_data_export(extensions.digest('token-three', 'sha256')),
+  'exports/cccccccccccccccccccccccccccccccc.json', 'checking the link does not spend it');
+select is(public.peek_data_export(extensions.digest('token-three', 'sha256')),
+  'exports/cccccccccccccccccccccccccccccccc.json', 'so it can be checked again');
 select is(public.consume_data_export(extensions.digest('token-three', 'sha256')),
   'exports/cccccccccccccccccccccccccccccccc.json', 'the owner downloads it once');
 select throws_ok($$select public.consume_data_export(extensions.digest('token-three', 'sha256'))$$, 'P0001', 'export_invalid',

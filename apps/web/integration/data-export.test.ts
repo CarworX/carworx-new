@@ -98,6 +98,33 @@ describe("download my data", () => {
     expect(again.location).toContain("export=invalid");
   });
 
+  it("keeps the link usable when the file can't be read (Codex review on #147)", async () => {
+    const user = await person("export-retry");
+    const browser = await signIn(user.email);
+    await browser.send(PATH);
+    await browser.send(PATH, { form: { intent: "request-export" } });
+    const [key] = sqlRows(
+      `select object_key from private.data_exports where user_id='${user.id}'`,
+    );
+    const stored = media.get(key ?? "");
+    media.delete(key ?? "");
+    const failed = await browser.send("/account/privacy/download", {
+      form: {},
+    });
+    expect(failed.status).toBe(302);
+    expect(failed.location).toContain("export=retry");
+    expect(
+      sqlRows(
+        `select count(*) from private.data_exports where user_id='${user.id}' and downloaded_at is null`,
+      ),
+    ).toEqual(["1"]);
+    // Storage is back: the same button now works.
+    if (stored !== undefined) media.set(key ?? "", stored);
+    const file = await browser.send("/account/privacy/download", { form: {} });
+    expect(file.status).toBe(200);
+    expect(file.headers.get("Content-Disposition")).toContain("attachment");
+  });
+
   it("allows one request per 24 hours", async () => {
     const user = await person("export-limit");
     const browser = await signIn(user.email);

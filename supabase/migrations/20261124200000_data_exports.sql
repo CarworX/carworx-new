@@ -145,6 +145,22 @@ begin
   return v_row.object_key;
 end $$;
 
+-- Check a link without spending it, so the Worker can read the file first
+-- and spend the link only once the file is in hand (a storage error then
+-- leaves the link usable; Codex review on #147). Same refusals as consume.
+create function private.peek_data_export(p_token_hash bytea) returns text
+language plpgsql stable security definer set search_path = '' as $$
+declare v_row private.data_exports;
+begin
+  if auth.uid() is null then raise exception 'not_allowed' using errcode = '42501'; end if;
+  if p_token_hash is null or length(p_token_hash) <> 32 then raise exception 'export_invalid' using errcode = 'P0001'; end if;
+  select * into v_row from private.data_exports where token_hash = p_token_hash;
+  if not found or v_row.user_id <> auth.uid() or v_row.downloaded_at is not null or v_row.expires_at <= now() then
+    raise exception 'export_invalid' using errcode = 'P0001';
+  end if;
+  return v_row.object_key;
+end $$;
+
 -- What the privacy page shows: when the last request was made, whether its
 -- link is still usable, and when a new request is allowed.
 create function private.data_export_status()
@@ -188,12 +204,14 @@ revoke all on function
   private.request_data_export(text, bytea),
   private.cancel_data_export(text),
   private.consume_data_export(bytea),
+  private.peek_data_export(bytea),
   private.data_export_status()
   from public, anon, authenticated, service_role;
 grant execute on function
   private.request_data_export(text, bytea),
   private.cancel_data_export(text),
   private.consume_data_export(bytea),
+  private.peek_data_export(bytea),
   private.data_export_status()
   to authenticated;
 
@@ -203,6 +221,8 @@ create function public.cancel_data_export(p_key text) returns void
 language sql volatile security invoker set search_path = '' as $$ select private.cancel_data_export(p_key) $$;
 create function public.consume_data_export(p_token_hash bytea) returns text
 language sql volatile security invoker set search_path = '' as $$ select private.consume_data_export(p_token_hash) $$;
+create function public.peek_data_export(p_token_hash bytea) returns text
+language sql stable security invoker set search_path = '' as $$ select private.peek_data_export(p_token_hash) $$;
 create function public.data_export_status()
 returns table(requested_at timestamptz, expires_at timestamptz, downloaded_at timestamptz, next_allowed_at timestamptz)
 language sql stable security invoker set search_path = '' as $$ select * from private.data_export_status() $$;
@@ -211,11 +231,13 @@ revoke all on function
   public.request_data_export(text, bytea),
   public.cancel_data_export(text),
   public.consume_data_export(bytea),
+  public.peek_data_export(bytea),
   public.data_export_status()
   from public, anon, authenticated, service_role;
 grant execute on function
   public.request_data_export(text, bytea),
   public.cancel_data_export(text),
   public.consume_data_export(bytea),
+  public.peek_data_export(bytea),
   public.data_export_status()
   to authenticated;
