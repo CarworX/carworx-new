@@ -82,7 +82,9 @@ function capacity(minimum) {
   stageName = "disk-capacity";
   const available = freeBytes();
   if (available < minimum)
-    console.error(`Recovery disk available bytes: ${available}, required: ${minimum}`);
+    console.error(
+      `Recovery disk available bytes: ${available}, required: ${minimum}`,
+    );
   assert.ok(available >= minimum, "Recovery disk safety margin reached");
 }
 
