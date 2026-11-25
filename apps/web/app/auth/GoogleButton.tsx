@@ -141,21 +141,20 @@ export function GoogleButton({
         formNoValidate
         hidden
       />
+      {/* The redirect button is the no-JS path and the fallback when the Google
+          widget can't load. Once the widget is on the page it is hidden: no
+          second Google button, and no "redirect instead" link (B-11). */}
       <button
-        className={enhanced ? "min-h-11 underline" : "cx-btn outlined wide"}
+        className="cx-btn outlined wide"
         type="submit"
         name="intent"
         value="google"
         formNoValidate
+        hidden={enhanced}
+        style={enhanced ? { display: "none" } : undefined}
       >
-        {!enhanced && (
-          <img width="18" height="18" src="/assets/core/google-g.svg" alt="" />
-        )}
-        {enhanced
-          ? "Use Google redirect instead"
-          : signup
-            ? "Sign up with Google"
-            : "Continue with Google"}
+        <img width="18" height="18" src="/assets/core/google-g.svg" alt="" />
+        {signup ? "Sign up with Google" : "Continue with Google"}
       </button>
       {message && <p role="alert">{message}</p>}
     </div>
