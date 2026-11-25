@@ -120,6 +120,24 @@ The hero animation is an 8-second sequence in eight beats, all driven by one tim
 - Touch targets at least 44 px. Mockup buttons in decks are pictures, not controls.
 - Five shortcuts: equal, in order, all visible on a 360 × 640 phone without scrolling.
 
+# Site shell and journeys (2026-11)
+
+The owner approved the redesign mockups A1–A8 on 25 Nov 2026 (repo: `planning/design/redesign-2026-11/`, one folder per journey with PNGs at 1280 and 390). These components came out of it and follow every Studio rule above:
+
+- **Shell:** *SiteHeader* (the landing pill on every public page, aware of sign-in, account menu with My fines · Account · My business · Sign out, pinned state, phone sheet) and *SiteFooter* (one footer everywhere).
+- **Discovery:** *LocationChip*, *CategoryHero* (key-cap object, title, filter bar), *ListingCard* (tinted cover, Verified, distance, rating or New), *HomeRow* (service keys and sideways rails for the signed-in home).
+- **Fines:** *FinesCard* (count, total, nearest deadline) and *IdCheckStatus* (the Didit ID check: checking, verified, declined with the 3-try meter, no tries left, in review).
+- **Admin:** *AdminReview* (queue rows, Didit check bars, a decision that always needs a reason).
+- **Reviews:** *Rating*, *ReviewSummary*, *ReviewItem* (with the owner's single public reply) and *ReportDialog*.
+- **Forms:** *ConsentGate*, the disabled-until-consent state for *Create account* and the Google button.
+
+Rules these add:
+- **One shell.** Every public page uses SiteHeader and SiteFooter; nobody signed in is ever offered Sign in or Sign up.
+- **Status labels** (`.cx-badge`) use the existing `ok`, `warn`, `err` pairs and `sky`/`blue-ink` for information; always a word, never colour alone.
+- **Ratings** use one new colour, `rating` (#f5a524), **proposed** and not yet in tokens.json (the bundle declares it until the frontend change adds it). It is decorative: the number is always beside it in ink. A business with no reviews shows *New*, never empty stars.
+- **People's data:** first name and initial in reviews; ID numbers only as the last 4 digits; ID photos and selfies never appear in CarworX (they stay with Didit).
+- **Money and time:** "R 2 250" with a space; times always in SAST.
+
 # Files
 
 All logo, motion and print files are in this system (*Logos*, *Icons*, *Social*, *Print*, *Motion*, *Guidelines*) and in the repo at `planning/design/brand/exports/`. Studio's objects, illustrations and glyphs are in *Objects*, *Illustrations* and *Glyphs*, and in the repo at `planning/design/brand/exports/studio/`. Component styles are `components/bundle.css` (class prefix `cx-`). `MANIFEST.md` in the repo lists each brand file with its sources and checksums.

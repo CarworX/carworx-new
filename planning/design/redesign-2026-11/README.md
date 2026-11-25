@@ -13,6 +13,12 @@ Static HTML mockups and screenshots for the backlog in `planning/claude/BACKLOG.
 | [A7-admin-id-review](A7-admin-id-review/) | Admin queue of Didit *In review* cases, detail with Didit's result, empty | B-21 |
 | [A8-reviews](A8-reviews/) | Ratings on cards and the business page, reviews section, write, not eligible, owner reply, report, admin moderation, no reviews | new (owner, 25 Nov) |
 
+## For the build
+
+- **[FRONTEND-HANDOFF.md](FRONTEND-HANDOFF.md):** per screen, the files to change or create in `apps/web/app`, the classes and CSS to reuse, every copy string and the states.
+- **Component specs:** `planning/design/brand/studio/components/` (SiteHeader, SiteFooter, LocationChip, CategoryHero, ListingCard, Rating, HomeRow, FinesCard, IdCheckStatus, AdminReview, ReviewSummary, ReviewItem, ReportDialog, ConsentGate), styled by the "Redesign 2026-11" block of `bundle.css`. `_shared/redesign.css` is mockup-only and does not move into the app.
+- **Token change:** one, proposed: `rating` (#f5a524) for stars; added to `tokens.json` in the frontend PR.
+
 ## How it is built
 
 - `_shared/home.css` and `_shared/landing.css` are **verbatim copies** of `apps/web/app/home/` at `main` @ `fe6a955`; fonts, service objects, icons and state illustrations are copies of `planning/design/brand/exports/studio/`. The turbine sprite, hero objects and windscreen drawing are cut unchanged from `apps/web/app/home/preview.html` at build time.
@@ -27,5 +33,5 @@ Static HTML mockups and screenshots for the backlog in `planning/claude/BACKLOG.
 ## Open points for the owner
 
 - **O-2** payment partner (Pay@ or Electrum): the pay screens say "payment partner" until it is signed.
-- **O-3 / B-21** decided: Didit Option A (hosted ID photo + selfie). Still open: Didit's own retention period, the operator agreement and the Section 72 check if Didit processes data outside South Africa, and the Information Officer line.
+- **O-3 / B-21** decided: Didit Option A (hosted ID photo + selfie). Still open: Didit's own retention period, the operator agreement and the Section 72 check (Didit is offshore), and the Information Officer line.
 - The app-glimpse phone carousel (booking, quotes, payment) is left off the landing until Phase 3.
