@@ -53,10 +53,13 @@ export function GoogleButton({
   formId,
   options,
   signup = false,
+  disabled = false,
 }: {
   formId: string;
   options: { clientId: string; nonce: string } | null;
   signup?: boolean;
+  /** Sign-up: off until the terms box is ticked (B-10). */
+  disabled?: boolean;
 }) {
   const widget = useRef<HTMLDivElement>(null);
   const [enhanced, setEnhanced] = useState(false);
@@ -132,7 +135,7 @@ export function GoogleButton({
 
   return (
     <div className="grid gap-2">
-      <div ref={widget} />
+      <div ref={widget} inert={disabled || undefined} />
       <input type="hidden" name="googleCredential" />
       <button
         type="submit"
@@ -151,6 +154,7 @@ export function GoogleButton({
         value="google"
         formNoValidate
         hidden={enhanced}
+        disabled={disabled}
         style={enhanced ? { display: "none" } : undefined}
       >
         <img width="18" height="18" src="/assets/core/google-g.svg" alt="" />
