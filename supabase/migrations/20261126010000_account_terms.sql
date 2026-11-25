@@ -45,7 +45,7 @@ alter table private.account_closures add column reason text
   check (reason = 'declined_terms');
 
 create function private.close_account_with_reason(p_reason text) returns timestamptz
-language plpgsql volatile security definer set search_path = '' as $
+language plpgsql volatile security definer set search_path = '' as $$
 declare v_uid uuid := auth.uid(); v_after timestamptz;
 begin
   if v_uid is null then raise exception 'not_allowed' using errcode = '42501'; end if;
