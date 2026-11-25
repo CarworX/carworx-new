@@ -35,7 +35,9 @@ export const MAP_DAILY: Window = { limit: 1_500, windowMs: 86_400_000 };
  */
 export const FORM_WINDOW: Window = { limit: 5, windowMs: 600_000 };
 const GOOGLE_NONCE_WINDOW: Window = { limit: 1, windowMs: 300_000 };
-export const LIMITER_TIMEOUT_MS = 300;
+// Remote Durable Object round trips can exceed 300 ms in staging.
+// Keep the deadline bounded and fail closed if it expires.
+export const LIMITER_TIMEOUT_MS = 1_500;
 
 /** Check-and-consume a short-lived Google button nonce across concurrent posts. */
 export async function consumeGoogleNonce(
