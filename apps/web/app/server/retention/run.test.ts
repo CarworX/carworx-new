@@ -118,6 +118,17 @@ describe("cover photo file clean-up (D-098)", () => {
     expect(f.ended()).toBe(1);
   });
 
+  it("also deletes expired or downloaded data exports (D-098)", async () => {
+    const m = media();
+    const exportKey = `exports/${"e".repeat(32)}.json`;
+    const answers = [{ rows: [{ k: exportKey }] }, { rows: [{ n: 1 }] }];
+    const f = fake(() => Promise.resolve(answers.shift() ?? { rows: [] }));
+    expect(await purgeMedia(binding, f.make, m.bucket)).toEqual({
+      deleted: 1,
+    });
+    expect(m.deleted).toEqual([[exportKey]]);
+  });
+
   it("does nothing when the queue is empty", async () => {
     const m = media();
     const f = fake(() => Promise.resolve({ rows: [] }));

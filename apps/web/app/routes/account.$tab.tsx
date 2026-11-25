@@ -1,6 +1,14 @@
 import { data } from "react-router";
 
 import { accountTab, displayName } from "../account/forms";
+import {
+  exportCookie,
+  exportLink,
+  newExport,
+  pendingExport,
+  tokenHash,
+} from "../account/export.server";
+import { mediaBucket } from "../server/media/cover.server";
 import { throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
@@ -32,6 +40,26 @@ interface WorkMembership {
   organisation_id: string;
   role: keyof typeof ROLE_LABEL;
   organisations: { name: string };
+}
+
+interface ExportStatus {
+  requested_at: string;
+  expires_at: string;
+  downloaded_at: string | null;
+  next_allowed_at: string;
+}
+
+/** A date and time for display only, in South African time. */
+function sastDateTime(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("en-ZA", {
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Africa/Johannesburg",
+  }).format(date);
 }
 
 /** A date for display only, in South African time. */
@@ -98,10 +126,26 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
         ? (preference.data?.optional_email ?? false)
         : null;
   }
+  let exportStatus: ExportStatus | null = null;
+  let exportReady = false;
+  if (tab === "privacy") {
+    const status = await signedIn.supabase.rpc("data_export_status");
+    const row: unknown = Array.isArray(status.data) ? status.data[0] : null;
+    exportStatus =
+      status.error === null && typeof row === "object" && row !== null
+        ? (row as ExportStatus)
+        : null;
+    exportReady = pendingExport(request) !== null;
+  }
   return data(
     {
       tab,
       optionalEmail,
+      exportStatus,
+      exportReady,
+      exportInvalid:
+        new URL(request.url).searchParams.get("export") === "invalid",
+      exportRetry: new URL(request.url).searchParams.get("export") === "retry",
       csrf: context.security.csrfToken,
       email: signedIn.user.email ?? "",
       name: profile.data?.display_name ?? "",
@@ -120,8 +164,53 @@ export async function action({ request, params, context }: Route.ActionArgs) {
   if (tab === null) throwStatus(404, signedIn.headers);
   const form = await request.formData();
   const intent = form.get("intent");
-  const reply = (ok: boolean, message: string, status = 200) =>
-    data({ ok, message }, { status, headers: signedIn.headers });
+  const reply = (
+    ok: boolean,
+    message: string,
+    status = 200,
+    link: string | null = null,
+  ) => data({ ok, message, link }, { status, headers: signedIn.headers });
+  if (tab === "privacy" && intent === "request-export") {
+    // D-098 "Download my data": 1 per 24 h, kept 7 days, one-time link.
+    const media = mediaBucket(context.cloudflare.env);
+    if (media === null)
+      return reply(false, "Data downloads aren't available right now.", 503);
+    const { key, token } = newExport();
+    const requested = await signedIn.supabase.rpc("request_data_export", {
+      p_key: key,
+      p_token_hash: await tokenHash(token),
+    });
+    if (requested.error !== null)
+      return requested.error.message === "export_limit"
+        ? reply(
+            false,
+            "You can ask for your data once every 24 hours. Use the link from your last request.",
+            429,
+          )
+        : reply(false, "We couldn't prepare your data. Please try again.", 503);
+    try {
+      await media.put(
+        key,
+        new TextEncoder().encode(JSON.stringify(requested.data, null, 2)),
+        { httpMetadata: { contentType: "application/json" } },
+      );
+    } catch {
+      // Nothing stored: undo the request so the person can try again now.
+      await signedIn.supabase.rpc("cancel_data_export", { p_key: key });
+      return reply(
+        false,
+        "We couldn't prepare your data. Please try again.",
+        503,
+      );
+    }
+    signedIn.headers.append("Set-Cookie", exportCookie(token));
+    return reply(
+      true,
+      "Your data is ready. Download it below.",
+      200,
+      new URL(exportLink(token), signedIn.config.appOrigin).toString(),
+    );
+  }
   if (tab === "profile" && intent === "profile") {
     const name = displayName(form.get("displayName"));
     if (name === null)
@@ -418,13 +507,74 @@ export default function Settings({
             </>
           ) : tab === "privacy" ? (
             <>
-              <h2 className="type-heading">Privacy and your data</h2>
+              <h2 className="type-heading" id="your-data">
+                Your data
+              </h2>
+              <div className="cx-account-line" data-export>
+                <div>
+                  <strong>Download my data</strong>
+                  <p>A copy of what CarworX holds about you</p>
+                  <p className="type-caption">
+                    {loaderData.exportStatus
+                      ? `Last asked ${sastDateTime(loaderData.exportStatus.requested_at)}${loaderData.exportStatus.downloaded_at ? ", downloaded" : ""}. `
+                      : ""}
+                    Once every 24 hours; the link works once, for 7 days.
+                  </p>
+                </div>
+                <form method="post">
+                  <CsrfField token={csrf} />
+                  <input type="hidden" name="intent" value="request-export" />
+                  <button type="submit" className="cx-tlink">
+                    Request
+                  </button>
+                </form>
+              </div>
+              {loaderData.exportRetry ? (
+                <StatusNote
+                  tone="err"
+                  title="We couldn't fetch your file just now."
+                >
+                  Your link still works. Try the download again.
+                </StatusNote>
+              ) : null}
+              {loaderData.exportInvalid ? (
+                <StatusNote
+                  tone="err"
+                  title="That download link can't be used."
+                >
+                  It may have been used already, have expired, or belong to
+                  another account. Ask for your data again after 24 hours.
+                </StatusNote>
+              ) : null}
+              {actionData?.link ? (
+                <div className="grid gap-2" data-export-link>
+                  <label className="type-label" htmlFor="export-link">
+                    Your one-time link (keep it private)
+                  </label>
+                  <input
+                    id="export-link"
+                    className="cx-input"
+                    readOnly
+                    value={actionData.link}
+                  />
+                </div>
+              ) : null}
+              {loaderData.exportReady || actionData?.link ? (
+                <form method="post" action="/account/privacy/download">
+                  <CsrfField token={csrf} />
+                  <Button type="submit">Download my data file</Button>
+                </form>
+              ) : null}
+              <h3 className="type-title cx-account-sub">Delete my account</h3>
               <p>
-                For access, correction or deletion of your data, contact
-                support. Requests are reviewed before any account data is
-                removed.
+                To delete your account, contact support for now. Requests are
+                reviewed before any account data is removed.
               </p>
-              <ButtonLink href="/support">Contact support</ButtonLink>
+              <div>
+                <ButtonLink href="/support" variant="outline" size="sm">
+                  Contact support
+                </ButtonLink>
+              </div>
             </>
           ) : (
             <>

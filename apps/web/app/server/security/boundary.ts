@@ -35,7 +35,7 @@ const UPLOAD_PATHS = /^\/provider\/setup\/cover\/start$/;
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const PERSONAL_PATHS = /^\/(?:auth|account|admin|org|provider|join)(?:[/.]|$)/;
 /** Personal URLs that carry a secret in the path: never sent as a referrer. */
-const TOKEN_PATHS = /^\/join\/[^/]+/;
+const TOKEN_PATHS = /^\/(?:join|account\/data)\/[^/]+/;
 
 export interface SecurityContext {
   /**

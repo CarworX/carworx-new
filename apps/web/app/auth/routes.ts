@@ -12,6 +12,9 @@ export const authRoutes: RouteConfigEntry[] = [
   route("auth/sign-out", "auth/routes/sign-out.tsx"),
   route("auth/mfa", "auth/routes/mfa.tsx"),
   route("account", "auth/routes/account.tsx"),
+  // D-098 "Download my data": the one-time link and its POST download.
+  route("account/data/:token", "routes/account.data.$token.ts"),
+  route("account/privacy/download", "routes/account.privacy.download.ts"),
   route("account/:tab", "routes/account.$tab.tsx"),
   route("org/:orgId", "auth/routes/org.tsx"),
   route("admin", "auth/routes/admin.tsx"),
