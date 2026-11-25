@@ -9,7 +9,7 @@
 | `carworx.app`, `mail.carworx.app`, `mail.staging.carworx.app` in Resend | ✅ **Verified**, sending on, EU (Ireland) | 📮 The post box is built |
 | SPF, DKIM, DMARC records in Cloudflare DNS | ✅ All present | 🏷️ Stamps that prove the letters are really from us |
 | Incoming mail for `@carworx.app` | ✅ Goes to **Zoho Mail** | 📬 Letters *to* us land in Zoho |
-| Sign-in emails on staging (the hook Worker) | ✅ Resend key + test-address list set | 🔑 The front-door emails work |
+| Sign-in emails on staging (the hook Worker) | ✅ Resend key + test-address list set | 🔑 Hosted signup and reset delivery checks are pending |
 
 So the old to-do "verify carworx.app in Resend" is **finished**.
 
@@ -43,6 +43,8 @@ Customers and businesses write here. It needs a real inbox.
 3. Events: tick only **email.bounced** and **email.complained** (the two the app acts on)
 4. **Add**, then open it and **copy the Signing secret** (starts with `whsec_`). Keep it for step ③.
 
+After the app mail deploy, verify that the exact webhook path reaches the Worker through Cloudflare Access. An unsigned request should be rejected by the Worker. An Access sign-in redirect means Resend cannot reach the webhook.
+
 ### ③ Three secrets into the staging Worker (5 min) · dash.cloudflare.com
 
 1. **Workers & Pages** → **carworx-web-staging** → **Settings** → **Variables and Secrets** → **+ Add**
@@ -66,6 +68,6 @@ Only say *that* it's done. **Never send the keys.** Claude then asks Codex to ad
 
 ## ⚠️ Good to know
 
-- **Staging only sends to your test-address list** (`STAGING_APPROVED_RECIPIENTS_JSON`, already set). Nobody real can get a test email.
+- **Staging only sends to your test-address list** (`STAGING_APPROVED_RECIPIENTS_JSON`, already set). Use owner-approved, controlled inboxes for staging delivery checks.
 - **Production email comes later**, with the production checklist ([guide 14](14-production-project.md)): its own key for `mail.carworx.app`, its own webhook and secrets. The code keeps production mail switched off until then.
 - If a key ever leaks, delete it in Resend (**API Keys → ⋯ → Delete**), make a new one, and replace the Worker secret.
