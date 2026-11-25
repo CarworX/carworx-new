@@ -20,7 +20,9 @@
 -- * Every step writes an ID-only audit row. The closure is kept in its own
 --   table, not listing_decisions: decided_by there has no cascade, so an
 --   owner recorded in it could never delete their account (PR 4b).
--- * The business's two-step rule (O7) applies: private.require_org_mfa.
+-- * The business's two-step rule (O7, private.require_org_mfa) applies to
+--   offering, cancelling and closing (owners always meet it), but not to
+--   accepting: D-089 says ownership transfer has no two-step condition.
 --
 -- Lock order as P2-4: the organisation row first, then memberships/listings.
 
@@ -117,6 +119,10 @@ begin
     raise exception 'not_allowed' using errcode = '42501';
   end if;
   perform from public.organisations where id = p_org for update;
+  -- Re-read after the lock: the caller may have lost ownership meanwhile.
+  if not private.has_org_role(p_org, array['owner']) then
+    raise exception 'not_allowed' using errcode = '42501';
+  end if;
   perform private.require_org_mfa(p_org);
   delete from private.ownership_offers where organisation_id = p_org returning to_user into v_to;
   if v_to is null then return false; end if;
@@ -158,7 +164,9 @@ begin
       jsonb_build_object('event', 'declined', 'to_user_id', v_uid));
     return false;
   end if;
-  perform private.require_org_mfa(p_org);
+  -- No two-step condition on accepting (D-089: "ownership transfer has no
+  -- two-step condition"); the person offered becomes an owner, who is never
+  -- required to use it.
   if not exists (select from public.memberships m where m.id = v_o.to_membership
                    and m.user_id = v_uid and m.status = 'active')
      or not exists (select from public.memberships m where m.organisation_id = p_org

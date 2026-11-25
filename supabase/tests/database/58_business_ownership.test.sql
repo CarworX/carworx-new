@@ -32,7 +32,7 @@ insert into public.listings(public_id, organisation_id, service_slug, display_na
   ('d5830000-0000-4000-8000-000000000001', 'd5810000-0000-4000-8000-000000000001', 'x6-wash', 'Bay wash (synthetic)', 'Synthetic live listing', 'Gauteng', 'mobile', 'live', 'admin_import', 'synthetic'),
   ('d5830000-0000-4000-8000-000000000002', 'd5810000-0000-4000-8000-000000000001', 'x6-wash', 'Bay held (synthetic)', 'Synthetic suspended listing', 'Gauteng', 'mobile', 'suspended', 'admin_import', 'synthetic');
 
-select plan(34);
+select plan(35);
 
 -- ===== Grants ===============================================================
 select ok(not has_function_privilege('anon', 'public.offer_ownership(uuid)', 'execute'), 'anon cannot offer ownership');
@@ -97,12 +97,17 @@ reset role;
 update private.ownership_offers set created_at = now(), expires_at = now() + interval '7 days'
   where organisation_id = 'd5810000-0000-4000-8000-000000000001';
 
+-- D-089: accepting has no two-step condition, even where the business
+-- requires it for everyone (this manager is aal1).
+update public.organisations set team_mfa_policy = 'everyone' where id = 'd5810000-0000-4000-8000-000000000001';
 set local request.jwt.claims = '{"sub":"d5800000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal1"}';
 set local role authenticated;
 select is((select organisation_name || ' ' || other_name || ' ' || incoming::text from public.ownership_offers()),
   'Bay fixture (synthetic) Olu Owner (synthetic) true', 'the manager sees the offer and who made it');
-select ok(public.respond_ownership_offer('d5810000-0000-4000-8000-000000000001', true), 'the manager accepts');
+select ok(public.respond_ownership_offer('d5810000-0000-4000-8000-000000000001', true),
+  'the manager accepts, without two-step sign-in (D-089)');
 reset role;
+update public.organisations set team_mfa_policy = 'optional' where id = 'd5810000-0000-4000-8000-000000000001';
 select is((select role from public.memberships where id = 'd5820000-0000-4000-8000-000000000002'), 'owner', 'the manager is now the owner');
 select is((select role from public.memberships where id = 'd5820000-0000-4000-8000-000000000001'), 'manager', 'and the old owner a manager');
 select is((select count(*)::integer from private.ownership_offers), 0, 'the offer is gone');
@@ -111,6 +116,13 @@ select is((select array_agg(details->>'event' order by id) from public.audit_log
 select ok(exists (select from public.audit_log where target_table = 'memberships' and action = 'update'
   and details->>'role' = 'owner' and details->>'user_id' = 'd5800000-0000-4000-8000-000000000002'),
   'and the team history records the new owner');
+
+-- The old owner, now a manager, can no longer cancel offers.
+set local request.jwt.claims = '{"sub":"d5800000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}';
+set local role authenticated;
+select throws_ok($$select public.cancel_ownership_offer('d5810000-0000-4000-8000-000000000001')$$, '42501', 'not_allowed',
+  'the old owner can no longer cancel offers');
+reset role;
 
 -- A stale offer from someone who is no longer an owner is refused.
 insert into private.ownership_offers(organisation_id, from_user, to_membership, to_user) values
