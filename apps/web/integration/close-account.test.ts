@@ -145,6 +145,12 @@ describe("close my account", () => {
 
   it("stops a sole owner and refuses without CSRF", async () => {
     const user = await staff("close-owner");
+    // A business still in search: its sole owner must hand it over or close it.
+    sql(`insert into public.listings(organisation_id,service_slug,display_name,description,metro,mode,status,provenance_kind,provenance_reference)
+      values ('${user.org}','wash','Owner open (synthetic)','Synthetic listing','Gauteng','mobile','live','admin_import','synthetic-close')`);
+    onTestFinished(() => {
+      sql(`delete from public.listings where organisation_id='${user.org}'`);
+    });
     const owner = await signIn(user.owner.email);
     await owner.send(PATH);
     const refused = await owner.send(PATH, {
@@ -165,6 +171,40 @@ describe("close my account", () => {
     expect((await new Browser().send(PATH)).location).toContain(
       "/auth/sign-in",
     );
+  });
+
+  it("lets a sole owner close their account once their business is closed", async () => {
+    const user = await staff("close-sole");
+    const [listing] =
+      sqlRows(`insert into public.listings(organisation_id,service_slug,display_name,description,metro,mode,status,provenance_kind,provenance_reference)
+      values ('${user.org}','wash','Sole close (synthetic)','Synthetic listing','Gauteng','mobile','live','admin_import','synthetic-close') returning public_id`);
+    onTestFinished(() => {
+      sql(`delete from private.account_closures where user_id='${user.owner.id}';
+        delete from public.listings where organisation_id='${user.org}'`);
+    });
+    const owner = await signIn(user.owner.email);
+    await owner.send(PATH);
+    const refused = await owner.send(PATH, {
+      form: { intent: "close-account", password: PASSWORD, understand: "on" },
+    });
+    expect(refused.status).toBe(409);
+    // Close the business's listing on Account > Business, then try again.
+    await owner.send("/account/business");
+    const closedListing = await owner.send("/account/business", {
+      form: {
+        intent: "close-listing",
+        listing: listing ?? "",
+        understand: "on",
+      },
+    });
+    expect(closedListing.status).toBe(200);
+    await owner.send(PATH);
+    const closed = await owner.send(PATH, {
+      form: { intent: "close-account", password: PASSWORD, understand: "on" },
+    });
+    expect(closed.status).toBe(302);
+    expect(closed.location).toMatch(/^\/account\/closed\?on=/);
+    expect(closing(user.owner.id)).toEqual(["1"]);
   });
 
   it("deletes the account 14 days later in the daily run", async () => {
