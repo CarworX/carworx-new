@@ -42,6 +42,7 @@ export type Problem =
   | "application_pending"
   | "not_submitted"
   | "not_draft"
+  | "owner_required"
   | "not_live"
   | "not_suspended"
   | "not_claimable"
@@ -70,6 +71,8 @@ export const PROBLEM_TEXT: Record<Problem, string> = {
     "You already have an application waiting for review. We'll look at that one first.",
   not_submitted: "This listing isn't waiting for review any more.",
   not_draft: "This listing is already waiting for review.",
+  owner_required:
+    "This business has no owner. Ask CarworX to help before you send it for review.",
   not_live: "Only a live listing can be suspended.",
   not_suspended: "This listing isn't suspended.",
   not_claimable: "Only live listings can be claimed.",
