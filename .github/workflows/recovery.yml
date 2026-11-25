@@ -35,6 +35,16 @@ jobs:
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           run_install: false
+      - name: Make room for the recovery drill
+        if: runner.environment == 'github-hosted'
+        run: |
+          available_kib=$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR == 2 {print $4}')
+          sdk=/usr/local/lib/android/sdk
+          if (( available_kib < 10 * 1024 * 1024 )) && [[ "${ANDROID_HOME:-}" == "$sdk" && "$(realpath -e -- "$sdk")" == "$sdk" ]]; then
+            # This hosted runner is disposable and K4 does not use Android.
+            sudo rm -rf -- "$sdk"
+          fi
+          df -h "$GITHUB_WORKSPACE"
       - name: Install pinned tools
         run: |
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
