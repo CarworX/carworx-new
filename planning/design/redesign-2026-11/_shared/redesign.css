@@ -1858,19 +1858,17 @@
     margin-right: calc(-1 * var(--gutter));
   }
   .rd-icons {
-    grid-template-columns: repeat(5, 76px);
-    overflow: hidden;
-    margin-right: calc(-1 * var(--gutter));
-    gap: 10px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
   }
   .rd-ico .k {
-    width: 64px;
-    height: 64px;
-    border-radius: 20px;
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
   }
   .rd-ico .k img {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
   }
   .rd-ico {
     font-size: 12px;
