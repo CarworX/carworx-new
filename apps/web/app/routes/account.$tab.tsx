@@ -1,6 +1,11 @@
 import { data } from "react-router";
 
-import { accountTab, displayName } from "../account/forms";
+import {
+  accountTab,
+  displayName,
+  localMobile,
+  mobileNumber,
+} from "../account/forms";
 import {
   exportCookie,
   exportLink,
@@ -9,6 +14,13 @@ import {
   tokenHash,
 } from "../account/export.server";
 import { mediaBucket } from "../server/media/cover.server";
+import { newAvatarKey } from "../server/media/avatar.server";
+import { cleanImage, MAX_BYTES } from "../server/media/image";
+import {
+  PHOTO_LIMIT_TEXT,
+  PHOTO_TOO_LARGE,
+  uploadTooLarge,
+} from "../server/media/limits";
 import { throwRedirect, throwStatus } from "../auth/http.server";
 import { requireSignedIn } from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
@@ -19,6 +31,7 @@ import { PublicShell } from "../ui/public/PublicShell";
 import { TabBar } from "../ui/ScrollBar";
 import { Icon } from "../ui/Icon";
 import "../account/settings.css";
+import "../account/profile.css";
 import type { Route } from "./+types/account.$tab";
 
 const TABS = [
@@ -85,11 +98,25 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   if (tab === null) throwStatus(404, signedIn.headers);
   const profile = await signedIn.supabase
     .from("profiles")
-    .select("display_name")
+    .select("display_name, mobile")
     .eq("id", signedIn.user.id)
     .maybeSingle()
-    .overrideTypes<{ display_name: string }, { merge: false }>();
+    .overrideTypes<
+      { display_name: string; mobile: string | null },
+      { merge: false }
+    >();
   if (profile.error !== null) throwStatus(503, signedIn.headers);
+  // PR 6: the profile photo, if any (only the person can read the row).
+  let hasPhoto = false;
+  if (tab === "profile") {
+    const photo = await signedIn.supabase
+      .from("profile_photos")
+      .select("user_id")
+      .eq("user_id", signedIn.user.id)
+      .maybeSingle();
+    if (photo.error !== null) throwStatus(503, signedIn.headers);
+    hasPhoto = photo.data !== null;
+  }
   let factors: { id: string; name: string; addedOn: string }[] = [];
   if (tab === "security") {
     // listFactors().totp holds verified TOTP factors only.
@@ -154,6 +181,11 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       csrf: context.security.csrfToken,
       email: signedIn.user.email ?? "",
       name: profile.data?.display_name ?? "",
+      mobile: localMobile(profile.data?.mobile),
+      hasPhoto,
+      // An email change waiting for its confirmation links (both addresses).
+      newEmail: signedIn.user.new_email ?? null,
+      emailState: new URL(request.url).searchParams.get("email"),
       aal: signedIn.aal,
       enrolled: signedIn.nextAal === "aal2",
       factors,
@@ -167,6 +199,18 @@ export async function action({ request, params, context }: Route.ActionArgs) {
   const signedIn = await requireSignedIn(request, context.security);
   const tab = accountTab(params.tab);
   if (tab === null) throwStatus(404, signedIn.headers);
+  // PR 6: a photo upload over the limit is refused before its body is read.
+  if (
+    tab === "profile" &&
+    (request.headers.get("Content-Type") ?? "")
+      .toLowerCase()
+      .startsWith("multipart/form-data") &&
+    uploadTooLarge(request)
+  )
+    return data(
+      { ok: false, message: PHOTO_TOO_LARGE, link: null },
+      { status: 413, headers: signedIn.headers },
+    );
   const form = await request.formData();
   const intent = form.get("intent");
   const reply = (
@@ -295,16 +339,122 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       new URL(exportLink(token), signedIn.config.appOrigin).toString(),
     );
   }
+  if (tab === "profile" && intent === "upload-photo") {
+    const photo = form.get("photo");
+    if (!(photo instanceof File) || photo.size === 0)
+      return reply(false, "Choose a photo to upload.", 400);
+    if (photo.size > MAX_BYTES) return reply(false, PHOTO_TOO_LARGE, 413);
+    // The real type comes from the bytes; every metadata block (GPS too) is
+    // dropped, as for cover photos.
+    const clean = cleanImage(new Uint8Array(await photo.arrayBuffer()));
+    if (clean === null)
+      return reply(
+        false,
+        "Use a JPEG, PNG or WebP photo (not animated), at most 6000 pixels on each side.",
+        400,
+      );
+    const media = mediaBucket(context.cloudflare.env);
+    if (media === null)
+      return reply(false, "Photos can't be added right now.", 503);
+    const key = newAvatarKey(clean.extension);
+    try {
+      await media.put(key, clean.bytes, {
+        httpMetadata: { contentType: clean.type },
+      });
+    } catch {
+      return reply(
+        false,
+        "We couldn't save your photo. Please try again.",
+        503,
+      );
+    }
+    const saved = await signedIn.supabase.rpc("set_profile_photo", {
+      p_key: key,
+      p_type: clean.type,
+      p_bytes: clean.bytes.byteLength,
+      p_width: clean.width,
+      p_height: clean.height,
+    });
+    if (saved.error !== null) {
+      // Not recorded, so not referenced: remove the stored file again.
+      await media.delete(key).catch(() => undefined);
+      return reply(
+        false,
+        "We couldn't save your photo. Please try again.",
+        503,
+      );
+    }
+    return reply(true, "Your photo is saved.");
+  }
+  if (tab === "profile" && intent === "remove-photo") {
+    const removed = await signedIn.supabase.rpc("remove_profile_photo");
+    if (removed.error !== null)
+      return reply(
+        false,
+        "We couldn't remove your photo. Please try again.",
+        503,
+      );
+    return reply(true, "Your photo is removed.");
+  }
+  if (tab === "profile" && intent === "change-email") {
+    const raw = form.get("email");
+    const email = typeof raw === "string" ? raw.trim().toLowerCase() : "";
+    if (
+      email.length < 3 ||
+      email.length > 254 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    )
+      return reply(false, "Enter a valid email address.", 400);
+    if (email === (signedIn.user.email ?? "").toLowerCase())
+      return reply(false, "That's already your email address.", 400);
+    // Supabase Auth sends a link to both the current and the new address;
+    // the change happens only once both are opened (double_confirm_changes).
+    const changed = await signedIn.supabase.auth.updateUser({ email });
+    if (changed.error !== null) {
+      const code = changed.error.code ?? "";
+      if (code === "email_exists")
+        return reply(false, "That email address is already in use.", 409);
+      if (code.startsWith("over_") || changed.error.status === 429)
+        return reply(
+          false,
+          "We've sent a link recently. Please wait a minute and try again.",
+          429,
+        );
+      return reply(
+        false,
+        "We couldn't start the change. Please try again.",
+        503,
+      );
+    }
+    return reply(
+      true,
+      "Check both inboxes. We've sent a link to your current and your new address. Your email changes once you open both.",
+    );
+  }
   if (tab === "profile" && intent === "profile") {
     const name = displayName(form.get("displayName"));
     if (name === null)
       return reply(false, "Use a name of up to 80 characters.", 400);
+    // No mobile field at all leaves the saved number as it is; an empty one
+    // clears it.
+    const sent = form.has("mobile");
+    const mobile = sent ? mobileNumber(form.get("mobile")) : "";
+    if (mobile === null)
+      return reply(
+        false,
+        "Use a South African mobile number, for example 072 000 0000.",
+        400,
+      );
     // Update only the granted display_name column; upsert would also require
     // UPDATE(id), which is intentionally not granted to authenticated callers.
     const update = () =>
       signedIn.supabase
         .from("profiles")
-        .update({ display_name: name })
+        .update(
+          sent
+            ? { display_name: name, mobile: mobile === "" ? null : mobile }
+            : { display_name: name },
+        )
         .eq("id", signedIn.user.id)
         .select("id")
         .maybeSingle()
@@ -320,6 +470,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       const inserted = await signedIn.supabase.from("profiles").insert({
         id: signedIn.user.id,
         display_name: name,
+        ...(sent ? { mobile: mobile === "" ? null : mobile } : {}),
       });
       if (inserted.error !== null) {
         // Another session may have created this same person's profile first.
@@ -457,26 +608,127 @@ export default function Settings({
         <section className="cx-account-box">
           {tab === "profile" ? (
             <>
-              <h2 className="type-heading">Your profile</h2>
-              <p>Signed in as {loaderData.email}.</p>
-              <form method="post" className="grid gap-4">
-                <CsrfField token={csrf} />
-                <input type="hidden" name="intent" value="profile" />
-                <TextField
-                  label="Display name"
-                  name="displayName"
-                  required
-                  minLength={1}
-                  maxLength={80}
-                  defaultValue={loaderData.name}
-                  autoComplete="nickname"
-                />
+              <h2 className="type-heading">Your details</h2>
+              {loaderData.emailState === "confirmed" ? (
+                <StatusNote tone="ok" title="Your email address is changed." />
+              ) : loaderData.emailState === "half" ? (
+                <StatusNote title="One link done.">
+                  Now open the link we sent to your other address.
+                </StatusNote>
+              ) : null}
+              <TextField
+                label="Full name"
+                name="displayName"
+                form="cx-profile"
+                required
+                minLength={1}
+                maxLength={80}
+                defaultValue={loaderData.name}
+                autoComplete="name"
+              />
+              <div className="cx-account-line" data-email>
                 <div>
-                  <Button variant="primary" type="submit">
-                    Save profile
+                  <strong>Email</strong>
+                  <p>{loaderData.email}</p>
+                </div>
+                <span className="cx-account-label">Verified</span>
+              </div>
+              {loaderData.newEmail !== null ? (
+                <p className="cx-account-note" data-pending-email>
+                  {`Waiting for you to confirm ${loaderData.newEmail}. Open the links we sent to both addresses.`}
+                </p>
+              ) : null}
+              <details className="cx-account-change">
+                <summary>Change email</summary>
+                <form method="post" className="grid gap-3">
+                  <CsrfField token={csrf} />
+                  <input type="hidden" name="intent" value="change-email" />
+                  <TextField
+                    label="New email address"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    maxLength={254}
+                    hint="We'll send a link to your current and your new address. Your email changes once you open both."
+                  />
+                  <div>
+                    <Button type="submit" variant="outline" size="sm">
+                      Send the links
+                    </Button>
+                  </div>
+                </form>
+              </details>
+              <TextField
+                label="Mobile number (optional)"
+                name="mobile"
+                form="cx-profile"
+                inputMode="tel"
+                autoComplete="tel"
+                maxLength={32}
+                placeholder="For example, 072 000 0000"
+                defaultValue={loaderData.mobile}
+                hint="Private. Only you can see it."
+              />
+              <div className="cx-account-line" data-photo>
+                <div>
+                  <strong>Profile photo</strong>
+                  <p>{`Optional. ${PHOTO_LIMIT_TEXT}.`}</p>
+                </div>
+                {loaderData.hasPhoto ? (
+                  <img
+                    className="cx-account-photo"
+                    src="/account/photo"
+                    alt="Your profile photo"
+                    width={56}
+                    height={56}
+                  />
+                ) : null}
+              </div>
+              <form
+                method="post"
+                encType="multipart/form-data"
+                className="cx-account-photo-form"
+              >
+                <CsrfField token={csrf} />
+                <input type="hidden" name="intent" value="upload-photo" />
+                <label className="grid gap-1">
+                  <span className="type-label">
+                    {loaderData.hasPhoto ? "Replace the photo" : "Add a photo"}
+                  </span>
+                  <input
+                    type="file"
+                    name="photo"
+                    accept="image/jpeg,image/png,image/webp"
+                    required
+                  />
+                </label>
+                <div>
+                  <Button type="submit" variant="outline" size="sm">
+                    {loaderData.hasPhoto ? "Replace photo" : "Add photo"}
                   </Button>
                 </div>
               </form>
+              {loaderData.hasPhoto ? (
+                <form method="post">
+                  <CsrfField token={csrf} />
+                  <input type="hidden" name="intent" value="remove-photo" />
+                  <Button type="submit" variant="outline" size="sm">
+                    Remove photo
+                  </Button>
+                </form>
+              ) : null}
+              <form method="post" id="cx-profile" className="cx-account-acts">
+                <CsrfField token={csrf} />
+                <input type="hidden" name="intent" value="profile" />
+                <Button variant="primary" type="submit">
+                  Save
+                </Button>
+              </form>
+              <p className="cx-account-private">
+                <Icon name="lock" size="sm" />
+                <span>We never ask for your ID number or date of birth.</span>
+              </p>
             </>
           ) : tab === "security" ? (
             <>

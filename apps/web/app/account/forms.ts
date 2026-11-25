@@ -21,3 +21,31 @@ export function displayName(value: FormDataEntryValue | null): string | null {
     return null;
   return name;
 }
+
+/**
+ * An optional South African mobile number (finish-build PR 6): "" means
+ * none; "072 000 0000", "0720000000", "+27 72 000 0000" and "27720000000"
+ * all become "+27720000000". Anything else is null (invalid). Private: shown
+ * only to the person.
+ */
+export function mobileNumber(value: FormDataEntryValue | null): string | null {
+  if (typeof value !== "string") return null;
+  const raw = value.trim();
+  if (raw === "") return "";
+  if (raw.length > 32 || !/^\+?[\d\s()-]+$/.test(raw)) return null;
+  const digits = raw.replace(/\D/g, "");
+  const national = digits.startsWith("27")
+    ? digits.slice(2)
+    : digits.startsWith("0")
+      ? digits.slice(1)
+      : null;
+  if (national === null || !/^[1-9]\d{8}$/.test(national)) return null;
+  return `+27${national}`;
+}
+
+/** "+27720000000" shown as "072 000 0000". */
+export function localMobile(stored: string | null | undefined): string {
+  if (typeof stored !== "string" || !/^\+27\d{9}$/.test(stored)) return "";
+  const n = `0${stored.slice(3)}`;
+  return `${n.slice(0, 3)} ${n.slice(3, 6)} ${n.slice(6)}`;
+}

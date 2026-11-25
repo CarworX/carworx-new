@@ -20,10 +20,12 @@ export const meta: Route.MetaFunction = () => [{ title: "Confirm · CarworX" }];
  * POST, so link scanners that prefetch emails can't use it up, and it works
  * in a different browser from the one that asked for it.
  */
-type LinkType = "email" | "recovery";
+type LinkType = "email" | "recovery" | "email_change";
 
 function linkType(value: string | null): LinkType | null {
-  return value === "email" || value === "recovery" ? value : null;
+  return value === "email" || value === "recovery" || value === "email_change"
+    ? value
+    : null;
 }
 
 function tokenHash(value: string | null): string | null {
@@ -48,7 +50,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return data({ failed: true, type: type ?? "email" }, { status: 400 });
   }
   const auth = authRequest(request, context.security);
-  const { error } = await auth.supabase.auth.verifyOtp({
+  const { data: verified, error } = await auth.supabase.auth.verifyOtp({
     token_hash: hash,
     type,
   });
@@ -57,6 +59,16 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
   if (type === "recovery")
     return redirect("/auth/reset-password", { headers: auth.headers });
+  // PR 6: an email change needs both links (current and new address). After
+  // the first, Auth accepts the link but returns no user; after the second
+  // it returns the user with no pending new address.
+  if (type === "email_change")
+    return redirect(
+      verified.user === null || verified.user.new_email
+        ? "/account/profile?email=half"
+        : "/account/profile?email=confirmed",
+      { headers: auth.headers },
+    );
   // D-097: a sign-up that started from a business page goes back there.
   const back = safeReturnTo(
     readCookie(request, RETURN_COOKIE),
@@ -79,6 +91,8 @@ function LinkFailed({ type }: { type: LinkType }) {
       <p>
         {type === "recovery" ? (
           <Link to="/auth/forgot-password">Send a new password reset link</Link>
+        ) : type === "email_change" ? (
+          <Link to="/account/profile">Start the email change again</Link>
         ) : (
           <Link to="/auth/check-email?resend=signup">
             Send a new confirmation link
@@ -104,7 +118,11 @@ export default function Confirm({
   return (
     <AuthPage
       title={
-        link.type === "recovery" ? "Reset your password" : "Confirm your email"
+        link.type === "recovery"
+          ? "Reset your password"
+          : link.type === "email_change"
+            ? "Confirm your new email"
+            : "Confirm your email"
       }
     >
       <Form method="post">
@@ -114,7 +132,9 @@ export default function Confirm({
         <button type="submit">
           {link.type === "recovery"
             ? "Continue to a new password"
-            : "Confirm my email"}
+            : link.type === "email_change"
+              ? "Confirm the change"
+              : "Confirm my email"}
         </button>
       </Form>
     </AuthPage>

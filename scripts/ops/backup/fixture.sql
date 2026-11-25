@@ -64,3 +64,8 @@ insert into private.data_exports(user_id, object_key, token_hash)
 -- table is really restored. The synthetic seed customer, synthetic dates.
 insert into private.account_closures(user_id)
   values ('5eed0000-0000-4000-8000-000000000001');
+
+-- Profile fields (finish-build PR 6, D-098): one profile photo row, so the
+-- table is really restored. Synthetic key, synthetic seed customer.
+insert into public.profile_photos(user_id, object_key, content_type, bytes, width, height)
+  values ('5eed0000-0000-4000-8000-000000000001', 'avatars/' || repeat('e', 32) || '.jpg', 'image/jpeg', 1024, 256, 256);
