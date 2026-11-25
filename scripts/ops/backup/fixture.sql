@@ -64,3 +64,13 @@ insert into private.data_exports(user_id, object_key, token_hash)
 -- table is really restored. The synthetic seed customer, synthetic dates.
 insert into private.account_closures(user_id)
   values ('5eed0000-0000-4000-8000-000000000001');
+
+-- Business tab (finish-build PR 5, D-098): one open ownership offer and one
+-- closed listing, so both tables are really restored. Synthetic rows only.
+insert into private.ownership_offers(organisation_id, from_user, to_membership, to_user)
+  select m.organisation_id, '5eed0000-0000-4000-8000-000000000001', m.id, m.user_id
+  from public.memberships m
+  where m.user_id = '5eed0000-0000-4000-8000-000000000002' and m.organisation_id = '5eed0000-0000-4000-8000-0000000000a1';
+insert into private.listing_closures(listing_public_id, organisation_id)
+  select l.public_id, l.organisation_id from public.listings l
+  where l.public_id = 'ca7c1000-0000-4000-8000-000000000003';

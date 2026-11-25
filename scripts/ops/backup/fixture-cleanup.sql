@@ -33,3 +33,6 @@ delete from private.media_deletions where object_key in
 delete from private.data_exports where object_key = 'exports/' || repeat('d', 32) || '.json';
 
 delete from private.account_closures where user_id = '5eed0000-0000-4000-8000-000000000001';
+
+delete from private.ownership_offers where organisation_id = '5eed0000-0000-4000-8000-0000000000a1';
+delete from private.listing_closures where listing_public_id = 'ca7c1000-0000-4000-8000-000000000003';

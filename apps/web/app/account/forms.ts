@@ -8,6 +8,20 @@ export const ACCOUNT_TABS = [
 
 export type AccountTab = (typeof ACCOUNT_TABS)[number];
 
+/** The settings tab bar. "business" is its own route (account.business.tsx). */
+export const ACCOUNT_NAV = [
+  { id: "profile", label: "Profile", href: "/account/profile" },
+  { id: "security", label: "Security", href: "/account/security" },
+  {
+    id: "notifications",
+    label: "Notifications",
+    href: "/account/notifications",
+  },
+  { id: "privacy", label: "Privacy and data", href: "/account/privacy" },
+  { id: "work", label: "Your work", href: "/account/work" },
+  { id: "business", label: "Business", href: "/account/business" },
+] as const;
+
 export function accountTab(value: string | undefined): AccountTab | null {
   return ACCOUNT_TABS.find((tab) => tab === value) ?? null;
 }
