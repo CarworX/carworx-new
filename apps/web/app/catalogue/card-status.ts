@@ -55,17 +55,20 @@ export function cardStatus(hours: readonly HoursRow[], now: Date): CardStatus {
   return { kind: "none" };
 }
 
-/** The words on the card: "Open · closes 17:30", "Closes in 25 min · at 13:00". */
+/**
+ * The words on the card, kept short so the status stays on one line:
+ * "Open · closes 17:30", "Closes in 25 min", "Opens tomorrow 09:00", "Opens Mon 08:00".
+ */
 export function statusLabel(status: CardStatus, day: number): string {
   if (status.kind === "open") return `Open · closes ${status.closes}`;
   if (status.kind === "closing")
-    return `Closes in ${String(status.minutesLeft)} min · at ${status.closes}`;
+    return `Closes in ${String(status.minutesLeft)} min`;
   if (status.kind === "closed") {
-    if (status.today) return `Closed · opens today ${status.opens}`;
+    if (status.today) return `Opens today ${status.opens}`;
     const tomorrow = (day % 7) + 1 === status.day;
     return tomorrow
-      ? `Closed · opens tomorrow ${status.opens}`
-      : `Closed · opens ${dayShort(status.day)} ${status.opens}`;
+      ? `Opens tomorrow ${status.opens}`
+      : `Opens ${dayShort(status.day)} ${status.opens}`;
   }
   return "Hours not listed";
 }

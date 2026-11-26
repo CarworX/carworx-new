@@ -21,7 +21,7 @@ describe("card open status", () => {
     });
     const soon = cardStatus(WEEKDAYS, at("2026-11-26T16:35:00"));
     expect(soon).toEqual({ kind: "closing", closes: "17:00", minutesLeft: 25 });
-    expect(statusLabel(soon, 4)).toBe("Closes in 25 min · at 17:00");
+    expect(statusLabel(soon, 4)).toBe("Closes in 25 min");
   });
 
   it("works across midnight: closing at 23:59 counts as the end of the day", () => {
@@ -51,17 +51,17 @@ describe("card open status", () => {
       day: 1,
       today: false,
     });
-    expect(statusLabel(sunday, 7)).toBe("Closed · opens tomorrow 08:00");
+    expect(statusLabel(sunday, 7)).toBe("Opens tomorrow 08:00");
     // Friday evening: Monday is not tomorrow, so the weekday is named.
     const friday = cardStatus(monday, at("2026-11-27T18:00:00"));
-    expect(statusLabel(friday, 5)).toBe("Closed · opens Mon 08:00");
+    expect(statusLabel(friday, 5)).toBe("Opens Mon 08:00");
   });
 
   it("says 'today' before the day's opening, and 'tomorrow' after closing", () => {
     const after = cardStatus(WEEKDAYS, at("2026-11-26T18:00:00"));
-    expect(statusLabel(after, 4)).toBe("Closed · opens tomorrow 08:00");
+    expect(statusLabel(after, 4)).toBe("Opens tomorrow 08:00");
     const early = cardStatus(WEEKDAYS, at("2026-11-26T06:00:00"));
-    expect(statusLabel(early, 4)).toBe("Closed · opens today 08:00");
+    expect(statusLabel(early, 4)).toBe("Opens today 08:00");
   });
 
   it("is closed all day on a day with no hours, and opens on the next listed day", () => {

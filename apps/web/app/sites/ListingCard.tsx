@@ -41,7 +41,10 @@ function distanceText(listing: ListingSummary): string | null {
   return `${listing.distance_km.toFixed(1)} km`;
 }
 
-/** The status marker: a different shape per state, so colour is never the only cue. */
+/**
+ * The open status on the photo: a marker drawn as a shape (filled, half, slashed,
+ * hollow), then the words. Colour is never the only cue.
+ */
 function StatusPill({
   status,
   day,
@@ -49,13 +52,23 @@ function StatusPill({
   status: ReturnType<typeof cardStatus>;
   day: number;
 }) {
-  const kind = status.kind === "closing" ? "closing" : status.kind;
-  const marker = { open: "●", closing: "◐", closed: "⊘", none: "◌" }[kind];
   return (
-    <span className={`cx-openstate ${kind}`}>
-      <span aria-hidden="true">{marker}</span> {statusLabel(status, day)}
+    <span className={`cx-openstate ${status.kind}`}>
+      <span className="marker" aria-hidden="true" />
+      {statusLabel(status, day)}
     </span>
   );
+}
+
+/**
+ * The service artwork for a business without a photo. Only glass has a line
+ * illustration in the repo that matches the mockup; the others show the tint
+ * and initials until their illustrations are exported.
+ */
+export function illustrationFor(categorySlug: string): string | null {
+  const key = topCategoryOf(categorySlug)?.key;
+  if (key !== "glass") return null;
+  return SERVICES.find((s) => s.key === key)?.object ?? null;
 }
 
 /**
@@ -76,8 +89,7 @@ export function ListingCard({
   hours?: readonly HoursRow[];
   now?: Date;
 }) {
-  const key = topCategoryOf(listing.category_slug)?.key ?? "repairs";
-  const icon = SERVICES.find((s) => s.key === key)?.object ?? "";
+  const illustration = illustrationFor(listing.category_slug);
   const tint = tintFor(listing.public_id);
   const rating = reviewRatingText(listing);
   const status = cardStatus(hours, now);
@@ -105,7 +117,9 @@ export function ListingCard({
             />
           ) : (
             <>
-              <img className="obj" src={icon} alt="" />
+              {illustration ? (
+                <img className="obj" src={illustration} alt="" />
+              ) : null}
               <span className="initials" aria-hidden="true">
                 {initialsOf(listing.display_name)}
               </span>
