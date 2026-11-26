@@ -18,6 +18,8 @@ export default [
   route("media/covers/:file", "routes/media.covers.$file.ts"),
   route("fines", "routes/fines.tsx"),
   route("fines/mine", "routes/fines.mine.tsx"),
+  // A6: confirm your ID before your fines show (K2 Didit session, decided by webhook).
+  route("fines/verify", "routes/fines.verify.tsx"),
   // P2-5 visitor forms (Claude 22). The enquiry form lives on /p/:publicId.
   route("demand", "routes/demand.tsx"),
   route("support", "routes/support.tsx"),

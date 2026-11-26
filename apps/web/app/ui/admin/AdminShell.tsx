@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/admin/listings?status=submitted", label: "Applications" },
   { href: "/admin/listings?status=live", label: "Businesses" },
   { href: "/admin/listings?status=suspended", label: "Suspended" },
+  { href: "/admin/id-checks", label: "ID checks" },
   { href: "/admin/claims", label: "Claims" },
   { href: "/admin/demand", label: "Demand" },
   { href: "/admin/support", label: "Support" },

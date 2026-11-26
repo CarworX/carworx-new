@@ -36,6 +36,9 @@ export const authRoutes: RouteConfigEntry[] = [
   route("join/:token?", "routes/join.$token.tsx"),
   route("provider/claim/:publicId", "routes/provider.claim.$publicId.tsx"),
   // P2-7 (Claude 21): admin tools, listed admin at aal2 only.
+  // A7 (B-21): the ID checks Didit sent for a second look.
+  route("admin/id-checks", "routes/admin.id-checks.tsx"),
+  route("admin/id-checks/:id", "routes/admin.id-checks.$id.tsx"),
   route("admin/listings", "routes/admin.listings.tsx"),
   route("admin/today", "routes/admin.today.tsx"),
   route("admin/listings/:publicId", "routes/admin.listings.$publicId.tsx"),
