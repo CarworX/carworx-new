@@ -58,7 +58,7 @@ describe("staging fines payments", () => {
     const refused = await browser.send(path, checkout);
     expect(
       refused.status,
-      `${refused.status} ${refused.location ?? ""} ${refused.body.slice(0, 200)}`,
+      `${String(refused.status)} ${refused.location ?? ""} ${refused.body.slice(0, 200)}`,
     ).toBe(403);
 
     approve(user.id);
