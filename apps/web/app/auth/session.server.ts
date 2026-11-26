@@ -53,14 +53,44 @@ export async function getSignedIn(
   request: Request,
   security: SecurityContext,
 ): Promise<SignedIn | null> {
+  const signedIn = await getSignedInIgnoringTerms(request, security);
+  if (signedIn === null) return null;
+  // Pending terms (account consent) count as signed out for every decision
+  // here: no enquiries, joins or private covers until the terms are accepted.
+  return (await readTermsState(signedIn.supabase)) === "pending"
+    ? null
+    : signedIn;
+}
+
+/**
+ * As getSignedIn, without the terms check. Only for the password-recovery step,
+ * which must work before consent: a recovery link signs the person in, and
+ * consent comes after. Closing accounts are still signed out.
+ */
+export async function getSignedInIgnoringTerms(
+  request: Request,
+  security: SecurityContext,
+): Promise<SignedIn | null> {
   const signedIn = await getSignedInClosing(request, security);
   // A closing account (D-098) is signed out everywhere but its own closing
   // page: it cannot send enquiries, join teams or see private covers.
+  return signedIn?.closingUntil ? null : signedIn;
+}
+
+/**
+ * A signed-in, non-closing person whose account terms are pending, or null.
+ * Pages that must send such a person to consent (an invite) use this, so they
+ * can redirect instead of treating them as signed out.
+ */
+export async function signedInWithPendingTerms(
+  request: Request,
+  security: SecurityContext,
+): Promise<SignedIn | null> {
+  const signedIn = await getSignedInClosing(request, security);
   if (signedIn === null || signedIn.closingUntil) return null;
-  // Pending terms (account consent) count as signed out for every decision
-  // here: no enquiries, joins or private covers until the terms are accepted.
-  if ((await readTermsState(signedIn.supabase)) === "pending") return null;
-  return signedIn;
+  return (await readTermsState(signedIn.supabase)) === "pending"
+    ? signedIn
+    : null;
 }
 
 /** As getSignedIn, but also returns an account that is closing. */
@@ -110,13 +140,25 @@ export function signInUrl(request: Request, appOrigin: string): string {
 
 /**
  * Where a person with pending terms is sent. A GET keeps its own address as
- * returnTo, so accepting brings them back; a POST has no page to return to.
+ * returnTo, so accepting brings them back; a POST has no page to return to,
+ * unless the caller names one (an invite names /join).
  */
-export function termsUrl(request: Request, appOrigin: string): string {
-  if (request.method !== "GET") return TERMS_PATH;
-  const url = new URL(request.url);
-  const returnTo = safeReturnTo(`${url.pathname}${url.search}`, appOrigin);
-  return `${TERMS_PATH}?returnTo=${encodeURIComponent(returnTo)}`;
+export function termsUrl(
+  request: Request,
+  appOrigin: string,
+  returnTo?: string,
+): string {
+  const target =
+    returnTo ??
+    (request.method === "GET"
+      ? (() => {
+          const url = new URL(request.url);
+          return `${url.pathname}${url.search}`;
+        })()
+      : null);
+  if (target === null) return TERMS_PATH;
+  const safe = safeReturnTo(target, appOrigin);
+  return `${TERMS_PATH}?returnTo=${encodeURIComponent(safe)}`;
 }
 
 /** Signed-in user, or a redirect to sign in (clearing a dead session). */

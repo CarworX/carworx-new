@@ -6,7 +6,7 @@ import {
   type AuthFailure,
 } from "../errors";
 import { field, parsePassword } from "../forms";
-import { getSignedIn } from "../session.server";
+import { getSignedInIgnoringTerms } from "../session.server";
 import { AuthPage, CsrfField, Notice, PasswordField } from "../ui";
 import type { Route } from "./+types/reset-password";
 
@@ -28,7 +28,7 @@ function fail(problem: Problem, init: { status: number; headers?: Headers }) {
 }
 
 export async function loader({ request, context }: Route.LoaderArgs) {
-  const signedIn = await getSignedIn(request, context.security);
+  const signedIn = await getSignedInIgnoringTerms(request, context.security);
   return data(
     { csrf: context.security.csrfToken, hasSession: signedIn !== null },
     { headers: signedIn?.headers },
@@ -36,7 +36,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 }
 
 export async function action({ request, context }: Route.ActionArgs) {
-  const signedIn = await getSignedIn(request, context.security);
+  const signedIn = await getSignedInIgnoringTerms(request, context.security);
   if (signedIn === null) {
     return fail("link_invalid", { status: 401 });
   }

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { termsUrl } from "./session.server";
 import {
   parseTermsStatus,
   readTermsState,
@@ -109,5 +110,34 @@ describe("readTermsState", () => {
       log,
     );
     expect(log).not.toHaveBeenCalled();
+  });
+});
+
+describe("termsUrl (where a pending person is sent)", () => {
+  const origin = "https://carworx.app";
+
+  it("keeps a GET's own address as returnTo, so accepting brings them back", () => {
+    const url = termsUrl(
+      new Request("https://carworx.app/provider?tab=1"),
+      origin,
+    );
+    expect(url).toBe("/auth/terms?returnTo=%2Fprovider%3Ftab%3D1");
+  });
+
+  it("sends a POST to the consent page with no returnTo", () => {
+    const url = termsUrl(
+      new Request("https://carworx.app/account/photo", { method: "POST" }),
+      origin,
+    );
+    expect(url).toBe("/auth/terms");
+  });
+
+  it("uses an explicit returnTo for a POST (an invite returns to /join)", () => {
+    const url = termsUrl(
+      new Request("https://carworx.app/join", { method: "POST" }),
+      origin,
+      "/join",
+    );
+    expect(url).toBe("/auth/terms?returnTo=%2Fjoin");
   });
 });

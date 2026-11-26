@@ -220,7 +220,7 @@ export const PASSWORD = `synthetic-${randomUUID()}`;
 
 export async function createConfirmedUser(
   label: string,
-  extra: { user_metadata?: Record<string, unknown> } = {},
+  extra: { user_metadata?: Record<string, unknown>; terms?: boolean } = {},
 ): Promise<{ id: string; email: string }> {
   const email = syntheticEmail(label);
   const { data, error } = await admin.auth.admin.createUser({
@@ -234,9 +234,11 @@ export async function createConfirmedUser(
   // (K1). Without this, a pending account is sent to /auth/terms (B-10 2b).
   // The version must match ACCOUNT_TERMS_VERSION in app/auth/account-terms.server.ts.
   // (Not imported: that module pulls server code into the node project.)
-  sql(
-    `insert into public.consents (user_id, purpose, notice_version) values ('${data.user.id}', 'account_terms', 'account-terms-v1')`,
-  );
+  // Opt out (terms: false) for a test that starts with no consent row.
+  if (extra.terms !== false)
+    sql(
+      `insert into public.consents (user_id, purpose, notice_version) values ('${data.user.id}', 'account_terms', 'account-terms-v1')`,
+    );
   return { id: data.user.id, email };
 }
 
