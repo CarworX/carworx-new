@@ -6,28 +6,20 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import type { Review, ReviewReply } from "../../reviews/model";
+export {
+  parseReviewSort,
+  ratingBreakdown,
+  REVIEW_SORTS,
+  sortReviews,
+  type ReviewSort,
+} from "../../reviews/model";
+export type { Review, ReviewReply } from "../../reviews/model";
+
 /** Postgres codes the K5 RPCs raise: 42501 not_allowed, 22023 invalid input. */
 export type ReviewFailure = "not_allowed" | "invalid" | "unavailable";
 export type ReviewOutcome<T> =
   { ok: true; value: T } | { ok: false; reason: ReviewFailure };
-
-export interface Review {
-  id: string;
-  listing_public_id: string;
-  author_display: string;
-  rating: number;
-  body: string;
-  service_slug: string | null;
-  created_at: string;
-  edited_at: string | null;
-  reply: ReviewReply | null;
-}
-
-export interface ReviewReply {
-  body: string;
-  created_at: string;
-  edited_at: string | null;
-}
 
 export interface OwnReview {
   id: string;
@@ -205,44 +197,4 @@ export async function reportReview(
   });
   if (result.error) return reviewOutcomeOf(result.error);
   return { ok: true, value: true };
-}
-
-/** Review sort for the profile: the page's own sort keys, nothing else. */
-export const REVIEW_SORTS = ["recent", "highest", "lowest", "replied"] as const;
-export type ReviewSort = (typeof REVIEW_SORTS)[number];
-
-export function parseReviewSort(value: string | null): ReviewSort {
-  return (REVIEW_SORTS as readonly string[]).includes(value ?? "")
-    ? (value as ReviewSort)
-    : "recent";
-}
-
-export function sortReviews(
-  reviews: readonly Review[],
-  sort: ReviewSort,
-): Review[] {
-  const copy = [...reviews];
-  if (sort === "highest") return copy.sort((a, b) => b.rating - a.rating);
-  if (sort === "lowest") return copy.sort((a, b) => a.rating - b.rating);
-  if (sort === "replied")
-    return copy.sort(
-      (a, b) => Number(b.reply !== null) - Number(a.reply !== null),
-    );
-  return copy;
-}
-
-/** Counts per star, 5 down to 1, and the average to one decimal. */
-export function ratingBreakdown(reviews: readonly Pick<Review, "rating">[]) {
-  const counts = [5, 4, 3, 2, 1].map((stars) => ({
-    stars,
-    count: reviews.filter((r) => r.rating === stars).length,
-  }));
-  const total = reviews.length;
-  const average =
-    total === 0
-      ? null
-      : Math.round(
-          (reviews.reduce((sum, r) => sum + r.rating, 0) / total) * 10,
-        ) / 10;
-  return { counts, total, average, showBars: total >= 3 };
 }

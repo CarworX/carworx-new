@@ -9,7 +9,7 @@ import {
   ratingBreakdown,
   type Review,
   type ReviewSort,
-} from "../server/reviews/reviews.server";
+} from "../reviews/model";
 
 const SORTS: { key: ReviewSort; label: string }[] = [
   { key: "recent", label: "Most recent" },
