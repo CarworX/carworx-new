@@ -46,10 +46,15 @@ describe("staging fines payments", () => {
     const path = "/fines/mine";
     const checkout = { form: { intent: "checkout", notice: "GP-2026-118452" } };
 
+    // A6: until the ID check is approved, /fines/mine sends the customer to the
+    // verify page instead of showing any notice.
     const gated = await browser.send(path);
-    expect(gated.status).toBe(200);
-    expectNeutralCopy(gated.body);
-    expect(gated.body).not.toContain("Speeding notice");
+    expect(gated.status).toBe(302);
+    expect(gated.location).toBe("/fines/verify");
+    const verify = await browser.send("/fines/verify");
+    expect(verify.status).toBe(200);
+    expectNeutralCopy(verify.body);
+    expect(verify.body).not.toContain("Speeding notice");
     expect((await browser.send(path, checkout)).status).toBe(403);
 
     approve(user.id);
