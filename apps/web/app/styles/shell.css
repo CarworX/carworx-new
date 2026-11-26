@@ -1136,3 +1136,41 @@
     font-size: 13px;
   }
 }
+
+/*
+ * Polish (C-polish). These sit outside the layer on purpose: home.css has a bare
+ * `a { color: inherit }` and sites/app.css has `:where(.sites a) { underline }`,
+ * both unlayered, and an unlayered rule beats any layered rule. Scoped to
+ * .sites where the underline rule lives.
+ */
+.cx-btn.primary,
+.cx-btn.primary:hover,
+.cx-btn.primary:focus-visible {
+  color: var(--white);
+}
+/* Disabled-until-consent (ConsentGate spec): canvas-2 ground, muted text, no shadow. */
+.cx-btn.primary[disabled] {
+  background: var(--canvas-2);
+  color: var(--muted);
+  box-shadow: none;
+}
+.sites .cx-lcard,
+.sites .cx-lcard:hover,
+.sites .cx-lcard *,
+.sites .cx-badge,
+.sites .cx-loc,
+.sites .cx-crumbs a {
+  text-decoration: none;
+}
+.sites .cx-lcard:hover h3,
+.sites .cx-lcard:focus-visible h3 {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sites .cx-loc:hover,
+.sites .cx-loc:focus-visible,
+.sites .cx-crumbs a:hover,
+.sites .cx-crumbs a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

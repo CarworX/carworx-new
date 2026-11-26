@@ -12,12 +12,6 @@
     min-width: 0;
   }
 
-  .auth-brand {
-    display: block;
-    width: 132px;
-    margin: 0 auto 24px;
-  }
-
   .auth-card {
     display: grid;
     gap: 16px;
