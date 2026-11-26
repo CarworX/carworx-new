@@ -30,7 +30,9 @@ select ok(has_function_privilege('retention_server','public.run_retention()','ex
   'retention_server can execute the public wrapper');
 select is_empty($$
   select r.rolname, f.sig from (values ('anon'),('authenticated'),('service_role'),('forms_server'),('catalogue_server')) r(rolname),
-    (values ('public.run_retention()'),('private.run_retention()'),('private.purge_expired_provider_records()'),('private.purge_expired_forms()')) f(sig)
+    (values ('public.run_retention()'),('private.run_retention()'),('private.purge_expired_provider_records()'),('private.purge_expired_forms()'),
+     ('public.claim_didit_deletions(integer)'),('private.claim_didit_deletions(integer)'),
+     ('public.complete_didit_deletion(uuid,uuid)'),('private.complete_didit_deletion(uuid,uuid)')) f(sig)
   where has_function_privilege(r.rolname, f.sig, 'execute')$$,
   'no API, forms or catalogue role can run any retention function');
 select ok(not has_function_privilege('retention_server','private.purge_expired_forms()','execute')
@@ -54,7 +56,10 @@ select is_empty($$select p.oid::regprocedure from pg_proc p join pg_namespace n 
     'public.confirm_media_deletions(text[])'::regprocedure, 'private.confirm_media_deletions(text[])'::regprocedure,
     -- Finish-build PR 4b (D-098): closed accounts deleted after 14 days.
     'public.claim_account_deletions(integer)'::regprocedure, 'private.claim_account_deletions(integer)'::regprocedure,
-    'public.finalize_account_deletion(uuid)'::regprocedure, 'private.finalize_account_deletion(uuid)'::regprocedure)$$,
+    'public.finalize_account_deletion(uuid)'::regprocedure, 'private.finalize_account_deletion(uuid)'::regprocedure,
+    -- K4: acknowledge only Didit erasure work held by the retention job.
+    'public.claim_didit_deletions(integer)'::regprocedure, 'private.claim_didit_deletions(integer)'::regprocedure,
+    'public.complete_didit_deletion(uuid,uuid)'::regprocedure, 'private.complete_didit_deletion(uuid,uuid)'::regprocedure)$$,
   'retention_server can execute nothing else in public, private or api');
 select is_empty($$select rolname from pg_roles where rolname = 'retention_server'
   and not (rolcanlogin and rolconnlimit = 5 and not rolsuper and not rolbypassrls and not rolinherit and not rolcreaterole and not rolcreatedb)$$,

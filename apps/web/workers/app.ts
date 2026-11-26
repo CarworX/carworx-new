@@ -7,6 +7,10 @@ import { dispatchFinesCallback } from "../app/routes/api.fines.callback";
 import { createRequestHandler } from "react-router";
 
 import { mediaBucket } from "../app/server/media/cover.server";
+import {
+  makeDiditEraser,
+  purgeDiditSessions,
+} from "../app/server/retention/didit-erasure.server";
 import { finalEmailSender } from "../app/server/retention/final-email.server";
 import {
   pgClient,
@@ -92,5 +96,11 @@ export default {
       await finalEmailSender(env),
     );
     console.log(JSON.stringify({ event: "retention_accounts", ...accounts }));
+    const didit = await purgeDiditSessions(
+      binding,
+      pgClient,
+      makeDiditEraser(env),
+    );
+    console.log(JSON.stringify({ event: "retention_didit", ...didit }));
   },
 } satisfies ExportedHandler<Env>;

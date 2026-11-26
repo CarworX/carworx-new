@@ -60,9 +60,16 @@ describe("R-2 retention cron (built Worker)", () => {
         { RETENTION_DB: { connectionString: login() }, MEDIA: workerEnv.MEDIA },
         ctx,
       );
-      // The counts line, then the cover-file clean-up line (D-098).
-      // Counts, cover files (D-098), then closed accounts (D-098).
-      expect(log).toHaveBeenCalledTimes(3);
+      // Each stage logs only its event name and aggregate results.
+
+      expect(log).toHaveBeenCalledTimes(4);
+      const diditLine = String(log.mock.calls[3]?.[0]);
+      expect(JSON.parse(diditLine)).toEqual({
+        event: "retention_didit",
+        erased: 0,
+        retry: 0,
+        configured: false,
+      });
       const mediaLine = String(log.mock.calls[1]?.[0]);
       expect(JSON.parse(mediaLine)).toMatchObject({ event: "retention_media" });
       expect(mediaLine).not.toMatch(/covers\/|example\.test|postgres:/);

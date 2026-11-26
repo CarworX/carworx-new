@@ -31,6 +31,11 @@ select is_empty($$
       and tablename in ('categories','services','branches','listings','service_areas','verifications','listing_hours','listing_covers')
       and roles in ('{listing_projection}'::name[], '{listing_eligibility}'::name[])
       and policyname in ('catalogue_projection','catalogue_eligibility'))
+    and not (schemaname = 'public' and (
+      (tablename = 'reviews' and policyname = 'reviews_projection' and roles = '{listing_projection}'::name[])
+      or ((tablename, policyname) in (('reviews','reviews_visible'), ('review_replies','review_replies_read'))
+        and roles @> '{anon,authenticated}'::name[] and cardinality(roles) = 2)
+    ))
 $$, 'policies use authenticated or the explicit P2 catalogue capability roles');
 
 select is_empty($$
@@ -70,9 +75,9 @@ select is_empty($$
   select p.oid::regprocedure::text
   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
   where n.nspname = 'private'
-    and (has_function_privilege('anon', p.oid, 'execute')
-         or has_function_privilege('public', p.oid, 'execute'))
-$$, 'no private function is executable by anon or PUBLIC');
+    and (has_function_privilege('public', p.oid, 'execute')
+      or (has_function_privilege('anon', p.oid, 'execute') and p.oid <> 'private.review_listing_live(uuid)'::regprocedure))
+$$, 'only the narrow live-review predicate is executable by anon; none by PUBLIC');
 
 select ok(not has_schema_privilege('anon', 'private', 'usage'), 'anon has no usage on schema private');
 

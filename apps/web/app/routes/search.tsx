@@ -4,7 +4,7 @@ import { CATEGORIES, findCategory } from "../catalogue/taxonomy";
 import { cataloguePage } from "../server/search/catalogue-page.server";
 import type { PageModel } from "../server/search/page";
 import { ListingCard } from "../sites/ListingCard";
-import { coverKeys } from "../server/catalogue/public";
+import { listingCardDetails } from "../server/catalogue/public";
 import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
 import { UseMyLocation } from "../sites/UseMyLocation";
 import { LocationPicker } from "../sites/LocationPicker";
@@ -22,19 +22,17 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     request,
     context.cloudflare.env,
   );
-  // Cover photos (D-098): one extra public read for this page's listings.
-  // The search function itself has no cover column; this fails soft.
   const config = context.security.config;
   if (config && (model.kind === "results" || model.kind === "browse")) {
     const groups = [model.body.fixed, model.body.mobile, model.body.all];
-    const items: { public_id: string; cover_key?: string | null }[] =
-      groups.flatMap((g): { public_id: string }[] => g?.items ?? []);
-    const covers = await coverKeys(
-      config,
-      items.map((i) => i.public_id),
+    const items = groups.flatMap(
+      (group): { public_id: string }[] => group?.items ?? [],
     );
-    for (const item of items)
-      item.cover_key = covers.get(item.public_id) ?? null;
+    const details = await listingCardDetails(
+      config,
+      items.map((item) => item.public_id),
+    );
+    for (const item of items) Object.assign(item, details.get(item.public_id));
   }
   const headers = new Headers({ "Cache-Control": "private, no-store" });
   if (cookie) headers.append("Set-Cookie", cookie);
