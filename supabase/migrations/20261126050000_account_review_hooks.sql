@@ -142,6 +142,24 @@ language sql stable security definer set search_path = '' as $$
         'receipt_number', f.receipt_number, 'created_at', f.created_at, 'settled_at', f.settled_at)
         order by f.created_at, f.id)
       from public.fines_payments f where f.user_id = p_uid), '[]'::jsonb),
+    'reviews', coalesce((select jsonb_agg(jsonb_build_object(
+        'listing', l.display_name, 'rating', r.rating, 'body', r.body,
+        'service_slug', r.service_slug, 'status', r.status, 'hidden_reason', r.hidden_reason,
+        'created_at', r.created_at, 'edited_at', r.edited_at) order by r.created_at, r.id)
+      from public.reviews r join public.listings l on l.public_id = r.listing_public_id
+      where r.author_id = p_uid), '[]'::jsonb),
+    'review_replies', coalesce((select jsonb_agg(jsonb_build_object(
+        'listing', l.display_name, 'body', rr.body, 'created_at', rr.created_at,
+        'edited_at', rr.edited_at) order by rr.created_at, rr.review_id)
+      from public.review_replies rr join public.reviews r on r.id = rr.review_id
+      join public.listings l on l.public_id = r.listing_public_id
+      where rr.author_id = p_uid), '[]'::jsonb),
+    'review_reports', coalesce((select jsonb_agg(jsonb_build_object(
+        'listing', l.display_name, 'reason', rr.reason, 'created_at', rr.created_at,
+        'resolved_at', rr.resolved_at) order by rr.created_at, rr.review_id)
+      from public.review_reports rr join public.reviews r on r.id = rr.review_id
+      join public.listings l on l.public_id = r.listing_public_id
+      where rr.reporter_id = p_uid), '[]'::jsonb),
     'provider_applications', coalesce((select jsonb_agg(jsonb_build_object(
         'business_name', a.business_name, 'services', a.service_slugs, 'mode', a.mode,
         'metro', a.metro, 'description', a.description, 'public_address', a.public_address,
