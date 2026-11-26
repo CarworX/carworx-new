@@ -6,8 +6,10 @@ import homeCss from "../home/home.css?url";
 import { INTRO_GATE } from "../home/introGate";
 import landingCss from "../home/landing.css?url";
 import markup from "../home/preview.html?raw";
+import { CustomerHome } from "../home/CustomerHome";
 import { homeCatalogue, type HomeCatalogue } from "../server/catalogue/home";
 import type { PublicListing } from "../server/catalogue/public";
+import { readViewer } from "../ui/site/viewer.server";
 import { SiteFooter } from "../ui/site/SiteFooter";
 import { SiteHeader } from "../ui/site/SiteHeader";
 import { UseMyLocation } from "../sites/UseMyLocation";
@@ -82,18 +84,24 @@ export const meta: Route.MetaFunction = () => [
   },
 ];
 
-export async function loader({ context }: Route.LoaderArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
   const config = context.security.config;
   const catalogue: HomeCatalogue | null = config
     ? await homeCatalogue(config)
     : null;
+  // Signed in, the page carries the visitor's first name: never shared-cached.
+  const viewer = await readViewer(request, config).catch(() => null);
   return data(
-    { catalogue },
+    { catalogue, viewer },
     {
       headers: {
         // Public catalogue data only, nothing personal: browsers may keep it
         // briefly. A failed read is not cached.
-        "Cache-Control": catalogue ? "public, max-age=300" : "no-store",
+        "Cache-Control": viewer
+          ? "private, no-store"
+          : catalogue
+            ? "public, max-age=300"
+            : "no-store",
       },
     },
   );
@@ -113,6 +121,15 @@ function objectFor(categorySlug: string): string {
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   const catalogue = loaderData.catalogue;
+  // Signed in, the customer home replaces the landing (redesign A4, C3).
+  if (loaderData.viewer) {
+    return (
+      <CustomerHome
+        firstName={loaderData.viewer.firstName}
+        listings={catalogue?.listings ?? []}
+      />
+    );
+  }
   return (
     <>
       {/* First-visit intro (owner, 14 Nov): runs before the page paints, once

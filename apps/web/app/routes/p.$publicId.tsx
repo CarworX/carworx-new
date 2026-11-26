@@ -28,6 +28,7 @@ import coverCss from "../sites/cover.css?url";
 import gateCss from "../sites/gate.css?url";
 import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
 import { HumanCheck } from "../ui/public/HumanCheck";
+import { rememberView } from "../home/recent";
 import type { Route } from "./+types/p.$publicId";
 
 function unavailable(): never {
@@ -180,6 +181,11 @@ export default function ListingPage({
   const now = statusText(status);
   return (
     <SitesShell>
+      <RecordView
+        id={listing.public_id}
+        name={listing.display_name}
+        service={listing.service_name}
+      />
       <a className="back" href={category ? `/c/${category.slug}` : "/search"}>
         ← {category ? category.label : "Find a service"}
       </a>
@@ -563,4 +569,20 @@ function EnquiryForm({
       </button>
     </form>
   );
+}
+
+/** Notes this listing in "Recently viewed" (this browser only, C3). */
+function RecordView({
+  id,
+  name,
+  service,
+}: {
+  id: string;
+  name: string;
+  service: string;
+}) {
+  useEffect(() => {
+    rememberView({ id, name, service });
+  }, [id, name, service]);
+  return null;
 }
