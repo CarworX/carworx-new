@@ -1,30 +1,78 @@
 import { describe, expect, it } from "vitest";
+import type { SignedIn } from "../../auth/session.server";
 import {
-  parseOutcome,
   parseScenario,
-  sandbox,
-  settleSandbox,
+  sandboxAdapter,
+  sandboxCallbackRequest,
 } from "./sandbox.server";
 
-describe("synthetic fines checkout", () => {
-  it("provides populated, empty and unavailable fixtures without accepting identities", () => {
-    expect(sandbox.lookup("sample")?.fines).toHaveLength(2);
-    expect(sandbox.lookup("empty")?.fines).toEqual([]);
-    expect(sandbox.lookup("unavailable")).toBeNull();
-    expect(parseScenario("1234567890123")).toBe("sample");
+const env = {
+  CARWORX_ENV: "staging",
+  FINES_PROVIDER: "sandbox",
+  SEARCH_CURSOR_KEY: "synthetic-k3-signature-key-only-for-tests",
+};
+const origin = "https://test.example";
+const event = {
+  paymentId: "ae686b96-471c-487e-96c2-84babed729d9",
+  status: "paid",
+} as const;
+function auth(state: string) {
+  return {
+    user: { id: "customer" },
+    supabase: {
+      rpc: () => Promise.resolve({ data: [{ state }], error: null }),
+    },
+  } as unknown as SignedIn;
+}
+
+describe("synthetic fines adapter", () => {
+  it("requires approved identity and a staging provider for lookup and checkout", async () => {
+    const unverified = sandboxAdapter(env, auth("in_review"));
+    expect(await unverified.lookup("customer")).toBe("unavailable");
+    await expect(
+      unverified.startCheckout("customer", ["DEMO-101"]),
+    ).rejects.toThrow("identity_required");
+    expect(await sandboxAdapter(env, auth("approved")).lookup("other")).toBe(
+      "unavailable",
+    );
+    const outsideStaging = sandboxAdapter(
+      { ...env, CARWORX_ENV: "production" },
+      auth("approved"),
+    );
+    expect(await outsideStaging.lookup("customer")).toBe("unavailable");
+    await expect(
+      outsideStaging.startCheckout("customer", ["DEMO-101"]),
+    ).rejects.toThrow("identity_required");
   });
 
-  it("authorizes only a payable fixture and validates outcomes", () => {
-    expect(sandbox.checkout("DEMO-101")?.cents).toBe(45000);
-    expect(sandbox.checkout("DEMO-102")).toBeUndefined();
-    expect(sandbox.checkout("real-notice")).toBeUndefined();
-    expect(parseOutcome("paid")).toBeNull();
+  it("returns synthetic results and refuses non-payable notices", async () => {
+    const adapter = sandboxAdapter(env, auth("approved"));
+    expect(await adapter.lookup("customer")).toMatchObject({
+      fines: [{ id: "DEMO-101" }, { id: "DEMO-102" }],
+    });
+    expect(
+      await sandboxAdapter(env, auth("approved"), "empty").lookup("customer"),
+    ).toMatchObject({ fines: [] });
+    expect(
+      await sandboxAdapter(env, auth("approved"), "unavailable").lookup(
+        "customer",
+      ),
+    ).toBe("unavailable");
+    expect(parseScenario("unknown")).toBe("sample");
+    await expect(
+      adapter.startCheckout("customer", ["DEMO-102"]),
+    ).rejects.toThrow("invalid_fines_checkout");
   });
 
-  it("allows retries after failure and keeps an issued receipt stable", () => {
-    expect(settleSandbox("timeout", "pending")).toBe("pending");
-    expect(settleSandbox("cancelled", "confirmed")).toBe("confirmed");
-    expect(settleSandbox("pending", "confirmed")).toBe("pending");
-    expect(settleSandbox("confirmed", "cancelled")).toBe("confirmed");
+  it("verifies the callback signature and rejects a modified body", async () => {
+    const adapter = sandboxAdapter(env, auth("approved"));
+    const signed = await sandboxCallbackRequest(env, origin, event);
+    const tampered = new Request(signed.url, {
+      method: "POST",
+      headers: signed.headers,
+      body: (await signed.clone().text()).replace("paid", "failed"),
+    });
+    expect(await adapter.verifyCallback(signed)).toEqual(event);
+    expect(await adapter.verifyCallback(tampered)).toBeNull();
   });
 });

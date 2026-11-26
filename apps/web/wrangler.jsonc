@@ -23,6 +23,7 @@
       "vars": {
         "CARWORX_ENV": "staging",
         "CARWORX_DEV_PAGES": "1",
+        "FINES_PROVIDER": "sandbox",
         "DIDIT_WORKFLOW_ID": "0ccc342d-6da5-4a68-9c34-28101b2b727b",
         "MAIL_ENABLED": "1",
         "MAIL_DOMAIN_VERIFIED": "1",
