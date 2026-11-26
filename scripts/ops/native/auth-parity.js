@@ -44,6 +44,13 @@ async function command(args, options = native) {
   return result.stdout;
 }
 
+/** Masks emails and long token-like runs before a failure message reaches the log. */
+function maskDetail(text) {
+  return text
+    .replace(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g, "[email]")
+    .replace(/[A-Za-z0-9_+/=-]{24,}/g, "[masked]");
+}
+
 function capture(templates) {
   return createServer(async (request, response) => {
     try {
@@ -172,6 +179,15 @@ try {
       // Publish only source-file basenames and assertion indices, never messages.
       try {
         const report = JSON.parse(readFileSync(integration, "utf8"));
+        // Job log only, masked and capped: the summary artifact stays
+        // message-free. Lets a red run show what the assertion saw.
+        for (const file of report.testResults)
+          for (const test of file.assertionResults)
+            if (test.status === "failed")
+              for (const message of test.failureMessages ?? [])
+                console.error(
+                  `integration failure: ${maskDetail(message).slice(0, 500)}`,
+                );
         statusSummary.integration_failures = report.testResults
           .map((file) => ({
             file:
