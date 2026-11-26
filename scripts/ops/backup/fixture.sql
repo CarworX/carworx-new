@@ -83,3 +83,8 @@ insert into private.listing_closures(listing_public_id, organisation_id)
 -- K2: one synthetic identity outcome to verify export and restore.
 insert into private.identity_checks(user_id, provider_session_id, status, attempt)
   values ('5eed0000-0000-4000-8000-000000000001', 'b1900000-0000-4000-8000-000000000001', 'in_review', 1);
+
+-- K3: one unpaid synthetic checkout to verify export and restore.
+insert into public.fines_payments(id,user_id,notice_ids,cents,provider_ref)
+  values ('b2000000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-000000000001',
+    array['GP-2026-118452'],45000,'sandbox:b2000000-0000-4000-8000-000000000001');

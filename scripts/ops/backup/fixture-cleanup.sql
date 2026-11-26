@@ -39,3 +39,4 @@ delete from private.ownership_offers where organisation_id = '5eed0000-0000-4000
 delete from private.listing_closures where listing_public_id = 'ca7c1000-0000-4000-8000-000000000003';
 
 delete from private.identity_checks where provider_session_id = 'b1900000-0000-4000-8000-000000000001';
+delete from public.fines_payments where id = 'b2000000-0000-4000-8000-000000000001';

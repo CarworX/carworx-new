@@ -1,131 +1,145 @@
-import { data, Form, Link } from "react-router";
+import { data, Form, Link, redirect } from "react-router";
 import { throwStatus } from "../auth/http.server";
-import { requireSignedIn } from "../auth/session.server";
+import { requireSignedIn, type SignedIn } from "../auth/session.server";
 import { AuthPage, CsrfField } from "../auth/ui";
+import { createIdentitySession } from "../server/identity/didit.server";
 import {
-  parseOutcome,
+  hasApprovedIdentity,
+  PAYMENT_ID,
   parseScenario,
-  sandbox,
-  settleSandbox,
-  type Outcome,
+  paymentStatus,
+  sandboxAdapter,
+  sandboxCallbackRequest,
+  sandboxEnabled,
 } from "../server/fines/sandbox.server";
-import { readCookie, serializeAppCookie } from "../server/security/cookies";
+import { dispatchFinesCallback } from "./api.fines.callback";
 import type { Route } from "./+types/fines.mine";
 
-const RECEIPT_COOKIE = "__Host-cx-fines-sandbox";
-const MAX_AGE = 3600;
 const formatter = new Intl.NumberFormat("en-ZA", {
   style: "currency",
   currency: "ZAR",
 });
 
-const messages: Record<Outcome, string> = {
-  confirmed: "Issuer confirmed settlement in the sandbox.",
-  pending: "Payment received in the sandbox. Issuer confirmation is pending.",
-  cancelled: "Checkout cancelled. No payment was made.",
-  timeout: "The sandbox timed out. No payment has been confirmed.",
+type Payment = {
+  id: string;
+  cents: number;
+  status: string;
+  receipt_number: string | null;
 };
 
-function checkEnvironment(context: Route.LoaderArgs["context"]) {
-  if (context.security.config?.environment !== "staging") throwStatus(404);
-}
-
-async function receiptKey(env: unknown) {
-  const secret = (env as { SEARCH_CURSOR_KEY?: unknown }).SEARCH_CURSOR_KEY;
-  if (typeof secret !== "string" || secret.length < 32) throwStatus(503);
-  return crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign", "verify"],
-  );
-}
-
-function receiptInput(owner: string, payload: string) {
-  return new TextEncoder().encode(
-    `carworx-fines-sandbox-v1\n${owner}\n${payload}`,
-  );
-}
-
-async function readReceipt(request: Request, owner: string, env: unknown) {
-  const cookie = readCookie(request, RECEIPT_COOKIE);
-  if (!cookie) return null;
-  const [outcome, expires, signature, extra] = cookie.split(".");
-  const state = parseOutcome(outcome ?? null);
-  if (
-    extra !== undefined ||
-    state === null ||
-    !expires ||
-    !/^\d{10}$/.test(expires) ||
-    Number(expires) <= Math.floor(Date.now() / 1000) ||
-    !signature ||
-    !/^[A-Za-z0-9+/]{43}=$/.test(signature)
-  )
-    return null;
-  const input = receiptInput(owner, `${state}.${expires}`);
-  const bytes = Uint8Array.from(atob(signature), (c) => c.charCodeAt(0));
-  const valid = await crypto.subtle.verify(
-    "HMAC",
-    await receiptKey(env),
-    bytes,
-    input,
-  );
-  return valid ? state : null;
+async function readPayment(
+  auth: SignedIn,
+  id: string | null,
+): Promise<Payment | null> {
+  if (!id || !PAYMENT_ID.test(id)) return null;
+  const result: { data: unknown; error: unknown } = await auth.supabase
+    .from("fines_payments")
+    .select("id,cents,status,receipt_number")
+    .eq("id", id)
+    .eq("user_id", auth.user.id)
+    .maybeSingle();
+  if (result.error) throwStatus(503);
+  return result.data as Payment | null;
 }
 
 export async function loader({ request, context }: Route.LoaderArgs) {
-  checkEnvironment(context);
+  const env = context.cloudflare.env;
+  if (!sandboxEnabled(env)) throwStatus(404);
   const auth = await requireSignedIn(request, context.security);
   const params = new URL(request.url).searchParams;
   const scenario = parseScenario(params.get("scenario"));
-  const notice = params.get("checkout");
+  const approved = await hasApprovedIdentity(auth);
   return data(
     {
       csrf: context.security.csrfToken,
+      approved,
       scenario,
-      result: sandbox.lookup(scenario),
-      checkout:
-        scenario === "sample" && notice
-          ? (sandbox.checkout(notice) ?? null)
-          : null,
-      outcome: await readReceipt(request, auth.user.id, context.cloudflare.env),
+      result: approved
+        ? await sandboxAdapter(env, auth, scenario).lookup(auth.user.id)
+        : null,
+      payment: approved ? await readPayment(auth, params.get("payment")) : null,
     },
     { headers: auth.headers },
   );
 }
 
 export async function action({ request, context }: Route.ActionArgs) {
-  checkEnvironment(context);
+  const env = context.cloudflare.env;
+  if (!sandboxEnabled(env)) throwStatus(404);
   const auth = await requireSignedIn(request, context.security);
   const form = await request.formData();
-  const notice = form.get("notice");
-  const outcome = parseOutcome(form.get("outcome"));
-  if (
-    typeof notice !== "string" ||
-    !sandbox.checkout(notice) ||
-    outcome === null
-  )
+  const intent = form.get("intent");
+  if (intent === "verify") {
+    try {
+      const { url } = await createIdentitySession(
+        env,
+        auth.user.id,
+        "/fines/mine",
+      );
+      return redirect(url, { headers: auth.headers });
+    } catch {
+      return data(
+        { problem: "Unable to start a new ID check right now." },
+        { status: 409, headers: auth.headers },
+      );
+    }
+  }
+  if (!(await hasApprovedIdentity(auth))) {
     return data(
-      { problem: "Choose a payable synthetic fine and checkout outcome." },
+      { problem: "Verify your identity before checking fines." },
+      { status: 403, headers: auth.headers },
+    );
+  }
+  if (intent === "checkout") {
+    const notices = form.getAll("notice");
+    if (
+      notices.length === 0 ||
+      notices.some((notice) => typeof notice !== "string")
+    )
+      return data(
+        { problem: "Select a valid notice." },
+        { status: 400, headers: auth.headers },
+      );
+    try {
+      const { url } = await sandboxAdapter(env, auth).startCheckout(
+        auth.user.id,
+        notices as string[],
+      );
+      return redirect(url, { headers: auth.headers });
+    } catch {
+      return data(
+        { problem: "Unable to start checkout for that notice." },
+        { status: 409, headers: auth.headers },
+      );
+    }
+  }
+  if (intent !== "simulate") {
+    return data(
+      { problem: "Invalid checkout action." },
       { status: 400, headers: auth.headers },
     );
-  const old = await readReceipt(request, auth.user.id, context.cloudflare.env);
-  const state = settleSandbox(old, outcome);
-  const payload = `${state}.${String(Math.floor(Date.now() / 1000) + MAX_AGE)}`;
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    await receiptKey(context.cloudflare.env),
-    receiptInput(auth.user.id, payload),
-  );
-  const encoded = btoa(String.fromCharCode(...new Uint8Array(signature)));
-  auth.headers.append(
-    "Set-Cookie",
-    serializeAppCookie(RECEIPT_COOKIE, `${payload}.${encoded}`, {
-      maxAge: MAX_AGE,
-    }),
-  );
-  return data({ problem: null }, { headers: auth.headers });
+  }
+  const paymentId = form.get("payment");
+  const status = form.get("status");
+  if (typeof paymentId !== "string" || !paymentStatus(status)) {
+    return data(
+      { problem: "Choose a valid payment outcome." },
+      { status: 400, headers: auth.headers },
+    );
+  }
+  const payment = await readPayment(auth, paymentId);
+  if (!payment) throwStatus(404);
+  if (payment.status === "created" || payment.status === "pending_issuer") {
+    const event = await sandboxCallbackRequest(env, auth.config.appOrigin, {
+      paymentId,
+      status,
+    });
+    const response = await dispatchFinesCallback(event, env);
+    if (!response.ok) throwStatus(503);
+  }
+  return redirect("/fines/mine?payment=" + paymentId, {
+    headers: auth.headers,
+  });
 }
 
 export function headers({ loaderHeaders, actionHeaders }: Route.HeadersArgs) {
@@ -136,81 +150,89 @@ export function headers({ loaderHeaders, actionHeaders }: Route.HeadersArgs) {
   return headers;
 }
 
+function PaymentView({ payment, csrf }: { payment: Payment; csrf: string }) {
+  return (
+    <>
+      <p>{formatter.format(payment.cents / 100)}</p>
+      {payment.status === "paid" ? (
+        <p role="status">
+          Issuer confirmed settlement. Receipt {payment.receipt_number}.
+        </p>
+      ) : payment.status === "failed" || payment.status === "cancelled" ? (
+        <p role="status">No payment was confirmed.</p>
+      ) : (
+        <p role="status">Awaiting issuer confirmation.</p>
+      )}
+      {(payment.status === "created" ||
+        payment.status === "pending_issuer") && (
+        <Form method="post">
+          <CsrfField token={csrf} />
+          <input type="hidden" name="intent" value="simulate" />
+          <input type="hidden" name="payment" value={payment.id} />
+          <label className="cx-field">
+            Payment outcome
+            <select className="cx-input" name="status">
+              <option value="paid">Issuer confirms settlement</option>
+              <option value="pending_issuer">Settlement pending</option>
+              <option value="cancelled">Checkout cancelled</option>
+              <option value="failed">Checkout failed</option>
+            </select>
+          </label>
+          <button className="cx-btn primary wide" type="submit">
+            Update payment
+          </button>
+        </Form>
+      )}
+      <Link to="/fines/mine">Back to My Fines</Link>
+    </>
+  );
+}
+
 export default function MyFines({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { csrf, scenario, result, checkout, outcome } = loaderData;
+  const { csrf, approved, payment, scenario, result } = loaderData;
   return (
-    <AuthPage title={checkout ? "Simulated checkout" : "My Fines"}>
-      <p>
-        <strong>Staging sandbox.</strong> Fines, payment and receipts are
-        fictional. No money moves.
-      </p>
+    <AuthPage title={payment ? "Checkout" : "My Fines"}>
+      <p>These notices are fictional. No money moves.</p>
       {actionData?.problem && <p role="alert">{actionData.problem}</p>}
-      {outcome && (
-        <p role="status">
-          {messages[outcome]}{" "}
-          {(outcome === "confirmed" || outcome === "pending") &&
-            "Demo receipt DEMO-101."}
-        </p>
-      )}
-      {checkout ? (
-        <Form method="post">
+      {!approved ? (
+        <Form method="post" reloadDocument>
           <CsrfField token={csrf} />
-          <input type="hidden" name="notice" value={checkout.id} />
           <p>
-            {checkout.id} · {formatter.format(checkout.cents / 100)}
+            Didit checks your ID and selfie before you can view or pay fines.
           </p>
-          <label className="cx-field">
-            Test outcome
-            <select className="cx-input" name="outcome">
-              <option value="confirmed">Issuer confirms settlement</option>
-              <option value="pending">
-                Payment received, settlement pending
-              </option>
-              <option value="cancelled">Checkout cancelled</option>
-              <option value="timeout">Checkout timed out</option>
-            </select>
-          </label>
-          <button className="cx-btn primary wide" type="submit">
-            Run simulated checkout
+          <button className="cx-btn primary wide" name="intent" value="verify">
+            Start identity check
           </button>
-          <Link to="/fines/mine">Back to My Fines</Link>
         </Form>
+      ) : payment ? (
+        <PaymentView payment={payment} csrf={csrf} />
       ) : (
         <>
           <Form method="get">
             <label className="cx-field">
-              Sample lookup
+              Fine lookup
               <select
                 className="cx-input"
                 name="scenario"
                 defaultValue={scenario}
               >
-                <option value="sample">Two sample fines</option>
+                <option value="sample">Fines available</option>
                 <option value="empty">No results</option>
                 <option value="unavailable">Service unavailable</option>
               </select>
             </label>
             <button className="cx-btn primary wide" type="submit">
-              Check sample fines
+              Check fines
             </button>
           </Form>
-          {result === null ? (
-            <p role="status">The sandbox lookup is unavailable. Try again.</p>
+          {result === null || result === "unavailable" ? (
+            <p role="status">Fine lookup is unavailable. Try again.</p>
           ) : (
             <>
-              <p>
-                Coverage: example municipal authority. Checked{" "}
-                <time dateTime={result.checkedAt}>
-                  {new Date(result.checkedAt).toLocaleString("en-ZA", {
-                    timeZone: "Africa/Johannesburg",
-                  })}{" "}
-                  SAST
-                </time>
-                .
-              </p>
+              <p>Fines checked across {result.coverage.join(", ")}.</p>
               {result.fines.length === 0 ? (
                 <p role="status">
                   No fines found across the authorities checked.
@@ -225,16 +247,16 @@ export default function MyFines({
                       <p>
                         {fine.issuer} · {formatter.format(fine.cents / 100)}
                       </p>
-                      {fine.payable &&
-                      outcome !== "confirmed" &&
-                      outcome !== "pending" ? (
-                        <Link to={`?checkout=${fine.id}`}>Pay sample fine</Link>
+                      {fine.payable ? (
+                        <Form method="post">
+                          <CsrfField token={csrf} />
+                          <input type="hidden" name="notice" value={fine.id} />
+                          <button name="intent" value="checkout">
+                            Pay fine
+                          </button>
+                        </Form>
                       ) : (
-                        <p>
-                          {fine.payable
-                            ? "Checkout already recorded."
-                            : "Not payable in this channel."}
-                        </p>
+                        <p>{fine.reasonNotPayable}</p>
                       )}
                     </li>
                   ))}

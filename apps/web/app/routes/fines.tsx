@@ -1,3 +1,4 @@
+import { sandboxEnabled } from "../server/fines/sandbox.server";
 import { TextLink } from "../ui/Button";
 import { StatusNote } from "../ui/Note";
 import { PublicShell } from "../ui/public/PublicShell";
@@ -18,7 +19,7 @@ export const headers: Route.HeadersFunction = () => ({
 });
 
 export function loader({ context }: Route.LoaderArgs) {
-  return { sandbox: context.security.config?.environment === "staging" };
+  return { sandbox: sandboxEnabled(context.cloudflare.env) };
 }
 
 /**
@@ -61,7 +62,7 @@ export default function Fines({
       <div className="mt-6 grid max-w-[65ch] gap-8">
         {loaderData.sandbox && (
           <TextLink href="/fines/mine">
-            Try My Fines in the staging sandbox
+            Try My Fines with sample notices
           </TextLink>
         )}
         <StatusNote title="CarworX doesn't check or collect fines.">
