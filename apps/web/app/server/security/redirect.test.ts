@@ -20,6 +20,15 @@ describe("safeReturnTo", () => {
     "/provider/claim/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
     "/p/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
     "/p/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20#enquiry",
+    "/fines/mine",
+    "/fines/mine?payment=0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
+    "/fines/verify",
+    "/fines/GP-2026-118452",
+    "/provider/reviews",
+    "/provider/reviews?tab=all",
+    "/auth/terms",
+    "/admin/reviews",
+    "/admin/reviews/0b0b5f4e-2f8c-4b55-9a52-6a5f3c7d1e20",
   ])("accepts %s", (path) => {
     expect(safeReturnTo(path, APP)).toBe(path);
   });

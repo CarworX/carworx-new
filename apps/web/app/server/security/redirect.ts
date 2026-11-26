@@ -25,6 +25,12 @@ const ALLOWED = [
   /^\/provider\/setup\/[a-z-]+\/[a-z-]+(?:\?org=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$/,
   // Invite secrets stay in a short-lived HttpOnly cookie, never in returnTo.
   /^\/join$/,
+  // Signed-in pages a visitor may be sent to sign in from: they come back to
+  // the page they asked for, with its query, as /admin does.
+  /^\/fines\/(?:mine|verify)(?:[?#]|$)/,
+  /^\/fines\/[A-Za-z0-9-]+(?:[?#]|$)/,
+  /^\/provider\/reviews(?:[?#]|$)/,
+  /^\/auth\/terms(?:[?#]|$)/,
 ];
 
 export function safeReturnTo(
