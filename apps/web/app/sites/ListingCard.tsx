@@ -1,6 +1,10 @@
 import "./cover.css";
 import { topCategoryOf } from "../catalogue/taxonomy";
-import { whereText, type ListingSummary } from "../ui/public/ListingResult";
+import {
+  reviewRatingText,
+  whereText,
+  type ListingSummary,
+} from "../ui/public/ListingResult";
 import { SERVICES } from "../ui/services";
 
 const TINTS = ["", "t2", "t3", "t4"] as const;
@@ -27,6 +31,7 @@ export function ListingCard({
   const key = topCategoryOf(listing.category_slug)?.key ?? "repairs";
   const icon = SERVICES.find((s) => s.key === key)?.object ?? "";
   const tint = tintFor(listing.public_id);
+  const rating = reviewRatingText(listing);
   return (
     <a className="cx-lcard" href={`/p/${listing.public_id}`}>
       <span className={tint === "" ? "cover" : `cover ${tint}`}>
@@ -47,6 +52,7 @@ export function ListingCard({
       </span>
       <span className="body">
         <h3>{listing.display_name}</h3>
+        {rating && <span className="meta">{rating}</span>}
         {/* The labels say exactly what CarworX checked: shown as written. */}
         {listing.verification_labels.map((label) => (
           <span key={label} className="cx-badge ok">

@@ -34,3 +34,20 @@ describe("search card cover photo (D-098)", () => {
     ).not.toContain("data-cover");
   });
 });
+
+it("shows New for an unrated listing and the average and count for a rated one", () => {
+  expect(
+    renderToStaticMarkup(
+      <ListingCard
+        listing={{ ...listing, rating_avg: null, rating_count: 0 }}
+      />,
+    ),
+  ).toContain(">New<");
+  expect(
+    renderToStaticMarkup(
+      <ListingCard
+        listing={{ ...listing, rating_avg: 4.5, rating_count: 2 }}
+      />,
+    ),
+  ).toContain("4.5 out of 5 · 2 reviews");
+});

@@ -20,6 +20,8 @@ export interface PublicListing {
   verification_labels: string[];
   /** R2 key of the listing's cover photo (D-098), or null. */
   cover_key?: string | null;
+  rating_avg?: number | null;
+  rating_count?: number;
 }
 
 export interface CatalogueConfig {
@@ -28,7 +30,7 @@ export interface CatalogueConfig {
 }
 
 const COLUMNS =
-  "public_id,display_name,description,metro,mode,service_slug,service_name,category_slug,category_name,public_address,public_latitude,public_longitude,verification_labels,cover_key";
+  "public_id,display_name,description,metro,mode,service_slug,service_name,category_slug,category_name,public_address,public_latitude,public_longitude,verification_labels,cover_key,rating_avg,rating_count";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const SLUG = /^[a-z][a-z0-9-]{0,79}$/;
 export const PAGE_SIZE = 20;
@@ -103,34 +105,38 @@ export async function listingById(
 
 const COVER = /^covers\/[0-9a-f]{32}\.(?:jpg|png|webp)$/;
 
-/**
- * Cover keys for a page of search results (D-098). Search rows come from
- * api.search_listings, which has no cover column, so this one extra read
- * fills them in. Fails soft: an error means cards show no photo.
- */
-export async function coverKeys(
+type CardDetails = Pick<
+  PublicListing,
+  "cover_key" | "rating_avg" | "rating_count"
+>;
+
+/** Add photo and review summaries to search cards in one bounded public read. */
+export async function listingCardDetails(
   config: CatalogueConfig,
   ids: readonly string[],
   send: typeof fetch = fetch,
-): Promise<Map<string, string>> {
-  const wanted = ids.filter((id) => UUID.test(id)).slice(0, 100);
+): Promise<Map<string, CardDetails>> {
+  const wanted = [...new Set(ids.filter((id) => UUID.test(id)))].slice(0, 100);
   if (wanted.length === 0) return new Map();
   try {
     const rows = await read(
       config,
       new URLSearchParams({
-        select: "public_id,cover_key",
+        select: "public_id,cover_key,rating_avg,rating_count",
         public_id: `in.(${wanted.join(",")})`,
-        cover_key: "not.is.null",
       }),
       send,
     );
     return new Map(
-      rows
-        .filter(
-          (r) => typeof r.cover_key === "string" && COVER.test(r.cover_key),
-        )
-        .map((r) => [r.public_id, r.cover_key as string]),
+      rows.map((r) => [
+        r.public_id,
+        {
+          cover_key:
+            r.cover_key && COVER.test(r.cover_key) ? r.cover_key : null,
+          rating_avg: r.rating_avg,
+          rating_count: r.rating_count,
+        },
+      ]),
     );
   } catch {
     return new Map();

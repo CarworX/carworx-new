@@ -88,3 +88,12 @@ insert into private.identity_checks(user_id, provider_session_id, status, attemp
 insert into public.fines_payments(id,user_id,notice_ids,cents,provider_ref)
   values ('b2000000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-000000000001',
     array['GP-2026-118452'],45000,'sandbox:b2000000-0000-4000-8000-000000000001');
+
+-- K5: synthetic review, business reply and report for recovery coverage.
+insert into public.reviews(id,listing_public_id,organisation_id,author_id,author_display,rating,body)
+  values ('b2100000-0000-4000-8000-000000000001','ca7c1000-0000-4000-8000-000000000001',
+    '5eed0000-0000-4000-8000-0000000000a1','5eed0000-0000-4000-8000-000000000003','Mila W.',4,'Synthetic review for the recovery drill.');
+insert into public.review_replies(review_id,author_id,body)
+  values ('b2100000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-000000000001','Synthetic business reply.');
+insert into public.review_reports(review_id,reporter_id,reason)
+  values ('b2100000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-000000000002','Synthetic report for the recovery drill.');
