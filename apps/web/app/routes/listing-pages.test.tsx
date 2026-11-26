@@ -36,6 +36,9 @@ function renderListing(extra: Record<string, unknown> = {}) {
         <Page
           loaderData={{
             listing,
+            reviews: [],
+            sort: "recent",
+            eligibility: "sign_in",
             hours: [{ day: 1, opens: "08:00", closes: "17:00" }],
             today: 1,
             status: openStatus([], new Date("2026-11-16T08:00:00Z")),
@@ -112,6 +115,9 @@ describe("/p/:publicId: the preview listing view", () => {
           <Page
             loaderData={{
               listing,
+              reviews: [],
+              sort: "recent",
+              eligibility: "sign_in",
               hours: [],
               today: 1,
               status: openStatus([], new Date("2026-11-16T08:00:00Z")),

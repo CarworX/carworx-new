@@ -14,6 +14,7 @@ export default [
   route("search/map", "routes/search.map.ts"),
   route("c/:category", "routes/c.$category.tsx"),
   route("p/:publicId", "routes/p.$publicId.tsx"),
+  route("p/:publicId/review", "routes/p.$publicId.review.tsx"),
   // Finish-build PR 3 (D-098): cover photos from the R2 bucket MEDIA.
   route("media/covers/:file", "routes/media.covers.$file.ts"),
   route("fines", "routes/fines.tsx"),
