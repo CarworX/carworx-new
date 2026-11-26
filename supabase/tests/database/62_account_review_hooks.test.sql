@@ -5,6 +5,8 @@ grant execute on all functions in schema extensions to authenticated, retention_
 grant usage on schema extensions to retention_server;
 grant retention_server to postgres with set true, inherit false;
 select plan(13);
+select count(*)::int as existing_identity from private.identity_checks where status='in_review' \gset
+select count(distinct review_id)::int as existing_reports from public.review_reports where resolved_at is null \gset
 
 insert into auth.users(id,email) values
   ('d6200000-0000-4000-8000-000000000001','review-hooks-subject@example.test'),
@@ -36,8 +38,8 @@ select throws_ok('select public.admin_today_review_counts()','42501','not_allowe
 reset role;
 set local request.jwt.claims = '{"sub":"d6200000-0000-4000-8000-000000000002","aal":"aal2"}';
 set local role authenticated;
-select is((select pending_identity_reviews from public.admin_today_review_counts()),1,'AAL2 admin sees pending checks');
-select is((select reported_reviews from public.admin_today_review_counts()),1,'two reports on one review count as one item');
+select is((select pending_identity_reviews from public.admin_today_review_counts()),(:'existing_identity')::int+1,'AAL2 admin sees pending checks');
+select is((select reported_reviews from public.admin_today_review_counts()),(:'existing_reports')::int+1,'two reports on one review count as one item');
 reset role;
 
 insert into private.account_closures(user_id,requested_at,delete_after,claimed_at)

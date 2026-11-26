@@ -9,14 +9,12 @@ const env = { DIDIT_API_KEY: "synthetic" };
 
 describe("Didit privacy erasure", () => {
   it("requests erasure without biometric retention and checks the response", async () => {
-    const send = vi
-      .fn<typeof fetch>()
-      .mockResolvedValue(
-        Response.json({
-          session_id: providerSession,
-          face_retention_outcome: "deleted",
-        }),
-      );
+    const send = vi.fn<typeof fetch>().mockResolvedValue(
+      Response.json({
+        session_id: providerSession,
+        face_retention_outcome: "deleted",
+      }),
+    );
     await expect(
       makeDiditEraser(env, send)?.(providerSession, id),
     ).resolves.toBe("erased");
