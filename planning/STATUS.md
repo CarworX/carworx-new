@@ -1,5 +1,7 @@
 # Status
 
+**25 November 2026 (SAST).** The directory is deployed on staging at `3c4e3b2`. The [staging journey audit and backlog](codex/staging-journey-backlog.md) records the current browser evidence, the search and enquiry staging failures, and the pending signed-in checks. Use it for current staging status.
+
 Updated 2026-11-13 (SAST) by Claude. **Launch order (D-093): the directory goes live first; Phase 3 (bookings, quotes, payments, messaging) is a second release.** Both agents keep full build and merge authority, with reviews after merge (D-091). The launch plan is the [G-PROD checklist](runbooks/g-prod-checklist.md).
 
 ## Current work
@@ -10,7 +12,7 @@ Updated 2026-11-13 (SAST) by Claude. **Launch order (D-093): the directory goes 
 
 - **main** (`7550b1a`) has Phases 1–2, onboarding (#84), the launch gaps (P-1 to P-3, R-1, R-2, BK-1, the no-JS forms) and the first O7 slice (#100, #101, #103: listing and removing authenticators).
 - **Staging Supabase** `gdiyrdqfkthtcglgqnts` has all 12 migrations on main plus the synthetic seed. The `catalogue_server`, `forms_server` and `retention_server` logins are set. The three Hyperdrive configs are made, with caching off over a direct connection (#96). Backups (D2) and retention (E4) are only partly done.
-- **The staging Worker is not deployed yet.** The cloud proxy rewrites the Authorization header on Cloudflare's asset upload, so the owner deploys from their own machine.
+- **The staging Worker is deployed.** The audit linked above gives the current commit, Worker version and hosted evidence.
 - **Phase 3** is on the shared `phase-3` branch (draft #102 into main). Claude's bookings C1–C7 are merged there (#99), along with Codex's checkout and messaging. The bookings test round is running in its own Claude sub-session.
 - **Codex drafts:** #93, #94 and #97 (the mail pipeline, which is needed for the launch Auth emails), #95 (the sign-in security backend, not a launch blocker) and #83 (Sites).
 
@@ -34,7 +36,7 @@ The Sites preview (#83 @ `b88a8ca`) is being ported screen by screen, exactly, o
 
 ## External blockers and gates
 
-- The owner's staging deploy and the hosted A1–A7 checks.
+- Hosted A1–A7 checks on the deployed staging app.
 - Real Auth email: a verified sending domain and Codex's mail PRs.
 - The production project, Hyperdrive and secrets (runbook).
 - The legal approvals: E1–E3 and E5–E6, plus the owner questions OQ-L1, L2 and L4 to L7.
@@ -43,7 +45,7 @@ The Sites preview (#83 @ `b88a8ca`) is being ported screen by screen, exactly, o
 
 ## Next
 
-1. The owner deploys staging. Then the Claude smoke and A1–A7 checks run.
+1. Triage the search and enquiry failures in the staging backlog and complete the hosted smoke and A1–A7 checks.
 2. Claude: build the `/privacy` and `/terms` pages from `planning/legal/`, marked as drafts until the owner approves them.
 3. Codex: the mail pipeline first (#97, then #93 and #94), then Phase 3.
 4. The owner works through the G-PROD checklist in order; Claude guides each step.
