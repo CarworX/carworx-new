@@ -41,6 +41,71 @@ function distanceText(listing: ListingSummary): string | null {
   return `${listing.distance_km.toFixed(1)} km`;
 }
 
+/** "Open · closes 14:00": the state in bold, the time in regular weight. */
+function StatusLabel({ text }: { text: string }) {
+  const [lead, rest] = text.split(" · ");
+  return (
+    <span className="label">
+      <b>{lead}</b>
+      {rest ? ` · ${rest}` : ""}
+    </span>
+  );
+}
+
+/** Small line icons for the "where" row: a shopfront to visit, a van that comes to you. */
+function WhereIcon({ mobile }: { mobile: boolean }) {
+  return (
+    <svg
+      className="where-ic"
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {mobile ? (
+        <>
+          <path d="M1.5 4h8v7h-8zM9.5 6.5h3l2 2.2V11h-5z" />
+          <circle cx="4.5" cy="12" r="1.3" />
+          <circle cx="11.7" cy="12" r="1.3" />
+        </>
+      ) : (
+        <>
+          <path d="M2.5 6.5v7h11v-7M1.5 3.5l1-2h11l1 2v1.2a1.7 1.7 0 0 1-3.2.8 1.7 1.7 0 0 1-3.2 0 1.7 1.7 0 0 1-3.2 0 1.7 1.7 0 0 1-3.2-.8z" />
+          <path d="M6.5 13.5V10h3v3.5" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+/** The shield with a tick, in the mockup's blue. */
+function ShieldIcon() {
+  return (
+    <svg
+      className="shield"
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M8 1.6 2.8 3.5v4c0 3 2.1 5.4 5.2 6.9 3.1-1.5 5.2-3.9 5.2-6.9v-4L8 1.6Z" />
+      <path d="m5.6 8 1.7 1.7L10.6 6.4" />
+    </svg>
+  );
+}
+
 /** A full 12 px marker per state: filled dot, clock, slashed circle, hollow ring. */
 function StatusMarker({
   kind,
@@ -94,7 +159,7 @@ function StatusPill({
   return (
     <span className={`cx-openstate ${status.kind}`}>
       <StatusMarker kind={status.kind} />
-      <span className="label">{statusLabel(status, day)}</span>
+      <StatusLabel text={statusLabel(status, day)} />
     </span>
   );
 }
@@ -139,11 +204,7 @@ export function ListingCard({
 
   return (
     <article className="cx-lcard">
-      <a
-        className="cx-lcard-link"
-        href={`/p/${listing.public_id}`}
-        aria-label={listing.display_name}
-      >
+      <div className="cx-lcard-main">
         <span className={coverClass}>
           {listing.cover_key ? (
             <img
@@ -168,16 +229,45 @@ export function ListingCard({
           </span>
         </span>
         <span className="body">
-          <h3>{listing.display_name}</h3>
+          <span className="nm">
+            <h3>
+              <a className="cx-lcard-link" href={`/p/${listing.public_id}`}>
+                {listing.display_name}
+              </a>
+            </h3>
+            {checks.length > 0 ? (
+              <details className="cx-verified">
+                <summary>
+                  <ShieldIcon />
+                  <span className="count" aria-hidden="true">
+                    {checks.length}
+                  </span>
+                  <span className="sr-only">
+                    Verified: {checks.length}{" "}
+                    {checks.length === 1 ? "check" : "checks"}
+                  </span>
+                </summary>
+                <div className="pop">
+                  <b>What CarworX checked</b>
+                  <ul>
+                    {checks.map((label) => (
+                      <li key={label}>{label}</li>
+                    ))}
+                  </ul>
+                </div>
+              </details>
+            ) : null}
+          </span>
           {rating === "New" ? (
             <span className="new">New</span>
           ) : rating ? (
             <RatingLine listing={listing} className="meta" />
           ) : null}
           <span className="where">
+            <WhereIcon mobile={listing.mode === "mobile"} />
             {listing.mode === "mobile" ? (
               <>
-                Comes to you
+                <b>Comes to you</b>
                 {matched ? (
                   <>
                     {" · "}
@@ -187,9 +277,11 @@ export function ListingCard({
               </>
             ) : (
               <>
-                {listing.mode === "both"
-                  ? "Visit or comes to you"
-                  : "Visit them"}
+                <b>
+                  {listing.mode === "both"
+                    ? "Visit or comes to you"
+                    : "Visit them"}
+                </b>
                 {" · "}
                 {listing.metro}
                 {distance ? (
@@ -207,21 +299,7 @@ export function ListingCard({
             {extra ? <span className="chip outline">{extra}</span> : null}
           </span>
         </span>
-      </a>
-      {checks.length > 0 ? (
-        <details className="cx-verified">
-          <summary>
-            <span aria-hidden="true">✓</span> Verified{" "}
-            <span className="count">{checks.length}</span>
-            <span className="sr-only"> checks</span>
-          </summary>
-          <ul>
-            {checks.map((label) => (
-              <li key={label}>{label}</li>
-            ))}
-          </ul>
-        </details>
-      ) : null}
+      </div>
       {SAVED_LISTINGS_ENABLED ? (
         <button
           type="button"
