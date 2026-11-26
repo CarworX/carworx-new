@@ -10,7 +10,7 @@ All businesses, suburbs and ratings are synthetic. The photos are generic Unspla
 |---|---|---|
 | A | Photo with status overlay | The status sits on the photo, so the eye lands on it first, and the photo keeps the whole top half. |
 | B | Photo plus a clean info stack | Nothing covers the photo and every fact has its own line with an icon. Easiest to scan and to read with a screen reader. |
-| C | Compact horizontal card | About half the height of A or B, so about twice as many businesses fit on a phone screen. Best for long result lists. |
+| C | Compact horizontal card | About two-thirds the height of A or B, so more businesses fit on a phone screen. Best for long result lists. |
 | D | Status strip (recommended) | The name on the photo reads like a shopfront sign, and a full-width tinted strip shows at a glance whether it is open now. |
 
 PNGs (2x, 256 colours) in [`png/`](png/): `{a,b,c,d}-desktop-1280.png` (3 per row) and `{a,b,c,d}-mobile-390.png` (three phone screens of the same list).
