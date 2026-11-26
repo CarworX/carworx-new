@@ -19,6 +19,7 @@ import {
   safeReturnTo,
 } from "../../server/security/redirect";
 import { useState, useSyncExternalStore } from "react";
+import { ConsentCheckbox } from "../../ui/Field";
 import { AuthPage, CsrfField, EmailField, Notice, PasswordField } from "../ui";
 import { GoogleButton } from "../GoogleButton";
 import { ACCOUNT_TERMS_VERSION } from "../account-terms.server";
@@ -181,21 +182,15 @@ export default function SignUp({
         <input type="hidden" name="returnTo" value={loaderData.returnTo} />
         <EmailField />
         <PasswordField autoComplete="new-password" />
-        <p>
-          <input
-            id="consent"
-            name="consent"
-            type="checkbox"
-            required
-            checked={agreed}
-            onChange={(event) => {
-              setAgreed(event.currentTarget.checked);
-            }}
-          />
-          <label htmlFor="consent">
-            I agree to the CarworX terms of use and privacy notice.
-          </label>
-        </p>
+        <ConsentCheckbox
+          name="consent"
+          required
+          onChange={(checked) => {
+            setAgreed(checked);
+          }}
+        >
+          I agree to the CarworX terms of use and privacy notice.
+        </ConsentCheckbox>
         <button className="cx-btn primary wide" type="submit" disabled={gated}>
           Create account
         </button>

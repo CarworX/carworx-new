@@ -32,12 +32,6 @@ function AuthPanel({
   return (
     <main className="cx-canvas auth-page">
       <div className="auth-panel">
-        <a className="auth-brand" href="/" aria-label="CarworX home">
-          <img
-            src="/assets/core/carworx-lockup-horizontal-ink.svg"
-            alt="CarworX"
-          />
-        </a>
         <div className="auth-card">
           <h1>{title}</h1>
           {children}

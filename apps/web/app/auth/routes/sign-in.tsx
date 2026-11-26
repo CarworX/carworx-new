@@ -13,6 +13,7 @@ import { authRequest, getSignedIn } from "../session.server";
 import { safeReturnTo } from "../../server/security/redirect";
 import { GoogleButton } from "../GoogleButton";
 import { exchangeGoogle, googleButton, startGoogle } from "../google.server";
+import { ConsentCheckbox } from "../../ui/Field";
 import { AuthPage, CsrfField, EmailField, Notice, PasswordField } from "../ui";
 import type { Route } from "./+types/sign-in";
 
@@ -157,20 +158,14 @@ export default function SignIn({
       <Form id="google-sign-in" method="post" reloadDocument>
         <CsrfField token={loaderData.csrf} />
         <input type="hidden" name="returnTo" value={loaderData.returnTo} />
-        <p>
-          <input
-            id="sign-in-consent"
-            name="consent"
-            type="checkbox"
-            checked={agreed}
-            onChange={(event) => {
-              setAgreed(event.currentTarget.checked);
-            }}
-          />
-          <label htmlFor="sign-in-consent">
-            I agree to the CarworX terms of use and privacy notice.
-          </label>
-        </p>
+        <ConsentCheckbox
+          name="consent"
+          onChange={(checked) => {
+            setAgreed(checked);
+          }}
+        >
+          I agree to the CarworX terms of use and privacy notice.
+        </ConsentCheckbox>
         <GoogleButton
           formId="google-sign-in"
           options={loaderData.google}
