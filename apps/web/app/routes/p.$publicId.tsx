@@ -35,7 +35,7 @@ import { EnquiryGate, useEnquiryDraft } from "../sites/EnquiryGate";
 import coverCss from "../sites/cover.css?url";
 import gateCss from "../sites/gate.css?url";
 import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
-import { reviewRatingText } from "../ui/public/ListingResult";
+import { RatingLine, reviewRatingText } from "../ui/public/ListingResult";
 import { HumanCheck } from "../ui/public/HumanCheck";
 import { rememberView } from "../home/recent";
 import type { Route } from "./+types/p.$publicId";
@@ -246,7 +246,17 @@ export default function ListingPage({
         />
       ) : null}
       <p className="lead">{listing.description}</p>
-      {rating && <p className="muted">{rating}</p>}
+      {rating && (
+        <p className="muted">
+          <RatingLine listing={listing} />
+          {listing.rating_count ? (
+            <>
+              {" · "}
+              <a href="#reviews">Read reviews</a>
+            </>
+          ) : null}
+        </p>
+      )}
       <div className="bar">
         {listing.verification_labels.map((label) => (
           <span key={label} className="tag green">

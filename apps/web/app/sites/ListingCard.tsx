@@ -1,6 +1,7 @@
 import "./cover.css";
 import { topCategoryOf } from "../catalogue/taxonomy";
 import {
+  RatingLine,
   reviewRatingText,
   whereText,
   type ListingSummary,
@@ -52,7 +53,7 @@ export function ListingCard({
       </span>
       <span className="body">
         <h3>{listing.display_name}</h3>
-        {rating && <span className="meta">{rating}</span>}
+        {rating && <RatingLine listing={listing} className="meta" />}
         {/* The labels say exactly what CarworX checked: shown as written. */}
         {listing.verification_labels.map((label) => (
           <span key={label} className="cx-badge ok">
