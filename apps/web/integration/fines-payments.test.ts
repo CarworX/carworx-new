@@ -75,7 +75,10 @@ describe("staging fines payments", () => {
     const record = `select status,cents,coalesce(receipt_number,'') from public.fines_payments where id='${id}'`;
     expect(sqlRows(record)).toEqual(["created|45000|"]);
     const checkoutPage = (await browser.send(location + "&status=paid")).body;
-    expect(checkoutPage).toContain("Awaiting issuer confirmation");
+    // A created payment shows the checkout state; nothing is "paid" until the issuer confirms.
+    expect(checkoutPage).toContain(
+      "Checkout started. Waiting for the payment outcome.",
+    );
     expectNeutralCopy(checkoutPage);
 
     const callback = await sendRaw(
