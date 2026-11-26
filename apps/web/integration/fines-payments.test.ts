@@ -55,7 +55,11 @@ describe("staging fines payments", () => {
     expect(verify.status).toBe(200);
     expectNeutralCopy(verify.body);
     expect(verify.body).not.toContain("Speeding notice");
-    expect((await browser.send(path, checkout)).status).toBe(403);
+    const refused = await browser.send(path, checkout);
+    expect(
+      refused.status,
+      `${refused.status} ${refused.location ?? ""} ${refused.body.slice(0, 200)}`,
+    ).toBe(403);
 
     approve(user.id);
     const results = (await browser.send(path)).body;
