@@ -1,11 +1,15 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
+grant usage on schema extensions to catalogue_server;
+grant execute on all functions in schema extensions to catalogue_server;
+grant catalogue_server to postgres with set true, inherit false;
 select plan(8);
 
 insert into public.reviews(listing_public_id,organisation_id,author_display,rating,body)
   values ('ca7c1000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-0000000000a1',
     'Mila W.',4,'A fictional mobile provider review.');
+set local role catalogue_server;
 select is((select count(*)::int from api.search_listings(null,null,null,null,null,'all',null,null,20,null,true)),1,
   'comes-to-you browse excludes fixed premises');
 select is((select rating_avg from api.search_listings(null,null,null,null,null,'all',null,null,20,null,true)),4.0::numeric,
@@ -19,10 +23,15 @@ select is((select count(*)::int from api.search_listings(-26.2,28.04,null,null,2
   'the mobile filter excludes the fixed group');
 select is((select count(*)::int from api.search_listings(null,null,null,null,null,'all',null,null,20,null)),2,
   'the prior search signature retains unfiltered browse');
-select ok(not has_function_privilege('anon','api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text,boolean)','execute'),
+reset role;
+select ok((select not has_function_privilege('anon',p.oid,'execute')
+    and has_function_privilege('catalogue_server',p.oid,'execute')
+  from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+  where n.nspname='api' and p.proname='search_listings' and p.pronargs=11),
   'the search overload remains private to the catalogue login');
-select is(pg_get_userbyid((select proowner from pg_proc where oid =
-    'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text,boolean)'::regprocedure)),
-  'listing_projection'::name,'new search wrapper runs under the restricted projection owner');
+select is((select pg_get_userbyid(p.proowner)::text
+  from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+  where n.nspname='api' and p.proname='search_listings' and p.pronargs=11),
+  'listing_projection','new search wrapper runs under the restricted projection owner');
 select * from finish();
 rollback;
