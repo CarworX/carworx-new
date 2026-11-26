@@ -51,3 +51,41 @@ it("shows New for an unrated listing and the average and count for a rated one",
     ),
   ).toContain("4.5 out of 5 · 2 reviews");
 });
+
+describe("where line (same rules as whereText)", () => {
+  const mobile = { ...listing, mode: "mobile", metro: "Gauteng" };
+
+  it("a mobile card shows the region and claims no coverage when browsing", () => {
+    const html = renderToStaticMarkup(<ListingCard listing={mobile} />);
+    expect(html).toContain('data-where="mobile"');
+    expect(html).toContain("Comes to you</b> · Gauteng");
+    expect(html).not.toContain("data-covers");
+    expect(html).not.toContain("Covers your area");
+  });
+
+  it("claims coverage only for a result that passed a location search", () => {
+    const html = renderToStaticMarkup(<ListingCard listing={mobile} matched />);
+    expect(html).toContain("Comes to you</b> · Gauteng");
+    expect(html).toContain("data-covers");
+    expect(html).toContain("Covers your area");
+  });
+
+  it("a both-business found by its service area has no distance and names its premises", () => {
+    const both = { ...listing, mode: "both", metro: "Synthetic Cape" };
+    expect(renderToStaticMarkup(<ListingCard listing={both} />)).toContain(
+      "Comes to you</b> · also has premises in Synthetic Cape",
+    );
+    const html = renderToStaticMarkup(<ListingCard listing={both} matched />);
+    expect(html).toContain("data-covers");
+    expect(html).toContain("also has premises in Synthetic Cape");
+    expect(html).not.toContain(" km");
+  });
+
+  it("a both-business with a distance reads as a premises card", () => {
+    const html = renderToStaticMarkup(
+      <ListingCard listing={{ ...listing, mode: "both", distance_km: 3.8 }} />,
+    );
+    expect(html).toContain("Visit or comes to you");
+    expect(html).toContain("3.8 km");
+  });
+});

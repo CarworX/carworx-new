@@ -40,8 +40,13 @@ export function RatingLine({
   return (
     <span className={className}>
       {rated ? (
-        <span className="stars" aria-hidden="true">
-          {ratingStars(listing.rating_avg ?? 0)}{" "}
+        <span className="rating-stars" aria-hidden="true">
+          <span className="on">
+            {"★".repeat(Math.round(listing.rating_avg ?? 0))}
+          </span>
+          <span className="off">
+            {"★".repeat(5 - Math.round(listing.rating_avg ?? 0))}
+          </span>{" "}
         </span>
       ) : null}
       {text}
