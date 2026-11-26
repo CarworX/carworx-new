@@ -28,7 +28,7 @@ These terms are an agreement between you and [CarworX legal name, OQ-L1] ("Carwo
 
 - We list car-service businesses and help you find them by place and category.
 - We pass your enquiry to a provider when you ask us to.
-- We **don't** sell, perform or guarantee any car service during the free pilot, and we take no payment.
+- We **don't** sell, perform or guarantee any car service while CarworX is free to use, and we take no payment.
 - Provider pages are written by providers. We review applications, but we can't check everything.
 
 *Basis: CPA s41(1) and (3)(a): no false or misleading impression of CarworX's status or of a provider's "status, affiliation, connection, sponsorship or approval".*
