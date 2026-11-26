@@ -2,7 +2,12 @@ import { data } from "react-router";
 
 import { field } from "../auth/forms";
 import { throwRedirect } from "../auth/http.server";
-import { authRequest, getSignedIn } from "../auth/session.server";
+import {
+  authRequest,
+  getSignedIn,
+  signedInWithPendingTerms,
+  termsUrl,
+} from "../auth/session.server";
 import { CsrfField } from "../auth/ui";
 import { UUID } from "../server/providers/forms";
 import { INVITE_TOKEN, TEAM_PROBLEMS } from "../team/forms";
@@ -36,6 +41,14 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     // Drop the secret before rendering any page, following links or starting OAuth.
     return throwRedirect("/join", headers);
   }
+  // A signed-in person with pending account terms accepts the terms first, then
+  // comes back here to join (B-10 2b).
+  const pending = await signedInWithPendingTerms(request, context.security);
+  if (pending !== null)
+    throwRedirect(
+      termsUrl(request, pending.config.appOrigin, "/join"),
+      pending.headers,
+    );
   const signedIn = await getSignedIn(request, context.security);
   const headers = privateHeaders(signedIn?.headers ?? new Headers());
   return data(
@@ -49,6 +62,12 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params, context }: Route.ActionArgs) {
+  const pending = await signedInWithPendingTerms(request, context.security);
+  if (pending !== null)
+    throwRedirect(
+      termsUrl(request, pending.config.appOrigin, "/join"),
+      pending.headers,
+    );
   const signedIn = await getSignedIn(request, context.security);
   const headers = privateHeaders(
     signedIn?.headers ?? authRequest(request, context.security).headers,

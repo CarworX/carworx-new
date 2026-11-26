@@ -118,6 +118,14 @@ function cleanUp(address: string) {
  * address, signed in through the real form in a browser with the forms env.
  * The account is deleted when the test finishes.
  */
+/** Records account-terms consent as sign-up does, so a synthetic customer is not pending. */
+function acceptTerms(userId: string): void {
+  // The version must match ACCOUNT_TERMS_VERSION (app/auth/account-terms.server.ts).
+  sql(
+    `insert into public.consents (user_id, purpose, notice_version) values ('${userId}', 'account_terms', 'account-terms-v1')`,
+  );
+}
+
 async function customer(address: string, extra: Record<string, unknown> = {}) {
   const { data, error } = await admin.auth.admin.createUser({
     email: address,
@@ -125,6 +133,7 @@ async function customer(address: string, extra: Record<string, unknown> = {}) {
     email_confirm: true,
   });
   if (error !== null) throw new Error(`createUser failed: ${error.message}`);
+  acceptTerms(data.user.id);
   onTestFinished(async () => {
     sql(
       `delete from public.enquiries where sender_user_id = '${data.user.id}'`,
@@ -242,6 +251,7 @@ describe("enquiry on /p/:publicId", () => {
       password: PASSWORD,
       email_confirm: true,
     });
+    if (data.user) acceptTerms(data.user.id);
     onTestFinished(async () => {
       if (data.user) {
         sql(
@@ -293,6 +303,7 @@ describe("enquiry on /p/:publicId", () => {
       password: PASSWORD,
       email_confirm: true,
     });
+    if (data.user) acceptTerms(data.user.id);
     onTestFinished(async () => {
       if (data.user) await admin.auth.admin.deleteUser(data.user.id);
     });

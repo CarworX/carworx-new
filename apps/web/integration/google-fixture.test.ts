@@ -166,7 +166,7 @@ describe("Google account terms", () => {
   ] as const)(
     "Google %s with consent=%s and closing=%s records %s consent rows",
     async (grant, consent, closing, count) => {
-      const user = await createConfirmedUser("google-terms");
+      const user = await createConfirmedUser("google-terms", { terms: false });
       if (closing) {
         sqlRows(
           `insert into private.account_closures (user_id) values ('${user.id}')`,
