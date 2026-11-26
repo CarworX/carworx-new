@@ -171,7 +171,7 @@ revoke all on function api.search_listings(double precision,double precision,tex
   from public, anon, authenticated, service_role;
 grant execute on function api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text,boolean)
   to catalogue_server;
-grant create on schema api to listing_projection;
+grant usage, create on schema api to listing_projection;
 grant listing_projection to postgres with set true, inherit true;
 alter function api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text,boolean) owner to listing_projection;
 
@@ -209,5 +209,6 @@ language sql stable security definer set search_path = '' as $$
     s.verification_labels,s.distance_bucket,s.browse_rank
   from api.search_listings(p_lat,p_lng,p_service,p_category,p_radius,p_group,p_after_bucket,p_after_id,p_limit,p_q,false) s
 $$;
+alter function api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text) owner to listing_projection;
 grant listing_projection to postgres with set false, inherit false;
 revoke create on schema api from listing_projection;

@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
-select plan(7);
+select plan(8);
 
 insert into public.reviews(listing_public_id,organisation_id,author_display,rating,body)
   values ('ca7c1000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-0000000000a1',
@@ -21,5 +21,8 @@ select is((select count(*)::int from api.search_listings(null,null,null,null,nul
   'the prior search signature retains unfiltered browse');
 select ok(not has_function_privilege('anon','api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text,boolean)','execute'),
   'the search overload remains private to the catalogue login');
+select is(pg_get_userbyid((select proowner from pg_proc where oid =
+    'api.search_listings(double precision,double precision,text,text,integer,text,integer,uuid,integer,text,boolean)'::regprocedure)),
+  'listing_projection'::name,'new search wrapper runs under the restricted projection owner');
 select * from finish();
 rollback;
