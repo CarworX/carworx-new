@@ -84,7 +84,7 @@ export async function createIdentitySession(
         callback_method: "initiator",
         metadata: {},
       }),
-      redirect: "error",
+      redirect: "manual",
       signal: AbortSignal.timeout(8000),
     });
     if (!response.ok) {
