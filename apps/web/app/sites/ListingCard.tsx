@@ -41,6 +41,45 @@ function distanceText(listing: ListingSummary): string | null {
   return `${listing.distance_km.toFixed(1)} km`;
 }
 
+/** A full 12 px marker per state: filled dot, clock, slashed circle, hollow ring. */
+function StatusMarker({
+  kind,
+}: {
+  kind: ReturnType<typeof cardStatus>["kind"];
+}) {
+  return (
+    <svg
+      className="marker"
+      viewBox="0 0 12 12"
+      width="12"
+      height="12"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    >
+      {kind === "open" ? (
+        <circle cx="6" cy="6" r="5" fill="currentColor" stroke="none" />
+      ) : null}
+      {kind === "closing" ? (
+        <>
+          <circle cx="6" cy="6" r="5.25" />
+          <path d="M6 3.2V6l1.9 1.2" />
+        </>
+      ) : null}
+      {kind === "closed" ? (
+        <>
+          <circle cx="6" cy="6" r="5.25" />
+          <path d="M2.4 9.6 9.6 2.4" />
+        </>
+      ) : null}
+      {kind === "none" ? <circle cx="6" cy="6" r="5.25" /> : null}
+    </svg>
+  );
+}
+
 /**
  * The open status on the photo: a marker drawn as a shape (filled, half, slashed,
  * hollow), then the words. Colour is never the only cue.
@@ -54,20 +93,19 @@ function StatusPill({
 }) {
   return (
     <span className={`cx-openstate ${status.kind}`}>
-      <span className="marker" aria-hidden="true" />
-      {statusLabel(status, day)}
+      <StatusMarker kind={status.kind} />
+      <span className="label">{statusLabel(status, day)}</span>
     </span>
   );
 }
 
 /**
- * The service artwork for a business without a photo. Only glass has a line
- * illustration in the repo that matches the mockup; the others show the tint
- * and initials until their illustrations are exported.
+ * The service artwork for a business without a photo: the Studio object for its
+ * top-level category (repairs covers panel and paint, auto electrical and mobile).
  */
 export function illustrationFor(categorySlug: string): string | null {
   const key = topCategoryOf(categorySlug)?.key;
-  if (key !== "glass") return null;
+  if (!key) return null;
   return SERVICES.find((s) => s.key === key)?.object ?? null;
 }
 
@@ -131,7 +169,11 @@ export function ListingCard({
         </span>
         <span className="body">
           <h3>{listing.display_name}</h3>
-          {rating && <RatingLine listing={listing} className="meta" />}
+          {rating === "New" ? (
+            <span className="new">New</span>
+          ) : rating ? (
+            <RatingLine listing={listing} className="meta" />
+          ) : null}
           <span className="where">
             {listing.mode === "mobile" ? (
               <>

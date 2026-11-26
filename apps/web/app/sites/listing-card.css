@@ -8,7 +8,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  border-radius: 22px;
+  border-radius: 16px;
   background: var(--surface);
   box-shadow:
     inset 0 0 0 1px var(--hair),
@@ -20,13 +20,13 @@
   flex-direction: column;
   color: inherit;
   text-decoration: none;
-  border-radius: 22px;
+  border-radius: 16px;
 }
 .cx-lcard-link::after {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 22px;
+  border-radius: 16px;
 }
 .cx-lcard:focus-within {
   outline: none;
@@ -45,7 +45,7 @@
   height: auto;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border-radius: 22px 22px 0 0;
+  border-radius: 16px 16px 0 0;
   background: linear-gradient(
     135deg,
     var(--sky),
@@ -85,21 +85,30 @@
   object-fit: cover;
 }
 .cx-lcard .cover img.obj {
-  width: 72px;
-  height: 72px;
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  width: 46%;
+  max-width: 180px;
+  height: auto;
+  transform: translateY(-50%) rotate(-6deg);
+  filter: drop-shadow(0 12px 18px rgba(42, 84, 212, 0.22));
 }
 /* With no photo, the initials sit bottom-left on a white tile (as in Option A). */
 .cx-lcard .cover .initials {
   position: absolute;
-  left: 14px;
-  bottom: 14px;
-  min-width: 48px;
-  padding: 10px 12px;
-  border-radius: 12px;
+  left: 16px;
+  bottom: 16px;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   background: var(--surface);
-  font: 600 18px var(--font-sans);
-  color: var(--ink);
-  text-align: center;
+  box-shadow: 0 4px 12px rgba(42, 84, 212, 0.18);
+  font: 650 22px var(--font-sans);
+  letter-spacing: -0.02em;
+  color: #2a54d4;
 }
 
 /* The status pill, top-left, on the photo. Colour plus a shape plus words. */
@@ -107,14 +116,15 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  max-width: calc(100% - 124px);
+  max-width: calc(100% - 132px);
 }
 .cx-openstate {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   max-width: 100%;
-  padding: 6px 12px;
+  line-height: 1.2;
+  padding: 6px 11px 6px 9px;
   border-radius: var(--radius-pill);
   background: var(--surface);
   box-shadow: 0 1px 2px rgba(13, 15, 18, 0.12);
@@ -125,34 +135,26 @@
 }
 .cx-openstate .marker {
   flex: none;
+  display: block;
   width: 12px;
   height: 12px;
-  border-radius: 50%;
-  box-sizing: border-box;
 }
-.cx-openstate.open .marker {
-  background: currentColor;
+.cx-openstate .label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.cx-openstate.closing .marker {
-  border: 1.5px solid currentColor;
-  background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+.cx-openstate.open {
+  color: #1e6b45;
 }
-.cx-openstate.closed .marker {
-  position: relative;
-  border: 1.5px solid currentColor;
+.cx-openstate.closing {
+  color: #8a5300;
 }
-.cx-openstate.closed .marker::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: -1px;
-  width: 1.5px;
-  height: 14px;
-  background: currentColor;
-  transform: translateX(-50%) rotate(45deg);
+.cx-openstate.closed {
+  color: #a61b1b;
 }
-.cx-openstate.none .marker {
-  border: 1.5px dashed currentColor;
+.cx-openstate.none {
+  color: #5b6470;
 }
 
 /* Verified: a disclosure, top-right, above the link. */
@@ -207,20 +209,20 @@
 /* Body: name, rating, where, then chips. */
 .cx-lcard .body {
   display: grid;
-  gap: 6px;
-  padding: 12px 14px 14px;
+  gap: 5px;
+  padding: 14px 16px 16px;
 }
 .cx-lcard h3 {
   margin: 0;
-  font: 600 17px var(--font-sans);
-  letter-spacing: -0.01em;
+  font: 600 18px/1.25 var(--font-sans);
+  letter-spacing: -0.015em;
 }
 .cx-lcard .meta {
-  font: 400 13px var(--font-sans);
+  font: 400 14px var(--font-sans);
   color: var(--muted);
 }
 .cx-lcard .where {
-  font: 500 13px var(--font-sans);
+  font: 500 14px var(--font-sans);
   color: var(--graphite);
 }
 .cx-lcard .card-chips {
@@ -231,9 +233,9 @@
 .cx-lcard .chip {
   padding: 4px 10px;
   border-radius: var(--radius-pill);
-  background: var(--frost, var(--canvas));
-  font: 500 12px var(--font-sans);
-  color: var(--graphite);
+  background: #f2f1ee;
+  font: 500 14px var(--font-sans);
+  color: #5b6470;
 }
 .cx-lcard .chip.outline {
   background: transparent;
@@ -271,4 +273,13 @@
 }
 .rating-stars .off {
   color: #b8b4aa;
+}
+
+.cx-lcard .new {
+  justify-self: start;
+  padding: 1px 9px;
+  border-radius: var(--radius-pill);
+  background: #e3eaff;
+  font: 600 13px var(--font-sans);
+  color: #2a54d4;
 }
