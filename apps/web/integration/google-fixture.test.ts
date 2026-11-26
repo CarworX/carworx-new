@@ -157,14 +157,21 @@ describe("FIXTURE Google sign-in: callback outcomes", () => {
 // Fake only Google's exchange. The session and consent write use local Supabase.
 describe("Google account terms", () => {
   it.each([
-    ["pkce", true, "1"],
-    ["pkce", false, "0"],
-    ["id_token", true, "1"],
-    ["id_token", false, "0"],
+    ["pkce", true, false, "1"],
+    ["pkce", false, false, "0"],
+    ["id_token", true, false, "1"],
+    ["id_token", false, false, "0"],
+    ["pkce", true, true, "0"],
+    ["id_token", true, true, "0"],
   ] as const)(
-    "records terms for %s only with consent (%s)",
-    async (grant, consent, count) => {
+    "Google %s with consent=%s and closing=%s records %s consent rows",
+    async (grant, consent, closing, count) => {
       const user = await createConfirmedUser("google-terms");
+      if (closing) {
+        sqlRows(
+          `insert into private.account_closures (user_id) values ('${user.id}')`,
+        );
+      }
       const realFetch = globalThis.fetch;
       const session = await realFetch(
         `${stack.apiUrl}/auth/v1/token?grant_type=password`,
@@ -211,6 +218,7 @@ describe("Google account terms", () => {
           const callback = await browser.send(
             "/auth/callback?code=synthetic-code",
           );
+          expect(callback.status).toBe(302);
           expect(callback.location).toBe("/account");
         } else {
           const reply = await browser.send("/auth/sign-in", {
@@ -221,8 +229,18 @@ describe("Google account terms", () => {
               ...(consent ? { consent: "on" } : {}),
             },
           });
-          if (consent) expect(reply.location).toBe("/account");
-          else expect(reply.status).toBe(400);
+          if (consent) {
+            expect(reply.status).toBe(302);
+            expect(reply.location).toBe("/account");
+          } else expect(reply.status).toBe(400);
+        }
+        if (closing) {
+          const account = await browser.send("/account");
+          expect(account.status).toBe(302);
+          expect(account.location).toBe("/account/closing");
+          const page = await browser.send("/account/closing");
+          expect(page.status).toBe(200);
+          expect(page.body).toContain("Reinstate my account");
         }
         expect(
           sqlRows(

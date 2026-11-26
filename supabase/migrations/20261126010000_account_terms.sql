@@ -16,9 +16,9 @@ language plpgsql security definer set search_path = '' as $$
 declare v_user uuid := auth.uid();
 begin
   perform from auth.users where id = v_user for update;
-  if not found or exists (select from private.account_closures where user_id = v_user) then
-    raise exception 'not_allowed' using errcode = '42501';
-  end if;
+  if not found then raise exception 'not_allowed' using errcode = '42501'; end if;
+  -- A closing account may sign in to reinstate, without writing consent.
+  if exists (select from private.account_closures where user_id = v_user) then return; end if;
   if p_version is distinct from 'account-terms-v1' then
     raise exception 'unknown_terms_version' using errcode = '22023';
   end if;
