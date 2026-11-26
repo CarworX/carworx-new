@@ -21,6 +21,7 @@ import { createIdentitySession } from "../server/identity/didit.server";
 import { Button } from "../ui/Button";
 import { ConsentCheckbox } from "../ui/Field";
 import { StatusNote } from "../ui/Note";
+import { useHydrated } from "../ui/useHydrated";
 import { PublicShell } from "../ui/public/PublicShell";
 import type { Route } from "./+types/fines.verify";
 
@@ -84,6 +85,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 /** The consent box and the start button; the button waits for the box. */
 function StartForm({ csrf, label }: { csrf: string; label: string }) {
   const [ticked, setTicked] = useState(false);
+  const hydrated = useHydrated();
   return (
     <form method="post" className="cx-verify-start">
       <CsrfField token={csrf} />
@@ -98,7 +100,12 @@ function StartForm({ csrf, label }: { csrf: string; label: string }) {
         I agree that Didit may check my ID and selfie for CarworX, and that
         CarworX may use the result to look up my traffic fines.
       </ConsentCheckbox>
-      <Button type="submit" variant="primary" block disabled={!ticked}>
+      <Button
+        type="submit"
+        variant="primary"
+        block
+        disabled={hydrated && !ticked}
+      >
         {label}
       </Button>
       {!ticked ? (
@@ -117,7 +124,7 @@ export default function VerifyFines({
 
   // While the check runs, ask the server again; the webhook decides the result.
   useEffect(() => {
-    if (view.kind !== "checking") return;
+    if (view.kind !== "checking" && view.kind !== "in_review") return;
     const timer = setInterval(() => {
       void revalidator.revalidate();
     }, POLL_MS);
@@ -198,8 +205,8 @@ export default function VerifyFines({
             <h1 id="verify-h">Checking…</h1>
             <p>
               {firstName !== null ? `Thanks, ${firstName}. ` : "Thanks. "}
-              This usually takes under a minute. You can leave this page;
-              we&apos;ll email you when it&apos;s done.
+              This usually takes under a minute. This page updates by itself, so
+              you can leave it and come back to see the result.
             </p>
             <ol className="cx-verify-steps" aria-label="Progress">
               <li>
@@ -246,7 +253,7 @@ export default function VerifyFines({
               </li>
               <li>
                 <strong>Our team decides</strong>
-                <span>We&apos;ll email you either way.</span>
+                <span>You&apos;ll see the result on this page.</span>
               </li>
             </ol>
           </>
