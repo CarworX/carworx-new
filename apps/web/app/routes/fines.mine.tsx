@@ -174,6 +174,14 @@ function PaymentBlock({
         <StatusNote tone="ok" title="Payment confirmed by the issuer.">
           Receipt {view.receipt}. Keep it for your records.
         </StatusNote>
+      ) : view.kind === "checkout" ? (
+        <StatusNote
+          tone="info"
+          title="Checkout started. Waiting for the payment outcome."
+        >
+          Nothing has been paid yet. Finish on the payment partner&apos;s page;
+          this page updates once the outcome is in.
+        </StatusNote>
       ) : view.kind === "awaiting" ? (
         <StatusNote
           tone="info"
@@ -187,7 +195,7 @@ function PaymentBlock({
           {view.text}
         </StatusNote>
       )}
-      {view.kind === "awaiting" ? (
+      {view.kind === "awaiting" || view.kind === "checkout" ? (
         // Staging only: this form exists where the sandbox provider is on.
         <Form method="post">
           <CsrfField token={csrf} />
@@ -219,7 +227,7 @@ export default function MyFines({
   const { csrf, view, checkedAt, payment } = loaderData;
   return (
     <PublicShell signedIn>
-      <section className="cx-fines" aria-labelledby="fines-h">
+      <section className="cx-fines-page" aria-labelledby="fines-h">
         <h1 id="fines-h">Your fines</h1>
         {actionData?.problem ? (
           <StatusNote tone="err" title="That didn't work.">

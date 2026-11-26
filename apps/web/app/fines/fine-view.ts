@@ -114,6 +114,9 @@ export function fineById(result: LookupResult, id: string): FineRow | null {
 
 /** What a payment's status says to show. */
 export type PaymentView =
+  /** The checkout was started; no payment outcome has come back yet. */
+  | { kind: "checkout" }
+  /** Payment outcome received; the issuer has not confirmed settlement. */
   | { kind: "awaiting" }
   | { kind: "paid"; receipt: string }
   | { kind: "stopped"; text: string };
@@ -127,8 +130,8 @@ export function paymentView(
   receipt: string | null,
 ): PaymentView {
   if (status === "paid" && receipt !== null) return { kind: "paid", receipt };
-  if (status === "created" || status === "pending_issuer")
-    return { kind: "awaiting" };
+  if (status === "created") return { kind: "checkout" };
+  if (status === "pending_issuer") return { kind: "awaiting" };
   if (status === "cancelled")
     return {
       kind: "stopped",

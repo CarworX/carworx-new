@@ -114,7 +114,7 @@ describe("paymentView", () => {
   });
 
   it("waits while the payment or the issuer is pending", () => {
-    expect(paymentView("created", null)).toEqual({ kind: "awaiting" });
+    expect(paymentView("created", null)).toEqual({ kind: "checkout" });
     expect(paymentView("pending_issuer", null)).toEqual({ kind: "awaiting" });
   });
 

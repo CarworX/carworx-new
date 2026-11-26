@@ -146,6 +146,13 @@ describe("/ home: browse first (D-097)", () => {
       expect(html).not.toContain(gone);
   });
 
+  it("keeps the official fines links as a fallback in the fines band (D-003)", () => {
+    expect(html).toContain("Prefer to check yourself?");
+    expect(html).toContain('href="https://rtmc.co.za/"');
+    expect(html).toContain('href="https://www.rtia.co.za/"');
+    expect(html).toContain("Link checked 2026-11-11.");
+  });
+
   it("uses the free-to-list copy: no pilot, R0 or CarworX fee wording (B-12)", () => {
     expect(html).toContain("Free to browse · Free to list");
     expect(html).toContain("Free to list.");
@@ -162,7 +169,7 @@ describe("/ home: browse first (D-097)", () => {
     const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1] ?? "");
     for (const href of hrefs)
       expect(href).toMatch(
-        /^(\/|#[a-z0-9-]+|\/(search(\/location|\?category=[a-z-]+)?|fines|fines\/mine|account|provider|support|privacy|terms|auth\/sign-in(\?returnTo=%2Ffines%2Fmine)?|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36})|\/#(services|fines|business))$/,
+        /^(https:\/\/(rtmc\.co\.za|www\.rtia\.co\.za)\/|\/|#[a-z0-9-]+|\/(search(\/location|\?category=[a-z-]+)?|fines|fines\/mine|account|provider|support|privacy|terms|auth\/sign-in(\?returnTo=%2Ffines%2Fmine)?|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36})|\/#(services|fines|business))$/,
       );
   });
 
