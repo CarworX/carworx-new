@@ -217,3 +217,74 @@ export async function reportReview(
   if (result.error) return reviewOutcomeOf(result.error);
   return { ok: true, value: true };
 }
+
+/** One review in the moderation queue, with its unresolved reports. */
+export interface AdminReviewRow {
+  id: string;
+  listing_public_id: string;
+  author_display: string;
+  rating: number;
+  body: string;
+  status: string;
+  hidden_reason: string | null;
+  report_count: number;
+  first_reported_at: string;
+}
+
+export type ModerationDecision = "hide" | "restore" | "dismiss";
+
+/** Reported reviews, oldest report first. Platform admins at aal2 only (the RPC checks). */
+export async function adminReviewQueue(
+  supabase: SupabaseClient,
+): Promise<ReviewOutcome<AdminReviewRow[]>> {
+  const result: RpcResult = await supabase.rpc("admin_review_queue");
+  if (result.error) return reviewOutcomeOf(result.error);
+  return { ok: true, value: rows(result.data) as AdminReviewRow[] };
+}
+
+/** Hide, restore or dismiss a reported review, with the reason both sides are told. */
+export async function adminModerateReview(
+  supabase: SupabaseClient,
+  id: string,
+  decision: ModerationDecision,
+  reason: string,
+): Promise<ReviewOutcome<true>> {
+  const result: RpcResult = await supabase.rpc("admin_moderate_review", {
+    p_id: id,
+    p_decision: decision,
+    p_reason: reason,
+  });
+  if (result.error) return reviewOutcomeOf(result.error);
+  return { ok: true, value: true };
+}
+
+/** Visible reviews across the given listings, for an owner's reply box. */
+export async function reviewsForListings(
+  supabase: SupabaseClient,
+  listings: readonly string[],
+): Promise<ReviewOutcome<Review[]>> {
+  if (listings.length === 0) return { ok: true, value: [] };
+  const result: RpcResult = await supabase
+    .from("reviews")
+    .select(
+      "id,listing_public_id,author_display,rating,body,service_slug,created_at,edited_at",
+    )
+    .in("listing_public_id", [...listings])
+    .eq("status", "visible")
+    .order("created_at", { ascending: false })
+    .limit(REVIEW_PAGE);
+  if (result.error) return reviewOutcomeOf(result.error);
+  const reviews = rows(result.data) as Omit<Review, "reply">[];
+  const replies = await repliesFor(
+    supabase,
+    reviews.map((r) => r.id),
+  );
+  if (!replies.ok) return replies;
+  return {
+    ok: true,
+    value: reviews.map((r) => ({
+      ...r,
+      reply: replies.value.get(r.id) ?? null,
+    })),
+  };
+}

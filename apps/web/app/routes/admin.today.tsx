@@ -153,7 +153,11 @@ export default function AdminToday({ loaderData }: Route.ComponentProps) {
       value: counts.pending_identity_reviews,
       href: "/admin/id-checks",
     },
-    { title: "Reported reviews", value: counts.reported_reviews },
+    {
+      title: "Reported reviews",
+      value: counts.reported_reviews,
+      href: "/admin/reviews",
+    },
   ];
   return (
     <AdminShell title="Today">
