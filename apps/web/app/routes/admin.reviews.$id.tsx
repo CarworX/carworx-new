@@ -51,11 +51,11 @@ export async function action({ request, context, params }: Route.ActionArgs) {
       { problem: "That decision isn't available." },
       { status: 400, headers: admin.headers },
     );
-  if (reason.length < 3 || reason.length > 240)
+  if (reason.length < 10 || reason.length > 500)
     return data(
       {
         problem:
-          "Give a reason of 3 to 240 characters. Both sides are told it.",
+          "Give a reason of 10 to 500 characters. Both sides are told it.",
       },
       { status: 400, headers: admin.headers },
     );
@@ -106,7 +106,7 @@ export default function ReportedReview({
           <CsrfField token={csrf} />
           <label>
             Reason for your decision
-            <textarea name="reason" required minLength={3} maxLength={240} />
+            <textarea name="reason" required minLength={10} maxLength={500} />
           </label>
           <Button type="submit" name="intent" value="dismiss" variant="outline">
             Keep review

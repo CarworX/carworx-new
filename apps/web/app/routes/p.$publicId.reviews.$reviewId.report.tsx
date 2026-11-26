@@ -2,7 +2,7 @@
  * /p/:publicId/reviews/:reviewId/report: report a review (A8). The reviewer is
  * never told who reported it. Signed out, the visitor goes to sign-in first.
  */
-import { data } from "react-router";
+import { data, Link } from "react-router";
 
 import { throwRedirect } from "../auth/http.server";
 import { getSignedIn } from "../auth/session.server";
@@ -11,6 +11,8 @@ import {
   reviewFailureText,
 } from "../server/reviews/reviews.server";
 import { reportText } from "../reviews/report";
+import { PublicShell } from "../ui/public/PublicShell";
+import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/p.$publicId.reviews.$reviewId.report";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -43,4 +45,24 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       { status: 409, headers: signedIn.headers },
     );
   throwRedirect(`/p/${params.publicId}?reported=1#reviews`, signedIn.headers);
+}
+
+/** A failed report comes back here: say why, and let the visitor go back and correct it. */
+export default function ReportProblem({
+  actionData,
+  params,
+}: Route.ComponentProps) {
+  return (
+    <PublicShell signedIn>
+      <section className="card" aria-labelledby="report-h">
+        <h1 id="report-h">Report this review</h1>
+        <StatusNote tone="err" title="That report didn't send.">
+          {actionData?.problem ?? "Try again in a moment."}
+        </StatusNote>
+        <p>
+          <Link to={`/p/${params.publicId}#reviews`}>Back to the reviews</Link>
+        </p>
+      </section>
+    </PublicShell>
+  );
 }
