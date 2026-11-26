@@ -27,7 +27,7 @@ const ROW = [
   { key: "repairs", label: "Repairs", to: "/c/repairs-and-maintenance" },
   { key: "glass", label: "Glass", to: "/c/glass-repair-and-replacement" },
   { key: "tyres", label: "Tyres", to: "/c/tyres-and-wheel-alignment" },
-  { key: "fines", label: "Fines", to: "/fines" },
+  { key: "fines", label: "Fines", to: "/fines/mine" },
 ] as const;
 
 /**
@@ -174,7 +174,7 @@ function FinesCard() {
         <h2 id="fines-h">Check your traffic fines</h2>
         <p>Confirm your ID once, then see and pay fines here.</p>
       </div>
-      <Link className="cx-btn" to="/fines">
+      <Link className="cx-btn" to="/fines/verify">
         Get started
       </Link>
     </section>

@@ -75,7 +75,7 @@ describe("CustomerHome markup", () => {
     expect(html).toContain("What does your car need?");
     expect(html).toContain('action="/search"');
     expect(html).toContain('href="/c/wash-and-detailing"');
-    expect(html).toContain('href="/fines"');
+    expect(html).toContain('href="/fines/mine"');
   });
 
   it("shows the not-verified fines state and no fine count", () => {

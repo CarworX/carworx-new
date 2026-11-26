@@ -467,7 +467,7 @@ function FinesBand() {
           </li>
         </ol>
         <div className="biz-cta">
-          <a className="pill" href="/auth/sign-in?returnTo=%2Ffines">
+          <a className="pill" href="/auth/sign-in?returnTo=%2Ffines%2Fmine">
             <span>Sign in to see your fines</span>
           </a>
           <small>Free to check. You pay only the fine.</small>

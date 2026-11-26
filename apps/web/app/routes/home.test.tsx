@@ -162,7 +162,7 @@ describe("/ home: browse first (D-097)", () => {
     const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1] ?? "");
     for (const href of hrefs)
       expect(href).toMatch(
-        /^(\/|#[a-z0-9-]+|\/(search(\/location|\?category=[a-z-]+)?|fines|fines\/mine|account|provider|support|privacy|terms|auth\/sign-in(\?returnTo=%2Ffines)?|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36})|\/#(services|fines|business))$/,
+        /^(\/|#[a-z0-9-]+|\/(search(\/location|\?category=[a-z-]+)?|fines|fines\/mine|account|provider|support|privacy|terms|auth\/sign-in(\?returnTo=%2Ffines%2Fmine)?|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36})|\/#(services|fines|business))$/,
       );
   });
 

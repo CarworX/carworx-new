@@ -315,17 +315,9 @@ describe("A14: no ID-number field anywhere; fines copy", () => {
     expect(LABEL.test("<label for=x>Your ID number</label>")).toBe(true);
   });
 
-  it("/fines has no field, no lookup, the no-results warning and official links only", async () => {
+  it("/fines sends visitors to the landing's fines band", async () => {
     const reply = await new Browser().send("/fines");
-    expect(reply.status).toBe(200);
-    expect(reply.body).not.toMatch(/<(?:form|input|select|textarea)\b/i);
-    expect(reply.body).toContain("doesn&#x27;t always mean you have none");
-    const external = [...reply.body.matchAll(/href="(https?:\/\/[^"]+)"/g)]
-      .map((m) => m[1])
-      .filter((h) => h !== undefined && !h.startsWith("http://localhost"));
-    expect(external).toEqual([
-      "https://rtmc.co.za/",
-      "https://www.rtia.co.za/",
-    ]);
+    expect(reply.status).toBe(302);
+    expect(reply.location).toBe("/#fines");
   });
 });
