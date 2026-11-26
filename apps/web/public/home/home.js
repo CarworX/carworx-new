@@ -165,8 +165,8 @@
   const goTo = (i) => { const cur = ((Math.round(target) % N) + N) % N; target = Math.round(target) + wrapD(i - cur); lastMove = now(); };
   tabs.forEach((b, i) => b.addEventListener('click', () => goTo(i)));
   cards.forEach((c, i) => c.addEventListener('click', () => { if (moved < 6 && Math.abs(wrapD(i - pos)) > .4) goTo(i); }));
-  gstage.addEventListener('pointerdown', (e) => { kick(); dragging = true; moved = 0; dx0 = e.clientX; pos0 = pos; gstage.setPointerCapture(e.pointerId); });
-  gstage.addEventListener('pointermove', (e) => { if (!dragging) return; moved = Math.max(moved, Math.abs(e.clientX - dx0)); target = pos = pos0 - (e.clientX - dx0) / spacing(); vel = 0; });
+  gstage?.addEventListener('pointerdown', (e) => { kick(); dragging = true; moved = 0; dx0 = e.clientX; pos0 = pos; gstage.setPointerCapture(e.pointerId); });
+  gstage?.addEventListener('pointermove', (e) => { if (!dragging) return; moved = Math.max(moved, Math.abs(e.clientX - dx0)); target = pos = pos0 - (e.clientX - dx0) / spacing(); vel = 0; });
   const endDrag = (e) => {
     if (!dragging) return; dragging = false;
     // a short swipe still turns one card
@@ -174,9 +174,9 @@
     target = Math.abs(dx) > 40 && Math.abs(pos - pos0) < .5 ? Math.round(pos0) - Math.sign(dx) : Math.round(pos);
     lastMove = now();
   };
-  gstage.addEventListener('pointerup', endDrag); gstage.addEventListener('pointercancel', endDrag);
-  gstage.addEventListener('pointerenter', () => hover = true); gstage.addEventListener('pointerleave', () => hover = false);
-  new IntersectionObserver((es) => { if (es[0].isIntersecting && !inView) lastMove = now(); inView = es[0].isIntersecting; kick(); }).observe(gstage);
+  gstage?.addEventListener('pointerup', endDrag); gstage?.addEventListener('pointercancel', endDrag);
+  gstage?.addEventListener('pointerenter', () => hover = true); gstage?.addEventListener('pointerleave', () => hover = false);
+  if (gstage) new IntersectionObserver((es) => { if (es[0].isIntersecting && !inView) lastMove = now(); inView = es[0].isIntersecting; kick(); }).observe(gstage);
   addEventListener('keydown', (e) => { if (!inView) return; if (e.key === 'ArrowRight') { target = Math.round(target) + 1; } if (e.key === 'ArrowLeft') { target = Math.round(target) - 1; } });
   layoutCards();
 
@@ -191,6 +191,7 @@
       d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)},${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)},${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0]},${p2[1].toFixed(1)}`; }
     return d; };
   const renderChart = () => {
+    if (!cPath) return; // the chart is not on the page any more (the glimpse and the old dashboard are gone)
     const p = pts(cur), d = smooth(p);
     cPath.setAttribute('d', d); cArea.setAttribute('d', `${d} L600,220 L0,220Z`);
     const Lp = cPath.getTotalLength();
@@ -236,8 +237,6 @@
       });
     } });
     G.fromTo('.dash-glow', { scale: .9, rotate: -4 }, { scale: 1.05, rotate: 3, ease: 'none', scrollTrigger: { trigger: '.dash-wrap', start: 'top bottom', end: 'bottom top', scrub: true } });
-    G.fromTo('.gblob.b1', { x: -60 }, { x: 60, ease: 'none', scrollTrigger: { trigger: '#glimpse', start: 'top bottom', end: 'bottom top', scrub: true } });
-    G.fromTo('.gblob.b2', { x: 60 }, { x: -60, ease: 'none', scrollTrigger: { trigger: '#glimpse', start: 'top bottom', end: 'bottom top', scrub: true } });
     G.fromTo('.ill svg', { scale: 1.08 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '.ill', start: 'top bottom', end: 'center center', scrub: true } });
   } else {
     $$('#days i').forEach((d) => d.style.setProperty('--f', 1));
