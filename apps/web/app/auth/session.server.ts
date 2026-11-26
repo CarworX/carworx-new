@@ -7,6 +7,11 @@ import type { ServerConfig } from "../server/security/config";
 import { readCookies, SESSION_COOKIE } from "../server/security/cookies";
 import { safeReturnTo } from "../server/security/redirect";
 import { throwRedirect } from "./http.server";
+import {
+  readTermsState,
+  TERMS_PATH,
+  termsGateAllows,
+} from "./terms-gate.server";
 import { createRequestSupabase } from "./supabase.server";
 
 const SESSION_CHUNK = new RegExp(`^${SESSION_COOKIE}(?:\\.\\d+)?$`);
@@ -51,7 +56,11 @@ export async function getSignedIn(
   const signedIn = await getSignedInClosing(request, security);
   // A closing account (D-098) is signed out everywhere but its own closing
   // page: it cannot send enquiries, join teams or see private covers.
-  return signedIn?.closingUntil ? null : signedIn;
+  if (signedIn === null || signedIn.closingUntil) return null;
+  // Pending terms (account consent) count as signed out for every decision
+  // here: no enquiries, joins or private covers until the terms are accepted.
+  if ((await readTermsState(signedIn.supabase)) === "pending") return null;
+  return signedIn;
 }
 
 /** As getSignedIn, but also returns an account that is closing. */
@@ -99,13 +108,32 @@ export function signInUrl(request: Request, appOrigin: string): string {
   return `/auth/sign-in?returnTo=${encodeURIComponent(returnTo)}`;
 }
 
+/**
+ * Where a person with pending terms is sent. A GET keeps its own address as
+ * returnTo, so accepting brings them back; a POST has no page to return to.
+ */
+export function termsUrl(request: Request, appOrigin: string): string {
+  if (request.method !== "GET") return TERMS_PATH;
+  const url = new URL(request.url);
+  const returnTo = safeReturnTo(`${url.pathname}${url.search}`, appOrigin);
+  return `${TERMS_PATH}?returnTo=${encodeURIComponent(returnTo)}`;
+}
+
 /** Signed-in user, or a redirect to sign in (clearing a dead session). */
 export async function requireSignedIn(
   request: Request,
   security: SecurityContext,
 ): Promise<SignedIn> {
   const signedIn = await getSignedInClosing(request, security);
-  if (signedIn !== null && signedIn.closingUntil === null) return signedIn;
+  if (signedIn !== null && signedIn.closingUntil === null) {
+    const path = new URL(request.url).pathname;
+    const state = await readTermsState(signedIn.supabase);
+    if (termsGateAllows(path, state)) return signedIn;
+    return throwRedirect(
+      termsUrl(request, signedIn.config.appOrigin),
+      signedIn.headers,
+    );
+  }
   if (signedIn !== null) {
     if (CLOSING_PATHS.test(new URL(request.url).pathname)) return signedIn;
     return throwRedirect("/account/closing", signedIn.headers);

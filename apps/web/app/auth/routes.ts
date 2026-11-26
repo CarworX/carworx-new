@@ -11,6 +11,8 @@ export const authRoutes: RouteConfigEntry[] = [
   route("auth/reset-password", "auth/routes/reset-password.tsx"),
   route("auth/sign-out", "auth/routes/sign-out.tsx"),
   route("auth/mfa", "auth/routes/mfa.tsx"),
+  // B-10 part 2b: the consent page a pending account is sent to (before any signed-in page or action).
+  route("auth/terms", "auth/routes/terms.tsx"),
   route("account", "auth/routes/account.tsx"),
   // D-098 close my account: the reinstate page and the closed notice.
   route("account/closing", "routes/account.closing.tsx"),

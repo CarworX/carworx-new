@@ -10,6 +10,11 @@ import { CustomerHome } from "../home/CustomerHome";
 import { homeCatalogue, type HomeCatalogue } from "../server/catalogue/home";
 import type { PublicListing } from "../server/catalogue/public";
 import { readViewer } from "../ui/site/viewer.server";
+import { throwRedirect } from "../auth/http.server";
+import {
+  readTermsStateForRequest,
+  TERMS_PATH,
+} from "../auth/terms-gate.server";
 import { SiteFooter } from "../ui/site/SiteFooter";
 import { SiteHeader } from "../ui/site/SiteHeader";
 import { UseMyLocation } from "../sites/UseMyLocation";
@@ -72,6 +77,12 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     : null;
   // Signed in, the page carries the visitor's first name: never shared-cached.
   const viewer = await readViewer(request, config).catch(() => null);
+  // Signed in with pending account terms: the consent page comes first (B-10 2b).
+  if (
+    viewer !== null &&
+    (await readTermsStateForRequest(request, config)) === "pending"
+  )
+    throwRedirect(`${TERMS_PATH}?returnTo=%2F`);
   return data(
     { catalogue, viewer },
     {
