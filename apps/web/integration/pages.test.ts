@@ -97,9 +97,10 @@ describe("public pages without JavaScript", () => {
       "/c/repairs-and-maintenance",
       "/c/glass-repair-and-replacement",
       "/c/tyres-and-wheel-alignment",
-      "/fines",
     ])
       expect(reply.body).toContain(`href="${href}"`);
+    // The fifth tile opens the fines band on this page (handoff §2), not /fines.
+    expect(reply.body).toContain('href="#fines"');
   });
 
   it("a category page lists live providers from its subcategories, never pending ones", async () => {

@@ -15,6 +15,10 @@ import { SiteHeader } from "../ui/site/SiteHeader";
 import { UseMyLocation } from "../sites/UseMyLocation";
 import { LocationPicker } from "../sites/LocationPicker";
 import { SERVICES } from "../ui/services";
+import { ListingCard } from "../sites/ListingCard";
+import coverCss from "../sites/cover.css?url";
+import panelCss from "../home/for-businesses.css?url";
+import panelHtml from "../home/for-businesses-panel.html?raw";
 import type { Route } from "./+types/home";
 
 /**
@@ -33,13 +37,6 @@ function cut(start: string, end: string, from = 0): string {
   if (a < 0 || b < 0) throw new Error(`home markup: ${start} not found`);
   return markup.slice(a, b);
 }
-function section(id: string): string {
-  const at = markup.indexOf(`id="${id}"`);
-  const start = markup.lastIndexOf("<section", at);
-  const end = markup.indexOf("</section>", at) + "</section>".length;
-  if (at < 0 || start < 0 || end < at) throw new Error(`home markup: ${id}`);
-  return markup.slice(start, end);
-}
 /**
  * Icons, the preview intro, the header and the menu sheet. The header links
  * are the mockup's (the timeline they pointed to is gone).
@@ -52,27 +49,11 @@ const HEAD = (() => {
 })();
 /** The hero's floating objects, as drawn in the preview. */
 const FLOATS = cut('<div class="floats"', '<div class="hero-copy">');
-// The business band's two switches were buttons with aria-selected and no
-// role; as tabs they pass the accessibility audit (Lighthouse a11y >= 95).
-const KEPT = ["glimpse", "fines", "business"]
-  .map(section)
-  .join("\n")
-  .replace(
-    '<div class="ptabs" id="dtabs">',
-    '<div class="ptabs" id="dtabs" role="tablist" aria-label="Dashboard view">',
-  )
-  .replace(
-    '<div class="ptabs" id="ctabs">',
-    '<div class="ptabs" id="ctabs" role="tablist" aria-label="Chart range">',
-  )
-  .replace(
-    /<button aria-selected="(true|false)" data-(p|r)=/g,
-    '<button role="tab" aria-selected="$1" data-$2=',
-  );
-
 export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: homeCss },
   { rel: "stylesheet", href: landingCss },
+  { rel: "stylesheet", href: coverCss },
+  { rel: "stylesheet", href: panelCss },
 ];
 
 export const meta: Route.MetaFunction = () => [
@@ -162,7 +143,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             />
             <div className="hero-copy">
               <span className="badge" data-hero>
-                <i></i>Pilot · CarworX fee R0
+                <i></i>Free to browse · Free to list
               </span>
               <h1 id="h-hero">
                 <span className="ln">
@@ -185,11 +166,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           <Categories catalogue={catalogue} />
           <Businesses catalogue={catalogue} />
           <HowItWorks />
-          <div
-            className="lp-contents"
-            suppressHydrationWarning
-            dangerouslySetInnerHTML={{ __html: KEPT }}
-          />
+          <FinesBand />
+          <ForBusinesses />
         </main>
         <SiteFooter />
       </div>
@@ -251,8 +229,7 @@ function HeroSearch() {
           <em>✓ Free to browse</em> · no account needed
         </span>
         <span>
-          <span aria-hidden="true">🔒 </span>Sign in only to book or send an
-          enquiry
+          <span aria-hidden="true">🔒 </span>Sign in only to send an enquiry
         </span>
       </p>
     </div>
@@ -262,11 +239,11 @@ function HeroSearch() {
 function Categories({ catalogue }: { catalogue: HomeCatalogue | null }) {
   const fines = SERVICES.find((s) => s.key === "fines")?.object ?? "";
   return (
-    <section className="lp-sec" aria-labelledby="h-cats">
+    <section className="lp-sec" id="services" aria-labelledby="h-cats">
       <div className="wrap">
         <div className="lp-head">
           <div>
-            <span className="lp-eyebrow">Browse by category</span>
+            <span className="lp-eyebrow">Find a service</span>
             <h2 id="h-cats">What does your car need?</h2>
           </div>
         </div>
@@ -286,11 +263,11 @@ function Categories({ catalogue }: { catalogue: HomeCatalogue | null }) {
             </li>
           ))}
           <li>
-            <a className="lp-cat" href="/fines">
+            <a className="lp-cat" href="#fines">
               <small>05</small>
               <img src={fines} alt="" width={46} height={46} />
               <h3>Fines &amp; Vehicle Admin</h3>
-              <p>Guides, free</p>
+              <p>Check and pay fines</p>
             </a>
           </li>
         </ul>
@@ -363,9 +340,9 @@ function Businesses({ catalogue }: { catalogue: HomeCatalogue | null }) {
           </p>
         ) : (
           <>
-            <div className="lp-grid">
+            <div className="cx-lgrid">
               {shown.map((l) => (
-                <BusinessCard key={l.public_id} listing={l} />
+                <ListingCard key={l.public_id} listing={l} />
               ))}
             </div>
             {filter !== "all" ? (
@@ -383,60 +360,6 @@ function Businesses({ catalogue }: { catalogue: HomeCatalogue | null }) {
         )}
       </div>
     </section>
-  );
-}
-
-function BusinessCard({ listing: l }: { listing: PublicListing }) {
-  const where = l.mode === "mobile" ? `Comes to you · ${l.metro}` : l.metro;
-  return (
-    <article className="lp-card">
-      {l.cover_key ? (
-        <img
-          className="lp-cover"
-          src={`/media/${l.cover_key}`}
-          alt=""
-          loading="lazy"
-          data-cover
-        />
-      ) : null}
-      <div className="lp-top">
-        <img src={objectFor(l.category_slug)} alt="" width={44} height={44} />
-        <div>
-          <h3>{l.display_name}</h3>
-          <p className="lp-where">{where}</p>
-        </div>
-      </div>
-      {l.verification_labels.length > 0 || l.mode !== "fixed" ? (
-        <div className="lp-tags">
-          {l.verification_labels.map((label) => (
-            <span key={label} className="lp-tag">
-              {label}
-            </span>
-          ))}
-          {l.mode !== "fixed" ? (
-            <span className="lp-tag grey">Mobile</span>
-          ) : null}
-        </div>
-      ) : null}
-      <div className="lp-svc">
-        <div>
-          {l.service_name}
-          <span>{l.mode === "fixed" ? "Workshop" : "Comes to you"}</span>
-        </div>
-        <div>
-          {topCategoryOf(l.category_slug)?.label ?? l.category_name}
-          <span>Free to enquire</span>
-        </div>
-      </div>
-      <div className="lp-acts">
-        <a className="lp-btn" href={`/p/${l.public_id}`}>
-          View business →
-        </a>
-        <span className="lp-lock">
-          <span aria-hidden="true">🔒 </span>Enquire after sign in
-        </span>
-      </div>
-    </article>
   );
 }
 
@@ -468,13 +391,128 @@ function HowItWorks() {
           </li>
           <li>
             <span className="lp-n">03</span>
-            <h3>Book or enquire</h3>
-            <p>
-              Accepted within 2 business hours. Paid to the business directly.
-            </p>
+            <h3>Send an enquiry</h3>
+            <p>The business replies to you directly. You pay them directly.</p>
             <span className="lp-badge">Signed in</span>
           </li>
         </ol>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Fines (redesign A2, C4). Signed-out only: a signed-in visitor gets the
+ * customer home instead (see the loader's viewer), so this band never shows
+ * a fine count.
+ */
+function FinesBand() {
+  const fines = SERVICES.find((s) => s.key === "fines")?.object ?? "";
+  return (
+    <section className="lp-sec" id="fines" aria-labelledby="h-fines">
+      <div className="wrap">
+        <div className="lp-head">
+          <div>
+            <span className="lp-eyebrow">Fines &amp; Vehicle Admin</span>
+            <h2 className="h2" id="h-fines">
+              <span className="ln">
+                <span>A fine on the windscreen?</span>
+              </span>
+              <span className="ln grey">
+                <span>Check it and pay it here.</span>
+              </span>
+            </h2>
+          </div>
+          <img src={fines} alt="" width={72} height={72} />
+        </div>
+        <p className="lede">
+          See the traffic fines linked to your ID number and pay them in one
+          place, with a receipt you can keep.
+        </p>
+        <ol className="lp-how">
+          <li>
+            <span className="lp-n">1</span>
+            <h3>Confirm it&rsquo;s you, once</h3>
+            <p>
+              Photograph your ID and take a quick selfie on our verification
+              partner&rsquo;s secure screen. Usually done in under a minute.
+            </p>
+          </li>
+          <li>
+            <span className="lp-n">2</span>
+            <h3>See every fine on your ID</h3>
+            <p>
+              Amount, issuer, due date and any discount, in plain words. No more
+              hunting across municipal sites.
+            </p>
+          </li>
+          <li>
+            <span className="lp-n">3</span>
+            <h3>Pay securely, get a receipt</h3>
+            <p>
+              You pay on our payment partner&rsquo;s secure checkout. We show
+              &ldquo;Paid&rdquo; only once the issuer confirms it.
+            </p>
+          </li>
+        </ol>
+        <div className="biz-cta">
+          <a className="pill" href="/auth/sign-in?returnTo=%2Ffines">
+            <span>Sign in to see your fines</span>
+          </a>
+          <small>Free to check. You pay only the fine.</small>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * For businesses (redesign A2, C4): the free-to-list copy and the static
+ * dashboard panel (rd- rules in for-businesses.css). No fee wording.
+ */
+function ForBusinesses() {
+  const wash = SERVICES.find((s) => s.key === "wash")?.object ?? "";
+  return (
+    <section className="lp-sec" id="business" aria-labelledby="h-biz">
+      <div className="wrap">
+        <div className="biz-head">
+          <div>
+            <span className="lp-eyebrow">For businesses</span>
+            <h2 className="h2" id="h-biz">
+              <span className="ln">
+                <span>Free to list.</span>
+              </span>
+              <span className="ln grey">
+                <span>Paid directly.</span>
+              </span>
+            </h2>
+            <p className="lede">
+              Washes, workshops, glass fitters, tyre shops and mobile teams.
+              Customers find you and send enquiries, and every payment goes
+              straight to you.
+            </p>
+          </div>
+          <ul className="perks">
+            <li>Free to list</li>
+            <li>Checked by our team</li>
+            <li>Enquiries to your inbox</li>
+            <li>Add your team</li>
+          </ul>
+        </div>
+        {/* Static, generated markup from the repository; no user input. */}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: panelHtml.replace("__WASH_OBJECT__", wash),
+          }}
+        />
+        <div className="biz-cta">
+          <a className="pill" href="/provider/get-listed/business">
+            <span>List your business free</span>
+          </a>
+          <small>
+            Free to list. Our team checks every business before it goes live.
+          </small>
+        </div>
       </div>
     </section>
   );

@@ -1,0 +1,342 @@
+/*
+ * Dashboard panel for the landing's "For businesses" band (redesign A2, C4).
+ * The rd- rules are copied from planning/design/redesign-2026-11/_shared/
+ * redesign.css, only the ones the panel uses (the file also carries rules
+ * for other screens). Keep in step with that file when the panel changes.
+ */
+
+.rd-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 14px 0 6px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: var(--sh-1);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rd-av {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--sky), #fff);
+  border: 1px solid rgba(61, 109, 255, 0.25);
+  color: var(--blue-ink);
+  font: 600 13px var(--f-sans);
+  flex: none;
+}
+
+.rd-av.sm {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}
+
+.rd-av.coral {
+  background: linear-gradient(135deg, var(--peach), #fff);
+  border-color: rgba(255, 59, 10, 0.2);
+  color: #a33a14;
+}
+
+.rd-av.amber {
+  background: linear-gradient(135deg, var(--note), #fff);
+  border-color: rgba(161, 92, 0, 0.2);
+  color: var(--warn);
+}
+
+
+/* ---------- shared footer ---------- */
+.rd-foot-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin-top: var(--s4);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--graphite);
+}
+
+.rd-foot-links a:hover {
+  color: var(--blue-ink);
+}
+
+.rd-stack > * + * {
+  margin-top: 16px;
+}
+
+.rd-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.rd-sp {
+  flex: 1;
+}
+
+.rd-link {
+  color: var(--blue-ink);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.rd-lbl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font: 600 11px var(--f-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--canvas);
+  color: var(--graphite);
+  white-space: nowrap;
+}
+
+.rd-lbl::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.rd-lbl.ok {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+
+.rd-lbl.warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.rd-lbl.err {
+  background: var(--err-soft);
+  color: var(--err);
+}
+
+.rd-lbl.blue {
+  background: var(--sky);
+  color: var(--blue-ink);
+}
+
+.rd-lbl.plain::before {
+  display: none;
+}
+
+
+/* dashboard glimpse, redrawn from the real /provider screen */
+.rd-dgrid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 16px;
+}
+
+.rd-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--frost-edge);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: var(--sh-1);
+}
+
+.rd-panel h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rd-panel h3 .rd-sp + * {
+  font: 500 12px var(--f-mono);
+  color: var(--muted);
+}
+
+.rd-lst {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 14px;
+}
+
+.rd-lst img {
+  width: 40px;
+  height: 40px;
+}
+
+.rd-lst small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.rd-enq {
+  padding: 12px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 14px;
+}
+
+.rd-enq .top {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.rd-enq .top small {
+  margin-left: auto;
+  color: var(--muted);
+  font: 12px var(--f-mono);
+}
+
+.rd-enq p {
+  margin: 6px 0 0 38px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.rd-team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rd-team .rd-av {
+  margin-left: -10px;
+  border: 2px solid #fff;
+}
+
+.rd-team .rd-av:first-child {
+  margin-left: 0;
+}
+
+.rd-task {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 14px;
+}
+
+.rd-task .tk {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid #c9c6bf;
+}
+
+.rd-task.done .tk {
+  background: var(--ink);
+  border-color: var(--ink);
+  display: grid;
+  place-items: center;
+}
+
+.rd-task.done .tk::after {
+  content: "";
+  width: 9px;
+  height: 4px;
+  border: 2px solid #fff;
+  border-top: 0;
+  border-right: 0;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.rd-task.done span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.rd-prog {
+  height: 6px;
+  border-radius: 6px;
+  background: #e6e4df;
+  overflow: hidden;
+  margin: 4px 0 12px;
+}
+
+.rd-prog i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--blue-soft));
+  border-radius: 6px;
+}
+
+.rd-empty .rd-row {
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.rd-rowhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 40px 0 14px;
+}
+
+.rd-rowhead h2 {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin: 0;
+}
+
+.rd-rowhead small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+@media (max-width: 900px) {
+
+  .rd-fines,
+  .rd-dgrid,
+  .rd-auth,
+  .rd-fine-grid,
+  .rd-review {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rd-spin {
+  width: 112px;
+  height: 112px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background:
+    conic-gradient(from 200deg, var(--blue) 0 28%, #e6e4df 28% 100%) border-box;
+  -webkit-mask: radial-gradient(circle, #000 0 52px, transparent 52.5px 53px, #000 54px);
+  mask: radial-gradient(circle, #000 0 52px, transparent 52.5px 53px, #000 54px);
+  position: relative;
+}
+
+.rd-spin::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.rd-spin svg {
+  position: relative;
+  color: var(--ink);
+}

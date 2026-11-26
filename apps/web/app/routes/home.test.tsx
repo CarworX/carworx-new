@@ -75,7 +75,7 @@ describe("/ home: browse first (D-097)", () => {
     expect(form).not.toContain('name="area"');
     expect(html).toContain("What do you need?");
     expect(html).toContain("Free to browse");
-    expect(html).toContain("Sign in only to book or send an enquiry");
+    expect(html).toContain("Sign in only to send an enquiry");
     expect(html.indexOf('class="lp-search"')).toBeLessThan(
       html.indexOf("What does your car need?"),
     );
@@ -92,7 +92,8 @@ describe("/ home: browse first (D-097)", () => {
       const tile = new RegExp(`href="/c/${slug}".*?</a>`).exec(html)?.[0];
       expect(tile).toContain(words);
     }
-    expect(html).toContain('href="/fines"');
+    // The fifth tile points at the fines band on this page, not the fines pages.
+    expect(html).toContain('href="#fines"');
   });
 
   it("lists live businesses without an account, with the sign-in hint", () => {
@@ -103,7 +104,7 @@ describe("/ home: browse first (D-097)", () => {
     );
     expect(html).toContain("Shine Studio");
     expect(html).toContain("Comes to you · Gauteng");
-    expect(html).toContain("Enquire after sign in");
+    expect(html).toContain('class="cx-lcard"');
     // No location filter: never a coverage claim or a distance.
     expect(text).not.toContain("serves your area");
     expect(text).not.toContain("straight-line");
@@ -124,24 +125,32 @@ describe("/ home: browse first (D-097)", () => {
     expect(h).toContain("See businesses");
   });
 
-  it("keeps the hero objects, app glimpse and bands; drops the timeline and quote", () => {
+  it("keeps the hero objects, the fines and business bands; drops the glimpse and the timeline", () => {
     for (const keep of [
       'class="floats"',
       'class="obj o-note"',
       'class="obj o-timer"',
-      'id="glimpse"',
       'id="fines"',
       'id="business"',
       "Look first. Sign up when you're ready.",
     ])
       expect(html).toContain(keep);
     for (const gone of [
+      'id="glimpse"',
+      'class="gcard"',
       'id="how"',
       'id="quote-sec"',
       'class="keys"',
       'id="start"',
     ])
       expect(html).not.toContain(gone);
+  });
+
+  it("uses the free-to-list copy: no pilot, R0 or CarworX fee wording (B-12)", () => {
+    expect(html).toContain("Free to browse · Free to list");
+    expect(html).toContain("Free to list.");
+    expect(html).toContain("Paid directly.");
+    expect(text).not.toMatch(/pilot|R0|CarworX fee/i);
   });
 
   it("has no demo, mock, concept or fictional wording", () => {
@@ -153,7 +162,7 @@ describe("/ home: browse first (D-097)", () => {
     const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1] ?? "");
     for (const href of hrefs)
       expect(href).toMatch(
-        /^(\/|#[a-z0-9-]+|\/(search(\/location|\?category=[a-z-]+)?|fines|fines\/mine|account|provider|support|privacy|terms|auth\/sign-in|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36})|\/#(services|fines|business))$/,
+        /^(\/|#[a-z0-9-]+|\/(search(\/location|\?category=[a-z-]+)?|fines|fines\/mine|account|provider|support|privacy|terms|auth\/sign-in(\?returnTo=%2Ffines)?|auth\/sign-up|provider\/get-listed\/business|c\/[a-z-]+|p\/[0-9a-f-]{36})|\/#(services|fines|business))$/,
       );
   });
 
@@ -188,7 +197,7 @@ describe("/ home: browse first (D-097)", () => {
   });
 
   it("loads its stylesheets and script on this route only", () => {
-    expect(links()).toHaveLength(2);
+    expect(links()).toHaveLength(4);
     expect(html).toContain('<script src="/home/home.js" defer="">');
     const js = readFileSync(
       new URL("../../public/home/home.js", import.meta.url),
