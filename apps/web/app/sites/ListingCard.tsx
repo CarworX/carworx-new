@@ -200,6 +200,22 @@ export function ListingCard({
   const extra = hoursChip(hours);
   const distance = distanceText(listing);
   const checks = listing.verification_labels;
+  // The same rules as whereText: a mobile provider never gets a distance, and
+  // coverage is claimed only for a result that passed a location search.
+  const whereKind =
+    listing.mode === "mobile"
+      ? "mobile"
+      : listing.mode === "both" && distance === null
+        ? "both-area"
+        : "premises";
+  const covers = matched ? (
+    <>
+      {" · "}
+      <span className="covers" data-covers="">
+        ✓ Covers your area
+      </span>
+    </>
+  ) : null;
   const coverClass = tint === "" ? "cover" : `cover ${tint}`;
 
   return (
@@ -263,17 +279,19 @@ export function ListingCard({
           ) : rating ? (
             <RatingLine listing={listing} className="meta" />
           ) : null}
-          <span className="where">
+          <span className="where" data-where={whereKind}>
             <WhereIcon mobile={listing.mode === "mobile"} />
-            {listing.mode === "mobile" ? (
+            {whereKind === "mobile" ? (
               <>
                 <b>Comes to you</b>
-                {matched ? (
-                  <>
-                    {" · "}
-                    <span className="covers">✓ Covers your area</span>
-                  </>
-                ) : null}
+                {` · ${listing.metro}`}
+                {covers}
+              </>
+            ) : whereKind === "both-area" ? (
+              <>
+                <b>Comes to you</b>
+                {covers}
+                {` · also has premises in ${listing.metro}`}
               </>
             ) : (
               <>
