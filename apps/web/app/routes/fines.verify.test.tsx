@@ -38,14 +38,21 @@ describe("/fines/verify", () => {
     expect(html).toContain("Start verification");
     expect(html).toContain('name="consent"');
     expect(html).toContain("Tick the box above to continue.");
-    expect(html).toMatch(/<button[^>]*disabled/);
+    // Server HTML leaves the button enabled: with JavaScript off, the native
+    // `required` checkbox still applies; the browser disables it after hydration.
+    expect(html).not.toMatch(/<button[^>]*disabled/);
+    const box = /<input[^>]*>/g;
+    const consent = [...html.matchAll(box)]
+      .map((m) => m[0])
+      .find((t) => t.includes('name="consent"'));
+    expect(consent).toMatch(/\brequired\b/);
   });
 
   it("checking: names the person when it knows the first name, and says the page can be left", () => {
     const html = render({ kind: "checking" }, { firstName: "Thandi" });
     expect(html).toContain("Checking…");
     expect(html).toContain("Thanks, Thandi.");
-    expect(html).toContain("we&#x27;ll email you when it&#x27;s done.");
+    expect(html).toContain("This page updates by itself");
   });
 
   it("approved: says so and links to the fines", () => {

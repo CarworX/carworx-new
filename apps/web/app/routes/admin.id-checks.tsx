@@ -44,8 +44,7 @@ export default function IdChecks({ loaderData }: Route.ComponentProps) {
           <h2>Nothing waiting for review.</h2>
           <p>
             Didit is handling everyone automatically right now. Cases it sends
-            for a second look appear here; we email the team if one waits more
-            than 4 hours.
+            for a second look appear here, oldest first.
           </p>
         </section>
       ) : (
