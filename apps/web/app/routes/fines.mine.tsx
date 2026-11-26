@@ -93,11 +93,9 @@ export async function action({ request, context }: Route.ActionArgs) {
   const auth = await requireSignedIn(request, context.security);
   const form = await request.formData();
   const intent = form.get("intent");
-  if (!(await hasApprovedIdentity(auth)))
-    return data(
-      { problem: "Confirm your ID before paying a fine." },
-      { status: 403, headers: auth.headers },
-    );
+  // Thrown, not returned: a returned action is followed by loader revalidation,
+  // and the loader's redirect to /fines/verify would replace this 403.
+  if (!(await hasApprovedIdentity(auth))) throwStatus(403, auth.headers);
   if (intent === "checkout") {
     const notices = form.getAll("notice");
     if (
