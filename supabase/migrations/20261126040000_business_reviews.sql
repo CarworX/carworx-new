@@ -87,7 +87,9 @@ create trigger reviews_anonymize_author before update of author_id on public.rev
 create function private.can_review(p_listing uuid) returns boolean
 language sql stable security definer set search_path = '' as $$
   select exists (select from public.enquiries e
-    where e.sender_user_id = auth.uid() and e.listing_public_id = p_listing)
+    join public.listings l on l.public_id = e.listing_public_id
+    where e.sender_user_id = auth.uid() and e.listing_public_id = p_listing
+      and not private.is_org_member(l.organisation_id))
 $$;
 
 -- The author can discover their own row without exposing account UUIDs on
@@ -105,6 +107,7 @@ returns uuid language plpgsql security definer set search_path = '' as $$
 declare
   v_user uuid := auth.uid();
   v_org uuid;
+  v_live boolean;
   v_id uuid;
   v_display text;
   v_names text[];
@@ -125,6 +128,10 @@ begin
   -- Serialise create, edit and delete for this account and listing, including
   -- the first write, when there is no review row to lock.
   perform pg_advisory_xact_lock(175509, hashtext(v_user::text || p_listing::text));
+  select organisation_id, status = 'live' into v_org, v_live from public.listings where public_id = p_listing;
+  if not found or private.is_org_member(v_org) then
+    raise exception 'not_allowed' using errcode = '42501';
+  end if;
   select id into v_id from public.reviews where listing_public_id = p_listing and author_id = v_user;
   if found then
     update public.reviews set rating = p_rating, body = v_body, service_slug = p_service, edited_at = now()
@@ -132,8 +139,7 @@ begin
     return v_id;
   end if;
 
-  select organisation_id into v_org from public.listings where public_id = p_listing and status = 'live';
-  if not found or not private.can_review(p_listing) then
+  if not v_live or not private.can_review(p_listing) then
     raise exception 'not_allowed' using errcode = '42501';
   end if;
   select regexp_split_to_array(btrim(display_name), '[[:space:]]+') into v_names

@@ -2,7 +2,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 grant execute on all functions in schema extensions to anon, authenticated;
-select plan(22);
+select plan(26);
 
 insert into auth.users(id,email) values
   ('d6100000-0000-4000-8000-000000000001','review-customer@example.test'),
@@ -16,6 +16,19 @@ insert into public.enquiries(id,listing_public_id,organisation_id,sender_name,se
    '5eed0000-0000-4000-8000-0000000000a1','Mila Van Wyk','review-customer@example.test','Please quote for the service',
    'd6110000-0000-4000-8000-000000000001','d6100000-0000-4000-8000-000000000001');
 
+insert into public.consents(id,purpose,notice_version,subject_email) values
+  ('d6110000-0000-4000-8000-000000000002','enquiry_share_with_provider','privacy-2026-11-01','synthetic.owner@example.test');
+insert into public.enquiries(listing_public_id,organisation_id,sender_name,sender_email,message,consent_id,sender_user_id) values
+  ('ca7c1000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-0000000000a1',
+   'Synthetic Owner','synthetic.owner@example.test','Please quote for my car service',
+   'd6110000-0000-4000-8000-000000000002','5eed0000-0000-4000-8000-000000000001');
+set local request.jwt.claims = '{"sub":"5eed0000-0000-4000-8000-000000000001","aal":"aal1"}';
+set local role authenticated;
+select is(public.can_review('ca7c1000-0000-4000-8000-000000000001'),false,'a member with an enquiry is ineligible');
+select throws_ok($$select public.upsert_review('ca7c1000-0000-4000-8000-000000000001',5::smallint,'A detailed internal review.',null)$$,
+  '42501','not_allowed','a member with an enquiry cannot create a review');
+reset role;
+
 select ok(not has_column_privilege('anon','public.reviews','author_id','select'), 'anon cannot read account IDs');
 select ok(not has_table_privilege('authenticated','public.reviews','insert,update,delete'), 'review writes go through RPCs');
 set local request.jwt.claims = '{"sub":"d6100000-0000-4000-8000-000000000002","aal":"aal1"}';
@@ -27,11 +40,20 @@ reset role;
 
 set local request.jwt.claims = '{"sub":"d6100000-0000-4000-8000-000000000001","aal":"aal1"}';
 set local role authenticated;
-select is(public.can_review('ca7c1000-0000-4000-8000-000000000001'),true,'an enquiry grants eligibility');
+select is(public.can_review('ca7c1000-0000-4000-8000-000000000001'),true,'a non-member with an enquiry is eligible');
 select public.upsert_review('ca7c1000-0000-4000-8000-000000000001',2::smallint,'The service was slow.',null) as review \gset
 select is((select id::text from public.my_review('ca7c1000-0000-4000-8000-000000000001')), :'review','author can identify their editable review');
 select is((select author_display from public.reviews where id=:'review'),'Mila W.','capture first name and last initial');
 reset role;
+insert into public.memberships(organisation_id,user_id,role,status) values
+  ('5eed0000-0000-4000-8000-0000000000a1','d6100000-0000-4000-8000-000000000001','staff','active');
+set local role authenticated;
+select is(public.can_review('ca7c1000-0000-4000-8000-000000000001'),false,'an author who joins the business becomes ineligible even with an enquiry');
+select throws_ok($$select public.upsert_review('ca7c1000-0000-4000-8000-000000000001',5::smallint,'Changed as an employee.',null)$$,
+  '42501','not_allowed','a current member cannot edit their earlier review');
+reset role;
+update public.memberships set status='revoked' where organisation_id='5eed0000-0000-4000-8000-0000000000a1'
+  and user_id='d6100000-0000-4000-8000-000000000001';
 delete from public.enquiries where id='d6120000-0000-4000-8000-000000000001';
 set local role authenticated;
 select is(public.upsert_review('ca7c1000-0000-4000-8000-000000000001',1::smallint,'The service was very slow.',null)::text,
