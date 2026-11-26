@@ -11,13 +11,18 @@ export function throwRedirect(url: string, headers?: Headers): never {
   throw redirect(url, { headers });
 }
 
-export function throwStatus(status: 404 | 500 | 503, headers?: Headers): never {
+export function throwStatus(
+  status: 403 | 404 | 500 | 503,
+  headers?: Headers,
+): never {
   const body =
     status === 404
       ? "Not found"
-      : status === 503
-        ? "Unavailable"
-        : "Internal error";
+      : status === 403
+        ? "Forbidden"
+        : status === 503
+          ? "Unavailable"
+          : "Internal error";
   // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router control flow
   throw data(body, { status, headers });
 }

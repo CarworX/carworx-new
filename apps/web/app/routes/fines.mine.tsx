@@ -1,8 +1,25 @@
+/**
+ * /fines/mine: your traffic fines (A6). Shown only after the ID check is
+ * approved (otherwise the verify page). The list comes from the fines adapter
+ * (K3); a payment is "paid" only once the issuer has confirmed it, with its
+ * receipt. Outside staging this page does not exist: no fines provider is live.
+ */
 import { data, Form, Link, redirect } from "react-router";
-import { throwStatus } from "../auth/http.server";
+
+import { throwRedirect, throwStatus } from "../auth/http.server";
 import { requireSignedIn, type SignedIn } from "../auth/session.server";
-import { AuthPage, CsrfField } from "../auth/ui";
-import { createIdentitySession } from "../server/identity/didit.server";
+import { CsrfField } from "../auth/ui";
+import { dispatchFinesCallback } from "./api.fines.callback";
+import { FINES_HOME, VERIFY, fineHref } from "../fines/fine-links";
+import {
+  finesView,
+  paymentView,
+  rand,
+  shortDate,
+  sastTime,
+  type FinesView,
+  type PaymentView,
+} from "../fines/fine-view";
 import {
   hasApprovedIdentity,
   PAYMENT_ID,
@@ -12,13 +29,14 @@ import {
   sandboxCallbackRequest,
   sandboxEnabled,
 } from "../server/fines/sandbox.server";
-import { dispatchFinesCallback } from "./api.fines.callback";
+import { PublicShell } from "../ui/public/PublicShell";
+import { StatusNote } from "../ui/Note";
 import type { Route } from "./+types/fines.mine";
 
-const formatter = new Intl.NumberFormat("en-ZA", {
-  style: "currency",
-  currency: "ZAR",
-});
+export const meta: Route.MetaFunction = () => [
+  { title: "Your fines · CarworX" },
+  { name: "robots", content: "noindex" },
+];
 
 type Payment = {
   id: string;
@@ -46,18 +64,24 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const env = context.cloudflare.env;
   if (!sandboxEnabled(env)) throwStatus(404);
   const auth = await requireSignedIn(request, context.security);
+  auth.headers.set("Cache-Control", "private, no-store");
+  if (!(await hasApprovedIdentity(auth))) throwRedirect(VERIFY, auth.headers);
   const params = new URL(request.url).searchParams;
   const scenario = parseScenario(params.get("scenario"));
-  const approved = await hasApprovedIdentity(auth);
+  const result = await sandboxAdapter(env, auth, scenario).lookup(auth.user.id);
+  const payment = await readPayment(auth, params.get("payment"));
   return data(
     {
       csrf: context.security.csrfToken,
-      approved,
-      scenario,
-      result: approved
-        ? await sandboxAdapter(env, auth, scenario).lookup(auth.user.id)
+      view: finesView(result),
+      checkedAt: result === "unavailable" ? null : result.checkedAt,
+      payment: payment
+        ? {
+            id: payment.id,
+            amount: rand(payment.cents),
+            view: paymentView(payment.status, payment.receipt_number),
+          }
         : null,
-      payment: approved ? await readPayment(auth, params.get("payment")) : null,
     },
     { headers: auth.headers },
   );
@@ -69,27 +93,9 @@ export async function action({ request, context }: Route.ActionArgs) {
   const auth = await requireSignedIn(request, context.security);
   const form = await request.formData();
   const intent = form.get("intent");
-  if (intent === "verify") {
-    try {
-      const { url } = await createIdentitySession(
-        env,
-        auth.user.id,
-        "/fines/mine",
-      );
-      return redirect(url, { headers: auth.headers });
-    } catch {
-      return data(
-        { problem: "Unable to start a new ID check right now." },
-        { status: 409, headers: auth.headers },
-      );
-    }
-  }
-  if (!(await hasApprovedIdentity(auth))) {
-    return data(
-      { problem: "Verify your identity before checking fines." },
-      { status: 403, headers: auth.headers },
-    );
-  }
+  // Thrown, not returned: a returned action is followed by loader revalidation,
+  // and the loader's redirect to /fines/verify would replace this 403.
+  if (!(await hasApprovedIdentity(auth))) throwStatus(403, auth.headers);
   if (intent === "checkout") {
     const notices = form.getAll("notice");
     if (
@@ -97,7 +103,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       notices.some((notice) => typeof notice !== "string")
     )
       return data(
-        { problem: "Select a valid notice." },
+        { problem: "Choose at least one fine to pay." },
         { status: 400, headers: auth.headers },
       );
     try {
@@ -108,25 +114,24 @@ export async function action({ request, context }: Route.ActionArgs) {
       return redirect(url, { headers: auth.headers });
     } catch {
       return data(
-        { problem: "Unable to start checkout for that notice." },
+        { problem: "We couldn't start the payment. Nothing was charged." },
         { status: 409, headers: auth.headers },
       );
     }
   }
-  if (intent !== "simulate") {
+  if (intent !== "simulate")
     return data(
-      { problem: "Invalid checkout action." },
+      { problem: "That action isn't available." },
       { status: 400, headers: auth.headers },
     );
-  }
+  // Staging only: drive the signed callback the way the payment partner would.
   const paymentId = form.get("payment");
   const status = form.get("status");
-  if (typeof paymentId !== "string" || !paymentStatus(status)) {
+  if (typeof paymentId !== "string" || !paymentStatus(status))
     return data(
-      { problem: "Choose a valid payment outcome." },
+      { problem: "Choose a valid outcome." },
       { status: 400, headers: auth.headers },
     );
-  }
   const payment = await readPayment(auth, paymentId);
   if (!payment) throwStatus(404);
   if (payment.status === "created" || payment.status === "pending_issuer") {
@@ -137,7 +142,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     const response = await dispatchFinesCallback(event, env);
     if (!response.ok) throwStatus(503);
   }
-  return redirect("/fines/mine?payment=" + paymentId, {
+  return redirect(`${FINES_HOME}?payment=${paymentId}`, {
     headers: auth.headers,
   });
 }
@@ -150,41 +155,66 @@ export function headers({ loaderHeaders, actionHeaders }: Route.HeadersArgs) {
   return headers;
 }
 
-function PaymentView({ payment, csrf }: { payment: Payment; csrf: string }) {
+/** A payment's state, in plain words. Only a confirmed payment says "Paid". */
+function PaymentBlock({
+  payment,
+  csrf,
+}: {
+  payment: NonNullable<Route.ComponentProps["loaderData"]["payment"]>;
+  csrf: string;
+}) {
+  const view: PaymentView = payment.view;
   return (
-    <>
-      <p>{formatter.format(payment.cents / 100)}</p>
-      {payment.status === "paid" ? (
-        <p role="status">
-          Issuer confirmed settlement. Receipt {payment.receipt_number}.
-        </p>
-      ) : payment.status === "failed" || payment.status === "cancelled" ? (
-        <p role="status">No payment was confirmed.</p>
+    <section aria-labelledby="payment-h" className="cx-payment">
+      <h2 id="payment-h">{view.kind === "paid" ? "Paid" : "Your payment"}</h2>
+      <p>{payment.amount}</p>
+      {view.kind === "paid" ? (
+        <StatusNote tone="ok" title="Payment confirmed by the issuer.">
+          Receipt {view.receipt}. Keep it for your records.
+        </StatusNote>
+      ) : view.kind === "checkout" ? (
+        <StatusNote
+          tone="info"
+          title="Checkout started. Waiting for the payment outcome."
+        >
+          Nothing has been paid yet. Finish on the payment partner&apos;s page;
+          this page updates once the outcome is in.
+        </StatusNote>
+      ) : view.kind === "awaiting" ? (
+        <StatusNote
+          tone="info"
+          title="Payment received. Waiting for the issuer."
+        >
+          The issuer usually confirms within 1 to 3 business days. We mark the
+          fine &quot;Paid&quot; only once it does.
+        </StatusNote>
       ) : (
-        <p role="status">Awaiting issuer confirmation.</p>
+        <StatusNote tone="err" title="The payment didn't go through.">
+          {view.text}
+        </StatusNote>
       )}
-      {(payment.status === "created" ||
-        payment.status === "pending_issuer") && (
+      {view.kind === "awaiting" || view.kind === "checkout" ? (
+        // Staging only: this form exists where the sandbox provider is on.
         <Form method="post">
           <CsrfField token={csrf} />
           <input type="hidden" name="intent" value="simulate" />
           <input type="hidden" name="payment" value={payment.id} />
-          <label className="cx-field">
-            Payment outcome
-            <select className="cx-input" name="status">
+          <label>
+            Outcome (staging only)
+            <select name="status">
               <option value="paid">Issuer confirms settlement</option>
-              <option value="pending_issuer">Settlement pending</option>
+              <option value="pending_issuer">
+                Still waiting for the issuer
+              </option>
               <option value="cancelled">Checkout cancelled</option>
               <option value="failed">Checkout failed</option>
             </select>
           </label>
-          <button className="cx-btn primary wide" type="submit">
-            Update payment
-          </button>
+          <button type="submit">Apply outcome</button>
         </Form>
-      )}
-      <Link to="/fines/mine">Back to My Fines</Link>
-    </>
+      ) : null}
+      <Link to={FINES_HOME}>Back to my fines</Link>
+    </section>
   );
 }
 
@@ -192,81 +222,137 @@ export default function MyFines({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { csrf, approved, payment, scenario, result } = loaderData;
+  const { csrf, view, checkedAt, payment } = loaderData;
   return (
-    <AuthPage title={payment ? "Checkout" : "My Fines"}>
-      <p>These notices are fictional. No money moves.</p>
-      {actionData?.problem && <p role="alert">{actionData.problem}</p>}
-      {!approved ? (
-        <Form method="post" reloadDocument>
+    <PublicShell signedIn>
+      <section className="cx-fines-page" aria-labelledby="fines-h">
+        <h1 id="fines-h">Your fines</h1>
+        {actionData?.problem ? (
+          <StatusNote tone="err" title="That didn't work.">
+            {actionData.problem}
+          </StatusNote>
+        ) : null}
+        {payment !== null ? (
+          <PaymentBlock payment={payment} csrf={csrf} />
+        ) : null}
+        {payment === null ? (
+          <FinesBody view={view} checkedAt={checkedAt} csrf={csrf} />
+        ) : null}
+        <p className="type-caption">
+          Fines come from the issuers&apos; records through our payment partner.
+          If something looks wrong, tell us.
+        </p>
+      </section>
+    </PublicShell>
+  );
+}
+
+function FinesBody({
+  view,
+  checkedAt,
+  csrf,
+}: {
+  view: FinesView;
+  checkedAt: string | null;
+  csrf: string;
+}) {
+  if (view.kind === "unavailable")
+    return (
+      <StatusNote
+        tone="warn"
+        title="We can't reach the fines records right now."
+      >
+        Try again in a moment.
+      </StatusNote>
+    );
+  if (view.kind === "none")
+    return (
+      <section>
+        <h2>No fines on your ID.</h2>
+        <p>
+          Nothing to pay right now. We check again each time you open this page.
+        </p>
+        <Link to="/">Back to home</Link>
+      </section>
+    );
+  return (
+    <>
+      <p className="type-caption">
+        {checkedAt !== null
+          ? `Last checked today, ${sastTime(checkedAt)} SAST.`
+          : null}
+      </p>
+      <dl className="cx-fines-stats">
+        <div>
+          <dt>To settle</dt>
+          <dd>{rand(view.totalCents)}</dd>
+        </div>
+        <div>
+          <dt>Open fines</dt>
+          <dd>{view.payable.length + view.notPayable.length}</dd>
+        </div>
+      </dl>
+      {view.onlyNotPayable ? (
+        <StatusNote
+          tone="warn"
+          title={`${String(view.notPayable.length)} fine${view.notPayable.length === 1 ? "" : "s"}, but ${view.notPayable.length === 1 ? "it" : "they"} can't be paid online.`}
+        >
+          Contact the issuer to settle{" "}
+          {view.notPayable.length === 1 ? "it" : "them"}.
+        </StatusNote>
+      ) : null}
+      {view.payable.length > 0 ? (
+        <Form method="post" aria-label="Fines to pay">
           <CsrfField token={csrf} />
-          <p>
-            Didit checks your ID and selfie before you can view or pay fines.
-          </p>
-          <button className="cx-btn primary wide" name="intent" value="verify">
-            Start identity check
+          <input type="hidden" name="intent" value="checkout" />
+          <ul className="cx-fine-list">
+            {view.payable.map((fine) => (
+              <li key={fine.id} className="cx-fine">
+                <label>
+                  <input type="checkbox" name="notice" value={fine.id} />
+                  <span>
+                    <strong>{fine.offence}</strong>
+                    <span>
+                      {fine.issuer} · {shortDate(fine.issued)}
+                    </span>
+                  </span>
+                </label>
+                <span>{rand(fine.payCents)}</span>
+                <Link to={fineHref(fine.id)}>Details</Link>
+              </li>
+            ))}
+          </ul>
+          <button type="submit">
+            Pay {rand(view.totalCents)} on a secure checkout
           </button>
+          <p className="type-caption">
+            On our payment partner&apos;s secure checkout. CarworX never sees
+            your card.
+          </p>
         </Form>
-      ) : payment ? (
-        <PaymentView payment={payment} csrf={csrf} />
-      ) : (
-        <>
-          <Form method="get">
-            <label className="cx-field">
-              Fine lookup
-              <select
-                className="cx-input"
-                name="scenario"
-                defaultValue={scenario}
-              >
-                <option value="sample">Fines available</option>
-                <option value="empty">No results</option>
-                <option value="unavailable">Service unavailable</option>
-              </select>
-            </label>
-            <button className="cx-btn primary wide" type="submit">
-              Check fines
-            </button>
-          </Form>
-          {result === null || result === "unavailable" ? (
-            <p role="status">Fine lookup is unavailable. Try again.</p>
-          ) : (
-            <>
-              <p>Fines checked across {result.coverage.join(", ")}.</p>
-              {result.fines.length === 0 ? (
-                <p role="status">
-                  No fines found across the authorities checked.
-                </p>
-              ) : (
-                <ul className="grid gap-4">
-                  {result.fines.map((fine) => (
-                    <li key={fine.id} className="cx-field">
-                      <strong>
-                        {fine.offence} · {fine.id}
-                      </strong>
-                      <p>
-                        {fine.issuer} · {formatter.format(fine.cents / 100)}
-                      </p>
-                      {fine.payable ? (
-                        <Form method="post">
-                          <CsrfField token={csrf} />
-                          <input type="hidden" name="notice" value={fine.id} />
-                          <button name="intent" value="checkout">
-                            Pay fine
-                          </button>
-                        </Form>
-                      ) : (
-                        <p>{fine.reasonNotPayable}</p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </>
-          )}
-          <Link to="/fines">Official fines guidance</Link>
-        </>
-      )}
-    </AuthPage>
+      ) : null}
+      {view.notPayable.length > 0 ? (
+        <section aria-labelledby="np-h">
+          <h2 id="np-h">Not payable here</h2>
+          <p className="type-caption">These need you to contact the issuer.</p>
+          <ul className="cx-fine-list muted">
+            {view.notPayable.map((fine) => (
+              <li key={fine.id} className="cx-fine">
+                <span>
+                  <strong>{fine.offence}</strong>
+                  <span>
+                    {fine.issuer} · {shortDate(fine.issued)}
+                  </span>
+                  {fine.reasonNotPayable ? (
+                    <span>{fine.reasonNotPayable}</span>
+                  ) : null}
+                </span>
+                <Link to={fineHref(fine.id)}>Details</Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </>
   );
 }

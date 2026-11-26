@@ -5,7 +5,8 @@ export const ROUTES = [
   "/auth/forgot-password",
   "/_dev/components",
   // P2-5 + P2-6 (Claude 22, A15). Forms render closed without Turnstile keys.
-  "/fines",
+  // /fines redirects to the landing's fines band (A2); measure where it lands.
+  "/#fines",
   "/support",
 ];
 export function evaluate(reports) {

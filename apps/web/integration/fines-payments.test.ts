@@ -46,11 +46,20 @@ describe("staging fines payments", () => {
     const path = "/fines/mine";
     const checkout = { form: { intent: "checkout", notice: "GP-2026-118452" } };
 
+    // A6: until the ID check is approved, /fines/mine sends the customer to the
+    // verify page instead of showing any notice.
     const gated = await browser.send(path);
-    expect(gated.status).toBe(200);
-    expectNeutralCopy(gated.body);
-    expect(gated.body).not.toContain("Speeding notice");
-    expect((await browser.send(path, checkout)).status).toBe(403);
+    expect(gated.status).toBe(302);
+    expect(gated.location).toBe("/fines/verify");
+    const verify = await browser.send("/fines/verify");
+    expect(verify.status).toBe(200);
+    expectNeutralCopy(verify.body);
+    expect(verify.body).not.toContain("Speeding notice");
+    const refused = await browser.send(path, checkout);
+    expect(
+      refused.status,
+      `${String(refused.status)} ${refused.location ?? ""} ${refused.body.slice(0, 200)}`,
+    ).toBe(403);
 
     approve(user.id);
     const results = (await browser.send(path)).body;
@@ -70,7 +79,10 @@ describe("staging fines payments", () => {
     const record = `select status,cents,coalesce(receipt_number,'') from public.fines_payments where id='${id}'`;
     expect(sqlRows(record)).toEqual(["created|45000|"]);
     const checkoutPage = (await browser.send(location + "&status=paid")).body;
-    expect(checkoutPage).toContain("Awaiting issuer confirmation");
+    // A created payment shows the checkout state; nothing is "paid" until the issuer confirms.
+    expect(checkoutPage).toContain(
+      "Checkout started. Waiting for the payment outcome.",
+    );
     expectNeutralCopy(checkoutPage);
 
     const callback = await sendRaw(

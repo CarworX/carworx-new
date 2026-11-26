@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { data } from "react-router";
 
+import { OFFICIAL_LINKS } from "../fines/official-links";
 import { CATEGORIES, topCategoryOf } from "../catalogue/taxonomy";
 import homeCss from "../home/home.css?url";
 import { INTRO_GATE } from "../home/introGate";
@@ -466,8 +467,30 @@ function FinesBand() {
             </p>
           </li>
         </ol>
+        <section aria-labelledby="official-h" className="cx-official">
+          <h3 id="official-h">Prefer to check yourself?</h3>
+          <p>
+            You can check with the official sites directly. Type the address
+            yourself rather than following a link in a message.
+          </p>
+          <ul>
+            {OFFICIAL_LINKS.map((l) => (
+              <li key={l.href}>
+                <a href={l.href} rel="noopener noreferrer">
+                  {l.name}
+                </a>{" "}
+                <span className="type-caption">
+                  (official site, opens {new URL(l.href).hostname})
+                </span>
+                <p className="type-body-sm">{l.runBy}</p>
+                <p className="type-body-sm">{l.use}</p>
+                <p className="type-caption">Link checked {l.checked}.</p>
+              </li>
+            ))}
+          </ul>
+        </section>
         <div className="biz-cta">
-          <a className="pill" href="/auth/sign-in?returnTo=%2Ffines">
+          <a className="pill" href="/auth/sign-in?returnTo=%2Ffines%2Fmine">
             <span>Sign in to see your fines</span>
           </a>
           <small>Free to check. You pay only the fine.</small>
