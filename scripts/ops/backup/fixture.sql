@@ -97,3 +97,7 @@ insert into public.review_replies(review_id,author_id,body)
   values ('b2100000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-000000000001','Synthetic business reply.');
 insert into public.review_reports(review_id,reporter_id,reason)
   values ('b2100000-0000-4000-8000-000000000001','5eed0000-0000-4000-8000-000000000002','Synthetic report for the recovery drill.');
+
+-- K4: a queued synthetic request survives restore until Didit has confirmed erasure.
+insert into private.didit_session_deletions(id,provider_session_id)
+  values ('b2200000-0000-4000-8000-000000000001','b2210000-0000-4000-8000-000000000001');
