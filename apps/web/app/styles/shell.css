@@ -1059,4 +1059,80 @@
   .cx-crumbs a:hover {
     color: var(--ink);
   }
+  /* ---------- Signed-in customer home (A4, C3) ---------- */
+  .cx-cust {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-6) 24px var(--space-10);
+  }
+  .cx-cust-hero h1 {
+    margin: 0;
+    font: 600 clamp(28px, 4vw, 40px) / 1.1 var(--font-sans);
+    letter-spacing: -0.02em;
+  }
+  .cx-cust-hero .cx-steel {
+    margin: 4px 0 var(--space-5);
+    color: var(--muted);
+    font: 500 18px var(--font-sans);
+  }
+  .cx-cust-search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: var(--space-8);
+  }
+  .cx-cust-search input {
+    flex: 1;
+    min-width: 0;
+    height: 52px;
+    padding: 0 18px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    font: 500 16px var(--font-sans);
+    color: var(--ink);
+  }
+  .cx-linkbtn {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--blue-ink);
+    font: 600 14px var(--font-sans);
+    cursor: pointer;
+  }
+  .cx-fcard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin: var(--space-10) 0 0;
+    padding: 20px 24px;
+    border-radius: 22px;
+    background: var(--peach, #fbe9dc);
+  }
+  .cx-fcard h2 {
+    margin: 0;
+    font: 600 18px var(--font-sans);
+  }
+  .cx-fcard p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .cx-rcard {
+    display: grid;
+    gap: 4px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: var(--sh-key);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .cx-rcard-name {
+    font: 600 15px var(--font-sans);
+  }
+  .cx-rcard-svc {
+    color: var(--muted);
+    font-size: 13px;
+  }
 }
