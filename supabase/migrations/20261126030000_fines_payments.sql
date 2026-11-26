@@ -16,6 +16,8 @@ alter table public.fines_payments enable row level security;
 revoke all on public.fines_payments from public, anon, authenticated, service_role, forms_server;
 grant select on public.fines_payments to authenticated;
 create index fines_payments_user_created_idx on public.fines_payments(user_id, created_at desc);
+-- Reserve the eight UUID hex digits used in receipts when a payment is created.
+create unique index fines_payments_receipt_prefix_idx on public.fines_payments ((left(id::text, 8)));
 create policy fines_payments_select_own on public.fines_payments
   for select to authenticated using (user_id = (select auth.uid()));
 create policy fines_payments_select_admin on public.fines_payments
@@ -45,10 +47,13 @@ begin
     and notice_ids && v_notices and status in ('created','pending_issuer','paid')) then
     raise exception 'fines_checkout_exists' using errcode = 'P0001';
   end if;
-  v_id := gen_random_uuid();
-  insert into public.fines_payments(id,user_id,notice_ids,cents,provider_ref)
-    values(v_id,p_user,v_notices,p_cents,'sandbox:' || v_id::text);
-  return v_id;
+  loop
+    v_id := gen_random_uuid();
+    insert into public.fines_payments(id,user_id,notice_ids,cents,provider_ref)
+      values(v_id,p_user,v_notices,p_cents,'sandbox:' || v_id::text)
+      on conflict ((left(id::text, 8))) do nothing;
+    if found then return v_id; end if;
+  end loop;
 end $$;
 
 create function private.apply_fines_callback(p_payment uuid, p_status text) returns void
@@ -56,7 +61,7 @@ language sql security definer set search_path = '' as $$
   update public.fines_payments
   set status = p_status,
       settled_at = case when p_status = 'paid' then now() end,
-      receipt_number = case when p_status = 'paid' then 'DEMO-' || id::text end
+      receipt_number = case when p_status = 'paid' then 'CXF-' || upper((left(id::text, 8))) end
   where id = p_payment and provider_ref = 'sandbox:' || id::text
     and status <> p_status
     and status in ('created','pending_issuer')

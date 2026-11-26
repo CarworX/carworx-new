@@ -31,7 +31,7 @@ describe("synthetic fines adapter", () => {
     const unverified = sandboxAdapter(env, auth("in_review"));
     expect(await unverified.lookup("customer")).toBe("unavailable");
     await expect(
-      unverified.startCheckout("customer", ["DEMO-101"]),
+      unverified.startCheckout("customer", ["GP-2026-118452"]),
     ).rejects.toThrow("identity_required");
     expect(await sandboxAdapter(env, auth("approved")).lookup("other")).toBe(
       "unavailable",
@@ -42,14 +42,14 @@ describe("synthetic fines adapter", () => {
     );
     expect(await outsideStaging.lookup("customer")).toBe("unavailable");
     await expect(
-      outsideStaging.startCheckout("customer", ["DEMO-101"]),
+      outsideStaging.startCheckout("customer", ["GP-2026-118452"]),
     ).rejects.toThrow("identity_required");
   });
 
   it("returns synthetic results and refuses non-payable notices", async () => {
     const adapter = sandboxAdapter(env, auth("approved"));
     expect(await adapter.lookup("customer")).toMatchObject({
-      fines: [{ id: "DEMO-101" }, { id: "DEMO-102" }],
+      fines: [{ id: "GP-2026-118452" }, { id: "GP-2026-123817" }],
     });
     expect(
       await sandboxAdapter(env, auth("approved"), "empty").lookup("customer"),
@@ -61,7 +61,7 @@ describe("synthetic fines adapter", () => {
     ).toBe("unavailable");
     expect(parseScenario("unknown")).toBe("sample");
     await expect(
-      adapter.startCheckout("customer", ["DEMO-102"]),
+      adapter.startCheckout("customer", ["GP-2026-123817"]),
     ).rejects.toThrow("invalid_fines_checkout");
   });
 

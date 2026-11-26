@@ -32,20 +32,33 @@ function approve(userId: string) {
   );
 }
 
+function expectNeutralCopy(html: string) {
+  const visible = html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<[^>]+>/g, "");
+  expect(visible).not.toMatch(/\b(?:sandbox|simulat\w*|test(?:ing)?)\b/i);
+}
+
 describe("staging fines payments", () => {
   it("gates fines, reuses checkout, verifies callbacks and protects receipts", async () => {
     const user = await createConfirmedUser("fines-customer");
     const browser = await customer(user.email);
     const path = "/fines/mine";
-    const checkout = { form: { intent: "checkout", notice: "DEMO-101" } };
+    const checkout = { form: { intent: "checkout", notice: "GP-2026-118452" } };
 
     const gated = await browser.send(path);
     expect(gated.status).toBe(200);
+    expectNeutralCopy(gated.body);
     expect(gated.body).not.toContain("Speeding notice");
     expect((await browser.send(path, checkout)).status).toBe(403);
 
     approve(user.id);
-    expect((await browser.send(path)).body).toContain("Speeding notice");
+    const results = (await browser.send(path)).body;
+    expect(results).toContain("Speeding notice");
+    expect(results).toContain("GP-2026-118452");
+    expect(results).toContain("GP-2026-123817");
+    expect(results).toContain("Highveld Metro Traffic");
+    expectNeutralCopy(results);
     const started = await browser.send(path, checkout);
     expect(started.status).toBe(302);
     const location = started.location ?? "";
@@ -53,11 +66,12 @@ describe("staging fines payments", () => {
     expect((await browser.send(path, checkout)).location).toBe(location);
     const id =
       new URL(location, env.APP_ORIGIN).searchParams.get("payment") ?? "";
+    const receipt = "CXF-" + id.slice(0, 8).toUpperCase();
     const record = `select status,cents,coalesce(receipt_number,'') from public.fines_payments where id='${id}'`;
     expect(sqlRows(record)).toEqual(["created|45000|"]);
-    expect((await browser.send(location + "&status=paid")).body).toContain(
-      "Awaiting issuer confirmation",
-    );
+    const checkoutPage = (await browser.send(location + "&status=paid")).body;
+    expect(checkoutPage).toContain("Awaiting issuer confirmation");
+    expectNeutralCopy(checkoutPage);
 
     const callback = await sendRaw(
       new Request(new URL("/api/fines/callback", env.APP_ORIGIN), {
@@ -74,17 +88,17 @@ describe("staging fines payments", () => {
     expect((await simulate("pending_issuer")).status).toBe(302);
     expect(sqlRows(record)).toEqual(["pending_issuer|45000|"]);
     expect((await simulate("paid")).status).toBe(302);
-    expect(sqlRows(record)).toEqual([`paid|45000|DEMO-${id}`]);
+    expect(sqlRows(record)).toEqual([`paid|45000|${receipt}`]);
     expect((await simulate("failed")).status).toBe(302);
-    expect((await browser.send(location)).body).toContain(`DEMO-${id}`);
-    expect(sqlRows(record)).toEqual([`paid|45000|DEMO-${id}`]);
+    expect((await browser.send(location)).body).toContain(receipt);
+    expect(sqlRows(record)).toEqual([`paid|45000|${receipt}`]);
 
     const other = await createConfirmedUser("fines-other");
     approve(other.id);
     const otherBrowser = await customer(other.email);
     const otherPage = await otherBrowser.send(location);
     expect(otherPage.status).toBe(200);
-    expect(otherPage.body).not.toContain(`DEMO-${id}`);
+    expect(otherPage.body).not.toContain(receipt);
     expect(
       (
         await otherBrowser.send(path, {

@@ -123,7 +123,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const status = form.get("status");
   if (typeof paymentId !== "string" || !paymentStatus(status)) {
     return data(
-      { problem: "Invalid test outcome." },
+      { problem: "Choose a valid payment outcome." },
       { status: 400, headers: auth.headers },
     );
   }
@@ -170,7 +170,7 @@ function PaymentView({ payment, csrf }: { payment: Payment; csrf: string }) {
           <input type="hidden" name="intent" value="simulate" />
           <input type="hidden" name="payment" value={payment.id} />
           <label className="cx-field">
-            Test outcome
+            Payment outcome
             <select className="cx-input" name="status">
               <option value="paid">Issuer confirms settlement</option>
               <option value="pending_issuer">Settlement pending</option>
@@ -179,7 +179,7 @@ function PaymentView({ payment, csrf }: { payment: Payment; csrf: string }) {
             </select>
           </label>
           <button className="cx-btn primary wide" type="submit">
-            Run simulated checkout
+            Update payment
           </button>
         </Form>
       )}
@@ -194,8 +194,8 @@ export default function MyFines({
 }: Route.ComponentProps) {
   const { csrf, approved, payment, scenario, result } = loaderData;
   return (
-    <AuthPage title={payment ? "Sample checkout" : "My Fines"}>
-      <p>Sample fines and payments are for testing. No money moves.</p>
+    <AuthPage title={payment ? "Checkout" : "My Fines"}>
+      <p>These notices are fictional. No money moves.</p>
       {actionData?.problem && <p role="alert">{actionData.problem}</p>}
       {!approved ? (
         <Form method="post" reloadDocument>
@@ -213,19 +213,19 @@ export default function MyFines({
         <>
           <Form method="get">
             <label className="cx-field">
-              Sample lookup
+              Fine lookup
               <select
                 className="cx-input"
                 name="scenario"
                 defaultValue={scenario}
               >
-                <option value="sample">Two sample fines</option>
+                <option value="sample">Fines available</option>
                 <option value="empty">No results</option>
                 <option value="unavailable">Service unavailable</option>
               </select>
             </label>
             <button className="cx-btn primary wide" type="submit">
-              Check sample fines
+              Check fines
             </button>
           </Form>
           {result === null || result === "unavailable" ? (
@@ -252,7 +252,7 @@ export default function MyFines({
                           <CsrfField token={csrf} />
                           <input type="hidden" name="notice" value={fine.id} />
                           <button name="intent" value="checkout">
-                            Pay sample fine
+                            Pay fine
                           </button>
                         </Form>
                       ) : (

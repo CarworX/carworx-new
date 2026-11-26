@@ -15,18 +15,19 @@ type Settings = {
   FORMS_DB?: { connectionString?: string };
 };
 
+const issuer = "Highveld Metro Traffic";
 const fines: readonly Fine[] = [
   {
-    id: "DEMO-101",
-    issuer: "Example municipal authority",
+    id: "GP-2026-118452",
+    issuer,
     offence: "Speeding notice",
     issuedAt: "2026-11-15",
     cents: 45000,
     payable: true,
   },
   {
-    id: "DEMO-102",
-    issuer: "Example municipal authority",
+    id: "GP-2026-123817",
+    issuer,
     offence: "Parking notice",
     issuedAt: "2026-11-18",
     cents: 25000,
@@ -179,7 +180,7 @@ export function sandboxAdapter(
         return "unavailable";
       return {
         checkedAt: new Date().toISOString(),
-        coverage: ["Example municipal authority"],
+        coverage: [issuer],
         fines: scenario === "empty" ? [] : [...fines],
       };
     },
