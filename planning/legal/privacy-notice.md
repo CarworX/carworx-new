@@ -17,7 +17,7 @@
 
 ## 2. What this covers
 
-This notice covers carworx.app: searching for car-service providers, reading listings and guidance, creating an account, applying to list a business, and contacting us. During the free pilot **no payments are taken** on CarworX.
+This notice covers carworx.app: searching for car-service providers, reading listings and guidance, creating an account, applying to list a business, and contacting us. While CarworX is free to use, **no payments are taken** on CarworX.
 
 ## 3. What we collect, why, and on what basis
 
@@ -36,7 +36,7 @@ This notice covers carworx.app: searching for car-service providers, reading lis
 | Marketing email permission | Only if you tick the box | To send news. The box is **never** ticked for you, and not unticking a box never counts as permission | (a) consent; s69(1)(a); Regulations reg 6.1 (written consent, free) and 6.4 ("opt-out shall not constitute consent") | No |
 | Security logs, with addresses and coordinates removed | Every request | To keep the site working and safe | (f) | — |
 
-We **don't** collect ID numbers, card details or bank details during the free pilot. We don't ask **customers** for a home or street address. **Mobile providers** do give us a private base location: if a provider uses their home, that is an exact home location, which is why we advise against it (terms of use, section 7). *Basis: PLAN §9.2 "No ID numbers in v1"; POPIA s10 (minimality).*
+We **don't** collect ID numbers, card details or bank details while CarworX is free to use. We don't ask **customers** for a home or street address. **Mobile providers** do give us a private base location: if a provider uses their home, that is an exact home location, which is why we advise against it (terms of use, section 7). *Basis: PLAN §9.2 "No ID numbers in v1"; POPIA s10 (minimality).*
 
 ## 4. Cookies
 
