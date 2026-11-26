@@ -1,6 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import { APP, Browser, stack } from "./harness";
+import {
+  APP,
+  Browser,
+  createConfirmedUser,
+  PASSWORD,
+  sqlRows,
+  stack,
+  workerEnv,
+} from "./harness";
 
 // FIXTURE-ONLY Google tests (Claude 10 B1, PLAN §11 A3). No Google client,
 // no Google account and no Google network call: these check the app's side
@@ -144,4 +152,104 @@ describe("FIXTURE Google sign-in: callback outcomes", () => {
     });
     expect(reply.status).toBe(403);
   });
+});
+
+// Fake only Google's exchange. The session and consent write use local Supabase.
+describe("Google account terms", () => {
+  it.each([
+    ["pkce", true, false, "1"],
+    ["pkce", false, false, "0"],
+    ["id_token", true, false, "1"],
+    ["id_token", false, false, "0"],
+    ["pkce", true, true, "0"],
+    ["id_token", true, true, "0"],
+  ] as const)(
+    "Google %s with consent=%s and closing=%s records %s consent rows",
+    async (grant, consent, closing, count) => {
+      const user = await createConfirmedUser("google-terms");
+      if (closing) {
+        sqlRows(
+          `insert into private.account_closures (user_id) values ('${user.id}')`,
+        );
+      }
+      const realFetch = globalThis.fetch;
+      const session = await realFetch(
+        `${stack.apiUrl}/auth/v1/token?grant_type=password`,
+        {
+          method: "POST",
+          headers: {
+            apikey: stack.anonKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: user.email, password: PASSWORD }),
+        },
+      );
+      expect(session.status).toBe(200);
+      const browser = new Browser({
+        ...workerEnv,
+        GOOGLE_WEB_CLIENT_ID: "123-synthetic.apps.googleusercontent.com",
+        SEARCH_LIMITER: {
+          idFromName: (name: string) => name,
+          get: () => ({
+            fetch: () => Promise.resolve(Response.json({ allowed: true })),
+          }),
+        },
+      });
+      const exchange = vi
+        .spyOn(globalThis, "fetch")
+        .mockImplementation((input, init) => {
+          const url = new URL(input instanceof Request ? input.url : input);
+          if (
+            url.origin === stack.apiUrl &&
+            url.pathname === "/auth/v1/token" &&
+            url.searchParams.get("grant_type") === grant
+          )
+            return Promise.resolve(session.clone());
+          return realFetch(input, init);
+        });
+      try {
+        await browser.send("/auth/sign-in");
+        if (grant === "pkce") {
+          const start = await browser.send("/auth/sign-in", {
+            form: { intent: "google", consent: "on", returnTo: "/account" },
+          });
+          expect(start.status).toBe(302);
+          if (!consent) browser.jar.delete("__Host-cx-google-terms");
+          const callback = await browser.send(
+            "/auth/callback?code=synthetic-code",
+          );
+          expect(callback.status).toBe(302);
+          expect(callback.location).toBe("/account");
+        } else {
+          const reply = await browser.send("/auth/sign-in", {
+            form: {
+              intent: "google-id",
+              googleCredential: "synthetic.token.signature",
+              returnTo: "/account",
+              ...(consent ? { consent: "on" } : {}),
+            },
+          });
+          if (consent) {
+            expect(reply.status).toBe(302);
+            expect(reply.location).toBe("/account");
+          } else expect(reply.status).toBe(400);
+        }
+        if (closing) {
+          const account = await browser.send("/account");
+          expect(account.status).toBe(302);
+          expect(account.location).toBe("/account/closing");
+          const page = await browser.send("/account/closing");
+          expect(page.status).toBe(200);
+          expect(page.body).toContain("Reinstate my account");
+        }
+        expect(
+          sqlRows(
+            `select count(*) from public.consents where user_id = '${user.id}' and purpose = 'account_terms'`,
+          ),
+        ).toEqual([count]);
+      } finally {
+        exchange.mockRestore();
+      }
+    },
+  );
 });

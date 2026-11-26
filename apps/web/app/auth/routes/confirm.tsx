@@ -2,6 +2,7 @@ import { data, Form, Link, redirect } from "react-router";
 
 import { FAILURE_MESSAGES } from "../errors";
 import { field } from "../forms";
+import { recordAccountTerms } from "../account-terms.server";
 import { authRequest } from "../session.server";
 import {
   RETURN_COOKIE,
@@ -69,6 +70,15 @@ export async function action({ request, context }: Route.ActionArgs) {
         : "/account/profile?email=confirmed",
       { headers: auth.headers },
     );
+  if (
+    verified.session &&
+    !(await recordAccountTerms(
+      auth,
+      verified.user?.user_metadata["terms_version"],
+    ))
+  ) {
+    return data({ failed: true, type }, { status: 503, headers: auth.headers });
+  }
   // D-097: a sign-up that started from a business page goes back there.
   const back = safeReturnTo(
     readCookie(request, RETURN_COOKIE),

@@ -1,5 +1,9 @@
 import { redirect } from "react-router";
 
+import {
+  GOOGLE_TERMS_COOKIE,
+  recordAccountTerms,
+} from "../account-terms.server";
 import { signedInDestination } from "../after-sign-in.server";
 import { authRequest } from "../session.server";
 import {
@@ -34,6 +38,11 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     "Set-Cookie",
     serializeAppCookie(RETURN_COOKIE, "", { maxAge: 0 }),
   );
+  const termsVersion = readCookie(request, GOOGLE_TERMS_COOKIE);
+  auth.headers.append(
+    "Set-Cookie",
+    serializeAppCookie(GOOGLE_TERMS_COOKIE, "", { maxAge: 0 }),
+  );
   const signup = readCookie(request, "__Host-cx-google-signup") === "1";
   if (signup)
     auth.headers.append(
@@ -63,6 +72,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   if (error !== null) {
     return failure("oauth_failed");
   }
+  if (!(await recordAccountTerms(auth, termsVersion)))
+    return new Response(null, { status: 503, headers: auth.headers });
   const destination = requested || (await signedInDestination(auth.supabase));
   return redirect(destination, { headers: auth.headers });
 }
