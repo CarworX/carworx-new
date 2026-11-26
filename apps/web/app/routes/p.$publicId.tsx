@@ -27,6 +27,7 @@ import { EnquiryGate, useEnquiryDraft } from "../sites/EnquiryGate";
 import coverCss from "../sites/cover.css?url";
 import gateCss from "../sites/gate.css?url";
 import { SITES_LINKS, SitesShell } from "../sites/SitesShell";
+import { reviewRatingText } from "../ui/public/ListingResult";
 import { HumanCheck } from "../ui/public/HumanCheck";
 import { rememberView } from "../home/recent";
 import type { Route } from "./+types/p.$publicId";
@@ -179,6 +180,7 @@ export default function ListingPage({
         ? "Workshop · also comes to you"
         : "Comes to you";
   const now = statusText(status);
+  const rating = reviewRatingText(listing);
   return (
     <SitesShell>
       <RecordView
@@ -203,6 +205,7 @@ export default function ListingPage({
         />
       ) : null}
       <p className="lead">{listing.description}</p>
+      {rating && <p className="muted">{rating}</p>}
       <div className="bar">
         {listing.verification_labels.map((label) => (
           <span key={label} className="tag green">

@@ -15,6 +15,17 @@ export interface ListingSummary {
   distance_km?: number | null;
   /** R2 key of the cover photo (D-098), when the listing has one. */
   cover_key?: string | null;
+  rating_avg?: number | null;
+  rating_count?: number;
+}
+
+export function reviewRatingText({
+  rating_avg,
+  rating_count,
+}: Pick<ListingSummary, "rating_avg" | "rating_count">): string | null {
+  if (rating_count === 0) return "New";
+  if (!rating_count || typeof rating_avg !== "number") return null;
+  return `${rating_avg.toFixed(1)} out of 5 · ${String(rating_count)} ${rating_count === 1 ? "review" : "reviews"}`;
 }
 
 /**

@@ -47,6 +47,7 @@
 | Outbox, notifications | 3 | Delivery | System, admin | **90 days** (PLAN) | s14(1) |
 | Integration events (raw) | 3 | Reconciliation | System, admin | Reconciled → **90 days** (PLAN) | s14(1) |
 | Reviews | 3 | Trust | Public (text), admin | While the listing is live; on account closure the author's name is removed and the text kept **de-identified** | s14(4) de-identify; confirm before Phase 3 |
+| Business reviews | K5 (proposed) | Customer feedback | Public when visible; subject and AAL2 platform admin can read hidden reviews | Keep review text for the life of the listing. On final account closure, replace the author label with Former customer and clear the account link. | D-099, K5; owner approval pending |
 | Didit identity outcome | K2 (proposed) | Verify access to fines | Subject, AAL2 review admin | While the account is active, delete at final closure. Hosted biometric evidence stays in Didit and uses the shortest supported retention setting, pending owner approval and verification. | D-099, K4 erasure hook |
 | Fines payment records | K3 (proposed) | Receipts and reconciliation | Subject, AAL2 platform admin | Keep five years under D-096. Final account erasure removes the user link and keeps the payment record. Financial holds take precedence. | D-099, K3; owner approval pending |
 | Financial records | G-LIVEPAY | Tax and accounting | Admin | Return submitted → **at least 5 years**, plus while any audit, objection or appeal is open | TAA s29(3)(a). **None exist in Phase 2.** Accountant review (D-047). OQ-R2 |
