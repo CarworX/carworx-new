@@ -11,7 +11,7 @@ import { Client } from "pg";
 import type { SearchArgs, SearchRow } from "./handler";
 
 export const SEARCH_SQL =
-  "select * from api.search_listings($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)";
+  "select * from api.search_listings($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)";
 
 export function createCatalogueSearch(connectionString: string) {
   return async (args: SearchArgs): Promise<SearchRow[]> => {
@@ -35,6 +35,7 @@ export function createCatalogueSearch(connectionString: string) {
         args.afterId,
         args.limit,
         args.q,
+        args.comesToYou === true,
       ]);
       return result.rows;
     } finally {
