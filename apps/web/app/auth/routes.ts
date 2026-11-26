@@ -28,6 +28,7 @@ export const authRoutes: RouteConfigEntry[] = [
   // P2-4 (Claude 21): signed-in provider pages.
   route("provider", "routes/provider.tsx"),
   route("provider/apply", "routes/provider.apply.tsx"),
+  route("provider/reviews", "routes/provider.reviews.tsx"),
   route("provider/get-listed/claim", "routes/provider.get-listed.claim.tsx"),
   route("provider/get-listed/:step", "routes/provider.get-listed.$step.tsx"),
   route("provider/setup/:task/:step", "routes/provider.setup.$task.$step.tsx"),
@@ -39,6 +40,8 @@ export const authRoutes: RouteConfigEntry[] = [
   // A7 (B-21): the ID checks Didit sent for a second look.
   route("admin/id-checks", "routes/admin.id-checks.tsx"),
   route("admin/id-checks/:id", "routes/admin.id-checks.$id.tsx"),
+  route("admin/reviews", "routes/admin.reviews.tsx"),
+  route("admin/reviews/:id", "routes/admin.reviews.$id.tsx"),
   route("admin/listings", "routes/admin.listings.tsx"),
   route("admin/today", "routes/admin.today.tsx"),
   route("admin/listings/:publicId", "routes/admin.listings.$publicId.tsx"),

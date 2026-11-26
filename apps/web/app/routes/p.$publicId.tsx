@@ -390,6 +390,7 @@ export default function ListingPage({
           ) : (
             <ReviewsSection
               reviews={reviews}
+              csrf={loaderData.csrf}
               aggregate={aggregate}
               business={listing.display_name}
               sort={sort}

@@ -5,6 +5,8 @@
  */
 import { Link } from "react-router";
 
+import { CsrfField } from "../auth/ui";
+import { REPORT_REASONS } from "../reviews/report";
 import {
   ratingBreakdown,
   type Review,
@@ -121,9 +123,13 @@ export function SortChips({
 export function ReviewItem({
   review,
   business,
+  reportTo,
+  csrf,
 }: {
   review: Review;
   business: string;
+  reportTo: string;
+  csrf: string;
 }) {
   return (
     <article className="review-item" aria-labelledby={`review-${review.id}`}>
@@ -155,12 +161,37 @@ export function ReviewItem({
           <p>{review.reply.body}</p>
         </aside>
       ) : null}
+      <details className="cx-report">
+        <summary>Report this review</summary>
+        <form method="post" action={reportTo}>
+          <CsrfField token={csrf} />
+          <p className="small">
+            Our team checks every report. The reviewer isn&apos;t told who
+            reported it.
+          </p>
+          <fieldset>
+            <legend>Why?</legend>
+            {REPORT_REASONS.map((reason) => (
+              <label key={reason} className="report-option">
+                <input type="radio" name="reason" value={reason} required />{" "}
+                {reason}
+              </label>
+            ))}
+          </fieldset>
+          <label>
+            Anything else? (optional)
+            <textarea name="note" maxLength={500} rows={2} />
+          </label>
+          <button type="submit">Send report</button>
+        </form>
+      </details>
     </article>
   );
 }
 
 export function ReviewsSection({
   reviews,
+  csrf,
   aggregate,
   business,
   sort,
@@ -168,6 +199,7 @@ export function ReviewsSection({
   eligibility,
 }: {
   reviews: readonly Review[];
+  csrf: string;
   aggregate: { average: number | null; count: number };
   business: string;
   sort: ReviewSort;
@@ -230,7 +262,13 @@ export function ReviewsSection({
           />
           <SortChips current={sort} pathname={pathname} />
           {reviews.map((review) => (
-            <ReviewItem key={review.id} review={review} business={business} />
+            <ReviewItem
+              key={review.id}
+              review={review}
+              business={business}
+              reportTo={`${pathname}/reviews/${review.id}/report`}
+              csrf={csrf}
+            />
           ))}
         </>
       )}
