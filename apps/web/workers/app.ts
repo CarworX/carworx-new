@@ -1,3 +1,7 @@
+import {
+  DIDIT_WEBHOOK_PATH,
+  dispatchDiditWebhook,
+} from "../app/routes/api.identity.didit";
 import { createRequestHandler } from "react-router";
 
 import { mediaBucket } from "../app/server/media/cover.server";
@@ -42,7 +46,14 @@ export default {
   fetch(request, env, ctx) {
     // This exact endpoint uses raw-body Svix authentication instead of a browser
     // CSRF token. All other requests retain the full T5 security boundary.
-    if (new URL(request.url).pathname === MAIL_WEBHOOK_PATH) {
+    const path = new URL(request.url).pathname;
+    if (
+      path === DIDIT_WEBHOOK_PATH ||
+      path.startsWith(DIDIT_WEBHOOK_PATH + "/")
+    ) {
+      return dispatchDiditWebhook(request, env);
+    }
+    if (path === MAIL_WEBHOOK_PATH) {
       return dispatchMailWebhook(request, env);
     }
     // Every request passes the T5 boundary: Origin and CSRF checks before the

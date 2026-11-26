@@ -79,3 +79,7 @@ insert into private.ownership_offers(organisation_id, from_user, to_membership, 
 insert into private.listing_closures(listing_public_id, organisation_id)
   select l.public_id, l.organisation_id from public.listings l
   where l.public_id = 'ca7c1000-0000-4000-8000-000000000003';
+
+-- K2: one synthetic identity outcome to verify export and restore.
+insert into private.identity_checks(user_id, provider_session_id, status, attempt)
+  values ('5eed0000-0000-4000-8000-000000000001', 'b1900000-0000-4000-8000-000000000001', 'in_review', 1);
