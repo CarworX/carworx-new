@@ -84,7 +84,7 @@ create trigger reviews_anonymize_author before update of author_id on public.rev
   for each row when (old.author_id is not null and new.author_id is null)
   execute function private.anonymize_review_author();
 
-create function public.can_review(p_listing uuid) returns boolean
+create function private.can_review(p_listing uuid) returns boolean
 language sql stable security definer set search_path = '' as $$
   select exists (select from public.enquiries e
     where e.sender_user_id = auth.uid() and e.listing_public_id = p_listing)
@@ -92,7 +92,7 @@ $$;
 
 -- The author can discover their own row without exposing account UUIDs on
 -- publicly visible reviews.
-create function public.my_review(p_listing uuid) returns table (
+create function private.my_review(p_listing uuid) returns table (
   id uuid, rating smallint, body text, service_slug text, status text, created_at timestamptz, edited_at timestamptz
 )
 language sql stable security definer set search_path = '' as $$
@@ -100,7 +100,7 @@ language sql stable security definer set search_path = '' as $$
   from public.reviews r where r.listing_public_id = p_listing and r.author_id = auth.uid()
 $$;
 
-create function public.upsert_review(p_listing uuid, p_rating smallint, p_body text, p_service text default null)
+create function private.upsert_review(p_listing uuid, p_rating smallint, p_body text, p_service text default null)
 returns uuid language plpgsql security definer set search_path = '' as $$
 declare
   v_user uuid := auth.uid();
@@ -133,7 +133,7 @@ begin
   end if;
 
   select organisation_id into v_org from public.listings where public_id = p_listing and status = 'live';
-  if not found or not public.can_review(p_listing) then
+  if not found or not private.can_review(p_listing) then
     raise exception 'not_allowed' using errcode = '42501';
   end if;
   select regexp_split_to_array(btrim(display_name), '[[:space:]]+') into v_names
@@ -148,7 +148,7 @@ begin
   return v_id;
 end $$;
 
-create function public.delete_my_review(p_id uuid) returns void
+create function private.delete_my_review(p_id uuid) returns void
 language plpgsql security definer set search_path = '' as $$
 declare v_listing uuid;
 begin
@@ -158,7 +158,7 @@ begin
   delete from public.reviews where id = p_id and author_id = auth.uid();
 end $$;
 
-create function public.reply_to_review(p_id uuid, p_body text) returns void
+create function private.reply_to_review(p_id uuid, p_body text) returns void
 language plpgsql security definer set search_path = '' as $$
 declare v_user uuid := auth.uid(); v_org uuid;
 begin
@@ -175,7 +175,7 @@ begin
   on conflict (review_id) do update set body = excluded.body, author_id = excluded.author_id, edited_at = now();
 end $$;
 
-create function public.report_review(p_id uuid, p_reason text) returns void
+create function private.report_review(p_id uuid, p_reason text) returns void
 language plpgsql security definer set search_path = '' as $$
 declare v_user uuid := auth.uid();
 begin
@@ -190,7 +190,7 @@ begin
   on conflict (review_id, reporter_id) do nothing;
 end $$;
 
-create function public.admin_review_queue() returns table (
+create function private.admin_review_queue() returns table (
   id uuid, listing_public_id uuid, author_display text, rating smallint, body text,
   status text, hidden_reason text, report_count integer, first_reported_at timestamptz
 )
@@ -207,7 +207,7 @@ begin
     group by r.id order by min(rr.created_at), r.id;
 end $$;
 
-create function public.admin_moderate_review(p_id uuid, p_decision text, p_reason text) returns void
+create function private.admin_moderate_review(p_id uuid, p_decision text, p_reason text) returns void
 language plpgsql security definer set search_path = '' as $$
 declare v_reason text; v_org uuid; v_status text;
 begin
@@ -232,6 +232,52 @@ begin
     values (auth.uid(), v_org, 'update', 'reviews', p_id::text,
       jsonb_build_object('decision', p_decision, 'reason', v_reason, 'previous_status', v_status));
 end $$;
+
+revoke all on function private.can_review(uuid), private.my_review(uuid), private.upsert_review(uuid,smallint,text,text),
+  private.delete_my_review(uuid), private.reply_to_review(uuid,text), private.report_review(uuid,text),
+  private.admin_review_queue(), private.admin_moderate_review(uuid,text,text) from public, anon, authenticated, service_role;
+grant execute on function private.can_review(uuid), private.my_review(uuid), private.upsert_review(uuid,smallint,text,text),
+  private.delete_my_review(uuid), private.reply_to_review(uuid,text), private.report_review(uuid,text),
+  private.admin_review_queue(), private.admin_moderate_review(uuid,text,text) to authenticated;
+
+-- Keep definer functions outside the API-exposed schema.
+create function public.can_review(p_listing uuid) returns boolean
+language sql stable security invoker set search_path = '' as $$
+  select private.can_review(p_listing)
+$$;
+create function public.my_review(p_listing uuid) returns table (
+  id uuid, rating smallint, body text, service_slug text, status text, created_at timestamptz, edited_at timestamptz
+)
+language sql stable security invoker set search_path = '' as $$
+  select * from private.my_review(p_listing)
+$$;
+create function public.upsert_review(p_listing uuid, p_rating smallint, p_body text, p_service text default null)
+returns uuid language sql security invoker set search_path = '' as $$
+  select private.upsert_review(p_listing, p_rating, p_body, p_service)
+$$;
+create function public.delete_my_review(p_id uuid) returns void
+language sql security invoker set search_path = '' as $$
+  select private.delete_my_review(p_id)
+$$;
+create function public.reply_to_review(p_id uuid, p_body text) returns void
+language sql security invoker set search_path = '' as $$
+  select private.reply_to_review(p_id, p_body)
+$$;
+create function public.report_review(p_id uuid, p_reason text) returns void
+language sql security invoker set search_path = '' as $$
+  select private.report_review(p_id, p_reason)
+$$;
+create function public.admin_review_queue() returns table (
+  id uuid, listing_public_id uuid, author_display text, rating smallint, body text,
+  status text, hidden_reason text, report_count integer, first_reported_at timestamptz
+)
+language sql stable security invoker set search_path = '' as $$
+  select * from private.admin_review_queue()
+$$;
+create function public.admin_moderate_review(p_id uuid, p_decision text, p_reason text) returns void
+language sql security invoker set search_path = '' as $$
+  select private.admin_moderate_review(p_id, p_decision, p_reason)
+$$;
 
 revoke all on function public.can_review(uuid), public.my_review(uuid), public.upsert_review(uuid,smallint,text,text),
   public.delete_my_review(uuid), public.reply_to_review(uuid,text), public.report_review(uuid,text),
