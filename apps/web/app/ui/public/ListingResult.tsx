@@ -19,6 +19,36 @@ export interface ListingSummary {
   rating_count?: number;
 }
 
+/** Five stars for an average, as glyphs; screen readers get the text beside them. */
+export function ratingStars(average: number): string {
+  const full = Math.min(5, Math.max(0, Math.round(average)));
+  return "★".repeat(full) + "☆".repeat(5 - full);
+}
+
+/** The rating as a line: stars (when rated) then the count, or "New" with none. */
+export function RatingLine({
+  listing,
+  className,
+}: {
+  listing: Pick<ListingSummary, "rating_avg" | "rating_count">;
+  className?: string;
+}) {
+  const text = reviewRatingText(listing);
+  if (text === null) return null;
+  const rated =
+    typeof listing.rating_avg === "number" && (listing.rating_count ?? 0) > 0;
+  return (
+    <span className={className}>
+      {rated ? (
+        <span className="stars" aria-hidden="true">
+          {ratingStars(listing.rating_avg ?? 0)}{" "}
+        </span>
+      ) : null}
+      {text}
+    </span>
+  );
+}
+
 export function reviewRatingText({
   rating_avg,
   rating_count,
