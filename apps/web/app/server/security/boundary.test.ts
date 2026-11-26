@@ -288,6 +288,59 @@ describe("response finalisation", () => {
     }
   });
 
+  it("allows only hosted Didit session redirects from staging fines POSTs", () => {
+    const staging = { ...config, environment: "staging" as const };
+    for (const [path, method, target, settings, status] of [
+      [
+        "/fines/verify",
+        "POST",
+        "https://verify.didit.me/en/session/test-token",
+        staging,
+        302,
+      ],
+      [
+        "/fines/verify",
+        "GET",
+        "https://verify.didit.me/en/session/test-token",
+        staging,
+        500,
+      ],
+      [
+        "/account",
+        "POST",
+        "https://verify.didit.me/en/session/test-token",
+        staging,
+        500,
+      ],
+      [
+        "/fines/verify",
+        "POST",
+        "https://verify.didit.me/settings",
+        staging,
+        500,
+      ],
+      [
+        "/fines/verify",
+        "POST",
+        "https://verify.didit.me/en/session/test-token",
+        config,
+        500,
+      ],
+    ] as const) {
+      const response = new Response(null, {
+        status: 302,
+        headers: { Location: target },
+      });
+      expect(
+        finalizeResponse(
+          new Request(APP + path, { method }),
+          response,
+          settings,
+        ).status,
+      ).toBe(status);
+    }
+  });
+
   it("adds the baseline security headers", () => {
     const headers = finalizeResponse(
       new Request(`${APP}/auth/sign-in`),

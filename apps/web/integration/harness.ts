@@ -75,6 +75,10 @@ export const workerEnv = {
 
 const ctx = { waitUntil() {}, passThroughOnException() {}, props: {} };
 
+export async function sendRaw(request: Request, env: unknown) {
+  return (await loadWorker()).fetch(request, env, ctx);
+}
+
 export interface Reply {
   status: number;
   headers: Headers;

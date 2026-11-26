@@ -1,3 +1,4 @@
+import { isHostedDiditSession } from "../identity/hosted-url";
 import {
   MAX_UPLOAD_REQUEST,
   PHOTO_TOO_LARGE,
@@ -154,6 +155,7 @@ export async function checkMutation(
 }
 
 function isAllowedRedirect(
+  request: Request,
   location: string,
   appOrigin: string,
   config: ServerConfig | undefined,
@@ -165,6 +167,13 @@ function isAllowedRedirect(
     return false;
   }
   if (url.origin === appOrigin) return true;
+  if (
+    config?.environment === "staging" &&
+    request.method === "POST" &&
+    /^\/fines(?:\/|$)/.test(new URL(request.url).pathname) &&
+    isHostedDiditSession(url)
+  )
+    return true;
   return (
     config !== undefined &&
     url.origin === config.supabaseUrl &&
@@ -201,7 +210,10 @@ export function finalizeResponse(
     return plain(500, "Internal error");
   }
   const location = headers.get("Location");
-  if (location !== null && !isAllowedRedirect(location, appOrigin, config)) {
+  if (
+    location !== null &&
+    !isAllowedRedirect(request, location, appOrigin, config)
+  ) {
     return plain(500, "Internal error");
   }
   const outgoing = new Response(response.body, {
