@@ -264,8 +264,7 @@ function FinesBody({
       <section>
         <h2>No fines on your ID.</h2>
         <p>
-          Nothing to pay right now. We check again each time you open this page,
-          and we&apos;ll email you if a new fine appears.
+          Nothing to pay right now. We check again each time you open this page.
         </p>
         <Link to="/">Back to home</Link>
       </section>

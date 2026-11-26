@@ -59,7 +59,7 @@ describe("/fines/mine", () => {
   it("none: no fines on the ID, and when it is checked again", () => {
     const html = render({ view: { kind: "none" } });
     expect(html).toContain("No fines on your ID.");
-    expect(html).toContain("we&#x27;ll email you if a new fine appears.");
+    expect(html).toContain("We check again each time you open this page.");
   });
 
   it("list: the amount to settle, the pay button, and the last check in SAST", () => {
