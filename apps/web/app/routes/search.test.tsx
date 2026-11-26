@@ -92,7 +92,9 @@ describe("/search page: the Sites preview search screen", () => {
       h.match(/href="\/p\/de3c1000-0000-4000-8000-000000000001"/g),
     ).toHaveLength(1);
     expect(h).toContain("Identity checked");
-    expect(h).toContain("Gauteng · 0.4 km straight-line");
+    expect(h).toContain("Gauteng");
+    expect(h).toContain("0.4 km");
+    expect(h).toContain("straight-line");
     expect(h).toContain('aria-current="page"');
     expect(h).toContain("1 result");
     const m0 = /.{0,60}(fictional|example listing|demo).{0,40}/i.exec(h);

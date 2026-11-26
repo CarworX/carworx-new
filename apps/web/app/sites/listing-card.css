@@ -1,0 +1,243 @@
+/*
+ * Listing card, Option A (listing card redesign). Unlayered so it overrides the
+ * older card rules in shell.css. The whole card is one link (a stretched link);
+ * the Verified disclosure and the save heart sit above it, outside the link.
+ */
+.cx-lcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px var(--hair),
+    var(--sh-1);
+  color: var(--ink);
+}
+.cx-lcard-link {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 22px;
+}
+.cx-lcard-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+}
+.cx-lcard:focus-within {
+  outline: none;
+}
+.cx-lcard-link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* The photo fills the top, 16:10. */
+.cx-lcard .cover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 22px 22px 0 0;
+  background: linear-gradient(
+    135deg,
+    var(--sky),
+    var(--surface) 60%,
+    var(--peach)
+  );
+}
+.cx-lcard .cover.t2 {
+  background: linear-gradient(
+    135deg,
+    var(--note),
+    var(--surface) 55%,
+    var(--sky)
+  );
+}
+.cx-lcard .cover.t3 {
+  background: linear-gradient(
+    135deg,
+    var(--ok-bg),
+    var(--surface) 55%,
+    var(--sky)
+  );
+}
+.cx-lcard .cover.t4 {
+  background: linear-gradient(
+    135deg,
+    var(--peach),
+    var(--surface) 55%,
+    var(--canvas)
+  );
+}
+.cx-lcard .cover img.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cx-lcard .cover img.obj {
+  width: 72px;
+  height: 72px;
+}
+/* With no photo, the initials sit bottom-left on a white tile (as in Option A). */
+.cx-lcard .cover .initials {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  min-width: 48px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  font: 600 18px var(--font-sans);
+  color: var(--ink);
+  text-align: center;
+}
+
+/* The status pill, top-left, on the photo. Colour plus a shape plus words. */
+.cx-lcard .status-on-photo {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 124px);
+}
+.cx-openstate {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(13, 15, 18, 0.12);
+  font: 600 13px var(--font-sans);
+  white-space: normal;
+}
+.cx-openstate.open {
+  color: var(--ok);
+}
+.cx-openstate.closing {
+  color: var(--warn);
+}
+.cx-openstate.closed {
+  color: var(--err);
+}
+.cx-openstate.none {
+  color: var(--muted);
+}
+
+/* Verified: a disclosure, top-right, above the link. */
+.cx-verified {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
+.cx-verified summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(13, 15, 18, 0.12);
+  font: 600 13px var(--font-sans);
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+.cx-verified summary::-webkit-details-marker {
+  display: none;
+}
+.cx-verified .count {
+  color: var(--ok);
+}
+.cx-verified ul {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 220px;
+  margin: 0;
+  padding: 12px 14px;
+  list-style: none;
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--sh-2, 0 8px 24px rgba(13, 15, 18, 0.16));
+  font: 400 13px var(--font-sans);
+}
+.cx-verified ul li {
+  padding: 3px 0;
+}
+.cx-verified[open] ul,
+.cx-verified:hover ul,
+.cx-verified:focus-within ul {
+  display: block;
+}
+
+/* Body: name, rating, where, then chips. */
+.cx-lcard .body {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px 16px;
+}
+.cx-lcard h3 {
+  margin: 0;
+  font: 600 17px var(--font-sans);
+  letter-spacing: -0.01em;
+}
+.cx-lcard .meta {
+  font: 400 13px var(--font-sans);
+  color: var(--muted);
+}
+.cx-lcard .where {
+  font: 500 13px var(--font-sans);
+  color: var(--graphite);
+}
+.cx-lcard .card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cx-lcard .chip {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--frost, var(--canvas));
+  font: 500 12px var(--font-sans);
+  color: var(--graphite);
+}
+.cx-lcard .chip.outline {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--hair-strong, var(--hair));
+}
+
+/* Save heart: above the link, top-right, only when the flag is on. */
+.cx-save {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(13, 15, 18, 0.12);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

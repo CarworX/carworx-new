@@ -103,7 +103,7 @@ describe("/ home: browse first (D-097)", () => {
       `href="/p/${catalogue.listings[0]?.public_id ?? ""}"`,
     );
     expect(html).toContain("Shine Studio");
-    expect(html).toContain("Comes to you · Gauteng");
+    expect(html).toContain("Comes to you");
     expect(html).toContain('class="cx-lcard"');
     // No location filter: never a coverage claim or a distance.
     expect(text).not.toContain("serves your area");
