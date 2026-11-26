@@ -33,51 +33,71 @@ interface Decision {
 export async function loader({ request, context }: Route.LoaderArgs) {
   const admin = await requireAdmin(request, context.security);
   const db = admin.supabase;
-  const [applications, disputes, claims, support, businesses, decisions] =
-    await Promise.all([
-      db
-        .from("listings")
-        .select("public_id, display_name, submitted_at, created_at", {
-          count: "exact",
-        })
-        .eq("status", "submitted")
-        .order("submitted_at", { ascending: true, nullsFirst: true })
-        .order("public_id")
-        .limit(5)
-        .overrideTypes<Application[], { merge: false }>(),
-      db
-        .from("listing_claims")
-        .select("id, listing_public_id, created_at", { count: "exact" })
-        .eq("status", "disputed")
-        .order("created_at")
-        .order("id")
-        .limit(5)
-        .overrideTypes<Claim[], { merge: false }>(),
-      db
-        .from("listing_claims")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "submitted"),
-      db
-        .from("support_cases")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "open"),
-      db
-        .from("listings")
-        .select("public_id", { count: "exact", head: true })
-        .eq("status", "live"),
-      db
-        .from("listing_decisions")
-        .select("id, listing_public_id, decision, decided_at")
-        .eq("decided_by", admin.user.id)
-        .order("decided_at", { ascending: false })
-        .order("id")
-        .limit(5)
-        .overrideTypes<Decision[], { merge: false }>(),
-    ]);
+  const [
+    applications,
+    disputes,
+    claims,
+    support,
+    businesses,
+    decisions,
+    reviews,
+  ] = await Promise.all([
+    db
+      .from("listings")
+      .select("public_id, display_name, submitted_at, created_at", {
+        count: "exact",
+      })
+      .eq("status", "submitted")
+      .order("submitted_at", { ascending: true, nullsFirst: true })
+      .order("public_id")
+      .limit(5)
+      .overrideTypes<Application[], { merge: false }>(),
+    db
+      .from("listing_claims")
+      .select("id, listing_public_id, created_at", { count: "exact" })
+      .eq("status", "disputed")
+      .order("created_at")
+      .order("id")
+      .limit(5)
+      .overrideTypes<Claim[], { merge: false }>(),
+    db
+      .from("listing_claims")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "submitted"),
+    db
+      .from("support_cases")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "open"),
+    db
+      .from("listings")
+      .select("public_id", { count: "exact", head: true })
+      .eq("status", "live"),
+    db
+      .from("listing_decisions")
+      .select("id, listing_public_id, decision, decided_at")
+      .eq("decided_by", admin.user.id)
+      .order("decided_at", { ascending: false })
+      .order("id")
+      .limit(5)
+      .overrideTypes<Decision[], { merge: false }>(),
+    db.rpc("admin_today_review_counts").single().overrideTypes<
+      {
+        pending_identity_reviews: number;
+        reported_reviews: number;
+      },
+      { merge: false }
+    >(),
+  ]);
   if (
-    [applications, disputes, claims, support, businesses, decisions].some(
-      (result) => result.error !== null,
-    )
+    [
+      applications,
+      disputes,
+      claims,
+      support,
+      businesses,
+      decisions,
+      reviews,
+    ].some((result) => result.error !== null)
   ) {
     throwStatus(503, admin.headers);
   }
@@ -89,6 +109,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         claims: claims.count ?? 0,
         support: support.count ?? 0,
         businesses: businesses.count ?? 0,
+        pending_identity_reviews: reviews.data?.pending_identity_reviews ?? 0,
+        reported_reviews: reviews.data?.reported_reviews ?? 0,
       },
       applications: applications.data ?? [],
       disputes: disputes.data ?? [],
@@ -126,6 +148,12 @@ export default function AdminToday({ loaderData }: Route.ComponentProps) {
       value: counts.businesses,
       href: "/admin/listings?status=live",
     },
+    {
+      title: "Identity checks in review",
+      value: counts.pending_identity_reviews,
+      href: "/admin/id-checks",
+    },
+    { title: "Reported reviews", value: counts.reported_reviews },
   ];
   return (
     <AdminShell title="Today">
@@ -140,11 +168,13 @@ export default function AdminToday({ loaderData }: Route.ComponentProps) {
             <dd>
               <strong>{metric.value}</strong>
             </dd>
-            <dd>
-              <a className="cx-tlink" href={metric.href}>
-                Open queue
-              </a>
-            </dd>
+            {metric.href && (
+              <dd>
+                <a className="cx-tlink" href={metric.href}>
+                  Open queue
+                </a>
+              </dd>
+            )}
           </div>
         ))}
       </dl>

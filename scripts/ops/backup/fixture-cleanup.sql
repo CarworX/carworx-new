@@ -41,3 +41,4 @@ delete from private.listing_closures where listing_public_id = 'ca7c1000-0000-40
 delete from private.identity_checks where provider_session_id = 'b1900000-0000-4000-8000-000000000001';
 delete from public.fines_payments where id = 'b2000000-0000-4000-8000-000000000001';
 delete from public.reviews where id = 'b2100000-0000-4000-8000-000000000001';
+delete from private.didit_session_deletions where id = 'b2200000-0000-4000-8000-000000000001';
