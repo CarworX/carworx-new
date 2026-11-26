@@ -122,10 +122,12 @@ function browseHref(p: {
   q: string;
   category: string;
   all_cursor?: string;
+  comesToYou?: boolean;
 }): string {
   const q = new URLSearchParams();
   if (p.q) q.set("q", p.q);
   if (p.category) q.set("category", p.category);
+  if (p.comesToYou) q.set("comes_to_you", "1");
   if (p.all_cursor) q.set("all_cursor", p.all_cursor);
   const text = q.toString();
   return text ? `/search?${text}` : "/search";
@@ -141,6 +143,8 @@ function searchHref(p: {
   fixed_cursor?: string;
   mobile_cursor?: string;
   map?: boolean;
+  comesToYou?: boolean;
+  sort?: string | null;
 }): string {
   const q = new URLSearchParams();
   if (p.q) q.set("q", p.q);
@@ -149,6 +153,8 @@ function searchHref(p: {
   if (p.near) q.set("near", p.near);
   if (p.category) q.set("category", p.category);
   q.set("radius", String(p.radius));
+  if (p.comesToYou) q.set("comes_to_you", "1");
+  if (p.sort) q.set("sort", p.sort);
   if (p.fixed_cursor) q.set("fixed_cursor", p.fixed_cursor);
   if (p.mobile_cursor) q.set("mobile_cursor", p.mobile_cursor);
   if (p.map) q.set("map", "1");
@@ -167,6 +173,9 @@ export async function buildSearchPage(
   const radius = (RADII as readonly number[]).includes(radiusParam)
     ? radiusParam
     : DEFAULT_RADIUS;
+  const travel = get("comes_to_you");
+  const comesToYou = travel === "1";
+  const sort = get("sort");
   const areaText = (get("area") ?? "").trim();
   const latText = get("lat") ?? "";
   const lngText = get("lng") ?? "";
@@ -205,6 +214,8 @@ export async function buildSearchPage(
   // No area and no point: browse every live listing (D-097).
   if (!hasPoint && !byArea) {
     const params = new URLSearchParams();
+    if (travel !== null) params.set("comes_to_you", travel);
+    if (sort !== null) params.set("sort", sort);
     if (words) params.set("q", words);
     if (category) params.set("category", category);
     const allCursor = get("all_cursor");
@@ -231,11 +242,16 @@ export async function buildSearchPage(
         ...CATEGORIES.map((c) => ({ slug: c.slug, label: c.label })),
       ].map((c) => ({
         ...c,
-        href: browseHref({ q: words, category: c.slug }),
+        href: browseHref({ q: words, category: c.slug, comesToYou }),
         current: c.slug === category,
       })),
       moreAll: outcome.body.all?.next
-        ? browseHref({ q: words, category, all_cursor: outcome.body.all.next })
+        ? browseHref({
+            q: words,
+            category,
+            all_cursor: outcome.body.all.next,
+            comesToYou,
+          })
         : null,
     });
   }
@@ -289,6 +305,8 @@ export async function buildSearchPage(
             category,
             radius,
             q: words,
+            comesToYou,
+            sort,
           }),
         })),
       });
@@ -300,6 +318,8 @@ export async function buildSearchPage(
   }
 
   const params = new URLSearchParams({ lat, lng, radius: String(radius) });
+  if (travel !== null) params.set("comes_to_you", travel);
+  if (sort !== null) params.set("sort", sort);
   if (words) params.set("q", words);
   if (category) params.set("category", category);
   for (const key of ["fixed_cursor", "mobile_cursor"]) {
@@ -318,7 +338,7 @@ export async function buildSearchPage(
         ? { kind: "bad_request" }
         : { kind: "unavailable" },
     );
-  const base = { lat, lng, near, category, q: words };
+  const base = { lat, lng, near, category, q: words, comesToYou, sort };
   const currentFixed = get("fixed_cursor");
   const currentMobile = get("mobile_cursor");
   const pins = (outcome.body.fixed?.items ?? []).flatMap((f) =>

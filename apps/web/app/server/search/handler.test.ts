@@ -370,3 +370,52 @@ describe("GET /api/search handler", () => {
     }
   });
 });
+
+describe("customer home search", () => {
+  it("filters to mobile, returns ratings, and binds pagination to the filter", async () => {
+    const calls: SearchArgs[] = [];
+    const search = (args: SearchArgs) => {
+      calls.push(args);
+      return Promise.resolve([
+        { ...row(1, "mobile"), rating_avg: "4.5", rating_count: 2 },
+        row(2, "mobile"),
+      ]);
+    };
+    const area = "?lat=-33.9&lng=18.4&limit=1";
+    const result = await get(area + "&comes_to_you=1&sort=near-me", { search });
+    const body = result.body as unknown as {
+      fixed: null;
+      mobile: { items: Record<string, unknown>[]; next: string };
+    };
+    expect(result.status).toBe(200);
+    expect(body.fixed).toBeNull();
+    expect(body.mobile.items[0]).toMatchObject({
+      rating_avg: 4.5,
+      rating_count: 2,
+    });
+    expect(body.mobile.items[0]).not.toHaveProperty("distance_km");
+    expect(calls).toEqual([
+      expect.objectContaining({ group: "mobile", comesToYou: true }),
+    ]);
+    expect(
+      (
+        await get(
+          area + "&mobile_cursor=" + encodeURIComponent(body.mobile.next),
+          { search },
+        )
+      ).status,
+    ).toBe(400);
+  });
+
+  it("requires a point for near-me and keeps the filter for browsing", async () => {
+    const calls: SearchArgs[] = [];
+    expect((await get("?sort=near-me")).status).toBe(400);
+    expect((await get("?comes_to_you=0")).status).toBe(400);
+    expect(
+      (await get("?comes_to_you=1", { search: fakeSearch(calls) })).status,
+    ).toBe(200);
+    expect(calls).toEqual([
+      expect.objectContaining({ group: "all", comesToYou: true }),
+    ]);
+  });
+});
