@@ -44,6 +44,8 @@ const ALLOWED = new Set([
   "fixed_cursor",
   "mobile_cursor",
   "all_cursor",
+  "comes_to_you",
+  "sort",
 ]);
 
 /** Trims and collapses spaces; null when empty or not allowed. */
@@ -54,6 +56,7 @@ export function normaliseWords(text: string | null): string | null {
 }
 
 export interface SearchArgs {
+  comesToYou?: true;
   /** Null (with lng and radius) only for the "all" group. */
   lat: number | null;
   lng: number | null;
@@ -67,6 +70,8 @@ export interface SearchArgs {
   q: string | null;
 }
 export interface SearchRow {
+  rating_avg?: string | number | null;
+  rating_count?: number;
   public_id: string;
   display_name: string;
   description: string;
@@ -102,6 +107,7 @@ export interface SearchDeps {
 }
 
 interface Query {
+  comesToYou: boolean;
   /** Both null: browse without a location (the "all" group). */
   lat: number | null;
   lng: number | null;
@@ -165,6 +171,12 @@ function parse(params: URLSearchParams): Query | null {
     lng = Number(lngText);
     if (!(lat >= -35 && lat <= -22 && lng >= 16 && lng <= 33)) return null;
   }
+  const travel = get("comes_to_you");
+  if (travel !== null && (travel !== "1" || get("fixed_cursor") !== null))
+    return null;
+  const sort = get("sort");
+  if (sort !== null && (sort !== "near-me" || lat === null || lng === null))
+    return null;
   const service = get("service");
   if (service !== null && !SLUG.test(service)) return null;
   const category = get("category");
@@ -194,6 +206,7 @@ function parse(params: URLSearchParams): Query | null {
     category,
     radius,
     limit,
+    comesToYou: travel === "1",
     fixedCursor: get("fixed_cursor"),
     mobileCursor: get("mobile_cursor"),
     allCursor: get("all_cursor"),
@@ -222,18 +235,17 @@ export function pgRound(x: number, dp: number): string {
  */
 export function canonicalQuery(
   q: Pick<Query, "lat" | "lng" | "service" | "category" | "radius" | "limit"> &
-    Partial<Pick<Query, "q">>,
+    Partial<Pick<Query, "q" | "comesToYou">>,
   group: SearchGroup,
 ): string {
   const words = q.q ? q.q.toLowerCase() : "";
+  const travelMarker = q.comesToYou ? "|comes_to_you" : "";
   if (group === "all" || q.lat === null || q.lng === null)
-    return [
-      "all",
-      q.service ?? "",
-      q.category ?? "",
-      String(q.limit),
-      words,
-    ].join("|");
+    return (
+      ["all", q.service ?? "", q.category ?? "", String(q.limit), words].join(
+        "|",
+      ) + travelMarker
+    );
   const dp = group === "fixed" ? 3 : 2;
   const parts = [
     group,
@@ -247,7 +259,7 @@ export function canonicalQuery(
   // Name words are appended only when present, so a located cursor issued
   // before keyword search existed still reads the same.
   if (words) parts.push(words);
-  return parts.join("|");
+  return parts.join("|") + travelMarker;
 }
 
 function baseItem(row: SearchRow) {
@@ -261,6 +273,8 @@ function baseItem(row: SearchRow) {
     category_slug: row.category_slug,
     category_name: row.category_name,
     verification_labels: row.verification_labels,
+    rating_avg: row.rating_avg == null ? null : Number(row.rating_avg),
+    rating_count: row.rating_count ?? 0,
   };
 }
 export type MobileItem = ReturnType<typeof baseItem> & {
@@ -329,6 +343,7 @@ async function page(
     afterId: after ? after.id : null,
     limit: q.limit + 1,
     q: q.q,
+    ...(q.comesToYou ? { comesToYou: true as const } : {}),
   });
   const visible = rows.slice(0, q.limit);
   const last = visible.at(-1);
@@ -484,7 +499,9 @@ export async function runSearch(
   // No cursor: first page of both groups. A cursor continues only its group,
   // unless the caller asks for both (the page keeps both on screen).
   const both = deps.bothGroups === true;
-  const wantFixed = both || q.fixedCursor !== null || q.mobileCursor === null;
+  const wantFixed =
+    !q.comesToYou &&
+    (both || q.fixedCursor !== null || q.mobileCursor === null);
   const wantMobile = both || q.mobileCursor !== null || q.fixedCursor === null;
   try {
     const ready = { ...deps, search, cursorKey };
