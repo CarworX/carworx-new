@@ -18,6 +18,7 @@ const statuses = {
   Declined: "declined",
   "In Review": "in_review",
   Expired: "expired",
+  "Kyc Expired": "expired",
   Abandoned: "abandoned",
 } as const;
 const maxWebhookBytes = 256 * 1024;
@@ -198,6 +199,17 @@ const reasons = {
   DOCUMENT_UNREADABLE: "document_unreadable",
 } as const;
 
+function nationalIdLast4(value: unknown): string | null {
+  if (typeof value !== "string" || !/^\d{13}$/.test(value)) return null;
+  let checksum = 0;
+  for (let index = 0; index < value.length; index++) {
+    const digit = Number(value.charAt(index));
+    const weighted = index % 2 === 0 ? digit : digit * 2;
+    checksum += weighted > 9 ? weighted - 9 : weighted;
+  }
+  return checksum % 10 === 0 ? value.slice(-4) : null;
+}
+
 function items(value: unknown): Record<string, unknown>[] {
   return Array.isArray(value) ? value.map(record) : [];
 }
@@ -232,13 +244,11 @@ export async function applyDiditWebhook(
   const state = statuses[status as keyof typeof statuses];
   const decision = record(payload["decision"]);
   const idChecks = items(decision["id_verifications"]);
-  const document = idChecks.find((check) => check["status"] === "Approved")?.[
-    "document_number"
-  ];
   const last4 =
-    typeof document === "string" && /^[0-9]{4}$/.test(document.slice(-4))
-      ? document.slice(-4)
-      : null;
+    idChecks
+      .filter((check) => check["status"] === "Approved")
+      .map((check) => nationalIdLast4(check["personal_number"]))
+      .find((suffix) => suffix !== null) ?? null;
   const warnings = [
     ...idChecks,
     ...items(decision["face_matches"]),

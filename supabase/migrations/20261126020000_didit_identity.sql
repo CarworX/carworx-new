@@ -19,19 +19,28 @@ alter table private.identity_checks enable row level security;
 revoke all on private.identity_checks from public, anon, authenticated, service_role, forms_server;
 create index identity_checks_user_created_idx on private.identity_checks(user_id, created_at desc);
 
+-- Only expiry of an approval begins a fresh attempt cycle.
+create function private.identity_cycle_start(p_user uuid) returns timestamptz
+language sql stable set search_path = '' as $$
+  select coalesce(max(updated_at), '-infinity'::timestamptz)
+  from private.identity_checks
+  where user_id = p_user and status = 'expired' and decided_by is not null
+$$;
+
 create function private.identity_next_attempt(p_user uuid) returns smallint
 language plpgsql security definer set search_path = '' as $$
-declare v_used integer;
+declare v_used integer; v_cycle timestamptz;
 begin
   perform pg_advisory_xact_lock(172911, hashtext(p_user::text));
+  v_cycle := private.identity_cycle_start(p_user);
   if not exists (select from auth.users where id = p_user)
     or exists (select from private.account_closures where user_id = p_user)
-    or exists (select from private.identity_checks where user_id = p_user and status in ('approved','in_review'))
+    or exists (select from private.identity_checks where user_id = p_user and (status = 'approved' or (status = 'in_review' and created_at > v_cycle)))
     or exists (select from private.identity_checks where user_id = p_user
-      and status in ('not_started','in_progress') and created_at > now() - interval '24 hours')
+      and status in ('not_started','in_progress') and created_at > greatest(v_cycle, now() - interval '24 hours'))
   then raise exception 'identity_not_available' using errcode = 'P0001'; end if;
   select count(*) into v_used from private.identity_checks
-    where user_id = p_user and created_at > now() - interval '30 days';
+    where user_id = p_user and created_at > greatest(v_cycle, now() - interval '30 days');
   if v_used >= 3 then raise exception 'identity_attempt_limit' using errcode = 'P0001'; end if;
   return (v_used + 1)::smallint;
 end $$;
@@ -42,8 +51,8 @@ begin
   if p_attempt is distinct from private.identity_next_attempt(p_user) then
     raise exception 'identity_attempt_changed' using errcode = 'P0001';
   end if;
-  insert into private.identity_checks (user_id, provider_session_id, status, attempt)
-  values (p_user, p_session, 'not_started', p_attempt);
+  insert into private.identity_checks (user_id, provider_session_id, status, attempt, created_at, updated_at)
+  select p_user, p_session, 'not_started', p_attempt, t, t from (select clock_timestamp() as t) stamp;
 end $$;
 
 create function private.identity_apply_webhook(p_session text, p_status text, p_reason text, p_last4 text) returns void
@@ -51,14 +60,15 @@ language sql security definer set search_path = '' as $$
   update private.identity_checks
   set status = p_status,
     decline_reason = case when p_status = 'declined' then p_reason end,
-    id_last4 = coalesce(p_last4, id_last4),
-    updated_at = now(),
-    decided_at = case when p_status in ('approved','declined') then now() end,
-    decided_by = case when p_status in ('approved','declined') then 'didit' end
+    id_last4 = case when p_status <> 'expired' then p_last4 end,
+    updated_at = clock_timestamp(),
+    decided_at = case when status = 'approved' then decided_at when p_status in ('approved','declined') then now() end,
+    decided_by = case when status = 'approved' then decided_by when p_status in ('approved','declined') then 'didit' end
   where provider_session_id = p_session and status <> p_status and (
     (status = 'not_started' and p_status in ('in_progress','in_review','approved','declined','expired','abandoned'))
     or (status = 'in_progress' and p_status in ('in_review','approved','declined','expired','abandoned'))
     or (status = 'in_review' and p_status in ('approved','declined'))
+    or (status = 'approved' and p_status = 'expired')
   )
 $$;
 
@@ -74,9 +84,10 @@ language sql stable security definer set search_path = '' as $$
     else 'none' end,
     c.decline_reason, coalesce(c.attempt, 0::smallint), greatest(0, 3 - u.used), c.decided_at
   from (select count(*)::integer as used from private.identity_checks
-        where user_id = auth.uid() and created_at > now() - interval '30 days') u
+        where user_id = auth.uid() and created_at > greatest(private.identity_cycle_start(auth.uid()), now() - interval '30 days')) u
   left join lateral (
     select i.* from private.identity_checks i where i.user_id = auth.uid()
+      and (i.status = 'approved' or i.created_at > private.identity_cycle_start(auth.uid()))
     order by (i.status = 'approved') desc, i.created_at desc, i.attempt desc, i.id desc limit 1
   ) c on true
 $$;
@@ -129,7 +140,7 @@ language sql security invoker set search_path = '' as $$
   select private.admin_decide_identity(p_id, p_decision, p_reason)
 $$;
 
-revoke all on function private.identity_next_attempt(uuid), private.identity_start(uuid,text,smallint),
+revoke all on function private.identity_cycle_start(uuid), private.identity_next_attempt(uuid), private.identity_start(uuid,text,smallint),
   private.identity_apply_webhook(text,text,text,text), private.require_identity_admin(),
   private.my_identity_status(), public.my_identity_status(), private.admin_identity_queue(),
   public.admin_identity_queue(), private.admin_decide_identity(uuid,text,text),
