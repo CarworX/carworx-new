@@ -7,6 +7,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Review, ReviewReply } from "../../reviews/model";
+import type { ReviewSort } from "../../reviews/model";
+
+/** Reviews fetched for one profile page; the aggregate covers all of them. */
+const REVIEW_PAGE = 200;
+
 export {
   parseReviewSort,
   ratingBreakdown,
@@ -110,19 +115,33 @@ export async function saveReview(
 }
 
 /** Public, visible reviews for a listing, with their owner replies. */
+/**
+ * The first page of visible reviews, in the chosen order. The order is applied
+ * in the database before the cap, so highest and lowest reach every review
+ * they should. "replied" has no column to sort on, so it runs on the page.
+ */
 export async function listReviews(
   supabase: SupabaseClient,
   listing: string,
+  sort: ReviewSort = "recent",
 ): Promise<ReviewOutcome<Review[]>> {
-  const result: RpcResult = await supabase
+  let query = supabase
     .from("reviews")
     .select(
       "id,listing_public_id,author_display,rating,body,service_slug,created_at,edited_at",
     )
     .eq("listing_public_id", listing)
-    .eq("status", "visible")
-    .order("created_at", { ascending: false })
-    .limit(200);
+    .eq("status", "visible");
+  if (sort === "highest")
+    query = query
+      .order("rating", { ascending: false })
+      .order("created_at", { ascending: false });
+  else if (sort === "lowest")
+    query = query
+      .order("rating", { ascending: true })
+      .order("created_at", { ascending: false });
+  else query = query.order("created_at", { ascending: false });
+  const result: RpcResult = await query.limit(REVIEW_PAGE);
   if (result.error) return reviewOutcomeOf(result.error);
   const reviews = rows(result.data) as Omit<Review, "reply">[];
   const replies = await repliesFor(

@@ -96,7 +96,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   const sort = parseReviewSort(new URL(request.url).searchParams.get("sort"));
   const reviewClient =
     signedIn?.supabase ?? createRequestSupabase(request, config).supabase;
-  const loaded = await listReviews(reviewClient, params.publicId);
+  const loaded = await listReviews(reviewClient, params.publicId, sort);
   const reviews = loaded.ok ? sortReviews(loaded.value, sort) : null;
   let eligibility: "write" | "message_first" | "sign_in" | "unavailable" =
     "sign_in";
@@ -113,6 +113,10 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
       reviews,
       sort,
       eligibility,
+      aggregate: {
+        average: listing.rating_avg ?? null,
+        count: listing.rating_count ?? 0,
+      },
       listing,
       hours: opening,
       today: localClock(now).day,
@@ -199,8 +203,16 @@ export default function ListingPage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { listing, hours, today, status, reviews, sort, eligibility } =
-    loaderData;
+  const {
+    listing,
+    hours,
+    today,
+    status,
+    reviews,
+    sort,
+    eligibility,
+    aggregate,
+  } = loaderData;
   const category = topCategoryOf(listing.category_slug);
   const mode =
     listing.mode === "fixed"
@@ -370,21 +382,22 @@ export default function ListingPage({
               Is this your business? Claim this listing
             </a>
           </p>
+          {reviews === null ? (
+            <section id="reviews" className="card" aria-labelledby="reviews-h">
+              <h2 id="reviews-h">Reviews</h2>
+              <p role="alert">We couldn&apos;t load the reviews just now.</p>
+            </section>
+          ) : (
+            <ReviewsSection
+              reviews={reviews}
+              aggregate={aggregate}
+              business={listing.display_name}
+              sort={sort}
+              pathname={`/p/${listing.public_id}`}
+              eligibility={eligibility}
+            />
+          )}
         </div>
-        {reviews === null ? (
-          <section id="reviews" className="card" aria-labelledby="reviews-h">
-            <h2 id="reviews-h">Reviews</h2>
-            <p role="alert">We couldn&apos;t load the reviews just now.</p>
-          </section>
-        ) : (
-          <ReviewsSection
-            reviews={reviews}
-            business={listing.display_name}
-            sort={sort}
-            pathname={`/p/${listing.public_id}`}
-            eligibility={eligibility}
-          />
-        )}
         <aside className="card" id="enquiry" aria-labelledby="enquiry-h">
           <span className="eyebrow">Send a message</span>
           <h2 id="enquiry-h">Send {listing.display_name} a message</h2>

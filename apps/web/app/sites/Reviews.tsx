@@ -44,19 +44,26 @@ export function Stars({ rating }: { rating: number }) {
   );
 }
 
+/** The average and count come from the whole listing; bars need every review loaded. */
 export function ReviewSummary({
   reviews,
   business,
+  aggregate,
 }: {
   reviews: readonly Pick<Review, "rating">[];
   business: string;
+  aggregate: { average: number | null; count: number };
 }) {
-  const { counts, total, average, showBars } = ratingBreakdown(reviews);
-  if (total === 0) return null;
+  const { counts } = ratingBreakdown(reviews);
+  const total = aggregate.count;
+  if (total === 0 || aggregate.average === null) return null;
+  const showBars = total >= 3 && reviews.length === total;
   return (
     <div className="review-summary">
       <p className="review-average">
-        <span className="review-average-number">{average?.toFixed(1)}</span>
+        <span className="review-average-number">
+          {aggregate.average.toFixed(1)}
+        </span>
         <span className="small muted">
           {" "}
           out of 5 · {String(total)} {total === 1 ? "review" : "reviews"} for{" "}
@@ -154,12 +161,14 @@ export function ReviewItem({
 
 export function ReviewsSection({
   reviews,
+  aggregate,
   business,
   sort,
   pathname,
   eligibility,
 }: {
   reviews: readonly Review[];
+  aggregate: { average: number | null; count: number };
   business: string;
   sort: ReviewSort;
   pathname: string;
@@ -214,7 +223,11 @@ export function ReviewsSection({
         </div>
       ) : (
         <>
-          <ReviewSummary reviews={reviews} business={business} />
+          <ReviewSummary
+            reviews={reviews}
+            business={business}
+            aggregate={aggregate}
+          />
           <SortChips current={sort} pathname={pathname} />
           {reviews.map((review) => (
             <ReviewItem key={review.id} review={review} business={business} />
