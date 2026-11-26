@@ -3,6 +3,7 @@ create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 grant execute on all functions in schema extensions to authenticated, forms_server;
 grant usage on schema extensions to forms_server;
+grant forms_server to postgres with set true, inherit false;
 select plan(10);
 
 insert into auth.users(id, email) values
