@@ -2,6 +2,8 @@ import {
   DIDIT_WEBHOOK_PATH,
   dispatchDiditWebhook,
 } from "../app/routes/api.identity.didit";
+import { FINES_CALLBACK_PATH } from "../app/server/fines/sandbox.server";
+import { dispatchFinesCallback } from "../app/routes/api.fines.callback";
 import { createRequestHandler } from "react-router";
 
 import { mediaBucket } from "../app/server/media/cover.server";
@@ -52,6 +54,12 @@ export default {
       path.startsWith(DIDIT_WEBHOOK_PATH + "/")
     ) {
       return dispatchDiditWebhook(request, env);
+    }
+    if (
+      path === FINES_CALLBACK_PATH ||
+      path.startsWith(FINES_CALLBACK_PATH + "/")
+    ) {
+      return dispatchFinesCallback(request, env);
     }
     if (path === MAIL_WEBHOOK_PATH) {
       return dispatchMailWebhook(request, env);

@@ -48,6 +48,7 @@
 | Integration events (raw) | 3 | Reconciliation | System, admin | Reconciled → **90 days** (PLAN) | s14(1) |
 | Reviews | 3 | Trust | Public (text), admin | While the listing is live; on account closure the author's name is removed and the text kept **de-identified** | s14(4) de-identify; confirm before Phase 3 |
 | Didit identity outcome | K2 (proposed) | Verify access to fines | Subject, AAL2 review admin | While the account is active, delete at final closure. Hosted biometric evidence stays in Didit and uses the shortest supported retention setting, pending owner approval and verification. | D-099, K4 erasure hook |
+| Fines payment records | K3 (proposed) | Receipts and reconciliation | Subject, AAL2 platform admin | Keep five years under D-096. Final account erasure removes the user link and keeps the payment record. Financial holds take precedence. | D-099, K3; owner approval pending |
 | Financial records | G-LIVEPAY | Tax and accounting | Admin | Return submitted → **at least 5 years**, plus while any audit, objection or appeal is open | TAA s29(3)(a). **None exist in Phase 2.** Accountant review (D-047). OQ-R2 |
 | Backups | 2 | Recovery | Owner | **7 daily + 4 weekly sets (about 5 weeks)**, then overwritten | s14(4)–(5); deleted data leaves backups within 5 weeks. [backup-and-pause.md](../runbooks/backup-and-pause.md) |
 

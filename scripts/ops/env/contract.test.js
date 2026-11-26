@@ -46,6 +46,7 @@ test("source config keeps local, staging and production separate without public 
   assert.equal(config.preview_urls, false);
   assert.equal(config.vars?.CARWORX_DEV_PAGES, undefined);
   assert.equal(config.vars?.DIDIT_WORKFLOW_ID, undefined);
+  assert.equal(config.vars?.FINES_PROVIDER, undefined);
   assert.equal(config.vars?.CARWORX_ENV, "local");
   assert.equal(config.hyperdrive, undefined);
   // Local never runs the retention cron.
@@ -55,6 +56,7 @@ test("source config keeps local, staging and production separate without public 
   assert.deepEqual(config.env.staging.vars, {
     CARWORX_ENV: "staging",
     CARWORX_DEV_PAGES: "1",
+    FINES_PROVIDER: "sandbox",
     DIDIT_WORKFLOW_ID: "0ccc342d-6da5-4a68-9c34-28101b2b727b",
     MAIL_ENABLED: "1",
     MAIL_DOMAIN_VERIFIED: "1",
